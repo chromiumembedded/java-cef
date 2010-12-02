@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/java/src/org/limewire/cef/Main.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="DYLD_LIBRARY_PATH" value="${env_var:DYLD_LIBRARY_PATH}:${workspace_loc:JavaCEFBrowser}/lib/native/osx"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.limewire.cef.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="JavaCEFBrowser"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-d32 -Djava.library.path=${workspace_loc:JavaCEFBrowser}/lib/native/osx"/>
+</launchConfiguration>
