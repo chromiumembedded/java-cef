@@ -1,0 +1,397 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		F9B18D9E0DB3EFE400F89148 /* BuildAll */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F9B18DAB0DB3EFFA00F89148 /* Build configuration list for PBXAggregateTarget "BuildAll" */;
+			buildPhases = (
+			);
+			dependencies = (
+				F96C68B70DCEADEE006A4F2B /* PBXTargetDependency */,
+			);
+			name = BuildAll;
+			productName = BuildAll;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		E64236FF12A300C000F1E70B /* CefBaseImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236ED12A300C000F1E70B /* CefBaseImpl.cpp */; };
+		E642370012A300C000F1E70B /* CefBaseImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236EE12A300C000F1E70B /* CefBaseImpl.h */; };
+		E642370112A300C000F1E70B /* CefBrowser_N.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236EF12A300C000F1E70B /* CefBrowser_N.cpp */; };
+		E642370212A300C000F1E70B /* CefBrowser_N.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236F012A300C000F1E70B /* CefBrowser_N.h */; };
+		E642370312A300C000F1E70B /* CefContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236F112A300C000F1E70B /* CefContext.cpp */; };
+		E642370412A300C000F1E70B /* CefContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236F212A300C000F1E70B /* CefContext.h */; };
+		E642370512A300C000F1E70B /* CefFrame_N.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236F312A300C000F1E70B /* CefFrame_N.cpp */; };
+		E642370612A300C000F1E70B /* CefFrame_N.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236F412A300C000F1E70B /* CefFrame_N.h */; };
+		E642370712A300C000F1E70B /* CefHandlerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236F512A300C000F1E70B /* CefHandlerImpl.cpp */; };
+		E642370812A300C000F1E70B /* CefHandlerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236F612A300C000F1E70B /* CefHandlerImpl.h */; };
+		E642370912A300C000F1E70B /* CefV8HandlerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236F712A300C000F1E70B /* CefV8HandlerImpl.cpp */; };
+		E642370A12A300C000F1E70B /* CefV8HandlerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236F812A300C000F1E70B /* CefV8HandlerImpl.h */; };
+		E642370B12A300C000F1E70B /* CefV8Value_N.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236F912A300C000F1E70B /* CefV8Value_N.cpp */; };
+		E642370C12A300C000F1E70B /* CefV8Value_N.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236FA12A300C000F1E70B /* CefV8Value_N.h */; };
+		E642370D12A300C000F1E70B /* SystemUtilities_mac.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236FB12A300C000F1E70B /* SystemUtilities_mac.h */; };
+		E642370E12A300C000F1E70B /* SystemUtilities_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E64236FC12A300C000F1E70B /* SystemUtilities_mac.mm */; };
+		E642370F12A300C000F1E70B /* SystemUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64236FD12A300C000F1E70B /* SystemUtilities.cpp */; };
+		E642371012A300C000F1E70B /* SystemUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = E64236FE12A300C000F1E70B /* SystemUtilities.h */; };
+		E642374A12A305B600F1E70B /* CefBrowser_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E642374912A305B600F1E70B /* CefBrowser_mac.mm */; };
+		E642374C12A305E600F1E70B /* CefBrowser_mac.h in Headers */ = {isa = PBXBuildFile; fileRef = E642374B12A305E600F1E70B /* CefBrowser_mac.h */; };
+		E642382812A3172800F1E70B /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E63833A512A2EF0500254B8A /* JavaVM.framework */; };
+		F96C68AA0DCEAD97006A4F2B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F965808F0DA1466600F02016 /* Cocoa.framework */; };
+		F96C68AB0DCEAD97006A4F2B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9AE53EA0DAC02D000122CBF /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F96C68B60DCEADEE006A4F2B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F96C68A40DCEAD97006A4F2B;
+			remoteInfo = "MacOSXUtils Leopard";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E63833A512A2EF0500254B8A /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = System/Library/Frameworks/JavaVM.framework; sourceTree = SDKROOT; };
+		E64236ED12A300C000F1E70B /* CefBaseImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefBaseImpl.cpp; path = ../../src/CefBaseImpl.cpp; sourceTree = SOURCE_ROOT; };
+		E64236EE12A300C000F1E70B /* CefBaseImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefBaseImpl.h; path = ../../src/CefBaseImpl.h; sourceTree = SOURCE_ROOT; };
+		E64236EF12A300C000F1E70B /* CefBrowser_N.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefBrowser_N.cpp; path = ../../src/CefBrowser_N.cpp; sourceTree = SOURCE_ROOT; };
+		E64236F012A300C000F1E70B /* CefBrowser_N.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefBrowser_N.h; path = ../../src/CefBrowser_N.h; sourceTree = SOURCE_ROOT; };
+		E64236F112A300C000F1E70B /* CefContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefContext.cpp; path = ../../src/CefContext.cpp; sourceTree = SOURCE_ROOT; };
+		E64236F212A300C000F1E70B /* CefContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefContext.h; path = ../../src/CefContext.h; sourceTree = SOURCE_ROOT; };
+		E64236F312A300C000F1E70B /* CefFrame_N.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefFrame_N.cpp; path = ../../src/CefFrame_N.cpp; sourceTree = SOURCE_ROOT; };
+		E64236F412A300C000F1E70B /* CefFrame_N.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefFrame_N.h; path = ../../src/CefFrame_N.h; sourceTree = SOURCE_ROOT; };
+		E64236F512A300C000F1E70B /* CefHandlerImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefHandlerImpl.cpp; path = ../../src/CefHandlerImpl.cpp; sourceTree = SOURCE_ROOT; };
+		E64236F612A300C000F1E70B /* CefHandlerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefHandlerImpl.h; path = ../../src/CefHandlerImpl.h; sourceTree = SOURCE_ROOT; };
+		E64236F712A300C000F1E70B /* CefV8HandlerImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefV8HandlerImpl.cpp; path = ../../src/CefV8HandlerImpl.cpp; sourceTree = SOURCE_ROOT; };
+		E64236F812A300C000F1E70B /* CefV8HandlerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefV8HandlerImpl.h; path = ../../src/CefV8HandlerImpl.h; sourceTree = SOURCE_ROOT; };
+		E64236F912A300C000F1E70B /* CefV8Value_N.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CefV8Value_N.cpp; path = ../../src/CefV8Value_N.cpp; sourceTree = SOURCE_ROOT; };
+		E64236FA12A300C000F1E70B /* CefV8Value_N.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefV8Value_N.h; path = ../../src/CefV8Value_N.h; sourceTree = SOURCE_ROOT; };
+		E64236FB12A300C000F1E70B /* SystemUtilities_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemUtilities_mac.h; path = ../../src/SystemUtilities_mac.h; sourceTree = SOURCE_ROOT; };
+		E64236FC12A300C000F1E70B /* SystemUtilities_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SystemUtilities_mac.mm; path = ../../src/SystemUtilities_mac.mm; sourceTree = SOURCE_ROOT; };
+		E64236FD12A300C000F1E70B /* SystemUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemUtilities.cpp; path = ../../src/SystemUtilities.cpp; sourceTree = SOURCE_ROOT; };
+		E64236FE12A300C000F1E70B /* SystemUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemUtilities.h; path = ../../src/SystemUtilities.h; sourceTree = SOURCE_ROOT; };
+		E642374912A305B600F1E70B /* CefBrowser_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CefBrowser_mac.mm; path = ../../src/CefBrowser_mac.mm; sourceTree = SOURCE_ROOT; };
+		E642374B12A305E600F1E70B /* CefBrowser_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CefBrowser_mac.h; path = ../../src/CefBrowser_mac.h; sourceTree = SOURCE_ROOT; };
+		F95A28D20DCBA50900468CF3 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		F95A29A20DCBB0A300468CF3 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		F95A29C00DCBB65400468CF3 /* System.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = System.framework; path = /System/Library/Frameworks/System.framework; sourceTree = "<absolute>"; };
+		F965808F0DA1466600F02016 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		F96C68AF0DCEAD97006A4F2B /* libCefWrapper.jnilib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libCefWrapper.jnilib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9AE53EA0DAC02D000122CBF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F96C68A80DCEAD97006A4F2B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F96C68AA0DCEAD97006A4F2B /* Cocoa.framework in Frameworks */,
+				F96C68AB0DCEAD97006A4F2B /* Foundation.framework in Frameworks */,
+				E642382812A3172800F1E70B /* JavaVM.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* GURL */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				F9657FBE0DA1462800F02016 /* Frameworks */,
+			);
+			name = GURL;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				E642374B12A305E600F1E70B /* CefBrowser_mac.h */,
+				E642374912A305B600F1E70B /* CefBrowser_mac.mm */,
+				E64236ED12A300C000F1E70B /* CefBaseImpl.cpp */,
+				E64236EE12A300C000F1E70B /* CefBaseImpl.h */,
+				E64236EF12A300C000F1E70B /* CefBrowser_N.cpp */,
+				E64236F012A300C000F1E70B /* CefBrowser_N.h */,
+				E64236F112A300C000F1E70B /* CefContext.cpp */,
+				E64236F212A300C000F1E70B /* CefContext.h */,
+				E64236F312A300C000F1E70B /* CefFrame_N.cpp */,
+				E64236F412A300C000F1E70B /* CefFrame_N.h */,
+				E64236F512A300C000F1E70B /* CefHandlerImpl.cpp */,
+				E64236F612A300C000F1E70B /* CefHandlerImpl.h */,
+				E64236F712A300C000F1E70B /* CefV8HandlerImpl.cpp */,
+				E64236F812A300C000F1E70B /* CefV8HandlerImpl.h */,
+				E64236F912A300C000F1E70B /* CefV8Value_N.cpp */,
+				E64236FA12A300C000F1E70B /* CefV8Value_N.h */,
+				E64236FB12A300C000F1E70B /* SystemUtilities_mac.h */,
+				E64236FC12A300C000F1E70B /* SystemUtilities_mac.mm */,
+				E64236FD12A300C000F1E70B /* SystemUtilities.cpp */,
+				E64236FE12A300C000F1E70B /* SystemUtilities.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F96C68AF0DCEAD97006A4F2B /* libCefWrapper.jnilib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F9657FBE0DA1462800F02016 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F95A29A20DCBB0A300468CF3 /* ApplicationServices.framework */,
+				F965808F0DA1466600F02016 /* Cocoa.framework */,
+				F95A28D20DCBA50900468CF3 /* CoreServices.framework */,
+				F9AE53EA0DAC02D000122CBF /* Foundation.framework */,
+				F95A29C00DCBB65400468CF3 /* System.framework */,
+				E63833A512A2EF0500254B8A /* JavaVM.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		F96C68A50DCEAD97006A4F2B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E642370012A300C000F1E70B /* CefBaseImpl.h in Headers */,
+				E642370212A300C000F1E70B /* CefBrowser_N.h in Headers */,
+				E642370412A300C000F1E70B /* CefContext.h in Headers */,
+				E642370612A300C000F1E70B /* CefFrame_N.h in Headers */,
+				E642370812A300C000F1E70B /* CefHandlerImpl.h in Headers */,
+				E642370A12A300C000F1E70B /* CefV8HandlerImpl.h in Headers */,
+				E642370C12A300C000F1E70B /* CefV8Value_N.h in Headers */,
+				E642370D12A300C000F1E70B /* SystemUtilities_mac.h in Headers */,
+				E642371012A300C000F1E70B /* SystemUtilities.h in Headers */,
+				E642374C12A305E600F1E70B /* CefBrowser_mac.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F96C68A40DCEAD97006A4F2B /* CefWrapper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F96C68AC0DCEAD97006A4F2B /* Build configuration list for PBXNativeTarget "CefWrapper" */;
+			buildPhases = (
+				F96C68A50DCEAD97006A4F2B /* Headers */,
+				F96C68A60DCEAD97006A4F2B /* Sources */,
+				F96C68A80DCEAD97006A4F2B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CefWrapper;
+			productName = GURL;
+			productReference = F96C68AF0DCEAD97006A4F2B /* libCefWrapper.jnilib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB914E08733D8E0010E9CD /* Build configuration list for PBXProject "JNI" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* GURL */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F9B18D9E0DB3EFE400F89148 /* BuildAll */,
+				F96C68A40DCEAD97006A4F2B /* CefWrapper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F96C68A60DCEAD97006A4F2B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E64236FF12A300C000F1E70B /* CefBaseImpl.cpp in Sources */,
+				E642370112A300C000F1E70B /* CefBrowser_N.cpp in Sources */,
+				E642370312A300C000F1E70B /* CefContext.cpp in Sources */,
+				E642370512A300C000F1E70B /* CefFrame_N.cpp in Sources */,
+				E642370712A300C000F1E70B /* CefHandlerImpl.cpp in Sources */,
+				E642370912A300C000F1E70B /* CefV8HandlerImpl.cpp in Sources */,
+				E642370B12A300C000F1E70B /* CefV8Value_N.cpp in Sources */,
+				E642370E12A300C000F1E70B /* SystemUtilities_mac.mm in Sources */,
+				E642370F12A300C000F1E70B /* SystemUtilities.cpp in Sources */,
+				E642374A12A305B600F1E70B /* CefBrowser_mac.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F96C68B70DCEADEE006A4F2B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F96C68A40DCEAD97006A4F2B /* CefWrapper */;
+			targetProxy = F96C68B60DCEADEE006A4F2B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB914F08733D8E0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Debug;
+		};
+		1DEB915008733D8E0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = "";
+			};
+			name = Release;
+		};
+		F96C68AD0DCEAD97006A4F2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CONFIGURATION_BUILD_DIR = ../../../java/lib/native/osx;
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = jnilib;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					/System/Library/Frameworks/JavaVM.framework/Headers,
+					../../cef_binary/include,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_CFLAGS = "--visibility=hidden";
+				OTHER_LDFLAGS = (
+					"-L../../cef_binary/lib/DebugOSX",
+					"-lcef",
+					"-lcef_dll_wrapper",
+				);
+				PRODUCT_NAME = CefWrapper;
+				SDKROOT = macosx10.5;
+				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		F96C68AE0DCEAD97006A4F2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CONFIGURATION_BUILD_DIR = ../../../java/lib/native/osx;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_EXTENSION = jnilib;
+				EXECUTABLE_PREFIX = lib;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					/System/Library/Frameworks/JavaVM.framework/Headers,
+					../../cef_binary/include,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_CFLAGS = "--visibility=hidden";
+				OTHER_LDFLAGS = (
+					"-L../../cef_binary/lib/ReleaseOSX",
+					"-lcef",
+					"-lcef_dll_wrapper",
+				);
+				PRODUCT_NAME = CefWrapper;
+				SDKROOT = macosx10.5;
+				USER_HEADER_SEARCH_PATHS = "";
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Release;
+		};
+		F9B18D9F0DB3EFE500F89148 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = BuildAll;
+			};
+			name = Debug;
+		};
+		F9B18DA00DB3EFE500F89148 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = BuildAll;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB914E08733D8E0010E9CD /* Build configuration list for PBXProject "JNI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB914F08733D8E0010E9CD /* Debug */,
+				1DEB915008733D8E0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F96C68AC0DCEAD97006A4F2B /* Build configuration list for PBXNativeTarget "CefWrapper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F96C68AD0DCEAD97006A4F2B /* Debug */,
+				F96C68AE0DCEAD97006A4F2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F9B18DAB0DB3EFFA00F89148 /* Build configuration list for PBXAggregateTarget "BuildAll" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9B18D9F0DB3EFE500F89148 /* Debug */,
+				F9B18DA00DB3EFE500F89148 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
