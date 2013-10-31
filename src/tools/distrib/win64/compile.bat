@@ -1,0 +1,1 @@
+javac -cp "./bin;./bin/*" ./bin/*.java

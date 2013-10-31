@@ -1,0 +1,15 @@
+Name: Java™ libraries for 3D Graphics, Multimedia and Processing
+Short Name: jogamp
+URL: http://jogamp.org/
+Version: 2.0.2 (master@64d7c6b7f28649f01f7e7e34eb8cd5716c440238)
+License: Mixed (see LICENSE.txt files)
+
+Description:
+This library is used to provide OpenGL bindings. Download
+jogamp-all-platforms.7z and copy files from the jar/ directory.
+
+See http://jogamp.org/wiki/index.php/Downloading_and_installing_JOGL for
+related documentation.
+
+Local Modifications:
+None.

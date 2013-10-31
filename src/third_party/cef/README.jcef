@@ -1,0 +1,15 @@
+Name: Chromium Embedded Framework
+Short Name: cef
+URL: https://code.google.com/p/chromiumembedded/
+Version: 3.1650.1501
+License: BSD
+
+Description:
+CEF binary distribution. Download the CEF binary distribution, extract the
+contents and rename the top-level directory as follows:
+
+  /win32 - Contents of the 32-bit Windows distribution.
+  /win64 - Contents of the 64-bit Windows distribution.
+
+Local Modifications:
+None.

@@ -1,0 +1,34 @@
+# When adding a new dependency, please update the top-level .gitignore file
+# to list the dependency's destination directory.
+
+vars = {
+  # Use this googlecode_url variable only if there is an internal mirror for it.
+  # If you do not know, use the full path while defining your new deps entry.
+  "googlecode_url": "http://%s.googlecode.com/svn",
+  "chromium_url": "http://src.chromium.org/svn",
+}
+
+deps = {
+  "src/third_party/gyp":
+    (Var("googlecode_url") % "gyp") + "/trunk@1769",
+}
+
+deps_os = {
+  "win": {
+    "src/third_party/python_26":
+      Var("chromium_url") + "/trunk/tools/third_party/python_26@89111",
+
+    "src/third_party/psyco_win32":
+      Var("chromium_url") + "/trunk/deps/third_party/psyco_win32@79861",
+  },
+}
+
+hooks = [
+  {
+    # A change to a .gyp, .gypi, or to GYP itself should run the generator.
+    "name": "gyp",
+    "pattern": ".",
+    "action": ['python', 'src/tools/gyp_jcef', 'src/jcef.gyp', '-I',
+               'src/jcef.gypi'],
+  },
+]

@@ -1,0 +1,12 @@
+Name: Chromium
+Short Name: chrome
+URL: https://code.google.com/p/chromium/
+Version: trunk@321322
+License: BSD (see LICENSE file)
+
+Description:
+This directory contains selected files extracted from a Chromium build/
+directory.
+
+Local Modifications:
+common.gypi - Add 'jcef_platform' define.
