@@ -151,5 +151,15 @@ if __name__ == '__main__':
         # Fix xcopy arguments.
         data = data.replace('xcopy \\', 'xcopy /')
         write_file(file, data)
+    elif platform == 'linux':
+      # Fix .mk files.
+      files = []
+      for file in get_files(os.path.join(jcef_dir, '*.mk')):
+        files.append(file)
+      for file in files:
+        data = read_file(file)
+        # Drop lib.target from the output path.
+        data = data.replace('/lib.target', '')
+        write_file(file, data)
 
   sys.exit(result)

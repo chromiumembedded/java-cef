@@ -25,21 +25,21 @@
         'jcef_helper',
       ],
       'sources': [
+        'native/CefBrowser_N.cpp',
+        'native/CefBrowser_N.h',
+        'native/CefContext.cpp',
+        'native/CefContext.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
+        'native/jni_util.h',
+        'native/jni_util.cpp',
+        'native/util.h',
       ],
       'conditions': [
         ['OS=="win"', {
           'sources': [
-            'native/CefBrowser_N.cpp',
-            'native/CefBrowser_N.h',
-            'native/CefContext.cpp',
-            'native/CefContext.h',
             'native/client_handler_win.cpp',
             'native/jcef_dll.rc',
-            'native/jni_util.h',
-            'native/jni_util.cpp',
-            'native/util.h',
           ],
           'include_dirs': [
             '<(jdk_directory)\include',
@@ -64,7 +64,7 @@
               'msvs_cygwin_shell': 0,
               'inputs': [],
               'outputs': [
-                '<(PRODUCT_DIR)/copy_resources.stamp',
+                '<(PRODUCT_DIR)/copy_libraries.stamp',
               ],
               'action': [
                 'xcopy /efy',
@@ -90,6 +90,66 @@
                 'native/jcef.dll.manifest',
               ],
             },
+          },
+        }],
+        [ 'OS=="linux"', {
+          'dependencies': [
+            '<(cef_directory)/cefclient.gyp:gtk',
+          ],
+          'sources': [
+            'native/client_handler_gtk.cpp',
+          ],
+          'include_dirs': [
+            '<(jdk_directory)/include',
+            '<(jdk_directory)/include/linux',
+          ],
+          'actions': [
+            {
+              'action_name': 'copy_resources',
+              'inputs': [],
+              'outputs': [
+                '<(PRODUCT_DIR)/copy_resources.stamp',
+              ],
+              'action': [
+                'cp',
+                '-rf',
+                '<(cef_directory)/Resources/cef.pak',
+                '<(cef_directory)/Resources/devtools_resources.pak',
+                '<(cef_directory)/Resources/locales',
+                '<(PRODUCT_DIR)',
+              ],
+            },
+            {
+              'action_name': 'copy_libraries',
+              'inputs': [],
+              'outputs': [
+                '<(PRODUCT_DIR)/copy_libraries.stamp',
+              ],
+              'action': [
+                'cp',
+                '-rf',
+                '<(cef_directory)/$(BUILDTYPE)/libcef.so',
+                '<(cef_directory)/$(BUILDTYPE)/libffmpegsumo.so',
+                '<(PRODUCT_DIR)',
+              ],
+            },
+          ],
+          'link_settings': {
+            'cflags': [
+              # Chromium adds "-fvisibility=hidden" by default. Override it here
+              # so that JNI symbols are properly exported when building with GCC.
+              # Related discussion: http://mail.openjdk.java.net/pipermail/core-libs-dev/2013-February/014446.html
+              # Test symbol export with: nm -D --defined-only libjcef.so | grep Java
+              '-fvisibility=default',
+            ],
+            'ldflags': [
+              # Look for libcef.so in the current directory. Path can also be
+              # specified using the LD_LIBRARY_PATH environment variable.
+              '-Wl,-rpath,.',
+            ],
+            'libraries': [
+              "<(cef_directory)/$(BUILDTYPE)/libcef.so",
+            ],
           },
         }],
       ],
@@ -135,6 +195,21 @@
                 '<(cef_directory)/cefclient/cefclient.exe.manifest',
               ],
             },
+          },
+        }],
+        [ 'OS=="linux"', {
+          'dependencies': [
+            '<(cef_directory)/cefclient.gyp:gtk',
+          ],
+          'link_settings': {
+            'ldflags': [
+              # Look for libcef.so in the current directory. Path can also be
+              # specified using the LD_LIBRARY_PATH environment variable.
+              '-Wl,-rpath,.',
+            ],
+            'libraries': [
+              "<(cef_directory)/$(BUILDTYPE)/libcef.so",
+            ],
           },
         }],
       ],

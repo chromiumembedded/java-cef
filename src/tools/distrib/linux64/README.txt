@@ -1,8 +1,8 @@
-Java Chromium Embedded Framework (JCEF) Binary Distribution for Windows 64-bit
+Java Chromium Embedded Framework (JCEF) Binary Distribution for Linux 64-bit
 -------------------------------------------------------------------------------
 
 This distribution contains all components necessary to build and distribute a
-Java application using JCEF on the Windows platform. Please see the LICENSING
+Java application using JCEF on the Linux platform. Please see the LICENSING
 section of this document for licensing terms and conditions.
 
 
@@ -18,10 +18,9 @@ docs        Contains documentation for the org.cef package.
 USAGE
 -----
 
-1. Install a 64-bit version of the Java 7 runtime.
-2. Add the Java bin folder to your system PATH.
-3. Execute the compile.bat script to compile the MainFrame sample application.
-4. Execute the run.bat script to run the MainFrame sample application.
+1. Install a 64-bit version of the Oracle Java 7 runtime.
+2. Execute the compile.sh script to compile the MainFrame sample application.
+3. Execute the run.sh script to run the MainFrame sample application.
 
 Please visit the JCEF Website for additional usage information.
 
@@ -41,32 +40,30 @@ Required components:
 * Java archives
     jcef.jar
     gluegen-rt.jar
-    gluegen-rt-natives-windows-amd64.jar
+    gluegen-rt-natives-linux-amd64.jar
     jogl-all.jar
-    jogl-all-natives-windows-amd64.jar
+    jogl-all-natives-linux-amd64.jar
 
 * CEF JNI library
-    jcef.dll
+    libjcef.so
 
 * CEF JNI process helper
-    jcef_helper.exe
+    jcef_helper
 
 * CEF core library
-    libcef.dll
-
-* Unicode support
-    icudt.dll
+    libcef.so
 
 Optional components:
 
 * Localized resources
     locales/
   Note: Contains localized strings for WebKit UI controls. A .pak file is loaded
-  from this folder based on the CefSettings.locale value. Only configured
-  locales need to be distributed. If no locale is configured the default locale
-  of "en-US" will be used. Locale file loading can be disabled completely using
-  CefSettings.pack_loading_disabled. The locales folder path can be customized
-  using CefSettings.locales_dir_path.
+  from this folder based on the value of environment variables which are read
+  with the following precedence order: LANGUAGE, LC_ALL, LC_MESSAGES and LANG.
+  Only configured locales need to be distributed. If no locale is configured the
+  default locale of "en-US" will be used. Locale file loading can be disabled
+  completely using CefSettings.pack_loading_disabled. The locales folder path
+  can be customized using CefSettings.locales_dir_path.
 
 * Other resources
     cef.pak
@@ -76,7 +73,7 @@ Optional components:
   directory path can be customized using CefSettings.resources_dir_path.
 
 * FFmpeg audio and video support
-    ffmpegsumo.dll
+    libffmpegsumo.so
   Note: Without this component HTML5 audio and video will not function.
 
 

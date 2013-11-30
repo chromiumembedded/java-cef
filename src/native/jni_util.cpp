@@ -28,16 +28,16 @@ JNIEnv* GetJNIEnv() {
 
 jobject NewJNIObject(JNIEnv* env, jclass cls) {
   jmethodID initID = env->GetMethodID(cls, "<init>", "()V");
-	if(initID == 0) {
-		env->ExceptionClear();
-		return NULL;
-	}
+  if(initID == 0) {
+    env->ExceptionClear();
+    return NULL;
+  }
 
-	jobject obj = env->NewObject(cls, initID);
-	if(obj == NULL) {
-		env->ExceptionClear();
-		return NULL;
-	}
+  jobject obj = env->NewObject(cls, initID);
+  if(obj == NULL) {
+    env->ExceptionClear();
+    return NULL;
+  }
 
   return obj;
 }
@@ -52,41 +52,41 @@ jobject NewJNIObject(JNIEnv* env, const char* class_name) {
 
 CefString GetJNIString(JNIEnv* env, jstring jstr)
 {
-	CefString cef_str;
-	const char* chr = NULL;
-	if(jstr)
-		chr = env->GetStringUTFChars(jstr, NULL);
-	if(chr)
-		cef_str = chr;
-	env->ReleaseStringUTFChars(jstr, chr);
-	return cef_str;
+  CefString cef_str;
+  const char* chr = NULL;
+  if(jstr)
+    chr = env->GetStringUTFChars(jstr, NULL);
+  if(chr)
+    cef_str = chr;
+  env->ReleaseStringUTFChars(jstr, chr);
+  return cef_str;
 }
 
 jstring NewJNIString(JNIEnv* env, const CefString& str)
 {
   std::string cstr(str);
-	return env->NewStringUTF(cstr.c_str());
+  return env->NewStringUTF(cstr.c_str());
 }
 
 jobjectArray NewJNIStringArray(JNIEnv* env,
-								               const std::vector<CefString>& vals)
+                               const std::vector<CefString>& vals)
 {
-	if(vals.empty())
-		return NULL;
+  if(vals.empty())
+    return NULL;
 
   jclass cls = env->FindClass("java/lang/String");
   if (!cls)
     return NULL;
 
-	jobjectArray arr = env->NewObjectArray(
+  jobjectArray arr = env->NewObjectArray(
       static_cast<jsize>(vals.size()),
-		  cls,
+      cls,
       NULL);
 
-	for(jsize i = 0; i < vals.size(); i++)
-		env->SetObjectArrayElement(arr, i, NewJNIString(env, vals[i]));
+  for(jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
+    env->SetObjectArrayElement(arr, i, NewJNIString(env, vals[i]));
 
-	return arr;
+  return arr;
 }
 
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
@@ -125,7 +125,7 @@ bool GetJNIFieldStaticInt(JNIEnv* env, jclass cls,
 bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
                       const char* method_name, int* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()I");
-	if (methodID) {
+  if (methodID) {
     *value = env->CallIntMethod(obj, methodID);
     return true;
   }
@@ -136,7 +136,7 @@ bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
 bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
                       const char* method_name, char* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()C");
-	if (methodID) {
+  if (methodID) {
     *value = env->CallCharMethod(obj, methodID);
     return true;
   }
@@ -184,23 +184,23 @@ jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
 }
 
 jobjectArray NewJNIRectArray(JNIEnv* env,
-								             const std::vector<CefRect>& vals) {
+                             const std::vector<CefRect>& vals) {
   if(vals.empty())
-		return NULL;
+    return NULL;
 
   jclass cls = env->FindClass("java/awt/Rectangle");
   if (!cls)
     return NULL;
 
-	jobjectArray arr = env->NewObjectArray(
+  jobjectArray arr = env->NewObjectArray(
       static_cast<jsize>(vals.size()),
-		  cls,
+      cls,
       NULL);
 
-	for(jsize i = 0; i < vals.size(); i++)
-		env->SetObjectArrayElement(arr, i, NewJNIRect(env, vals[i]));
+  for(jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
+    env->SetObjectArrayElement(arr, i, NewJNIRect(env, vals[i]));
 
-	return arr;
+  return arr;
 }
 
 bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y) {

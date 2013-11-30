@@ -10,34 +10,52 @@
 #include "jni_util.h"
 #include "util.h"
 
+#if defined(OS_LINUX)
+#include <gdk/gdkx.h>
+#endif
+
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
-  ASSERT(rs == JNI_OK);
+  if (rs != JNI_OK) {
+    ASSERT(false);  // Not reached.
+    return false;
+  }
   SetJVM(jvm);
 
+#if defined(OS_WIN)
   CefMainArgs main_args(::GetModuleHandle(NULL));
-	CefSettings settings;
+#else
+  CefMainArgs main_args(0, NULL);
+#endif
+
+  CefSettings settings;
 
   CefString module_dir = GetJNIString(env, argPathToJavaDLL);
+  CefString helper_path;
   
 #if defined(OS_WIN)
-  module_dir = module_dir.ToString() + "\\jcef_helper.exe";
+  helper_path = module_dir.ToString() + "\\jcef_helper.exe";
 #else
-  module_dir = module_dir.ToString() + "/jcef_helper";
+  helper_path = module_dir.ToString() + "/jcef_helper";
 #endif
-  CefString(&settings.browser_subprocess_path) = module_dir;
+  CefString(&settings.browser_subprocess_path) = helper_path;
 
-	if(!CefInitialize(main_args, settings, NULL))
-		return JNI_FALSE;
+#if defined(OS_LINUX)
+  CefString(&settings.resources_dir_path) = module_dir;
+  CefString(&settings.locales_dir_path) = module_dir.ToString() + "/locales";
+#endif
 
-	return JNI_TRUE;
+  if(!CefInitialize(main_args, settings, NULL))
+    return JNI_FALSE;
+
+  return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1Shutdown
   (JNIEnv *env, jclass) {
-	CefShutdown();
+  CefShutdown();
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1DoMessageLoopWork
@@ -75,6 +93,9 @@ JNIEXPORT jlong JNICALL Java_org_cef_CefContext_N_1GetWindowHandle
   CefWindowHandle windowHandle = NULL;
 #if defined(OS_WIN)
   windowHandle = ::WindowFromDC((HDC)displayHandle);
+#elif defined(OS_LINUX)
+  // TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
+  // until CEF has moved from GTK to Aura.
 #endif
   return (jlong)windowHandle;
 }

@@ -245,6 +245,7 @@ public class CefClient implements CefHandler {
                       int height) {
     canvas_.getContext().makeCurrent();
     renderer_.onPaint(canvas_.getGL().getGL2(), popup, dirtyRects, buffer, width, height);
+    canvas_.getContext().release();
     canvas_.display();
   }
   

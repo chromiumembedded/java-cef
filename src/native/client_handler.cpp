@@ -43,7 +43,6 @@ void ClientHandler::OnBeforeContextMenu(
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefContextMenuParams> params,
     CefRefPtr<CefMenuModel> model) {
-  int x = 0;
 }
 
 bool ClientHandler::OnContextMenuCommand(

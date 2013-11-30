@@ -13,15 +13,24 @@ public class CefContext {
    * @return true on success
    */
   public static final boolean initialize(String cachePath) {
-    System.out.println("initialize on " + Thread.currentThread());
+    String library_path = System.getProperty("java.library.path");
+    System.out.println("initialize on " + Thread.currentThread() +
+                       " with library path " + library_path);
     try {
-      System.loadLibrary("icudt");
-      System.loadLibrary("libcef");
-      System.loadLibrary("jcef");
-      return N_Initialize(System.getProperty("java.library.path"), cachePath);
+      String os = System.getProperty("os.name");
+      if (os.startsWith("Windows")) {
+        System.loadLibrary("icudt");
+        System.loadLibrary("libcef");
+        System.loadLibrary("jcef");
+      } else if (os.startsWith("Linux")) {
+        System.loadLibrary("cef");
+        System.loadLibrary("jcef");
+      }
+      return N_Initialize(library_path, cachePath);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
+    System.exit(0);
     return false;
   }
 

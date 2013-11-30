@@ -3,6 +3,7 @@
 // can be found in the LICENSE file.
 
 #include "client_handler.h"
+#include <gdk/gdk.h>
 #include "jni_util.h"
 
 int ClientHandler::NativeGetCursorId(CefCursorHandle cursor) {
@@ -29,32 +30,39 @@ int ClientHandler::NativeGetCursorId(CefCursorHandle cursor) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, W_RESIZE_CURSOR, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, WAIT_CURSOR, 0);
 
-  static HCURSOR kCursorArrow = LoadCursor(NULL, IDC_ARROW);
-  static HCURSOR kCursorIBeam = LoadCursor(NULL, IDC_IBEAM);
-  static HCURSOR kCursorWait = LoadCursor(NULL, IDC_WAIT);
-  static HCURSOR kCursorCross = LoadCursor(NULL, IDC_CROSS);
-  static HCURSOR kCursorUpArrow = LoadCursor(NULL, IDC_UPARROW);
-  static HCURSOR kCursorSize = LoadCursor(NULL, IDC_SIZE);
-  static HCURSOR kCursorIcon = LoadCursor(NULL, IDC_ICON);
-  static HCURSOR kCursorSizeNWSE = LoadCursor(NULL, IDC_SIZENWSE);
-  static HCURSOR kCursorSizeNESW = LoadCursor(NULL, IDC_SIZENESW);
-  static HCURSOR kCursorSizeWE = LoadCursor(NULL, IDC_SIZEWE);
-  static HCURSOR kCursorSizeNS = LoadCursor(NULL, IDC_SIZENS);
-  static HCURSOR kCursorSizeAll = LoadCursor(NULL, IDC_SIZEALL);
-  static HCURSOR kCursorNo = LoadCursor(NULL, IDC_NO);
-  static HCURSOR kCursorHand = LoadCursor(NULL, IDC_HAND);
-  static HCURSOR kCursorAppStarting = LoadCursor(NULL, IDC_APPSTARTING);
-
-  if (cursor == kCursorArrow)
-    return JNI_STATIC(DEFAULT_CURSOR);
-  if (cursor == kCursorIBeam)
-    return JNI_STATIC(TEXT_CURSOR);
-  if (cursor == kCursorWait)
-    return JNI_STATIC(WAIT_CURSOR);
-  if (cursor == kCursorCross)
-    return JNI_STATIC(CROSSHAIR_CURSOR);
-  if (cursor == kCursorHand)
-    return JNI_STATIC(HAND_CURSOR);
+  const GdkCursorType cursor_type = gdk_cursor_get_cursor_type(cursor);
+  switch (cursor_type) {
+    case GDK_CROSSHAIR:
+      return JNI_STATIC(CROSSHAIR_CURSOR);
+    case GDK_RIGHT_SIDE:
+      return JNI_STATIC(E_RESIZE_CURSOR);
+    case GDK_HAND1:
+    case GDK_HAND2:
+      return JNI_STATIC(HAND_CURSOR);
+    case GDK_FLEUR:
+      return JNI_STATIC(MOVE_CURSOR);
+    case GDK_TOP_SIDE:
+      return JNI_STATIC(N_RESIZE_CURSOR);
+    case GDK_TOP_RIGHT_CORNER:
+      return JNI_STATIC(NE_RESIZE_CURSOR);
+    case GDK_TOP_LEFT_CORNER:
+      return JNI_STATIC(NW_RESIZE_CURSOR);
+    case GDK_BOTTOM_SIDE:
+      return JNI_STATIC(S_RESIZE_CURSOR);
+    case GDK_BOTTOM_RIGHT_CORNER:
+      return JNI_STATIC(SE_RESIZE_CURSOR);
+    case GDK_BOTTOM_LEFT_CORNER:
+      return JNI_STATIC(SW_RESIZE_CURSOR);
+    case GDK_XTERM:
+      return JNI_STATIC(TEXT_CURSOR);
+    case GDK_LEFT_SIDE:
+      return JNI_STATIC(W_RESIZE_CURSOR);
+    case GDK_WATCH:
+      return JNI_STATIC(WAIT_CURSOR);
+    default:
+      break;
+  }
 
   return JNI_STATIC(DEFAULT_CURSOR);
 }
+

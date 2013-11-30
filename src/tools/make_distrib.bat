@@ -37,7 +37,10 @@ cd ..
 
 :: Copy JAR files to the bin directory.
 if not exist %DISTRIB_BIN_PATH% mkdir %DISTRIB_BIN_PATH%
-xcopy /sfy %JOGAMP_JAR_PATH%\*.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\gluegen-rt.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\gluegen-rt-natives-windows-amd64.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\jogl-all.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\jogl-all-natives-windows-amd64.jar %DISTRIB_BIN_PATH%
 copy %OUT_PATH%\jcef.jar %DISTRIB_BIN_PATH%
 
 :: Copy test programs to the bin directory.

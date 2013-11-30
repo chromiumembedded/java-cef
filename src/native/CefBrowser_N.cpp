@@ -6,6 +6,10 @@
 #include "include/cef_browser.h"
 #include "jni_util.h"
 
+#if defined(OS_LINUX)
+#include <gdk/gdkkeysyms.h>
+#endif
+
 #if defined(OS_WIN)
 #undef MOUSE_MOVED
 #endif
@@ -44,59 +48,59 @@ int GetCefModifiers(JNIEnv *env, jclass cls, int modifiers) {
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Close
   (JNIEnv *env, jobject obj) {
-	CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
+  if(!browser.get())
+    return;
 
   browser->GetHost()->CloseBrowser(true);
 
-	// Clear the browser pointer member of the Java object. This call will
-	// release the extra reference to the object added in
+  // Clear the browser pointer member of the Java object. This call will
+  // release the extra reference to the object added in
   // CefContext::CreateBrowser.
-	SetCefForJNIObject<CefBrowser>(env, obj, NULL);
+  SetCefForJNIObject<CefBrowser>(env, obj, NULL);
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1GoBack
   (JNIEnv *env, jobject obj) {
-	CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
+  if(!browser.get())
+    return;
 
-	browser->GoBack();
+  browser->GoBack();
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1GoForward
   (JNIEnv *env, jobject obj) {
-	CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
+  if(!browser.get())
+    return;
 
-	browser->GoForward();
+  browser->GoForward();
 }
 
 JNIEXPORT jint JNICALL Java_org_cef_CefBrowser_1N_N_1GetIdentifier
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return -1;
+  if(!browser.get())
+    return -1;
 
-	return browser->GetIdentifier();
+  return browser->GetIdentifier();
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1LoadURL
   (JNIEnv *env, jobject obj, jstring url) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
-	browser->GetMainFrame()->LoadURL(GetJNIString(env, url));
+  browser->GetMainFrame()->LoadURL(GetJNIString(env, url));
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1WasResized
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
   browser->GetHost()->WasResized();
 }
@@ -104,8 +108,8 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1WasResized
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Invalidate
   (JNIEnv *env, jobject obj, jobject rect) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
   CefRect dirtyRect = GetJNIRect(env, rect);
   browser->GetHost()->Invalidate(dirtyRect, PET_VIEW);
@@ -114,8 +118,8 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Invalidate
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendKeyEvent
   (JNIEnv *env, jobject obj, jobject key_event) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
   jclass cls = env->GetObjectClass(key_event);
   if (!cls)
@@ -139,7 +143,43 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendKeyEvent
   UINT scanCode = MapVirtualKey(VkCode, MAPVK_VK_TO_VSC);
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;  // key repeat count
-#endif
+#elif defined(OS_LINUX)
+  int key_code;
+  if (!CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
+    return;
+  }
+
+  JNI_STATIC_DEFINE_INT(env, cls, VK_BACK_SPACE);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_DELETE);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_DOWN);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_ENTER);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_ESCAPE);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_LEFT);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_RIGHT);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_TAB);
+  JNI_STATIC_DEFINE_INT(env, cls, VK_UP);
+
+  if (key_code == JNI_STATIC(VK_BACK_SPACE))
+    cef_event.native_key_code = GDK_BackSpace;
+  else if (key_code == JNI_STATIC(VK_DELETE))
+    cef_event.native_key_code = GDK_Delete;
+  else if (key_code == JNI_STATIC(VK_DOWN))
+    cef_event.native_key_code = GDK_Down;
+  else if (key_code == JNI_STATIC(VK_ENTER))
+    cef_event.native_key_code = GDK_KEY_KP_Enter;
+  else if (key_code == JNI_STATIC(VK_ESCAPE))
+    cef_event.native_key_code = GDK_Escape;
+  else if (key_code == JNI_STATIC(VK_LEFT))
+    cef_event.native_key_code = GDK_Left;
+  else if (key_code == JNI_STATIC(VK_RIGHT))
+    cef_event.native_key_code = GDK_Right;
+  else if (key_code == JNI_STATIC(VK_TAB))
+    cef_event.native_key_code = GDK_Tab;
+  else if (key_code == JNI_STATIC(VK_UP))
+    cef_event.native_key_code = GDK_Up;
+  else
+    cef_event.native_key_code = key_char;
+#endif  // defined(OS_LINUX)
 
   cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
 
@@ -170,8 +210,8 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendKeyEvent
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseEvent
   (JNIEnv *env, jobject obj, jobject mouse_event) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
   jclass cls = env->GetObjectClass(mouse_event);
   if (!cls)
@@ -233,8 +273,8 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseEvent
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseWheelEvent
   (JNIEnv *env, jobject obj, jobject mouse_wheel_event) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
-	if(!browser.get())
-		return;
+  if(!browser.get())
+    return;
 
   jclass cls = env->GetObjectClass(mouse_wheel_event);
   if (!cls)
