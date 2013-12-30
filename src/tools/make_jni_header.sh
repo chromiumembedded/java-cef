@@ -6,7 +6,7 @@
 cd ..
 
 if [ -z "$1" ]; then
-  echo "ERROR: Please specify a target platform: linux32 or linux64"
+  echo "ERROR: Please specify a target platform: linux32, linux64 or macosx64"
 else
   if [ -z "$2" ]; then
     echo "ERROR: Please specify a class name"

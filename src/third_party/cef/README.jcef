@@ -10,6 +10,7 @@ contents and rename the top-level directory as follows:
 
   /linux32 - Contents of the 32-bit Linux distribution.
   /linux64 - Contents of the 64-bit Linux distribution.
+  /macosx64 - Contents of the 64-bit Mac OS X distribution.
   /win32 - Contents of the 32-bit Windows distribution.
   /win64 - Contents of the 64-bit Windows distribution.
 

@@ -7,6 +7,13 @@
     'chromium_code': 1,
     'cef_directory': '<(DEPTH)/third_party/cef/<(jcef_platform)',
     'cef_directory_win': '<(DEPTH)\\third_party\\cef\\<(jcef_platform)',
+    'version_mac_dylib': '1.0.0',
+    'conditions': [
+      ['OS=="mac"', {
+        # Don't use clang with CEF binary releases due to Chromium tree structure dependency.
+        'clang': 0,
+      }],
+    ]
   },
   'targets': [
     {
@@ -35,6 +42,14 @@
         'native/jni_util.cpp',
         'native/util.h',
       ],
+      'xcode_settings': {
+        # Default path that will be changed by install_name_tool in dependent targets.
+        'INSTALL_PATH': '@executable_path',
+        'DYLIB_INSTALL_NAME_BASE': '@executable_path',
+        'LD_DYLIB_INSTALL_NAME': '@executable_path/libjcef.dylib',
+        'DYLIB_COMPATIBILITY_VERSION': '<(version_mac_dylib)',
+        'DYLIB_CURRENT_VERSION': '<(version_mac_dylib)',
+      },
       'conditions': [
         ['OS=="win"', {
           'sources': [
@@ -92,7 +107,7 @@
             },
           },
         }],
-        [ 'OS=="linux"', {
+        ['OS=="linux"', {
           'dependencies': [
             '<(cef_directory)/cefclient.gyp:gtk',
           ],
@@ -152,6 +167,37 @@
             ],
           },
         }],
+        ['OS=="mac"', {
+          'product_name': 'jcef',
+          'sources': [
+            'native/client_handler_mac.mm',
+            'native/util_mac.h',
+            'native/util_mac.mm',
+          ],
+          'include_dirs': [
+            '<(jdk_directory)/Headers',
+          ],
+          'postbuilds': [
+            {
+              'postbuild_name': 'Fix Framework Link',
+              'action': [
+                'install_name_tool',
+                '-change',
+                '@executable_path/libcef.dylib',
+                '@loader_path/../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
+                '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
+              ],
+            },
+          ],
+          'link_settings': {
+            'libraries': [
+              '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
+              '$(SDKROOT)/System/Library/Frameworks/JavaVM.framework',
+              '$(SDKROOT)/System/Library/Frameworks/OpenGL.framework',
+              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
+            ],
+          },
+        }],
       ],
     },
     {
@@ -171,6 +217,16 @@
       'sources': [
         'native/jcef_helper.cpp',
       ],
+      'mac_bundle': 1,
+      'mac_bundle_resources!': [
+        '<(cef_directory)/cefclient/mac/helper-Info.plist',
+      ],
+      'mac_bundle_resources/': [
+        ['exclude', '.*'],
+      ],
+      'xcode_settings': {
+        'INFOPLIST_FILE': '<(cef_directory)/cefclient/mac/helper-Info.plist',
+      },
       'conditions': [
         ['OS=="win"', {
           'sources': [
@@ -197,7 +253,7 @@
             },
           },
         }],
-        [ 'OS=="linux"', {
+        ['OS=="linux"', {
           'dependencies': [
             '<(cef_directory)/cefclient.gyp:gtk',
           ],
@@ -208,11 +264,144 @@
               '-Wl,-rpath,.',
             ],
             'libraries': [
-              "<(cef_directory)/$(BUILDTYPE)/libcef.so",
+              '<(cef_directory)/$(BUILDTYPE)/libcef.so',
+            ],
+          },
+        }],
+        ['OS=="mac"', {
+          'product_name': 'jcef Helper',
+          'variables': {
+            'enable_wexit_time_destructors': 1,
+          },
+          'postbuilds': [
+            {
+              # The framework defines its load-time path
+              # (DYLIB_INSTALL_NAME_BASE) relative to the main executable
+              # (chrome).  A different relative path needs to be used in
+              # jcef_helper_app.
+              'postbuild_name': 'Fix Framework Link',
+              'action': [
+                'install_name_tool',
+                '-change',
+                '@executable_path/libcef.dylib',
+                '@executable_path/../../../../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
+                '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
+              ],
+            },
+          ],
+          'link_settings': {
+            'libraries': [
+              '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
+              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
             ],
           },
         }],
       ],
     },
+  ],
+  'conditions': [
+    ['OS=="mac"', {
+      'targets': [
+        {
+          'target_name': 'jcef_app',
+          'type': 'executable',
+          'product_name': 'jcef_app',
+          'mac_bundle': 1,
+          'dependencies': [
+            'jcef',
+          ],
+          'defines': [
+            'USING_CEF_SHARED',
+          ],
+          'link_settings': {
+            'libraries': [
+              '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
+              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
+            ],
+          },
+          'mac_bundle_resources': [
+            'native/resources/jcef-Info.plist',
+          ],
+          'mac_bundle_resources!': [
+            'native/resources/jcef-Info.plist',
+          ],
+          'xcode_settings': {
+            'INFOPLIST_FILE': 'native/resources/jcef-Info.plist',
+          },
+          'actions': [
+            {
+              'action_name': 'generate_stub_main',
+              'process_outputs_as_sources': 1,
+              'inputs': [],
+              'outputs': [ '<(INTERMEDIATE_DIR)/dummy_main.c' ],
+              'action': [
+                'bash', '-c',
+                'echo "int main() { return 0; }" > <(INTERMEDIATE_DIR)/dummy_main.c'
+              ],
+            },
+          ],
+          'copies': [
+            {
+              # Add library dependencies to the bundle.
+              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
+              'files': [
+                '<(cef_directory)/Release/libcef.dylib',
+                '<(cef_directory)/Release/ffmpegsumo.so',
+              ],
+            },
+            {
+              # Add other resources to the bundle.
+              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks/Chromium Embedded Framework.framework/',
+              'files': [
+                '<(cef_directory)/Resources/',
+              ],
+            },
+            {
+              # Add the helper app.
+              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks',
+              'files': [
+                '<(PRODUCT_DIR)/jcef Helper.app',
+                '<(cef_directory)/Release/libplugin_carbon_interpose.dylib',
+              ],
+            },
+            {
+              # Add the JCEF library.
+              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/MacOS',
+              'files': [
+                '<(PRODUCT_DIR)/libjcef.dylib',
+              ],
+            },
+          ],
+          'postbuilds': [
+            {
+              'postbuild_name': 'Fix Framework Link',
+              'action': [
+                'install_name_tool',
+                '-change',
+                '@executable_path/libcef.dylib',
+                '@executable_path/../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
+                '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
+              ],
+            },     
+            {
+              # This postbuid step is responsible for creating the following
+              # helpers:
+              #
+              # jcef Helper EH.app and jcef Helper NP.app are created
+              # from jcef Helper.app.
+              #
+              # The EH helper is marked for an executable heap. The NP helper
+              # is marked for no PIE (ASLR).
+              'postbuild_name': 'Make More Helpers',
+              'action': [
+                '<(cef_directory)/tools/make_more_helpers.sh',
+                'Frameworks',
+                'jcef',
+              ],
+            },
+          ],
+        },  # target jcef_app
+      ],
+    }],  # OS=="mac"
   ],
 }

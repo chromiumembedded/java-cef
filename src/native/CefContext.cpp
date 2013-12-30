@@ -14,6 +14,53 @@
 #include <gdk/gdkx.h>
 #endif
 
+#if defined(OS_MACOSX)
+#include "util_mac.h"
+#endif
+
+namespace {
+
+class ClientApp : public CefApp {
+ public:
+  explicit ClientApp(const std::string& module_dir)
+      : module_dir_(module_dir) {
+  }
+
+#if defined(OS_MACOSX)
+  virtual void OnBeforeCommandLineProcessing(
+      const CefString& process_type,
+      CefRefPtr<CefCommandLine> command_line) OVERRIDE {
+    if (process_type.empty()) {
+      // Specify a path for the locale.pak file because CEF will fail to locate
+      // it based on the app bundle structure.
+      const std::string& locale_path = util_mac::GetAbsPath(
+          module_dir_ + "/../Frameworks/Chromium Embedded Framework.framework/"
+                       "Resources/en.lproj/locale.pak");
+      command_line->AppendSwitchWithValue("locale_pak", locale_path);
+    }
+  }
+#endif  // defined(OS_MACOSX)
+
+ private:
+  std::string module_dir_;
+
+  IMPLEMENT_REFCOUNTING(ClientApp);
+};
+
+std::string GetHelperPath(const std::string& module_dir) {
+#if defined(OS_MACOSX)
+  return util_mac::GetAbsPath(
+      module_dir + "/../Frameworks/jcef Helper.app/Contents/MacOS/jcef Helper");
+#elif defined(OS_WINDOWS)
+  return module_dir + "\\jcef_helper.exe"
+#elif defined(OS_LINUX)
+  return module_dir + "/jcef_helper";
+#endif
+}
+
+}  // namespace
+
+
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath) {
   JavaVM* jvm;
@@ -30,24 +77,18 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   CefMainArgs main_args(0, NULL);
 #endif
 
-  CefSettings settings;
+  const std::string& module_dir = GetJNIString(env, argPathToJavaDLL);
 
-  CefString module_dir = GetJNIString(env, argPathToJavaDLL);
-  CefString helper_path;
-  
-#if defined(OS_WIN)
-  helper_path = module_dir.ToString() + "\\jcef_helper.exe";
-#else
-  helper_path = module_dir.ToString() + "/jcef_helper";
-#endif
-  CefString(&settings.browser_subprocess_path) = helper_path;
+  CefSettings settings;
+  CefString(&settings.browser_subprocess_path) = GetHelperPath(module_dir);
 
 #if defined(OS_LINUX)
   CefString(&settings.resources_dir_path) = module_dir;
-  CefString(&settings.locales_dir_path) = module_dir.ToString() + "/locales";
+  CefString(&settings.locales_dir_path) = module_dir + "/locales";
 #endif
 
-  if(!CefInitialize(main_args, settings, NULL))
+  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir));
+  if(!CefInitialize(main_args, settings, client_app.get()))
     return JNI_FALSE;
 
   return JNI_TRUE;
@@ -96,6 +137,8 @@ JNIEXPORT jlong JNICALL Java_org_cef_CefContext_N_1GetWindowHandle
 #elif defined(OS_LINUX)
   // TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
   // until CEF has moved from GTK to Aura.
+#elif defined(OS_MACOSX)
+  ASSERT(util_mac::IsNSView((void*)displayHandle));
 #endif
   return (jlong)windowHandle;
 }

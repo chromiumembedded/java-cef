@@ -6,18 +6,25 @@
 cd ..
 
 if [ -z "$1" ]; then
-  echo "ERROR: Please specify a target platform: linux32 or linux64"
+  echo "ERROR: Please specify a target platform: linux32, linux64 or macosx64"
 else
   if [ -z "$2" ]; then
     echo "ERROR: Please specify a build type: Debug or Release"
   else
     export OUT_PATH="./out"
+
+    if [ $1 == "macosx64" ]; then
+      export LIB_PATH="./xcodebuild/$2/jcef_app.app/Contents/MacOS"
+    else
+      export LIB_PATH="$OUT_PATH/$2"
+
+      # Necessary for jcef_helper to find libcef.so.
+      export LD_LIBRARY_PATH=$LIB_PATH
+    fi
+
     export CLS_PATH="./third_party/jogamp/jar/*:$OUT_PATH/$1"
 
-    # Necessary for jcef_helper to find libcef.so.
-    export LD_LIBRARY_PATH=$OUT_PATH/$2
-
-    java -cp $CLS_PATH -Djava.library.path=$OUT_PATH/$2 MainFrame
+    java -cp $CLS_PATH -Djava.library.path=$LIB_PATH MainFrame
   fi
 fi
 

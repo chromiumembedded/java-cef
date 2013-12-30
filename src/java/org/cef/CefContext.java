@@ -25,6 +25,8 @@ public class CefContext {
       } else if (os.startsWith("Linux")) {
         System.loadLibrary("cef");
         System.loadLibrary("jcef");
+      } else if (os.startsWith("Mac OS X")) {
+        System.loadLibrary("jcef");
       }
       return N_Initialize(library_path, cachePath);
     } catch (UnsatisfiedLinkError err) {

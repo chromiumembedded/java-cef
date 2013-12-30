@@ -6,13 +6,13 @@
 cd ..
 
 if [ -z "$1" ]; then
-  echo "ERROR: Please specify a target platform: linux32 or linux64"
+  echo "ERROR: Please specify a target platform: linux32, linux64 or macosx64"
 else
   export OUT_PATH="./out/$1"
   export CLS_PATH="./third_party/jogamp/jar/*:./java"
 
   if [ ! -d "$OUT_PATH" ]; then
-    mkdir "$OUT_PATH"
+    mkdir -p "$OUT_PATH"
   fi
 
   javac -cp $CLS_PATH -d $OUT_PATH java/tests/*.java java/org/cef/*.java

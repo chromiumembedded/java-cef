@@ -3,11 +3,4 @@
 # reserved. Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 
-if [ -z "$1" ]; then
-  echo "ERROR: Please specify a build target: linux32, linux64 or macosx64"
-else
-  cd ../out/$1
-  jar -cf jcef.jar org/cef/*.class
-  cd ../../tools
-fi
-
+java -cp "./bin:./bin/*" -Djava.library.path=./bin/lib/macosx64/jcef_app.app/Contents/MacOS MainFrame

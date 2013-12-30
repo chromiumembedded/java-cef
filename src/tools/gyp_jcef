@@ -161,5 +161,18 @@ if __name__ == '__main__':
         # Drop lib.target from the output path.
         data = data.replace('/lib.target', '')
         write_file(file, data)
+    elif platform == 'macosx':
+      # Fix Xcode project files.
+      files = [
+        os.path.join(jcef_dir, 'jcef.xcodeproj/project.pbxproj'),
+        os.path.join(jcef_dir, 'third_party/cef/macosx64/cefclient.xcodeproj/project.pbxproj'),
+      ]
+      for file in files:
+        data = read_file(file)
+        # Fix file paths.
+        data = data.replace('build/mac/', 'third_party/cef/macosx64/tools/')
+        # Fix target compiler.
+        data = data.replace('GCC_VERSION = 4.2;', 'GCC_VERSION = com.apple.compilers.llvm.clang.1_0;')
+        write_file(file, data)
 
   sys.exit(result)

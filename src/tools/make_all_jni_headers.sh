@@ -4,7 +4,7 @@
 # that can be found in the LICENSE file.
 
 if [ -z "$1" ]; then
-  echo "ERROR: Please specify a target platform: linux32 or linux64"
+  echo "ERROR: Please specify a target platform: linux32, linux64 or macosx64"
 else
   ./make_jni_header.sh $1 CefContext
   ./make_jni_header.sh $1 CefBrowser_N
