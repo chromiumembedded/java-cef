@@ -51,8 +51,8 @@ std::string GetHelperPath(const std::string& module_dir) {
 #if defined(OS_MACOSX)
   return util_mac::GetAbsPath(
       module_dir + "/../Frameworks/jcef Helper.app/Contents/MacOS/jcef Helper");
-#elif defined(OS_WINDOWS)
-  return module_dir + "\\jcef_helper.exe"
+#elif defined(OS_WIN)
+  return module_dir + "\\jcef_helper.exe";
 #elif defined(OS_LINUX)
   return module_dir + "/jcef_helper";
 #endif
