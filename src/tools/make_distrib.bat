@@ -25,6 +25,12 @@ set JOGAMP_PATH=".\third_party\jogamp"
 set JOGAMP_JAR_PATH="%JOGAMP_PATH%\jar"
 set TOOLS_DISTRIB_PATH=".\tools\distrib\%1"
 
+if "%1" == "win32" (
+set JOGAMP_JAR_SUFFIX="i586"
+) else (
+set JOGAMP_JAR_SUFFIX="amd64"
+)
+
 :: Create the JCEF jar file.
 cd tools
 call make_jar.bat %1
@@ -38,9 +44,9 @@ cd ..
 :: Copy JAR files to the bin directory.
 if not exist %DISTRIB_BIN_PATH% mkdir %DISTRIB_BIN_PATH%
 copy %JOGAMP_JAR_PATH%\gluegen-rt.jar %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\gluegen-rt-natives-windows-amd64.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\gluegen-rt-natives-windows-%JOGAMP_JAR_SUFFIX%.jar %DISTRIB_BIN_PATH%
 copy %JOGAMP_JAR_PATH%\jogl-all.jar %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\jogl-all-natives-windows-amd64.jar %DISTRIB_BIN_PATH%
+copy %JOGAMP_JAR_PATH%\jogl-all-natives-windows-%JOGAMP_JAR_SUFFIX%.jar %DISTRIB_BIN_PATH%
 copy %OUT_PATH%\jcef.jar %DISTRIB_BIN_PATH%
 
 :: Copy test programs to the bin directory.

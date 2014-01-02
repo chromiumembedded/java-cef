@@ -46,8 +46,13 @@ else
     cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-macosx-universal.jar $DISTRIB_BIN_PATH
     cp -f $JOGAMP_JAR_PATH/jogl-all-natives-macosx-universal.jar $DISTRIB_BIN_PATH
   else
-    cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-linux-amd64.jar $DISTRIB_BIN_PATH
-    cp -f $JOGAMP_JAR_PATH/jogl-all-natives-linux-amd64.jar $DISTRIB_BIN_PATH
+    if [ $1 == "linux32" ]; then
+      export JOGAMP_JAR_SUFFIX="i586"
+    else
+      export JOGAMP_JAR_SUFFIX="amd64"
+    fi
+    cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
+    cp -f $JOGAMP_JAR_PATH/jogl-all-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
   fi
 
   cp -f $OUT_PATH/$1/jcef.jar $DISTRIB_BIN_PATH
