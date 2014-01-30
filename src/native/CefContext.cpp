@@ -29,15 +29,15 @@ static bool g_use_osr = false;
 
 class ClientApp : public CefApp {
  public:
-  explicit ClientApp(const std::string& module_dir)
-      : module_dir_(module_dir) {
+  explicit ClientApp(const std::string& module_dir, const std::vector<CefString> args)
+      : module_dir_(module_dir), args_(args) {
   }
 
-#if defined(OS_MACOSX)
   virtual void OnBeforeCommandLineProcessing(
       const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE {
     if (process_type.empty()) {
+#if defined(OS_MACOSX)
       // Specify a path for the locale.pak file because CEF will fail to locate
       // it based on the app bundle structure.
       const std::string& locale_path = util_mac::GetAbsPath(
@@ -49,11 +49,53 @@ class ClientApp : public CefApp {
       if (!g_use_osr)
         command_line->AppendSwitch("use-core-animation");
     }
-  }
 #endif  // defined(OS_MACOSX)
+      // Forward switches and arguments from Java to Cef
+      bool parseSwitchesDone = false;
+      for (size_t i=0;i< args_.size();i++){
+        CefString tmp = args_.at(i);
+        if (parseSwitchesDone || tmp.length() < 2) {
+          command_line->AppendArgument(tmp);
+          continue;
+        }
+        // Arguments with '--', '-' and, on Windows, '/' prefixes are considered switches.
+        std::string cppStr = tmp.ToString();
+        size_t switchCnt = cppStr.find("--") == 0 ? 2 :
+#if defined(OS_WIN)
+                           cppStr.find("/") == 0 ? 1 :
+#endif
+                           cppStr.find("-") == 0 ? 1 : 0;
+        switch (switchCnt) {
+          case 2:
+            // An argument of "--" will terminate switch parsing with all subsequent tokens
+            if (cppStr.length() == 2) {
+              parseSwitchesDone = true;
+              continue;
+            }
+            // FALL THRU
+          case 1: {
+            // Switches can optionally have a value specified using the '=' delimiter
+            // (e.g. "-switch=value").
+            size_t equalPos = cppStr.find("=",switchCnt);
+            if (equalPos != std::string::npos) {
+              command_line->AppendSwitchWithValue(cppStr.substr(switchCnt,equalPos-switchCnt),
+                                                  cppStr.substr(equalPos+1));
+            } else {
+              command_line->AppendSwitch(cppStr.substr(switchCnt));
+            }
+            break;
+          }
+          case 0:
+            command_line->AppendArgument(tmp);
+            break;
+        }
+      }
+    }
+  }
 
  private:
   std::string module_dir_;
+  std::vector<CefString> args_;
 
   IMPLEMENT_REFCOUNTING(ClientApp);
 };
@@ -74,7 +116,7 @@ std::string GetHelperPath(const std::string& module_dir) {
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath,
-   jboolean osrEnabled) {
+   jboolean osrEnabled, jobjectArray args) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -102,7 +144,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   CefString(&settings.locales_dir_path) = module_dir + "/locales";
 #endif
 
-  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir));
+  std::vector<CefString> vals;
+  GetJNIStringArray(env, args, vals);
+  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, vals));
 #if defined(OS_MACOSX)
   if (!g_use_osr)
     return util_mac::CefInitializeOnMainThread(main_args, settings, client_app.get()) ? JNI_TRUE : JNI_FALSE;

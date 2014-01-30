@@ -92,6 +92,18 @@ CefString GetJNIString(JNIEnv* env, jstring jstr)
   return cef_str;
 }
 
+void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
+                       std::vector<CefString>& vals) {
+  jsize argc = env->GetArrayLength(jarray);
+  for (jsize i = 0; i < argc; ++i) {
+    jstring jstr = (jstring)env->GetObjectArrayElement(jarray, i);
+    const char* cstr = env->GetStringUTFChars(jstr, NULL);
+    CefString cef_str(cstr);
+    vals.push_back(cef_str);
+    env->ReleaseStringUTFChars(jstr, cstr);
+  }
+}
+
 jstring NewJNIString(JNIEnv* env, const CefString& str)
 {
   std::string cstr(str);

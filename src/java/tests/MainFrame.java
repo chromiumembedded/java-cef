@@ -72,12 +72,13 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     final boolean osrEnabled = osrEnabledArg;
     System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
 
+    final String[] argsForCef = args;
     final MainFrame frame = new MainFrame(osrEnabled); 
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowOpened(WindowEvent e) {
         if (osrEnabled || !CefContext.isMacintosh()) {
-          CefContext.initialize("", osrEnabled);
+          CefContext.initialize("", osrEnabled, argsForCef);
           timer.start();
         }
         frame.createBrowser();
@@ -106,7 +107,7 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     // http://stackoverflow.com/questions/5642802/termination-of-program-on-main-thread-exit
     // for further information about the Java threading system.
     if (!osrEnabled && CefContext.isMacintosh()) {
-      CefContext.initialize("", osrEnabled);
+      CefContext.initialize("", osrEnabled, argsForCef);
     }
   }
 

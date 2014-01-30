@@ -25,7 +25,7 @@ public class CefContext {
    * Initialize the context.
    * @return true on success
    */
-  public static final boolean initialize(String cachePath, boolean osr) {
+  public static final boolean initialize(String cachePath, boolean osr, String[] args) {
     String library_path = getJcefLibPath();
     System.out.println("initialize on " + Thread.currentThread() +
                        " with library path " + library_path);
@@ -40,7 +40,7 @@ public class CefContext {
       } else if (isMacintosh()) {
         System.loadLibrary("jcef");
       }
-      return N_Initialize(library_path, cachePath, osr);
+      return N_Initialize(library_path, cachePath, osr, args);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -146,7 +146,7 @@ public class CefContext {
     return osType;
   }
 
-  private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath, boolean osr);
+  private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath, boolean osr, String[] args);
   private static final native void N_Shutdown();
   private static final native void N_DoMessageLoopWork();
   private static final native CefBrowser N_CreateBrowser(CefHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas);

@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_cef_CefContext
  * Method:    N_Initialize
- * Signature: (Ljava/lang/String;Ljava/lang/String;Z)Z
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Z[Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
-  (JNIEnv *, jclass, jstring, jstring, jboolean);
+  (JNIEnv *, jclass, jstring, jstring, jboolean, jobjectArray);
 
 /*
  * Class:     org_cef_CefContext

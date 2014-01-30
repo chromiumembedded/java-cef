@@ -18,7 +18,11 @@ else
     # Necessary for jcef_helper to find libcef.so.
     export LD_LIBRARY_PATH=$LIB_PATH
 
-    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH MainFrame
+    # Remove the first two params ($1 and $2) and pass the rest to java.
+    shift
+    shift
+
+    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH MainFrame "$@"
   fi
 fi
 

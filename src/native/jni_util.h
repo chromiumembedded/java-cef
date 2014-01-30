@@ -54,6 +54,10 @@ jobject NewJNIObject(JNIEnv* env, const char* class_name);
 // Retrieve a String value.
 CefString GetJNIString(JNIEnv* env, jstring jstr);
 
+// Retrieve a String array.
+void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
+                       std::vector<CefString>& vals);
+
 // Create a new String value.
 jstring NewJNIString(JNIEnv* env, const CefString& str);
 

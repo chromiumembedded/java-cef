@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseWheelEvent
  * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
-(JNIEnv *, jobject, jboolean);
+  (JNIEnv *, jobject, jboolean);
 
 #ifdef __cplusplus
 }
