@@ -49,7 +49,8 @@ copy %JOGAMP_JAR_PATH%\jogl-all.jar %DISTRIB_BIN_PATH%
 copy %JOGAMP_JAR_PATH%\jogl-all-natives-windows-%JOGAMP_JAR_SUFFIX%.jar %DISTRIB_BIN_PATH%
 copy %OUT_PATH%\jcef.jar %DISTRIB_BIN_PATH%
 
-:: Copy test programs to the bin directory.
+:: Copy test programs and its sources to the bin directory.
+copy %OUT_PATH%\jcef-tests.jar %DISTRIB_BIN_PATH%
 xcopy /sfy %SOURCE_PATH%\tests\*.java %DISTRIB_BIN_PATH%
 
 :: Copy CEF Release files to the lib directory.

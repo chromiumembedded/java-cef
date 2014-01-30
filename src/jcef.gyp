@@ -175,7 +175,8 @@
             'native/util_mac.mm',
           ],
           'include_dirs': [
-            '<(jdk_directory)/Headers',
+            '<(jdk_directory)/include',
+            '<(jdk_directory)/include/darwin',
           ],
           'postbuilds': [
             {
@@ -191,9 +192,8 @@
           ],
           'link_settings': {
             'libraries': [
+              '<(jdk_directory)/jre/lib/libjawt.dylib',
               '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
-              '$(SDKROOT)/System/Library/Frameworks/JavaVM.framework',
-              '$(SDKROOT)/System/Library/Frameworks/OpenGL.framework',
               '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
             ],
           },

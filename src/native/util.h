@@ -30,6 +30,18 @@
 
 #endif  // !OS_WIN
 
+#if defined(OS_MACOSX)
+
+// due a missing export definition within Java 7u40 (and prior)
+// for Mac OS X, we have to redefine JNIEXPORT.
+// Otherwise the JNI function names wouldn't be exported to libjcef
+#ifdef JNIEXPORT
+#undef JNIEXPORT
+#define JNIEXPORT __attribute__((visibility("default")))
+#endif // JNIEXPORT
+
+#endif // OS_MACOSX
+
 #define REQUIRE_UI_THREAD()   ASSERT(CefCurrentlyOn(TID_UI));
 #define REQUIRE_IO_THREAD()   ASSERT(CefCurrentlyOn(TID_IO));
 #define REQUIRE_FILE_THREAD() ASSERT(CefCurrentlyOn(TID_FILE));

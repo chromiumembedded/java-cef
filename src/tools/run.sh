@@ -24,7 +24,7 @@ else
 
     export CLS_PATH="./third_party/jogamp/jar/*:$OUT_PATH/$1"
 
-    java -cp $CLS_PATH -Djava.library.path=$LIB_PATH MainFrame
+    java -cp $CLS_PATH -Djava.library.path=$LIB_PATH tests.MainFrame
   fi
 fi
 

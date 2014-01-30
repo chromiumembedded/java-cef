@@ -57,7 +57,8 @@ else
 
   cp -f $OUT_PATH/$1/jcef.jar $DISTRIB_BIN_PATH
 
-  # Copy test programs to the bin directory.
+  # Copy test programs and its sources to the bin directory.
+  cp -f $OUT_PATH/$1/jcef-tests.jar $DISTRIB_BIN_PATH
   cp -f $SOURCE_PATH/tests/*.java $DISTRIB_BIN_PATH
 
   # Copy CEF Release files to the lib directory.
