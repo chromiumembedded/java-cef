@@ -16,6 +16,35 @@ void SetJVM(JavaVM* jvm);
 // Retrieve the JNIEnv for the current thread.
 JNIEnv* GetJNIEnv();
 
+// Determines whether the current thread is already attached to the VM,
+// and tells the caller if it needs to later DetachCurrentThread.
+//
+// INSTEAD OF USING THIS FUNCTION DIRECTLY, USE THE HELPER MACRO
+// BEGIN_ENV(e) INSTEAD.
+jint GetJNIEnv(JNIEnv **env, bool *mustDetach);
+
+// Detaches the current thread from the VM.
+//
+// INSTEAD OF USING THIS FUNCTION DIRECTLY; USE THE HELPER MACRO
+// END_ENV(e) INSTEAD.
+void DetachFromThread(bool *mustDetach);
+
+// Helper macros to bind and release the JNI environment
+// to other threads than the JNI function was called on.
+#define BEGIN_ENV(e) \
+  JNIEnv *e = NULL; \
+  bool __shouldDetach = false; \
+  if (GetJNIEnv(&e, &__shouldDetach) == JNI_OK && e != NULL) { \
+
+#define END_ENV(e) \
+    DetachFromThread(&__shouldDetach); \
+  } \
+
+# if defined(OS_MACOSX)
+// Required for onscreen rendering ability on Mac OS X.
+void AddLayerToComponent(jobject parent, JNIEnv *env, CefWindowHandle child);
+#endif
+
 // Create a new JNI object and call the default constructor.
 jobject NewJNIObject(JNIEnv* env, jclass cls);
 jobject NewJNIObject(JNIEnv* env, const char* class_name);

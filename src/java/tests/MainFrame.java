@@ -32,7 +32,7 @@ import org.cef.CefContext;
 
 public class MainFrame extends JFrame implements CefClientDelegate {
   public static void main(String [] args) {
-    // Timer used to pump the CEF message loop.
+    // Timer used to pump the CEF message loop in osr mode.
     final Timer timer = new Timer(33, new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -43,12 +43,30 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       }
     });
 
-    final MainFrame frame = new MainFrame(); 
+    // Start application with argument "--off-screen-rendering-enabled" for offscreen-rendering.
+    boolean osrEnabledArg = false;
+    if (CefContext.isMacintosh()) {
+      for (String arg : args) {
+        if (arg.toLowerCase().equals("--off-screen-rendering-enabled")) {
+          osrEnabledArg = true;
+          break;
+        }
+      }
+    } else {
+      // currently non-osr mode is only supported on mac systems
+      osrEnabledArg = true;
+    }
+    final boolean osrEnabled = osrEnabledArg;
+    System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
+
+    final MainFrame frame = new MainFrame(osrEnabled); 
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowOpened(WindowEvent e) {
-        CefContext.initialize("");
-        timer.start();
+        if (osrEnabled) {
+          CefContext.initialize("", osrEnabled);
+          timer.start();
+        }
         frame.createBrowser();
       }
 
@@ -56,23 +74,35 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       public void windowClosing(WindowEvent e) {
         frame.destroyBrowser();
         frame.dispose();
-        timer.stop();
+        if (osrEnabled) {
+          timer.stop();
+        }
         CefContext.shutdown();
         System.out.println("shutdown complete");
-        System.exit(0);
+        if (osrEnabled) {
+          System.exit(0);
+        }
       }
     });
 
     frame.setSize(800, 600);
     frame.setVisible(true);
+
+    // On Mac OS X the message loop is performed by calling initialize, which will block the main
+    // process until the message loop will be quit. See
+    // http://stackoverflow.com/questions/5642802/termination-of-program-on-main-thread-exit
+    // for further information about the Java threading system.
+    if (!osrEnabled) {
+      CefContext.initialize("", osrEnabled);
+    }
   }
 
   private JTextField address_field_;
   private String last_selected_file_ = "";
   private CefClient client_;
   
-  public MainFrame() {
-    client_ = new CefClient(this, false);
+  public MainFrame(boolean osrEnabled) {
+    client_ = new CefClient(this, false, osrEnabled);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
     setJMenuBar(createMenuBar());
   }
@@ -168,7 +198,7 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         JFileChooser fc = new JFileChooser(new File(last_selected_file_));
-        // Show open dialog; this method does not return until the dialog is closed 
+        // Show open dialog; this method does not return until the dialog is closed .
         fc.showOpenDialog(MainFrame.this); 
         File selectedFile = fc.getSelectedFile(); 
         if (selectedFile != null) {

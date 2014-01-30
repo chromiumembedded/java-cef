@@ -172,6 +172,7 @@
           'product_name': 'jcef',
           'sources': [
             'native/client_handler_mac.mm',
+            'native/jni_util_mac.mm',
             'native/util_mac.h',
             'native/util_mac.mm',
           ],

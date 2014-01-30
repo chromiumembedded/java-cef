@@ -4,6 +4,7 @@
 
 package org.cef;
 
+import java.awt.Canvas;
 import java.io.File;
 import java.io.FilenameFilter;
 
@@ -11,27 +12,35 @@ import java.io.FilenameFilter;
  * Exposes static methods for managing the global CEF context.
  */
 public class CefContext {
+  private static enum OSType {
+    OSUndefined,
+    OSLinux,
+    OSWindows,
+    OSMacintosh,
+    OSUnknown,
+  };
+  private static OSType osType = OSType.OSUndefined;
+
   /**
    * Initialize the context.
    * @return true on success
    */
-  public static final boolean initialize(String cachePath) {
+  public static final boolean initialize(String cachePath, boolean osr) {
     String library_path = getJcefLibPath();
     System.out.println("initialize on " + Thread.currentThread() +
                        " with library path " + library_path);
     try {
-      String os = System.getProperty("os.name");
-      if (os.startsWith("Windows")) {
+      if (isWindows()) {
         System.loadLibrary("icudt");
         System.loadLibrary("libcef");
         System.loadLibrary("jcef");
-      } else if (os.startsWith("Linux")) {
+      } else if (isLinux()) {
         System.loadLibrary("cef");
         System.loadLibrary("jcef");
-      } else if (os.startsWith("Mac OS X")) {
+      } else if (isMacintosh()) {
         System.loadLibrary("jcef");
       }
-      return N_Initialize(library_path, cachePath);
+      return N_Initialize(library_path, cachePath, osr);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -66,9 +75,9 @@ public class CefContext {
   /**
    * Create a new browser.
    */
-  public static final CefBrowser createBrowser(CefHandler handler, long windowHandle, String url, boolean transparent) {
+  public static final CefBrowser createBrowser(CefHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas) {
     try {
-      return N_CreateBrowser(handler, windowHandle, url, transparent);
+      return N_CreateBrowser(handler, windowHandle, url, transparent, canvas);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -110,9 +119,36 @@ public class CefContext {
     return library_path;
   }
 
-  private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath);
+  public static final boolean isWindows() {
+    return getOSType() == OSType.OSWindows;
+  }
+
+  public static final boolean isMacintosh() {
+    return getOSType() == OSType.OSMacintosh;
+  }
+
+  public static final boolean isLinux() {
+    return getOSType() == OSType.OSLinux;
+  }
+
+  private static final OSType getOSType() {
+    if(osType == OSType.OSUndefined) {
+      String os = System.getProperty("os.name").toLowerCase();
+      if (os.startsWith("windows"))
+        osType = OSType.OSWindows;
+      else if (os.startsWith("linux"))
+        osType = OSType.OSLinux;
+      else if (os.startsWith("mac"))
+        osType = OSType.OSMacintosh;
+      else
+        osType = OSType.OSUnknown;
+    }
+    return osType;
+  }
+
+  private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath, boolean osr);
   private static final native void N_Shutdown();
   private static final native void N_DoMessageLoopWork();
-  private static final native CefBrowser N_CreateBrowser(CefHandler handler, long windowHandle, String url, boolean transparent);
+  private static final native CefBrowser N_CreateBrowser(CefHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas);
   private static final native long N_GetWindowHandle(long surfaceHandle);
 }

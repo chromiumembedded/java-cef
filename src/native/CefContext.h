@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_cef_CefContext
  * Method:    N_Initialize
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
-  (JNIEnv *, jclass, jstring, jstring);
+  (JNIEnv *, jclass, jstring, jstring, jboolean);
 
 /*
  * Class:     org_cef_CefContext
@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1DoMessageLoopWork
 /*
  * Class:     org_cef_CefContext
  * Method:    N_CreateBrowser
- * Signature: (Lorg/cef/CefHandler;JLjava/lang/String;Z)Lorg/cef/CefBrowser;
+ * Signature: (Lorg/cef/CefHandler;JLjava/lang/String;ZLjava/awt/Canvas;)Lorg/cef/CefBrowser;
  */
 JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
-  (JNIEnv *, jclass, jobject, jlong, jstring, jboolean);
+  (JNIEnv *, jclass, jobject, jlong, jstring, jboolean, jobject);
 
 /*
  * Class:     org_cef_CefContext

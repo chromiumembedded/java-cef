@@ -3,6 +3,9 @@
 // can be found in the LICENSE file.
 
 #include "CefContext.h"
+
+#include <string>
+
 #include "include/cef_app.h"
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
@@ -19,6 +22,10 @@
 #endif
 
 namespace {
+
+// TODO(jcef): We may want to support both windowed and osr use cases in 
+// the same application, in which case we shouldn't use a global variable.
+static bool g_use_osr = false;
 
 class ClientApp : public CefApp {
  public:
@@ -37,6 +44,10 @@ class ClientApp : public CefApp {
           module_dir_ + "/../Frameworks/Chromium Embedded Framework.framework/"
                        "Resources/en.lproj/locale.pak");
       command_line->AppendSwitchWithValue("locale_pak", locale_path);
+      // If windowed rendering is used, we need the browser window as CALayer
+      // due Java7 is CALayer based instead of NSLayer based.
+      if (!g_use_osr)
+        command_line->AppendSwitch("use-core-animation");
     }
   }
 #endif  // defined(OS_MACOSX)
@@ -62,7 +73,8 @@ std::string GetHelperPath(const std::string& module_dir) {
 
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
-  (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath) {
+  (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath,
+   jboolean osrEnabled) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -70,6 +82,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
     return false;
   }
   SetJVM(jvm);
+
+  // Keep information if offscreen or windowed rendering is used.
+  g_use_osr = (osrEnabled == JNI_TRUE);
 
 #if defined(OS_WIN)
   CefMainArgs main_args(::GetModuleHandle(NULL));
@@ -88,14 +103,21 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
 #endif
 
   CefRefPtr<ClientApp> client_app(new ClientApp(module_dir));
-  if(!CefInitialize(main_args, settings, client_app.get()))
-    return JNI_FALSE;
-
-  return JNI_TRUE;
+#if defined(OS_MACOSX)
+  if (!g_use_osr)
+    return util_mac::CefInitializeOnMainThread(main_args, settings, client_app.get()) ? JNI_TRUE : JNI_FALSE;
+#endif
+  return CefInitialize(main_args, settings, client_app.get()) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1Shutdown
   (JNIEnv *env, jclass) {
+#if defined(OS_MACOSX)
+  if (!g_use_osr) {
+    util_mac::CefQuitMessageLoopOnMainThread();
+    return;
+  }
+#endif
   CefShutdown();
 }
 
@@ -106,7 +128,11 @@ JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1DoMessageLoopWork
 
 JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
   (JNIEnv *env, jclass, jobject handler, jlong windowHandle,
-   jstring url, jboolean transparent) {
+   jstring url, jboolean transparent, jobject canvas) {
+#if defined(OS_MACOSX)
+  if (!g_use_osr)
+    return util_mac::CefCreateBrowserOnMainThread(handler, windowHandle, url, transparent, canvas);
+#endif
   jobject browser = NewJNIObject(env, "org/cef/CefBrowser_N");
   if (!browser)
     return NULL;

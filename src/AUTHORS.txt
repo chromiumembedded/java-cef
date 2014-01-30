@@ -3,3 +3,4 @@
 # Name or Organization <email address>
 
 Marshall Greenblatt <magreenblatt@gmail.com>
+Kai Klimke, censhare AG <kkl@censhare.com>

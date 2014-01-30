@@ -16,8 +16,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.Canvas;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.nio.ByteBuffer;
 import javax.media.nativewindow.NativeSurface;
 import javax.media.opengl.awt.GLCanvas;
@@ -30,19 +33,28 @@ import javax.media.opengl.GLCapabilities;
  * Client that owns a browser and renderer.
  */
 public class CefClient implements CefHandler {
+  private boolean osr_enabled_;
+  private boolean isTransparent_;
   private CefClientDelegate delegate_;
   private CefRenderer renderer_;
-  private GLCanvas canvas_;
+  private Canvas canvas_;
   private long window_handle_ = 0;
   private CefBrowser browser_ = null;
   private int browser_id_ = -1;
   private Rectangle browser_rect_ = new Rectangle(0, 0, 0, 0);
 
-  public CefClient(CefClientDelegate delegate, boolean transparent) {
+  public CefClient(CefClientDelegate delegate, boolean transparent, boolean osr) {
     assert(delegate != null);
     delegate_ = delegate;
-    renderer_ = new CefRenderer(transparent);
-    createGLCanvas();
+    isTransparent_ = transparent;
+    osr_enabled_ = osr;
+    if (osr_enabled_) {
+      renderer_ = new CefRenderer(transparent);
+      createGLCanvas();
+    } else {
+      renderer_ = null;
+      canvas_ = new Canvas();
+    }
   }
   
   @Override
@@ -54,7 +66,7 @@ public class CefClient implements CefHandler {
 
   public void createBrowser(String url) {
     assert(browser_ == null);
-    browser_ = CefContext.createBrowser(this, getWindowHandle(), url, renderer_.isTransparent());
+    browser_ = CefContext.createBrowser(this, getWindowHandle(), url, isTransparent_, (osr_enabled_ ? null : canvas_));
     browser_id_ = browser_.getIdentifier();
   }
 
@@ -69,17 +81,33 @@ public class CefClient implements CefHandler {
     return browser_;
   }
 
-  public GLCanvas getCanvas() {
+  public Canvas getCanvas() {
     return canvas_;
   }
 
-  public long getWindowHandle() {
+  private long getWindowHandle() {
     if (window_handle_ == 0) {
-      NativeSurface surface = canvas_.getNativeSurface();
-      surface.lockSurface();
-      window_handle_ = CefContext.getWindowHandle(surface.getSurfaceHandle());
-      surface.unlockSurface();
-      assert (window_handle_ != 0);
+      if (osr_enabled_) {
+        NativeSurface surface = ((GLCanvas)canvas_).getNativeSurface();
+        surface.lockSurface();
+        window_handle_ = CefContext.getWindowHandle(surface.getSurfaceHandle());
+        surface.unlockSurface();
+        assert (window_handle_ != 0);
+      } else if (CefContext.isMacintosh()) {
+        try {
+          Class<?> cls = Class.forName("org.cef.mac.CefBrowserWindowMac");
+          CefBrowserWindow browserWindow = (CefBrowserWindow)cls.newInstance();
+          if (browserWindow != null) {
+            window_handle_ = browserWindow.getWindowHandleOfCanvas(canvas_);
+          }
+        } catch (ClassNotFoundException e) {
+          // Ignore exceptions
+        } catch (InstantiationException e) {
+          // Ignore exceptions
+        } catch (IllegalAccessException e) {
+          // Ignore exceptions
+        }
+      }
     }
     return window_handle_;
   }
@@ -89,7 +117,7 @@ public class CefClient implements CefHandler {
     GLCapabilities glcapabilities = new GLCapabilities(glprofile);
     canvas_ = new GLCanvas(glcapabilities);
 
-    canvas_.addGLEventListener(new GLEventListener() {
+    ((GLCanvas)canvas_).addGLEventListener(new GLEventListener() {
       @Override
       public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
         browser_rect_.setBounds(x, y, width, height);
@@ -210,7 +238,22 @@ public class CefClient implements CefHandler {
 
   @Override
   public Rectangle getViewRect(CefBrowser browser) {
-    return browser_rect_;
+    if (osr_enabled_)
+      return browser_rect_;
+
+    Rectangle tmp = canvas_.getBounds();
+    Container parent = canvas_.getParent();
+    while (parent != null) {
+      Container next = parent.getParent();
+      if (next != null && next instanceof Window)
+        break;
+ 
+      Rectangle parentRect = parent.getBounds();
+      tmp.x += parentRect.x;
+      tmp.y += parentRect.y;
+      parent = next;
+    }
+    return tmp;
   }
 
   @Override
@@ -243,10 +286,10 @@ public class CefClient implements CefHandler {
                       ByteBuffer buffer,
                       int width,
                       int height) {
-    canvas_.getContext().makeCurrent();
-    renderer_.onPaint(canvas_.getGL().getGL2(), popup, dirtyRects, buffer, width, height);
-    canvas_.getContext().release();
-    canvas_.display();
+    ((GLCanvas)canvas_).getContext().makeCurrent();
+    renderer_.onPaint(((GLCanvas)canvas_).getGL().getGL2(), popup, dirtyRects, buffer, width, height);
+    ((GLCanvas)canvas_).getContext().release();
+    ((GLCanvas)canvas_).display();
   }
   
   @Override
