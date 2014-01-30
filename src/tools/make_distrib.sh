@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2013 The Chromium Embedded Framework Authors. All rights
+# Copyright (c) 2014 The Chromium Embedded Framework Authors. All rights
 # reserved. Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 
@@ -11,71 +11,20 @@ else
   export DISTRIB_PATH="./binary_distrib/$1"
   export DISTRIB_BIN_PATH="$DISTRIB_PATH/bin"
   export DISTRIB_DOCS_PATH="$DISTRIB_PATH/docs"
-  export DISTRIB_LIB_PATH="$DISTRIB_PATH/bin/lib/$1"
   export OUT_PATH="./out"
   export OUT_DOCS_PATH="./out/docs"
   export SOURCE_PATH="./java"
   export JOGAMP_PATH="./third_party/jogamp"
-  export JOGAMP_JAR_PATH="$JOGAMP_PATH/jar"
   export TOOLS_DISTRIB_PATH="./tools/distrib/$1"
 
-  if [ $1 == "macosx64" ]; then
-    export OUT_BINARY_PATH="./xcodebuild/Release"
-  else
-    export OUT_BINARY_PATH="$OUT_PATH/Release"
+  if [ ! -d "$DISTRIB_BIN_PATH" ]; then
+    mkdir -p "$DISTRIB_BIN_PATH"
   fi
-
-  # Create the JCEF jar file.
-  cd tools
-  ./make_jar.sh $1
-  cd ..
 
   # Create the JCEF documentation.
   cd tools
   ./make_docs.sh
   cd ..
-
-  # Copy JAR files to the bin directory.
-  if [ ! -d "$DISTRIB_BIN_PATH" ]; then
-    mkdir -p "$DISTRIB_BIN_PATH"
-  fi
-  cp -f $JOGAMP_JAR_PATH/gluegen-rt.jar $DISTRIB_BIN_PATH
-  cp -f $JOGAMP_JAR_PATH/jogl-all.jar $DISTRIB_BIN_PATH
-
-  if [ $1 == "macosx64" ]; then
-    cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-macosx-universal.jar $DISTRIB_BIN_PATH
-    cp -f $JOGAMP_JAR_PATH/jogl-all-natives-macosx-universal.jar $DISTRIB_BIN_PATH
-  else
-    if [ $1 == "linux32" ]; then
-      export JOGAMP_JAR_SUFFIX="i586"
-    else
-      export JOGAMP_JAR_SUFFIX="amd64"
-    fi
-    cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
-    cp -f $JOGAMP_JAR_PATH/jogl-all-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
-  fi
-
-  cp -f $OUT_PATH/$1/jcef.jar $DISTRIB_BIN_PATH
-
-  # Copy test programs and its sources to the bin directory.
-  cp -f $OUT_PATH/$1/jcef-tests.jar $DISTRIB_BIN_PATH
-  cp -f $SOURCE_PATH/tests/*.java $DISTRIB_BIN_PATH
-
-  # Copy CEF Release files to the lib directory.
-  if [ ! -d "$DISTRIB_LIB_PATH" ]; then
-    mkdir -p "$DISTRIB_LIB_PATH"
-  fi
-
-  if [ $1 == "macosx64" ]; then
-    cp -rf $OUT_BINARY_PATH/jcef_app.app $DISTRIB_LIB_PATH
-  else
-    cp -f $OUT_BINARY_PATH/libffmpegsumo.so $DISTRIB_LIB_PATH
-    cp -f $OUT_BINARY_PATH/libjcef.so $DISTRIB_LIB_PATH
-    cp -f $OUT_BINARY_PATH/jcef_helper $DISTRIB_LIB_PATH
-    cp -f $OUT_BINARY_PATH/libcef.so $DISTRIB_LIB_PATH
-    cp -f $OUT_PATH/Release/*.pak $DISTRIB_LIB_PATH
-    cp -rf $OUT_PATH/Release/locales/ $DISTRIB_LIB_PATH
-  fi
 
   # Copy documentation to the docs directory.
   cp -rf $OUT_DOCS_PATH $DISTRIB_DOCS_PATH
@@ -84,6 +33,59 @@ else
   cp -f ./LICENSE.txt $DISTRIB_PATH
   cp -f $JOGAMP_PATH/*.LICENSE.txt $DISTRIB_PATH
   cp -f $TOOLS_DISTRIB_PATH/* $DISTRIB_PATH
+
+  if [ $1 == "macosx64" ]; then
+    export OUT_BINARY_PATH="./xcodebuild/Release"
+    export DISTRIB_TESTS_PATH="$DISTRIB_PATH/tests"
+
+    if [ ! -d "$DISTRIB_TESTS_PATH" ]; then
+      mkdir -p "$DISTRIB_TESTS_PATH"
+    fi
+
+    # Copy test program source file to the tests directory.
+    cp -f $SOURCE_PATH/tests/*.java $DISTRIB_TESTS_PATH
+
+    # Everything else is contained in the app bundle.
+    cp -rf $OUT_BINARY_PATH/jcef_app.app $DISTRIB_BIN_PATH
+  else
+    export DISTRIB_LIB_PATH="$DISTRIB_PATH/bin/lib/$1"
+    export JOGAMP_JAR_PATH="$JOGAMP_PATH/jar"
+    export OUT_BINARY_PATH="$OUT_PATH/Release"
+  
+    # Create the JCEF JAR file.
+    cd tools
+    ./make_jar.sh $1
+    cd ..
+
+    # Copy JAR files to the bin directory.
+    cp -f $JOGAMP_JAR_PATH/gluegen-rt.jar $DISTRIB_BIN_PATH
+    cp -f $JOGAMP_JAR_PATH/jogl-all.jar $DISTRIB_BIN_PATH
+
+    if [ $1 == "linux32" ]; then
+      export JOGAMP_JAR_SUFFIX="i586"
+    else
+      export JOGAMP_JAR_SUFFIX="amd64"
+    fi
+    cp -f $JOGAMP_JAR_PATH/gluegen-rt-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
+    cp -f $JOGAMP_JAR_PATH/jogl-all-natives-linux-$JOGAMP_JAR_SUFFIX.jar $DISTRIB_BIN_PATH
+    cp -f $OUT_PATH/$1/jcef.jar $DISTRIB_BIN_PATH
+
+    # Copy test program source and JAR file to the bin directory.
+    cp -f $SOURCE_PATH/tests/*.java $DISTRIB_BIN_PATH
+    cp -f $OUT_PATH/$1/jcef-tests.jar $DISTRIB_BIN_PATH
+
+    # Copy CEF Release files to the lib directory.
+    if [ ! -d "$DISTRIB_LIB_PATH" ]; then
+      mkdir -p "$DISTRIB_LIB_PATH"
+    fi
+
+    cp -f $OUT_BINARY_PATH/libffmpegsumo.so $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/libjcef.so $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/jcef_helper $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/libcef.so $DISTRIB_LIB_PATH
+    cp -f $OUT_PATH/Release/*.pak $DISTRIB_LIB_PATH
+    cp -rf $OUT_PATH/Release/locales/ $DISTRIB_LIB_PATH
+  fi
 
   cd tools
 fi

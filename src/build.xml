@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="javaLauncher" default="default" basedir=".">
+
+  <property environment="env"/>
+  <property name="jdk7.path"  value="${env.JDK_17}"/>
+  <property name="out.path"   value="${env.OUT_PATH}"/>
+  <property name="out.name"   value="${env.OUT_NAME}"/>
+  
+  <taskdef name="bundleapp"
+      classname="com.oracle.appbundler.AppBundlerTask"   
+      classpath="third_party/appbundler/appbundler-1.0.jar" />
+    
+  <path id="class.path">
+    <fileset dir="third_party/jogamp/jar">
+      <include name="gluegen-rt.jar"/>
+      <include name="gluegen-rt-natives-macosx-universal.jar"/>
+      <include name="jogl-all.jar"/>
+      <include name="jogl-all-natives-macosx-universal.jar"/>
+    </fileset>
+  </path>
+    
+  <target name="compile">
+    <mkdir dir="${out.path}"/>
+    <javac encoding="UTF8" nowarn="on" deprecation="off" debug="on" includeantruntime="false" destdir="${out.path}"
+           executable="${jdk7.path}/bin/javac" fork="true" memoryinitialsize="32m" memorymaximumsize="128m" includeJavaRuntime="yes">
+      <compilerarg value="-XDignore.symbol.file"/>
+      <classpath location="${jdk7.path}/jre/lib/rt.jar" />
+      <classpath refid="class.path"/>
+      <src path="java/tests/"/>
+      <src path="java/org/cef/"/>
+    </javac>
+  </target>
+    
+  <target name="jar" depends="compile">
+    <mkdir dir="${out.path}"/>
+    <jar destfile="${out.path}/jcef.jar" index="true" update="false">
+      <fileset dir="${out.path}">
+        <include name="org/cef/**"/>
+      </fileset>
+    </jar>
+    <jar destfile="${out.path}/jcef-tests.jar" index="true" update="false">
+      <fileset dir="${out.path}">
+        <include name="tests/**"/>
+      </fileset>
+    </jar>
+  </target>
+    
+  <target name="bundle" depends="jar">
+    <mkdir dir="${out.path}"/>
+    <bundleapp outputdirectory="${out.path}"
+                          name="${out.name}"
+                   displayname="${out.name}"
+                    identifier="org.jcef.jcef_app"
+                 mainclassname="tests.MainFrame">
+      <classpath dir="${out.path}">
+        <include name="jcef.jar"/>
+        <include name="jcef-tests.jar"/>
+      </classpath>
+      <classpath dir="third_party/jogamp/jar/">
+        <include name="gluegen-rt.jar"/>
+        <include name="gluegen-rt-natives-macosx-universal.jar" />
+        <include name="jogl-all.jar" />
+        <include name="jogl-all-natives-macosx-universal.jar" />
+      </classpath>
+      <option value="-Djava.library.path=$APP_ROOT/Contents/Java/:$APP_ROOT/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries" />
+    </bundleapp>
+  </target>
+</project>

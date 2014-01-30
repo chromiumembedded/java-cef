@@ -1,0 +1,15 @@
+Name: Java Application Bundler 
+Short Name: appbundler
+URL: https://java.net/projects/appbundler
+Version: 1.0
+License: GPL-2.0
+
+Description:
+Packages a Java application as Mac app bundle.
+
+See https://java.net/projects/appbundler/pages/Home 
+and http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/packagingAppsForMac.html 
+for related documentation.
+
+Local Modifications:
+None.

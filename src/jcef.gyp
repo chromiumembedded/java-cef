@@ -7,6 +7,7 @@
     'chromium_code': 1,
     'cef_directory': '<(DEPTH)/third_party/cef/<(jcef_platform)',
     'cef_directory_win': '<(DEPTH)\\third_party\\cef\\<(jcef_platform)',
+    'jcef_launch_name' : 'jcef_app',
     'version_mac_dylib': '1.0.0',
     'conditions': [
       ['OS=="mac"', {
@@ -304,46 +305,32 @@
       'targets': [
         {
           'target_name': 'jcef_app',
-          'type': 'executable',
-          'product_name': 'jcef_app',
-          'mac_bundle': 1,
+          'type': 'none',
           'dependencies': [
             'jcef',
-          ],
-          'defines': [
-            'USING_CEF_SHARED',
-          ],
-          'link_settings': {
-            'libraries': [
-              '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
-              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
-            ],
-          },
-          'mac_bundle_resources': [
-            'native/resources/jcef-Info.plist',
-          ],
-          'mac_bundle_resources!': [
-            'native/resources/jcef-Info.plist',
+            'jcef_helper',
           ],
           'xcode_settings': {
-            'INFOPLIST_FILE': 'native/resources/jcef-Info.plist',
+            'CONTENTS_FOLDER_PATH' : '<(jcef_launch_name).app/Contents',
           },
           'actions': [
             {
-              'action_name': 'generate_stub_main',
-              'process_outputs_as_sources': 1,
+              'action_name': 'Build and bundle Java',
               'inputs': [],
-              'outputs': [ '<(INTERMEDIATE_DIR)/dummy_main.c' ],
+              'outputs': ['<(PRODUCT_DIR)/make_java_code.stamp'],
               'action': [
-                'bash', '-c',
-                'echo "int main() { return 0; }" > <(INTERMEDIATE_DIR)/dummy_main.c'
+                'ant',
+                '-Djdk7.path=<(jdk_directory)',
+                '-Dout.path=<(PRODUCT_DIR)',
+                '-Dout.name=<(jcef_launch_name)',
+                'bundle',
               ],
             },
           ],
           'copies': [
             {
               # Add library dependencies to the bundle.
-              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
+              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
               'files': [
                 '<(cef_directory)/Release/libcef.dylib',
                 '<(cef_directory)/Release/ffmpegsumo.so',
@@ -351,14 +338,14 @@
             },
             {
               # Add other resources to the bundle.
-              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks/Chromium Embedded Framework.framework/',
+              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks/Chromium Embedded Framework.framework/',
               'files': [
                 '<(cef_directory)/Resources/',
               ],
             },
             {
               # Add the helper app.
-              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/Frameworks',
+              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks',
               'files': [
                 '<(PRODUCT_DIR)/jcef Helper.app',
                 '<(cef_directory)/Release/libplugin_carbon_interpose.dylib',
@@ -366,23 +353,13 @@
             },
             {
               # Add the JCEF library.
-              'destination': '<(PRODUCT_DIR)/jcef_app.app/Contents/MacOS',
+              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Java',
               'files': [
                 '<(PRODUCT_DIR)/libjcef.dylib',
               ],
             },
           ],
-          'postbuilds': [
-            {
-              'postbuild_name': 'Fix Framework Link',
-              'action': [
-                'install_name_tool',
-                '-change',
-                '@executable_path/libcef.dylib',
-                '@executable_path/../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
-                '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
-              ],
-            },     
+          'postbuilds': [   
             {
               # This postbuid step is responsible for creating the following
               # helpers:

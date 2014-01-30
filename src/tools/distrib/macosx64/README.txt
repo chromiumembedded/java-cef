@@ -9,18 +9,20 @@ section of this document for licensing terms and conditions.
 CONTENTS
 --------
 
-bin         Contains Java archives, native library files and the MainFrame
-            sample application.
+bin         Contains the jcef_app whose contents include Java archives and
+            native library files.
 
 docs        Contains documentation for the org.cef package.
 
+tests       Contains the MainFrame sample application.
 
 USAGE
 -----
 
 1. Install a 64-bit version of the Oracle Java 7 runtime.
-2. Execute the compile.sh script to compile the MainFrame sample application.
-3. Execute the run.sh script to run the MainFrame sample application.
+2. Execute the compile.sh script to compile the MainFrame sample application
+   and insert it into the jcef_app bundle.
+3. Launch jcef_app to run the MainFrame sample application.
 
 Please visit the JCEF Website for additional usage information.
 
@@ -68,9 +70,15 @@ jcef_app.app/
             jcef Helper NP <= helper executable
           Pkginfo
     Info.plist
-    MacOS/
+    Java/
+      *.jar <= Required JAR files
       libjcef.dylib <= CEF JNI library
+    MacOS/
+      JavaAppLauncher <= Java bootstrap executable
     Pkginfo
+    Resources/
+      en.lproj/Localizable.strings
+      GenericApp.icns
 
 The "Chromium Embedded Framework.framework" is an unversioned framework that
 contains CEF binaries and resources. The "jcef Helper" apps are used for

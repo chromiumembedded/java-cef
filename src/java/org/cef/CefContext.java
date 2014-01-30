@@ -4,6 +4,9 @@
 
 package org.cef;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 /**
  * Exposes static methods for managing the global CEF context.
  */
@@ -13,7 +16,7 @@ public class CefContext {
    * @return true on success
    */
   public static final boolean initialize(String cachePath) {
-    String library_path = System.getProperty("java.library.path");
+    String library_path = getJcefLibPath();
     System.out.println("initialize on " + Thread.currentThread() +
                        " with library path " + library_path);
     try {
@@ -82,6 +85,29 @@ public class CefContext {
       err.printStackTrace();
     }
     return 0;
+  }
+
+  /**
+   * Get the path which contains the jcef library
+   * @return The path to the jcef library
+   */
+  private static final String getJcefLibPath() {
+    String library_path = System.getProperty("java.library.path");
+    String[] paths = library_path.split(System.getProperty("path.separator"));
+    for (String path : paths) {
+      File dir = new File(path);
+      String[] found = dir.list(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          return (name.equalsIgnoreCase("libjcef.dylib") ||
+                  name.equalsIgnoreCase("libjcef.so") ||
+                  name.equalsIgnoreCase("jcef.dll"));
+        }
+      });
+      if (found.length != 0)
+        return path;
+    }
+    return library_path;
   }
 
   private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath);
