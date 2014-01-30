@@ -70,9 +70,9 @@ class CefBrowser_N implements CefBrowser {
   }
 
   @Override
-  public void wasResized() {
+  public void wasResized(int width, int height) {
     try {
-      N_WasResized();
+      N_WasResized(width, height);
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -114,14 +114,24 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
+  @Override
+  public void setFocus(boolean enable) {
+    try {
+      N_SetFocus(enable);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
   private final native void N_Close();
   private final native void N_GoBack();
   private final native void N_GoForward();
   private final native int N_GetIdentifier();
   private final native void N_LoadURL(String url);
-  private final native void N_WasResized();
+  private final native void N_WasResized(int width, int height);
   private final native void N_Invalidate(Rectangle rect);
   private final native void N_SendKeyEvent(KeyEvent e);
   private final native void N_SendMouseEvent(MouseEvent e);
   private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
+  private final native void N_SetFocus(boolean enable);
 }

@@ -6,8 +6,11 @@ package tests;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -43,19 +46,28 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       }
     });
 
-    // Start application with argument "--off-screen-rendering-enabled" for offscreen-rendering.
-    boolean osrEnabledArg = false;
-    if (CefContext.isMacintosh()) {
+    // OSR mode is enabled by default on Windows and Linux.
+    boolean osrEnabledArg = true;
+    if (CefContext.isWindows()) {
+      // TODO(jcef): Enable OSR mode by default once issue #32 is resolved.
+      osrEnabledArg = true;
+      for (String arg : args) {
+        if (arg.toLowerCase().equals("--off-screen-rendering-disabled")) {
+          osrEnabledArg = false;
+          break;
+        }
+      }
+    } else if (CefContext.isMacintosh()) {
+      // OSR mode is disabled by default on Mac OS X.
+      osrEnabledArg = false;
       for (String arg : args) {
         if (arg.toLowerCase().equals("--off-screen-rendering-enabled")) {
           osrEnabledArg = true;
           break;
         }
       }
-    } else {
-      // currently non-osr mode is only supported on mac systems
-      osrEnabledArg = true;
     }
+
     final boolean osrEnabled = osrEnabledArg;
     System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
 
@@ -63,7 +75,7 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowOpened(WindowEvent e) {
-        if (osrEnabled) {
+        if (osrEnabled || !CefContext.isMacintosh()) {
           CefContext.initialize("", osrEnabled);
           timer.start();
         }
@@ -74,12 +86,12 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       public void windowClosing(WindowEvent e) {
         frame.destroyBrowser();
         frame.dispose();
-        if (osrEnabled) {
+        if (osrEnabled || !CefContext.isMacintosh()) {
           timer.stop();
         }
         CefContext.shutdown();
         System.out.println("shutdown complete");
-        if (osrEnabled) {
+        if (osrEnabled || !CefContext.isMacintosh()) {
           System.exit(0);
         }
       }
@@ -92,7 +104,7 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     // process until the message loop will be quit. See
     // http://stackoverflow.com/questions/5642802/termination-of-program-on-main-thread-exit
     // for further information about the Java threading system.
-    if (!osrEnabled) {
+    if (!osrEnabled && CefContext.isMacintosh()) {
       CefContext.initialize("", osrEnabled);
     }
   }
@@ -169,6 +181,13 @@ public class MainFrame extends JFrame implements CefClientDelegate {
         client_.getBrowser().loadURL(address_field_.getText());
       }
     });
+    address_field_.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent arg0) {
+        client_.getBrowser().setFocus(false);
+        address_field_.requestFocus();
+      }
+    });
     controlPanel.add(address_field_);
 
     controlPanel.add(Box.createHorizontalStrut(5));
@@ -239,5 +258,28 @@ public class MainFrame extends JFrame implements CefClientDelegate {
   @Override
   public void onCursorChange(CefClient client, Cursor cursor) {
     setCursor(cursor);
+  }
+
+  @Override
+  public void onTakeFocus(CefClient client, boolean next) {
+    FocusTraversalPolicy policy = getFocusTraversalPolicy();
+    if (policy == null)
+      return;
+    if (next) {
+      policy.getFirstComponent(this).requestFocus();
+    } else {
+      policy.getLastComponent(this).requestFocus();
+    }
+  }
+
+  @Override
+  public boolean onSetFocus(CefClient client, FocusSource source) {
+    // Currently nothing to do.
+    return false;
+  }
+
+  @Override
+  public void onGotFocus(CefClient client) {
+    // Currently nothing to do.
   }
 }

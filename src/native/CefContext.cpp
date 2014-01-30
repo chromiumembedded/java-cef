@@ -139,12 +139,22 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
 
   CefRefPtr<CefBrowser> browserObj;
 
-  CefWindowInfo windowInfo;
-
-  windowInfo.SetAsOffScreen((CefWindowHandle)windowHandle);
-  windowInfo.SetTransparentPainting(transparent);
-
   CefRefPtr<ClientHandler> client = new ClientHandler(env, browser, handler);
+  CefWindowInfo windowInfo;
+#if defined(OS_WIN)
+  if (!g_use_osr) {
+    HWND parent = GetHwndOfCanvas(canvas, env);
+    CefRect rect;
+    client->GetViewRect(NULL, rect);
+    RECT winRect = {0,0, rect.width, rect.height};
+    windowInfo.SetAsChild(parent,winRect);
+  }
+  else
+#endif
+  {
+    windowInfo.SetAsOffScreen((CefWindowHandle)windowHandle);
+    windowInfo.SetTransparentPainting(transparent);
+  }
   CefBrowserSettings settings;
 
   browserObj = CefBrowserHost::CreateBrowserSync(windowInfo, client.get(),

@@ -42,8 +42,10 @@ public interface CefBrowser {
 
   /**
    * Notify that the browser was resized.
+   * @param width The new width of the browser
+   * @param height The new height of the browser
    */
-  public void wasResized();
+  public void wasResized(int width, int height);
 
   /**
    * Invalidate the specified rectangle.
@@ -68,4 +70,10 @@ public interface CefBrowser {
    * @param e The event to send.
    */
   public void sendMouseWheelEvent(MouseWheelEvent e);
+
+  /**
+   * Set or remove keyboard focus to/from the browser window.
+   * @param enable set to true to give the focus to the browser
+   **/
+  public void setFocus(boolean enable);
 }

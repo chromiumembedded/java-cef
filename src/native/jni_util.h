@@ -43,6 +43,8 @@ void DetachFromThread(bool *mustDetach);
 # if defined(OS_MACOSX)
 // Required for onscreen rendering ability on Mac OS X.
 void AddLayerToComponent(jobject parent, JNIEnv *env, CefWindowHandle child);
+#elif defined(OS_WIN)
+HWND GetHwndOfCanvas(jobject canvas, JNIEnv *env);
 #endif
 
 // Create a new JNI object and call the default constructor.
@@ -57,7 +59,7 @@ jstring NewJNIString(JNIEnv* env, const CefString& str);
 
 // Create a new array of String values.
 jobjectArray NewJNIStringArray(JNIEnv* env,
-								               const std::vector<CefString>& vals);
+                               const std::vector<CefString>& vals);
 
 // Retrieve the int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
@@ -87,7 +89,7 @@ jobject NewJNIRect(JNIEnv* env, const CefRect& rect);
 
 // create a new array of java.awt.Rectangle.
 jobjectArray NewJNIRectArray(JNIEnv* env,
-								             const std::vector<CefRect>& vals);
+                             const std::vector<CefRect>& vals);
 
 // Retrieve the value of a java.awt.Point.
 bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y);
@@ -115,20 +117,20 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y);
 template <class T>
 bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base) {
   jclass cls = env->GetObjectClass(obj);
-	jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
-	if (field) {
-	  T* oldbase = reinterpret_cast<T*>(env->GetLongField(obj, field));
-	  if(oldbase) {
-		  // Remove a reference from the previous base object.
-		  oldbase->Release();
-	  }
+  jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
+  if (field) {
+    T* oldbase = reinterpret_cast<T*>(env->GetLongField(obj, field));
+    if(oldbase) {
+      // Remove a reference from the previous base object.
+      oldbase->Release();
+    }
 
-	  env->SetLongField(obj, field, (jlong)base);
-	  if(base) {
-		  // Add a reference to the new base object.
-		  base->AddRef();
-	  }
-	  return true;
+    env->SetLongField(obj, field, (jlong)base);
+    if(base) {
+      // Add a reference to the new base object.
+      base->AddRef();
+    }
+    return true;
   }
 
   env->ExceptionClear();
@@ -139,11 +141,11 @@ bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base) {
 template <class T>
 T* GetCefFromJNIObject(JNIEnv* env, jobject obj) {
   jclass cls = env->GetObjectClass(obj);
-	jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
+  jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
   if (field)
     return reinterpret_cast<T*>(env->GetLongField(obj, field));
 
-	env->ExceptionClear();
+  env->ExceptionClear();
   return NULL;
 }
 

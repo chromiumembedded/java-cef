@@ -55,6 +55,7 @@
         ['OS=="win"', {
           'sources': [
             'native/client_handler_win.cpp',
+            'native/jni_util_win.cpp',
             'native/jcef_dll.rc',
           ],
           'include_dirs': [
@@ -93,7 +94,8 @@
             'libraries': [
               '-lcomctl32.lib',
               '-l<(cef_directory)/$(ConfigurationName)/libcef.lib',
-              '-l<(jdk_directory)/lib/jvm.lib',
+              '-l\"<(jdk_directory)/lib/jvm.lib\"',
+              '-l\"<(jdk_directory)/lib/jawt.lib\"',
             ],
           },
           'msvs_settings': {

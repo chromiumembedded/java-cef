@@ -166,12 +166,20 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1LoadURL
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1WasResized
-  (JNIEnv *env, jobject obj) {
+  (JNIEnv *env, jobject obj, jint width, jint height) {
   CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
   if(!browser.get())
     return;
 
-  browser->GetHost()->WasResized();
+  if( browser->GetHost()->IsWindowRenderingDisabled() ) {
+    browser->GetHost()->WasResized();
+  }
+#if defined(OS_WIN) 
+  else {
+    HWND handle = browser->GetHost()->GetWindowHandle();
+    SetWindowPos(handle, NULL, 0, 0, width, height, SWP_NOZORDER | SWP_NOMOVE);
+  }
+#endif
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Invalidate
@@ -476,4 +484,21 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseWheelEvent
     deltaY = delta;
 
   browser->GetHost()->SendMouseWheelEvent(cef_event, deltaX, deltaY);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
+  (JNIEnv *env, jobject obj, jboolean enable) {
+  CefRefPtr<CefBrowser> browser = GetCefFromJNIObject<CefBrowser>(env, obj);
+  if(!browser.get())
+    return;
+
+  if( browser->GetHost()->IsWindowRenderingDisabled() ) {
+    browser->GetHost()->SendFocusEvent(enable == JNI_TRUE);
+  } else {
+    browser->GetHost()->SetFocus(enable == JNI_TRUE);
+  }
+#if defined(OS_WIN)
+  if (enable == JNI_FALSE)
+    SetFocus(browser->GetHost()->GetOpenerWindowHandle());
+#endif
 }

@@ -50,10 +50,10 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1LoadURL
 /*
  * Class:     org_cef_CefBrowser_N
  * Method:    N_WasResized
- * Signature: ()V
+ * Signature: (II)V
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1WasResized
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint, jint);
 
 /*
  * Class:     org_cef_CefBrowser_N
@@ -86,6 +86,14 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseEvent
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseWheelEvent
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_SetFocus
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
+(JNIEnv *, jobject, jboolean);
 
 #ifdef __cplusplus
 }

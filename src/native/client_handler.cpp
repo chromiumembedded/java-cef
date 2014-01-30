@@ -65,39 +65,39 @@ void ClientHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     const CefString& url) {
   JNIEnv* env = GetJNIEnv();
-	if(env) {
-		jclass cls = env->GetObjectClass(jhandler_);
-		jmethodID methodID = env->GetMethodID(cls, "onAddressChange",
-			"(Lorg/cef/CefBrowser;Ljava/lang/String;)V");
-		if(methodID != 0) {
-			env->CallVoidMethod(jhandler_, methodID, jbrowser_,
-				  NewJNIString(env, url));
-		}
-		
-		if(env->ExceptionOccurred()) {
-			env->ExceptionDescribe();
-			env->ExceptionClear();
-		}
-	}
+  if(env) {
+    jclass cls = env->GetObjectClass(jhandler_);
+    jmethodID methodID = env->GetMethodID(cls, "onAddressChange",
+      "(Lorg/cef/CefBrowser;Ljava/lang/String;)V");
+    if(methodID != 0) {
+      env->CallVoidMethod(jhandler_, methodID, jbrowser_,
+          NewJNIString(env, url));
+    }
+    
+    if(env->ExceptionOccurred()) {
+      env->ExceptionDescribe();
+      env->ExceptionClear();
+    }
+  }
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
                                   const CefString& title) {
   JNIEnv* env = GetJNIEnv();
-	if(env) {
-		jclass cls = env->GetObjectClass(jhandler_);
-		jmethodID methodID = env->GetMethodID(cls, "onTitleChange",
-			"(Lorg/cef/CefBrowser;Ljava/lang/String;)V");
-		if(methodID != 0) {
-			env->CallVoidMethod(jhandler_, methodID, jbrowser_,
-				  NewJNIString(env, title));
-		}
-		
-		if(env->ExceptionOccurred()) {
-			env->ExceptionDescribe();
-			env->ExceptionClear();
-		}
-	}
+  if(env) {
+    jclass cls = env->GetObjectClass(jhandler_);
+    jmethodID methodID = env->GetMethodID(cls, "onTitleChange",
+      "(Lorg/cef/CefBrowser;Ljava/lang/String;)V");
+    if(methodID != 0) {
+      env->CallVoidMethod(jhandler_, methodID, jbrowser_,
+          NewJNIString(env, title));
+    }
+    
+    if(env->ExceptionOccurred()) {
+      env->ExceptionDescribe();
+      env->ExceptionClear();
+    }
+  }
 }
 
 bool ClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
@@ -188,7 +188,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     browser_id_ = 0;
 
     JNIEnv* env = GetJNIEnv();
-	  if(env) {
+    if(env) {
       env->DeleteGlobalRef(jbrowser_);
       env->DeleteGlobalRef(jhandler_);
       jbrowser_ = jhandler_ = NULL;
@@ -256,23 +256,23 @@ bool ClientHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,
 
 bool ClientHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return false;
 
-	jclass cls = env->GetObjectClass(jhandler_);
+  jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "getViewRect",
-			"(Lorg/cef/CefBrowser;)Ljava/awt/Rectangle;");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;)Ljava/awt/Rectangle;");
+  if(methodID == 0)
     return false;
 
-	bool success = false;
-		
+  bool success = false;
+
   jobject retval = env->CallObjectMethod(jhandler_, methodID, jbrowser_);
-		
-	if(env->ExceptionOccurred()) {
+
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	} else if (retval) {
+    env->ExceptionClear();
+  } else if (retval) {
     rect = GetJNIRect(env, retval);
     success = true;
   }
@@ -289,27 +289,27 @@ bool ClientHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
                                    int& screenX,
                                    int& screenY) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return false;
 
-	jclass cls = env->GetObjectClass(jhandler_);
+  jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "getScreenPoint",
-			"(Lorg/cef/CefBrowser;Ljava/awt/Point;)Ljava/awt/Point;");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;Ljava/awt/Point;)Ljava/awt/Point;");
+  if(methodID == 0)
     return false;
 
-	bool success = false;
+  bool success = false;
 
   jobject point_obj = NewJNIPoint(env, viewX, viewY);
   if (point_obj == NULL)
     return false;
-		
+
   jobject retval = env->CallObjectMethod(jhandler_, methodID, jbrowser_, point_obj);
-		
-	if(env->ExceptionOccurred()) {
+
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	} else if (retval) {
+    env->ExceptionClear();
+  } else if (retval) {
     GetJNIPoint(env, retval, &screenX, &screenY);
     success = true;
   }
@@ -329,34 +329,34 @@ bool ClientHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser,
 void ClientHandler::OnPopupShow(CefRefPtr<CefBrowser> browser,
                                 bool show) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return;
 
   jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "onPopupShow",
-			"(Lorg/cef/CefBrowser;Z)V");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;Z)V");
+  if(methodID == 0)
     return;
 
   env->CallVoidMethod(jhandler_, methodID, jbrowser_,
       show ? JNI_TRUE : JNI_FALSE);
 
-	if(env->ExceptionOccurred()) {
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	}
+    env->ExceptionClear();
+  }
 }
 
 void ClientHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
                                 const CefRect& rect) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return;
 
   jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "onPopupSize",
-			"(Lorg/cef/CefBrowser;Ljava/awt/Rectangle;)V");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;Ljava/awt/Rectangle;)V");
+  if(methodID == 0)
     return;
 
   jobject rect_obj = NewJNIRect(env, rect);
@@ -366,10 +366,10 @@ void ClientHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
   env->CallVoidMethod(jhandler_, methodID, jbrowser_,
       rect_obj);
 
-	if(env->ExceptionOccurred()) {
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	}
+    env->ExceptionClear();
+  }
 
   env->DeleteLocalRef(rect_obj);
 }
@@ -381,13 +381,13 @@ void ClientHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             int width,
                             int height) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return;
 
   jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "onPaint",
-			"(Lorg/cef/CefBrowser;Z[Ljava/awt/Rectangle;Ljava/nio/ByteBuffer;II)V");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;Z[Ljava/awt/Rectangle;Ljava/nio/ByteBuffer;II)V");
+  if(methodID == 0)
     return;
 
   jobjectArray rect_array = NewJNIRectArray(env, dirtyRects);
@@ -398,10 +398,10 @@ void ClientHandler::OnPaint(CefRefPtr<CefBrowser> browser,
       type == PET_VIEW ? JNI_FALSE : JNI_TRUE,
       rect_array, direct_buffer, width, height);
 
-	if(env->ExceptionOccurred()) {
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	}
+    env->ExceptionClear();
+  }
 
   env->DeleteLocalRef(rect_array);
   env->DeleteLocalRef(direct_buffer);
@@ -410,20 +410,83 @@ void ClientHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 void ClientHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
                                    CefCursorHandle cursor) {
   JNIEnv* env = GetJNIEnv();
-	if(!env)
+  if(!env)
     return;
 
   jclass cls = env->GetObjectClass(jhandler_);
   jmethodID methodID = env->GetMethodID(cls, "onCursorChange",
-			"(Lorg/cef/CefBrowser;I)V");
-	if(methodID == 0)
+      "(Lorg/cef/CefBrowser;I)V");
+  if(methodID == 0)
     return;
 
   const int cursorId = NativeGetCursorId(cursor);
   env->CallVoidMethod(jhandler_, methodID, jbrowser_, cursorId);
 
-	if(env->ExceptionOccurred()) {
+  if(env->ExceptionOccurred()) {
     env->ExceptionDescribe();
-		env->ExceptionClear();
-	}
+    env->ExceptionClear();
+  }
+}
+
+// Called when the browser component is about to loose focus.
+void ClientHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, 
+                                bool next) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jclass cls = env->GetObjectClass(jhandler_);
+  jmethodID methodID = env->GetMethodID(cls, "onTakeFocus",
+            "(Lorg/cef/CefBrowser;Z)V");
+  if (methodID == 0)
+    return;
+
+  env->CallVoidMethod(jhandler_, methodID, jbrowser_, next);
+
+  if(env->ExceptionOccurred()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
+}
+
+// Called when the browser component is requesting focus.
+bool ClientHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
+                               FocusSource source) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jclass cls = env->GetObjectClass(jhandler_);
+  jmethodID methodID = env->GetMethodID(cls, "onSetFocus",
+            "(Lorg/cef/CefBrowser;J)Z");
+  if (methodID == 0)
+    return false;
+
+  jboolean result = env->CallBooleanMethod(jhandler_, methodID, jbrowser_, (jlong)source);
+
+  if (env->ExceptionOccurred()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
+  return (result == JNI_TRUE);
+}
+
+// Called when the browser component has received focus.
+void ClientHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jclass cls = env->GetObjectClass(jhandler_);
+  jmethodID methodID = env->GetMethodID(cls, "onGotFocus",
+            "(Lorg/cef/CefBrowser;)V");
+  if (methodID == 0)
+    return;
+
+  env->CallVoidMethod(jhandler_, methodID, jbrowser_);
+
+  if (env->ExceptionOccurred()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
 }

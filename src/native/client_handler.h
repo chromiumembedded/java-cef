@@ -20,7 +20,8 @@ class ClientHandler : public CefClient,
                       public CefLifeSpanHandler,
                       public CefLoadHandler,
                       public CefRenderHandler,
-                      public CefRequestHandler {
+                      public CefRequestHandler,
+                      public CefFocusHandler {
  public:
   ClientHandler(JNIEnv* env, jobject browser, jobject handler);
   virtual ~ClientHandler();
@@ -54,6 +55,9 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE {
+    return this;
+  }
+  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE {
     return this;
   }
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -180,6 +184,13 @@ class ClientHandler : public CefClient,
                        int height) OVERRIDE;
   virtual void OnCursorChange(CefRefPtr<CefBrowser> browser,
                               CefCursorHandle cursor) OVERRIDE;
+
+  // CefFocusHandler methods
+  virtual void OnTakeFocus(CefRefPtr<CefBrowser> browser,
+                           bool next) OVERRIDE;
+  virtual bool OnSetFocus(CefRefPtr<CefBrowser> browser,
+                          FocusSource source) OVERRIDE;
+  virtual void OnGotFocus(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
   CefRefPtr<CefBrowser> GetBrowser() { return browser_; }
   int GetBrowserId() { return browser_id_; }

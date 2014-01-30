@@ -5,8 +5,6 @@
 package org.cef;
 
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -14,10 +12,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.Canvas;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -28,6 +25,10 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.GLCapabilities;
+import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
+
+import org.cef.CefClientDelegate.FocusSource;
 
 /**
  * Client that owns a browser and renderer.
@@ -52,8 +53,38 @@ public class CefClient implements CefHandler {
       renderer_ = new CefRenderer(transparent);
       createGLCanvas();
     } else {
+      // Disabling lightweight of popup menu is required because
+      // otherwise it will be displayed behind the content of canvas_
+      JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+
       renderer_ = null;
-      canvas_ = new Canvas();
+      canvas_ = new Canvas() {
+        @Override
+        public void setBounds(int x, int y, int width, int height) {
+          super.setBounds(x, y, width, height);
+          if (browser_ != null) {
+            browser_.wasResized(width, height);
+          }
+        }
+
+        @Override
+        public void setBounds(Rectangle r) {
+          setBounds(r.x, r.y, r.width, r.height);
+        }
+
+        @Override
+        public void setSize(int width, int height) {
+          super.setSize(width, height);
+          if (browser_ != null)
+            browser_.wasResized(width, height);
+        }
+
+        @Override
+        public void setSize(Dimension d) {
+          setSize(d.width, d.height);
+        }
+      };
     }
   }
   
@@ -122,7 +153,7 @@ public class CefClient implements CefHandler {
       public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
         browser_rect_.setBounds(x, y, width, height);
         if (browser_ != null)
-          browser_.wasResized();
+          browser_.wasResized(width, height);
       }
 
       @Override
@@ -242,16 +273,18 @@ public class CefClient implements CefHandler {
       return browser_rect_;
 
     Rectangle tmp = canvas_.getBounds();
-    Container parent = canvas_.getParent();
-    while (parent != null) {
-      Container next = parent.getParent();
-      if (next != null && next instanceof Window)
-        break;
- 
-      Rectangle parentRect = parent.getBounds();
-      tmp.x += parentRect.x;
-      tmp.y += parentRect.y;
-      parent = next;
+    if (CefContext.isMacintosh()) {
+      Container parent = canvas_.getParent();
+      while (parent != null) {
+        Container next = parent.getParent();
+        if (next != null && next instanceof Window)
+          break;
+
+        Rectangle parentRect = parent.getBounds();
+        tmp.x += parentRect.x;
+        tmp.y += parentRect.y;
+        parent = next;
+      }
     }
     return tmp;
   }
@@ -296,5 +329,26 @@ public class CefClient implements CefHandler {
   public void onCursorChange(CefBrowser browser,
                              int cursorType) {
     delegate_.onCursorChange(this, new Cursor(cursorType));
+  }
+
+  @Override
+  public void onTakeFocus(CefBrowser browser, boolean next) {
+    browser.setFocus(false);
+    delegate_.onTakeFocus(this, next);
+  }
+
+  @Override
+  public boolean onSetFocus(CefBrowser browser, long source) {
+    FocusSource src = (source == 0) ? FocusSource.FOCUS_SOURCE_NAVIGATION
+                                    : FocusSource.FOCUS_SOURCE_SYSTEM;
+    boolean alreadyHandled = delegate_.onSetFocus(this,src);
+    if (!alreadyHandled)
+      canvas_.requestFocus();
+    return alreadyHandled;
+  }
+
+  @Override
+  public void onGotFocus(CefBrowser browser) {
+    delegate_.onGotFocus(this);
   }
 }
