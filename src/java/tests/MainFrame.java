@@ -5,6 +5,7 @@
 package tests;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
@@ -112,11 +113,16 @@ public class MainFrame extends JFrame implements CefClientDelegate {
   private JTextField address_field_;
   private String last_selected_file_ = "";
   private CefClient client_;
-  
+  private JMenu bookmarkMenu_;
+
   public MainFrame(boolean osrEnabled) {
     client_ = new CefClient(this, false, osrEnabled);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
-    setJMenuBar(createMenuBar());
+
+    JMenuBar menuBar = createMenuBar();
+    addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
+    addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
+    setJMenuBar(menuBar);
   }
   
   private void createBrowser() {
@@ -240,9 +246,51 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     });
     fileMenu.add(exitItem);
 
+    bookmarkMenu_ = new JMenu("Bookmarks");
+
+    JMenuItem addBookmarkItem = new JMenuItem("Add bookmark");
+    addBookmarkItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        addBookmark(getTitle(), address_field_.getText());
+      }
+    });
+    bookmarkMenu_.add(addBookmarkItem);
+    bookmarkMenu_.addSeparator();
+
     menuBar.add(fileMenu);
+    menuBar.add(bookmarkMenu_);
 
     return menuBar;
+  }
+
+  void addBookmark(String name, String URL) {
+    if (bookmarkMenu_ == null)
+      return;
+
+    // Test if the bookmark already exists. If yes, update URL
+    Component[] entries = bookmarkMenu_.getMenuComponents();
+    for (Component itemEntry : entries) {
+      if( !(itemEntry instanceof JMenuItem) )
+        continue;
+
+      JMenuItem item = (JMenuItem)itemEntry;
+      if (item.getText().equals(name)) {
+         item.setActionCommand(URL);
+         return;
+      }
+    }
+
+    JMenuItem menuItem = new JMenuItem(name);
+    menuItem.setActionCommand(URL);
+    menuItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().loadURL(e.getActionCommand());
+      }
+    });
+    bookmarkMenu_.add(menuItem);
+    validate();
   }
 
   @Override
