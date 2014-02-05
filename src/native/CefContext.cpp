@@ -48,8 +48,8 @@ class ClientApp : public CefApp {
       // due Java7 is CALayer based instead of NSLayer based.
       if (!g_use_osr)
         command_line->AppendSwitch("use-core-animation");
-    }
 #endif  // defined(OS_MACOSX)
+
       // Forward switches and arguments from Java to Cef
       bool parseSwitchesDone = false;
       for (size_t i=0;i< args_.size();i++){
