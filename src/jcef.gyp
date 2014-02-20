@@ -188,8 +188,8 @@
               'action': [
                 'install_name_tool',
                 '-change',
-                '@executable_path/libcef.dylib',
-                '@loader_path/../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
+                '@executable_path/Chromium Embedded Framework',
+                '@loader_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework',
                 '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
               ],
             },
@@ -198,7 +198,7 @@
             'libraries': [
               '<(jdk_directory)/jre/lib/libjawt.dylib',
               '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
-              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
+              '<(cef_directory)/$(CONFIGURATION)/Chromium Embedded Framework.framework/Chromium Embedded Framework',
             ],
           },
         }],
@@ -287,8 +287,8 @@
               'action': [
                 'install_name_tool',
                 '-change',
-                '@executable_path/libcef.dylib',
-                '@executable_path/../../../../Frameworks/Chromium Embedded Framework.framework/Libraries/libcef.dylib',
+                '@executable_path/Chromium Embedded Framework',
+                '@executable_path/../../../../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework',
                 '${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}'
               ],
             },
@@ -296,7 +296,7 @@
           'link_settings': {
             'libraries': [
               '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
-              '<(cef_directory)/$(CONFIGURATION)/libcef.dylib',
+              '<(cef_directory)/$(CONFIGURATION)/Chromium Embedded Framework.framework/Chromium Embedded Framework',
             ],
           },
         }],
@@ -332,22 +332,7 @@
           ],
           'copies': [
             {
-              # Add library dependencies to the bundle.
-              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
-              'files': [
-                '<(cef_directory)/Release/libcef.dylib',
-                '<(cef_directory)/Release/ffmpegsumo.so',
-              ],
-            },
-            {
-              # Add other resources to the bundle.
-              'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks/Chromium Embedded Framework.framework/',
-              'files': [
-                '<(cef_directory)/Resources/',
-              ],
-            },
-            {
-              # Add the helper app.
+              # Add libraries and helper app.
               'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks',
               'files': [
                 '<(PRODUCT_DIR)/jcef Helper.app',
@@ -363,6 +348,15 @@
             },
           ],
           'postbuilds': [   
+            {
+              'postbuild_name': 'Add framework',
+              'action': [
+                'cp',
+                '-Rf',
+                '<(cef_directory)/Release/Chromium Embedded Framework.framework',
+                '${BUILT_PRODUCTS_DIR}/<(jcef_launch_name).app/Contents/Frameworks/'
+              ],
+            },
             {
               # This postbuid step is responsible for creating the following
               # helpers:

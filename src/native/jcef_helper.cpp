@@ -19,5 +19,5 @@ int main(int argc, char* argv[]) {
   CefMainArgs main_args(argc, argv);
 #endif
 
-  return CefExecuteProcess(main_args, NULL);
+  return CefExecuteProcess(main_args, NULL, NULL);
 }

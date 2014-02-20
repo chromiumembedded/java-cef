@@ -171,6 +171,9 @@ if __name__ == '__main__':
         data = read_file(file)
         # Fix file paths.
         data = data.replace('build/mac/', 'third_party/cef/macosx64/tools/')
+        # Fix framework type.
+        data = data.replace('lastKnownFileType = text; name = "Chromium Embedded Framework";', \
+                            'explicitFileType = "compiled.mach-o.dylib"; name = "Chromium Embedded Framework";')
         # Fix target compiler.
         data = data.replace('GCC_VERSION = 4.2;', 'GCC_VERSION = com.apple.compilers.llvm.clang.1_0;')
         write_file(file, data)

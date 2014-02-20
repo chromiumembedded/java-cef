@@ -189,7 +189,8 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
 
 + (void) initialize:(SystemStub*)stub {
   // Initialize CEF
-  bool result = CefInitialize([stub args], [stub settings], [stub application]);
+  bool result = CefInitialize([stub args], [stub settings], [stub application],
+                              NULL);
   [stub setResult:result];
   // Run the application message loop.
   CefRunMessageLoop();

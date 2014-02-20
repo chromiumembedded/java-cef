@@ -29,7 +29,8 @@ static bool g_use_osr = false;
 
 class ClientApp : public CefApp {
  public:
-  explicit ClientApp(const std::string& module_dir, const std::vector<CefString> args)
+  explicit ClientApp(const std::string& module_dir,
+                     const std::vector<CefString> args)
       : module_dir_(module_dir), args_(args) {
   }
 
@@ -58,7 +59,8 @@ class ClientApp : public CefApp {
           command_line->AppendArgument(tmp);
           continue;
         }
-        // Arguments with '--', '-' and, on Windows, '/' prefixes are considered switches.
+        // Arguments with '--', '-' and, on Windows, '/' prefixes are considered
+        // switches.
         std::string cppStr = tmp.ToString();
         size_t switchCnt = cppStr.find("--") == 0 ? 2 :
 #if defined(OS_WIN)
@@ -67,19 +69,21 @@ class ClientApp : public CefApp {
                            cppStr.find("-") == 0 ? 1 : 0;
         switch (switchCnt) {
           case 2:
-            // An argument of "--" will terminate switch parsing with all subsequent tokens
+            // An argument of "--" will terminate switch parsing with all
+            // subsequent tokens
             if (cppStr.length() == 2) {
               parseSwitchesDone = true;
               continue;
             }
             // FALL THRU
           case 1: {
-            // Switches can optionally have a value specified using the '=' delimiter
-            // (e.g. "-switch=value").
+            // Switches can optionally have a value specified using the '='
+            // delimiter (e.g. "-switch=value").
             size_t equalPos = cppStr.find("=",switchCnt);
             if (equalPos != std::string::npos) {
-              command_line->AppendSwitchWithValue(cppStr.substr(switchCnt,equalPos-switchCnt),
-                                                  cppStr.substr(equalPos+1));
+              command_line->AppendSwitchWithValue(
+                  cppStr.substr(switchCnt, equalPos - switchCnt),
+                  cppStr.substr(equalPos + 1));
             } else {
               command_line->AppendSwitch(cppStr.substr(switchCnt));
             }
@@ -139,6 +143,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   CefSettings settings;
   CefString(&settings.browser_subprocess_path) = GetHelperPath(module_dir);
 
+  settings.no_sandbox = true;
+
 #if defined(OS_LINUX)
   CefString(&settings.resources_dir_path) = module_dir;
   CefString(&settings.locales_dir_path) = module_dir + "/locales";
@@ -148,10 +154,14 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   GetJNIStringArray(env, args, vals);
   CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, vals));
 #if defined(OS_MACOSX)
-  if (!g_use_osr)
-    return util_mac::CefInitializeOnMainThread(main_args, settings, client_app.get()) ? JNI_TRUE : JNI_FALSE;
+  if (!g_use_osr) {
+    return util_mac::CefInitializeOnMainThread(main_args, settings,
+                                                client_app.get()) ?
+        JNI_TRUE : JNI_FALSE;
+  }
 #endif
-  return CefInitialize(main_args, settings, client_app.get()) ? JNI_TRUE : JNI_FALSE;
+  return CefInitialize(main_args, settings, client_app.get(), NULL) ?
+      JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1Shutdown
@@ -174,8 +184,10 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
   (JNIEnv *env, jclass, jobject handler, jlong windowHandle,
    jstring url, jboolean transparent, jobject canvas) {
 #if defined(OS_MACOSX)
-  if (!g_use_osr)
-    return util_mac::CefCreateBrowserOnMainThread(handler, windowHandle, url, transparent, canvas);
+  if (!g_use_osr) {
+    return util_mac::CefCreateBrowserOnMainThread(handler, windowHandle, url,
+                                                   transparent, canvas);
+  }
 #endif
   jobject browser = NewJNIObject(env, "org/cef/CefBrowser_N");
   if (!browser)
