@@ -47,19 +47,10 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       }
     });
 
-    // OSR mode is enabled by default on Windows and Linux.
+    // OSR mode is enabled by default on Linux.
     boolean osrEnabledArg = true;
-    if (CefContext.isWindows()) {
-      // TODO(jcef): Enable OSR mode by default once issue #32 is resolved.
-      osrEnabledArg = true;
-      for (String arg : args) {
-        if (arg.toLowerCase().equals("--off-screen-rendering-disabled")) {
-          osrEnabledArg = false;
-          break;
-        }
-      }
-    } else if (CefContext.isMacintosh()) {
-      // OSR mode is disabled by default on Mac OS X.
+    if (CefContext.isWindows() || CefContext.isMacintosh()) {
+      // OSR mode is disabled by default on Windows and Mac OS X.
       osrEnabledArg = false;
       for (String arg : args) {
         if (arg.toLowerCase().equals("--off-screen-rendering-enabled")) {
