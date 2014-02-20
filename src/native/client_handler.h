@@ -8,6 +8,7 @@
 
 #include <jni.h>
 #include "include/cef_client.h"
+#include "include/wrapper/cef_message_router.h"
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient,
@@ -21,7 +22,8 @@ class ClientHandler : public CefClient,
                       public CefLoadHandler,
                       public CefRenderHandler,
                       public CefRequestHandler,
-                      public CefFocusHandler {
+                      public CefFocusHandler,
+                      public CefMessageRouterBrowserSide::Handler {
  public:
   ClientHandler(JNIEnv* env, jobject browser, jobject handler);
   virtual ~ClientHandler();
@@ -149,6 +151,10 @@ class ClientHandler : public CefClient,
                                          TerminationStatus status) OVERRIDE;
 
   // CefRequestHandler methods
+  virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame,
+                              CefRefPtr<CefRequest> request,
+                              bool is_redirect) OVERRIDE;
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
@@ -192,6 +198,17 @@ class ClientHandler : public CefClient,
                           FocusSource source) OVERRIDE;
   virtual void OnGotFocus(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
+  // CefMessageRouterBrowserSide::Handler methods
+  virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefFrame> frame,
+                       int64 query_id,
+                       const CefString& request,
+                       bool persistent,
+                       CefRefPtr<Callback> callback) OVERRIDE;
+  virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<CefFrame> frame,
+                                 int64 query_id) OVERRIDE;
+
   CefRefPtr<CefBrowser> GetBrowser() { return browser_; }
   int GetBrowserId() { return browser_id_; }
 
@@ -208,6 +225,8 @@ class ClientHandler : public CefClient,
 
   // The child browser id
   int browser_id_;
+
+  CefRefPtr<CefMessageRouterBrowserSide> message_router_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ClientHandler);

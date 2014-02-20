@@ -33,6 +33,7 @@ import javax.swing.Timer;
 import org.cef.CefClient;
 import org.cef.CefClientDelegate;
 import org.cef.CefContext;
+import org.cef.CefQueryCallback;
 
 public class MainFrame extends JFrame implements CefClientDelegate {
   public static void main(String [] args) {
@@ -112,11 +113,14 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
 
     JMenuBar menuBar = createMenuBar();
+
+    // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
+    addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
     addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
     setJMenuBar(menuBar);
   }
-  
+
   private void createBrowser() {
     client_.createBrowser("http://www.google.com");
   }
@@ -321,5 +325,26 @@ public class MainFrame extends JFrame implements CefClientDelegate {
   @Override
   public void onGotFocus(CefClient client) {
     // Currently nothing to do.
+  }
+
+  @Override
+  public void onQuery(CefClient client,
+                      long query_id,
+                      String request,
+                      boolean persistent,
+                      CefQueryCallback callback) {
+    if (request.indexOf("BindingTest:") == 0) {
+      // Reverse the message and return it to the JavaScript caller.
+      String msg = request.substring(12);
+      callback.success(new StringBuilder(msg).reverse().toString());
+    } else {
+      // Not handled.
+      callback.failure(-1, "Request not handled");
+    }
+  }
+
+  @Override
+  public void onQueryCanceled(CefClient client,
+                              long query_id) {
   }
 }

@@ -12,8 +12,9 @@ set ERRORLEVEL=1
 goto end
 )
 
-call make_jni_header.bat %1 CefContext
 call make_jni_header.bat %1 CefBrowser_N
+call make_jni_header.bat %1 CefContext
+call make_jni_header.bat %1 CefQueryCallback_N
 
 :end
 endlocal & set RC=%ERRORLEVEL%

@@ -351,4 +351,19 @@ public class CefClient implements CefHandler {
   public void onGotFocus(CefBrowser browser) {
     delegate_.onGotFocus(this);
   }
+
+  @Override
+  public void onQuery(CefBrowser browser,
+                      long query_id,
+                      String request,
+                      boolean persistent,
+                      CefQueryCallback callback) {
+    delegate_.onQuery(this, query_id, request, persistent, callback);
+  }
+
+  @Override
+  public void onQueryCanceled(CefBrowser browser,
+                              long query_id) {
+    delegate_.onQueryCanceled(this, query_id);
+  }
 }

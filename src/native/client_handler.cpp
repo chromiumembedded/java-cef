@@ -35,7 +35,8 @@ bool ClientHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
-  return false;
+  return message_router_->OnProcessMessageReceived(
+      browser, source_process,  message);
 }
 
 void ClientHandler::OnBeforeContextMenu(
@@ -171,6 +172,13 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     browser_ = browser;
     browser_id_ = browser->GetIdentifier();
   }
+
+  if (!message_router_) {
+    // Create the browser-side router for query handling.
+    CefMessageRouterConfig config;
+    message_router_ = CefMessageRouterBrowserSide::Create(config);
+    message_router_->AddHandler(this, false);
+  }
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -194,6 +202,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
       jbrowser_ = jhandler_ = NULL;
     }
   }
+
+  message_router_->OnBeforeClose(browser);
 }
 
 void ClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
@@ -228,6 +238,15 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
 
 void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                               TerminationStatus status) {
+  message_router_->OnRenderProcessTerminated(browser);
+}
+
+bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefRequest> request,
+                                   bool is_redirect) {
+  message_router_->OnBeforeBrowse(browser, frame);
+  return false;
 }
 
 CefRefPtr<CefResourceHandler> ClientHandler::GetResourceHandler(
@@ -484,6 +503,61 @@ void ClientHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
     return;
 
   env->CallVoidMethod(jhandler_, methodID, jbrowser_);
+
+  if (env->ExceptionOccurred()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
+}
+
+bool ClientHandler::OnQuery(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    int64 query_id,
+    const CefString& request,
+    bool persistent,
+    CefRefPtr<CefMessageRouterBrowserSide::Callback> callback) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jclass cls = env->GetObjectClass(jhandler_);
+  jmethodID methodID = env->GetMethodID(cls, "onQuery",
+      "(Lorg/cef/CefBrowser;JLjava/lang/String;ZLorg/cef/CefQueryCallback;)V");
+  if (methodID == 0)
+    return false;
+
+  jobject query_callback = NewJNIObject(env, "org/cef/CefQueryCallback_N");
+  if (!query_callback)
+    return false;
+  SetCefForJNIObject(env, query_callback, callback.get());
+
+  env->CallVoidMethod(jhandler_, methodID, jbrowser_, query_id,
+                      NewJNIString(env, request), (jlong)query_id,
+                      query_callback);
+
+  if (env->ExceptionOccurred()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
+
+  return true;
+}
+
+void ClientHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    int64 query_id) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jclass cls = env->GetObjectClass(jhandler_);
+  jmethodID methodID = env->GetMethodID(cls, "onQueryCanceled",
+            "(Lorg/cef/CefBrowser;J)V");
+  if (methodID == 0)
+    return;
+
+  env->CallVoidMethod(jhandler_, methodID, jbrowser_, (jlong)query_id);
 
   if (env->ExceptionOccurred()) {
     env->ExceptionDescribe();

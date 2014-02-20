@@ -37,6 +37,8 @@
         'native/CefBrowser_N.h',
         'native/CefContext.cpp',
         'native/CefContext.h',
+        'native/CefQueryCallback_N.cpp',
+        'native/CefQueryCallback_N.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
         'native/jni_util.h',

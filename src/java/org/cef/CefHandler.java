@@ -13,67 +13,67 @@ import java.nio.ByteBuffer;
  */
 
 public interface CefHandler {
-	/**
-	 * Handle creation of a new browser window.
-	 * @param browser The browser generating the event.
-	 */
-	public void onAfterCreated(CefBrowser browser);
-	
-	/**
-	 * Handle address changes.
-	 * @param browser The browser generating the event.
-	 * @param url The new address.
-	 */
-	public void onAddressChange(CefBrowser browser, String url);
-	
-	/**
-	 * Handle title changes.
-	 * @param browser The browser generating the event.
-	 * @param title The new title.
-	 */
-	public void onTitleChange(CefBrowser browser, String title);
+  /**
+   * Handle creation of a new browser window.
+   * @param browser The browser generating the event.
+   */
+  public void onAfterCreated(CefBrowser browser);
   
   /**
-	 * Retrieve the view rectangle.
-	 * @param browser The browser generating the event.
-	 * @return The view rectangle.
-	 */
-	public Rectangle getViewRect(CefBrowser browser);
+   * Handle address changes.
+   * @param browser The browser generating the event.
+   * @param url The new address.
+   */
+  public void onAddressChange(CefBrowser browser, String url);
   
   /**
-	 * Retrieve the screen point for the specified view point.
-	 * @param browser The browser generating the event.
-	 * @param viewPoint The point in the view.
-	 * @return The screen point.
-	 */
-	public Point getScreenPoint(CefBrowser browser, Point viewPoint);
+   * Handle title changes.
+   * @param browser The browser generating the event.
+   * @param title The new title.
+   */
+  public void onTitleChange(CefBrowser browser, String title);
   
   /**
-	 * Show or hide the popup window.
-	 * @param browser The browser generating the event.
-	 * @param show True if the popup window is being shown.
-	 */
-	public void onPopupShow(CefBrowser browser,
+   * Retrieve the view rectangle.
+   * @param browser The browser generating the event.
+   * @return The view rectangle.
+   */
+  public Rectangle getViewRect(CefBrowser browser);
+  
+  /**
+   * Retrieve the screen point for the specified view point.
+   * @param browser The browser generating the event.
+   * @param viewPoint The point in the view.
+   * @return The screen point.
+   */
+  public Point getScreenPoint(CefBrowser browser, Point viewPoint);
+  
+  /**
+   * Show or hide the popup window.
+   * @param browser The browser generating the event.
+   * @param show True if the popup window is being shown.
+   */
+  public void onPopupShow(CefBrowser browser,
                           boolean show);
 
   /**
-	 * Size the popup window.
-	 * @param browser The browser generating the event.
-	 * @param size Size of the popup window.
-	 */
-	public void onPopupSize(CefBrowser browser,
+   * Size the popup window.
+   * @param browser The browser generating the event.
+   * @param size Size of the popup window.
+   */
+  public void onPopupSize(CefBrowser browser,
                           Rectangle size);
 
   /**
-	 * Handle painting.
-	 * @param browser The browser generating the event.
-	 * @param popup True if painting a popup window.
-	 * @param dirtyRects Array of dirty regions.
-	 * @param buffer Pixel buffer for the whole window.
-	 * @param width Width of the buffer.
-	 * @param height Height of the buffer.
-	 */
-	public void onPaint(CefBrowser browser,
+   * Handle painting.
+   * @param browser The browser generating the event.
+   * @param popup True if painting a popup window.
+   * @param dirtyRects Array of dirty regions.
+   * @param buffer Pixel buffer for the whole window.
+   * @param width Width of the buffer.
+   * @param height Height of the buffer.
+   */
+  public void onPaint(CefBrowser browser,
                       boolean popup,
                       Rectangle[] dirtyRects,
                       ByteBuffer buffer,
@@ -81,11 +81,11 @@ public interface CefHandler {
                       int height);
 
   /**
-	 * Handle cursor changes.
-	 * @param browser The browser generating the event.
-	 * @param cursorType Cursor type.
-	 */
-	public void onCursorChange(CefBrowser browser,
+   * Handle cursor changes.
+   * @param browser The browser generating the event.
+   * @param cursorType Cursor type.
+   */
+  public void onCursorChange(CefBrowser browser,
                              int cursorType);
 
   /**
@@ -97,7 +97,7 @@ public interface CefHandler {
    *        next component and false if the browser is giving focus
    *        to the previous component.
    */
-   public void onTakeFocus(CefBrowser browser, boolean next);
+  public void onTakeFocus(CefBrowser browser, boolean next);
 
   /**
    * Called when the browser component is requesting focus.
@@ -106,11 +106,32 @@ public interface CefHandler {
    *
    * @return false to allow the focus to be set or true to cancel setting the focus.
    */
-   public boolean onSetFocus(CefBrowser browser, long source);
+  public boolean onSetFocus(CefBrowser browser, long source);
 
   /**
    * Called when the browser component has received focus.
    * @param browser The browser generating the event.
    */
   public void onGotFocus(CefBrowser browser);
+  
+  /**
+   * Called when the browser receives a JavaScript query.
+   * @param browser The browser generating the event.
+   * @param query_id The unique ID for the query.
+   * @param persistent True if the query is persistent.
+   * @param callback Object used to continue or cancel the query asynchronously.
+   */
+  public void onQuery(CefBrowser browser,
+                      long query_id,
+                      String request,
+                      boolean persistent,
+                      CefQueryCallback callback);
+
+  /**
+   * Called when a pending JavaScript query is canceled.
+   * @param browser The browser generating the event.
+   * @param query_id The unique ID for the query.
+   */
+  public void onQueryCanceled(CefBrowser browser,
+                              long query_id);
 }
