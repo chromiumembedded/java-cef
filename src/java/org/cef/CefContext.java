@@ -113,7 +113,7 @@ public class CefContext {
                   name.equalsIgnoreCase("jcef.dll"));
         }
       });
-      if (found.length != 0)
+      if (found != null && found.length != 0)
         return path;
     }
     return library_path;
