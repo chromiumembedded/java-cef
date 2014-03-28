@@ -12,12 +12,12 @@ package org.cef;
 public abstract class CefDisplayHandlerAdapter implements CefDisplayHandler {
 
   @Override
-  public void onAddressChange(CefClient client, String url) {
+  public void onAddressChange(CefBrowser browser, String url) {
     return;
   }
 
   @Override
-  public void onTitleChange(CefClient client, String title) {
+  public void onTitleChange(CefBrowser browser, String title) {
     return;
   }
 }

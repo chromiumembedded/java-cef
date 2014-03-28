@@ -21,14 +21,8 @@ public class CefContext {
   };
   private static OSType osType = OSType.OSUndefined;
 
-  /**
-   * Initialize the context.
-   * @return true on success
-   */
-  public static final boolean initialize(String cachePath, boolean osr, String[] args) {
-    String library_path = getJcefLibPath();
-    System.out.println("initialize on " + Thread.currentThread() +
-                       " with library path " + library_path);
+  private static String library_path = getJcefLibPath();
+  public static final void loadLibraries() {
     try {
       if (isWindows()) {
         System.loadLibrary("icudt");
@@ -40,12 +34,20 @@ public class CefContext {
       } else if (isMacintosh()) {
         System.loadLibrary("jcef");
       }
-      return N_Initialize(library_path, cachePath, osr, args);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
+      System.exit(0);
     }
-    System.exit(0);
-    return false;
+  }
+
+  /**
+   * Initialize the context.
+   * @return true on success
+   */
+  public static final boolean initialize(String cachePath, boolean osr, String[] args) {
+    System.out.println("initialize on " + Thread.currentThread() +
+                       " with library path " + library_path);
+    return N_Initialize(library_path, cachePath, osr, args);
   }
 
   /**
@@ -75,7 +77,7 @@ public class CefContext {
   /**
    * Create a new browser.
    */
-  public static final CefBrowser createBrowser(CefHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas) {
+  public static final CefBrowser createBrowser(CefClientHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas) {
     try {
       return N_CreateBrowser(handler, windowHandle, url, transparent, canvas);
     } catch (UnsatisfiedLinkError err) {
@@ -149,6 +151,6 @@ public class CefContext {
   private static final native boolean N_Initialize(String pathToJavaDLL, String cachePath, boolean osr, String[] args);
   private static final native void N_Shutdown();
   private static final native void N_DoMessageLoopWork();
-  private static final native CefBrowser N_CreateBrowser(CefHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas);
+  private static final native CefBrowser N_CreateBrowser(CefClientHandler handler, long windowHandle, String url, boolean transparent, Canvas canvas);
   private static final native long N_GetWindowHandle(long surfaceHandle);
 }

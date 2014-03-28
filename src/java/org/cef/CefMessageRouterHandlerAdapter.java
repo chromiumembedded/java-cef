@@ -12,16 +12,16 @@ package org.cef;
 public abstract class CefMessageRouterHandlerAdapter implements CefMessageRouterHandler {
 
   @Override
-  public void onQuery(CefClient client, 
-                      long query_id, 
-                      String request,
-                      boolean persistent,
-                      CefQueryCallback callback) {
-    return;
+  public boolean onQuery(CefBrowser browser, 
+                         long query_id, 
+                         String request,
+                         boolean persistent,
+                         CefQueryCallback callback) {
+    return false;
   }
 
   @Override
-  public void onQueryCanceled(CefClient client,
+  public void onQueryCanceled(CefBrowser browser,
                               long query_id) {
     return;
   }

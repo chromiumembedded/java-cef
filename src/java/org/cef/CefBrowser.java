@@ -12,7 +12,7 @@ import java.awt.Rectangle;
 /**
  * Interface representing a browser.
  */
-public interface CefBrowser {
+public interface CefBrowser extends CefNative {
   /**
    * Close the browser.
    */

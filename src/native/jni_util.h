@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <vector>
 #include "include/cef_base.h"
+#include "include/cef_browser.h"
 #include "util.h"
 
 // Set the global JVM reference.
@@ -101,6 +102,10 @@ bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y);
 // Create a new java.awt.Point.
 jobject NewJNIPoint(JNIEnv* env, int x, int y);
 
+// Get java browser counterpart
+jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
+
+jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname);
 
 // Helper macros for defining and retrieving static ints.
 #define JNI_STATIC(name) _static_##name
@@ -114,42 +119,67 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y);
       !GetJNIFieldStaticInt(env, cls, #name, &JNI_STATIC(name))) \
     return rv;
 
+// Helper macros to call a method on the java side
+#define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...) { \
+  if (env) { \
+    jclass cls = env->GetObjectClass(obj); \
+    jmethodID methodId = env->GetMethodID(cls, method, sig); \
+    if (methodId != NULL) { \
+      storeIn = env->Call ## type ## Method(obj, methodId, ##__VA_ARGS__); \
+    } \
+    if (env->ExceptionOccurred()) { \
+      env->ExceptionDescribe(); \
+      env->ExceptionClear(); \
+    } \
+  } \
+}
+
+#define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...) { \
+  if (env) {\
+    jclass cls = env->GetObjectClass(obj); \
+    jmethodID methodId = env->GetMethodID(cls, method, sig); \
+    if (methodId != NULL) { \
+      env->CallVoidMethod(obj, methodId, ##__VA_ARGS__); \
+    } \
+    if (env->ExceptionOccurred()) { \
+      env->ExceptionDescribe(); \
+      env->ExceptionClear(); \
+    } \
+  } \
+}
 
 // Set the CEF base object for an existing JNI object. A reference will be
 // added to the base object. If a previous base object existed a reference
 // will be removed from that object.
 template <class T>
-bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base) {
-  jclass cls = env->GetObjectClass(obj);
-  jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
-  if (field) {
-    T* oldbase = reinterpret_cast<T*>(env->GetLongField(obj, field));
-    if(oldbase) {
-      // Remove a reference from the previous base object.
-      oldbase->Release();
-    }
+bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName) {
+  jstring identifer = env->NewStringUTF(varName);
+  jlong previousValue = 0;
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
 
-    env->SetLongField(obj, field, (jlong)base);
-    if(base) {
-      // Add a reference to the new base object.
-      base->AddRef();
-    }
-    return true;
+  T* oldbase = reinterpret_cast<T*>(previousValue);
+  if(oldbase) {
+    // Remove a reference from the previous base object.
+    oldbase->Release();
   }
 
-  env->ExceptionClear();
-  return false;
+  JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V", identifer, (jlong)base);
+  if(base) {
+    // Add a reference to the new base object.
+    base->AddRef();
+  }
+  return true;
 }
 
 // Retrieve the CEF base object from an existing JNI object.
 template <class T>
-T* GetCefFromJNIObject(JNIEnv* env, jobject obj) {
-  jclass cls = env->GetObjectClass(obj);
-  jfieldID field = env->GetFieldID(cls, "N_CefHandle", "J");
-  if (field)
-    return reinterpret_cast<T*>(env->GetLongField(obj, field));
+T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
+  jstring identifer = env->NewStringUTF(varName);
+  jlong previousValue = 0;
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
 
-  env->ExceptionClear();
+  if (previousValue != 0)
+    return reinterpret_cast<T*>(previousValue);
   return NULL;
 }
 

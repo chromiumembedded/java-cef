@@ -2,10 +2,10 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "client_handler.h"
+#include "render_handler.h"
 #include "jni_util.h"
 
-int ClientHandler::NativeGetCursorId(CefCursorHandle cursor) {
+int RenderHandler::NativeGetCursorId(CefCursorHandle cursor) {
   JNIEnv* env = GetJNIEnv();
   if(!env)
     return 0;

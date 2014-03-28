@@ -12,16 +12,16 @@ package org.cef;
 public abstract class CefFocusHandlerAdapter implements CefFocusHandler {
 
   @Override
-  public void onTakeFocus(CefClient client, boolean next) {
+  public void onTakeFocus(CefBrowser browser, boolean next) {
     return;
   }
 
   @Override
-  public boolean onSetFocus(CefClient client, FocusSource source) {
+  public boolean onSetFocus(CefBrowser browser, FocusSource source) {
     return false;
   }
 
   @Override
-  public void onGotFocus(CefClient client) {
+  public void onGotFocus(CefBrowser browser) {
   }
 }

@@ -12,15 +12,15 @@ public interface CefDisplayHandler {
 
   /**
    * Handle address changes.
-   * @param client The client generating the event.
+   * @param browser The browser generating the event.
    * @param url The new address.
    */
-  public void onAddressChange(CefClient client, String url);
+  public void onAddressChange(CefBrowser browser, String url);
 
   /**
    * Handle title changes.
-   * @param client The client generating the event.
+   * @param browser The browser generating the event.
    * @param title The new title.
    */
-  public void onTitleChange(CefClient client, String title);
+  public void onTitleChange(CefBrowser browser, String title);
 }

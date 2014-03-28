@@ -9,25 +9,25 @@
 JNIEXPORT void JNICALL Java_org_cef_CefQueryCallback_1N_N_1Success
   (JNIEnv *env, jobject obj, jstring response) {
   CefRefPtr<CefMessageRouterBrowserSide::Callback> callback =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj);
+      GetCefFromJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, "CefQueryCallback");
   if(!callback.get())
     return;
 
   callback->Success(GetJNIString(env, response));
 
   // Clear the reference added in ClientHandler::OnQuery.
-  SetCefForJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, NULL);
+  SetCefForJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, NULL, "CefQueryCallback");
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefQueryCallback_1N_N_1Failure
   (JNIEnv *env, jobject obj, jint error_code, jstring error_message) {
   CefRefPtr<CefMessageRouterBrowserSide::Callback> callback =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj);
+      GetCefFromJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, "CefQueryCallback");
   if(!callback.get())
     return;
 
   callback->Failure(error_code, GetJNIString(env, error_message));
 
   // Clear the reference added in ClientHandler::OnQuery.
-  SetCefForJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, NULL);
+  SetCefForJNIObject<CefMessageRouterBrowserSide::Callback>(env, obj, NULL, "CefQueryCallback");
 }

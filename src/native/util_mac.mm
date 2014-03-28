@@ -12,6 +12,7 @@
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
 #include "client_handler.h"
+#include "render_handler.h"
 #include "jni_util.h"
 
 namespace {
@@ -209,16 +210,20 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
   BEGIN_ENV(env)
   jobject browser = NewJNIObject(env, "org/cef/CefBrowser_N");
   if (browser) {
-    g_client_handler = new ClientHandler(env, browser, [stub cefClient]);
+    g_client_handler = GetCefFromJNIObject<ClientHandler>(env, [stub cefClient], "CefClientHandler");
+    g_client_handler->SetJBrowser(browser);
     CefWindowInfo windowInfo;
     if (![stub canvas]) {
       windowInfo.SetAsOffScreen((CefWindowHandle)[stub windowHandle]);
       windowInfo.SetTransparentPainting([stub transparent]);
     } else {
       CefRect rect;
-      g_client_handler->GetViewRect(NULL, rect);
-      int screenX, screenY;
-      g_client_handler->GetScreenPoint(NULL, rect.x, rect.y, screenX, screenY);
+      CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)g_client_handler->GetRenderHandler().get();
+      if (renderHandler.get()) {
+        renderHandler->GetViewRect(NULL, rect);
+        int screenX, screenY;
+        renderHandler->GetScreenPoint(NULL, rect.x, rect.y, screenX, screenY);
+      }
       NSWindow* window = (NSWindow*)[stub windowHandle];
       NSView* parentView = [window contentView];
       NSRect bounds = [parentView bounds];
@@ -240,7 +245,7 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
       [browserView setWantsLayer:YES];
       AddLayerToComponent([stub canvas], env, browserView);
     }
-    SetCefForJNIObject(env, browser, browserObj.get());
+    SetCefForJNIObject(env, browser, browserObj.get(), "CefBrowser");
   }
   [stub setResult:browser];
   END_ENV(env)

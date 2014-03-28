@@ -3,6 +3,7 @@
 // can be found in the LICENSE file.
 
 #include "jni_util.h"
+#include "client_handler.h"
 #include <jawt.h>
 #include "util.h"
 
@@ -275,4 +276,27 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y) {
 
   env->DeleteLocalRef(obj);
   return NULL;
+}
+
+jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return NULL;
+  CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
+  return client->GetJBrowser();
+}
+
+jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname) {
+  jclass sourceCls = env->FindClass(class_name);
+  if (!sourceCls)
+    return NULL;
+
+  std::string tmp;
+  tmp.append("L").append(class_name).append(";");
+
+  jfieldID fieldId = env->GetStaticFieldID(sourceCls, enum_valname, tmp.c_str());
+  if (!fieldId)
+    return NULL;
+
+  jobject jsource = env->GetStaticObjectField(sourceCls, fieldId);
+  return jsource;
 }

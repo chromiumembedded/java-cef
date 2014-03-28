@@ -2,13 +2,11 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "client_handler.h"
-
-#import <Cocoa/Cocoa.h>
-
+#include "render_handler.h"
+#include <gdk/gdk.h>
 #include "jni_util.h"
 
-int ClientHandler::NativeGetCursorId(CefCursorHandle cursor) {
+int RenderHandler::NativeGetCursorId(CefCursorHandle cursor) {
   JNIEnv* env = GetJNIEnv();
   if(!env)
     return 0;
@@ -32,23 +30,39 @@ int ClientHandler::NativeGetCursorId(CefCursorHandle cursor) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, W_RESIZE_CURSOR, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, WAIT_CURSOR, 0);
 
-  if ([cursor isEqual: [NSCursor IBeamCursor]])
-    return JNI_STATIC(TEXT_CURSOR);
-  if ([cursor isEqual: [NSCursor crosshairCursor]])
-    return JNI_STATIC(CROSSHAIR_CURSOR);
-  if ([cursor isEqual: [NSCursor dragCopyCursor]] ||
-      [cursor isEqual: [NSCursor dragLinkCursor]])
-    return JNI_STATIC(MOVE_CURSOR);
-  if ([cursor isEqual: [NSCursor pointingHandCursor]])
-    return JNI_STATIC(HAND_CURSOR);
-  if ([cursor isEqual: [NSCursor resizeLeftCursor]])
-    return JNI_STATIC(W_RESIZE_CURSOR);
-  if ([cursor isEqual: [NSCursor resizeRightCursor]])
-    return JNI_STATIC(E_RESIZE_CURSOR);
-  if ([cursor isEqual: [NSCursor resizeUpCursor]])
-    return JNI_STATIC(N_RESIZE_CURSOR);
-  if ([cursor isEqual: [NSCursor resizeDownCursor]])
-    return JNI_STATIC(S_RESIZE_CURSOR);
+  const GdkCursorType cursor_type = gdk_cursor_get_cursor_type(cursor);
+  switch (cursor_type) {
+    case GDK_CROSSHAIR:
+      return JNI_STATIC(CROSSHAIR_CURSOR);
+    case GDK_RIGHT_SIDE:
+      return JNI_STATIC(E_RESIZE_CURSOR);
+    case GDK_HAND1:
+    case GDK_HAND2:
+      return JNI_STATIC(HAND_CURSOR);
+    case GDK_FLEUR:
+      return JNI_STATIC(MOVE_CURSOR);
+    case GDK_TOP_SIDE:
+      return JNI_STATIC(N_RESIZE_CURSOR);
+    case GDK_TOP_RIGHT_CORNER:
+      return JNI_STATIC(NE_RESIZE_CURSOR);
+    case GDK_TOP_LEFT_CORNER:
+      return JNI_STATIC(NW_RESIZE_CURSOR);
+    case GDK_BOTTOM_SIDE:
+      return JNI_STATIC(S_RESIZE_CURSOR);
+    case GDK_BOTTOM_RIGHT_CORNER:
+      return JNI_STATIC(SE_RESIZE_CURSOR);
+    case GDK_BOTTOM_LEFT_CORNER:
+      return JNI_STATIC(SW_RESIZE_CURSOR);
+    case GDK_XTERM:
+      return JNI_STATIC(TEXT_CURSOR);
+    case GDK_LEFT_SIDE:
+      return JNI_STATIC(W_RESIZE_CURSOR);
+    case GDK_WATCH:
+      return JNI_STATIC(WAIT_CURSOR);
+    default:
+      break;
+  }
 
   return JNI_STATIC(DEFAULT_CURSOR);
 }
+

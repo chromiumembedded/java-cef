@@ -6,7 +6,6 @@ package tests;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,15 +28,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.cef.CefBrowser;
 import org.cef.CefClient;
 import org.cef.CefDisplayHandler;
 import org.cef.CefContext;
 import org.cef.CefFocusHandlerAdapter;
 import org.cef.CefMessageRouterHandler;
 import org.cef.CefQueryCallback;
-import org.cef.CefRenderHandler;
 
-public class MainFrame extends JFrame implements CefDisplayHandler, CefRenderHandler, CefMessageRouterHandler {
+public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRouterHandler {
   private static MainFrame frame_;
   public static void main(String [] args) {
     // Timer used to pump the CEF message loop in osr mode.
@@ -50,6 +49,9 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefRenderHan
         });
       }
     });
+
+    // load required native libraries
+    CefContext.loadLibraries();
 
     // OSR mode is enabled by default on Linux.
     boolean osrEnabledArg = true;
@@ -115,10 +117,9 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefRenderHan
     client_ = new CefClient(false, osrEnabled);
     client_.addDisplayHandler(this);
     client_.addMessageRouterHandler(this);
-    client_.addRenderHandler(this);
     client_.addFocusHandler(new CefFocusHandlerAdapter() {
       @Override
-      public void onTakeFocus(CefClient client, boolean next) {
+      public void onTakeFocus(CefBrowser browser, boolean next) {
         FocusTraversalPolicy policy = getFocusTraversalPolicy();
         if (policy == null)
           return;
@@ -309,38 +310,34 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefRenderHan
   }
 
   @Override
-  public void onAddressChange(CefClient client, String url) {
+  public void onAddressChange(CefBrowser browser, String url) {
     address_field_.setText(url);
   }
 
   @Override
-  public void onTitleChange(CefClient client, String title) {
+  public void onTitleChange(CefBrowser browser, String title) {
     setTitle(title);
-  }
-  
-  @Override
-  public void onCursorChange(CefClient client, Cursor cursor) {
-    setCursor(cursor);
   }
 
   @Override
-  public void onQuery(CefClient client,
-                      long query_id,
-                      String request,
-                      boolean persistent,
-                      CefQueryCallback callback) {
+  public boolean onQuery(CefBrowser browser,
+                         long query_id,
+                         String request,
+                         boolean persistent,
+                         CefQueryCallback callback) {
     if (request.indexOf("BindingTest:") == 0) {
       // Reverse the message and return it to the JavaScript caller.
       String msg = request.substring(12);
       callback.success(new StringBuilder(msg).reverse().toString());
-    } else {
-      // Not handled.
-      callback.failure(-1, "Request not handled");
+      return true;
     }
+    // Not handled.
+    callback.failure(-1, "Request not handled");
+    return false;
   }
 
   @Override
-  public void onQueryCanceled(CefClient client,
+  public void onQueryCanceled(CefBrowser browser,
                               long query_id) {
   }
 }

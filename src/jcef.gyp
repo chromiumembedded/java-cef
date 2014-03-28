@@ -39,8 +39,20 @@
         'native/CefContext.h',
         'native/CefQueryCallback_N.cpp',
         'native/CefQueryCallback_N.h',
+        'native/CefClientHandler.cpp',
+        'native/CefClientHandler.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
+        'native/display_handler.cpp',
+        'native/display_handler.h',
+        'native/focus_handler.cpp',
+        'native/focus_handler.h',
+        'native/life_span_handler.cpp',
+        'native/life_span_handler.h',
+        'native/message_router_handler.cpp',
+        'native/message_router_handler.h',
+        'native/render_handler.cpp',
+        'native/render_handler.h',
         'native/jni_util.h',
         'native/jni_util.cpp',
         'native/util.h',
@@ -56,7 +68,7 @@
       'conditions': [
         ['OS=="win"', {
           'sources': [
-            'native/client_handler_win.cpp',
+            'native/render_handler_win.cpp',
             'native/jni_util_win.cpp',
             'native/jcef_dll.rc',
           ],
@@ -117,7 +129,7 @@
             '<(cef_directory)/cefclient.gyp:gtk',
           ],
           'sources': [
-            'native/client_handler_gtk.cpp',
+            'native/render_handler_gtk.cpp',
           ],
           'include_dirs': [
             '<(jdk_directory)/include',
@@ -175,7 +187,7 @@
         ['OS=="mac"', {
           'product_name': 'jcef',
           'sources': [
-            'native/client_handler_mac.mm',
+            'native/render_handler_mac.mm',
             'native/jni_util_mac.mm',
             'native/util_mac.h',
             'native/util_mac.mm',

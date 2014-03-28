@@ -10,6 +10,7 @@
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
 #include "client_handler.h"
+#include "render_handler.h"
 #include "jni_util.h"
 #include "util.h"
 
@@ -195,13 +196,18 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
 
   CefRefPtr<CefBrowser> browserObj;
 
-  CefRefPtr<ClientHandler> client = new ClientHandler(env, browser, handler);
+  CefRefPtr<ClientHandler> client = GetCefFromJNIObject<ClientHandler>(env, handler, "CefClientHandler");
+  client->SetJBrowser(browser);
+
   CefWindowInfo windowInfo;
 #if defined(OS_WIN)
   if (!g_use_osr) {
     HWND parent = GetHwndOfCanvas(canvas, env);
     CefRect rect;
-    client->GetViewRect(NULL, rect);
+    CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)client->GetRenderHandler().get();
+    if (renderHandler.get()) {
+      renderHandler->GetViewRect(NULL, rect);
+    }
     RECT winRect = {0,0, rect.width, rect.height};
     windowInfo.SetAsChild(parent,winRect);
   }
@@ -216,7 +222,7 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
   browserObj = CefBrowserHost::CreateBrowserSync(windowInfo, client.get(),
                                                  GetJNIString(env, url),
                                                  settings, NULL);
-  SetCefForJNIObject(env, browser, browserObj.get());
+  SetCefForJNIObject(env, browser, browserObj.get(), "CefBrowser");
 
   return browser;
 }

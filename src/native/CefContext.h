@@ -34,7 +34,7 @@ JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1DoMessageLoopWork
 /*
  * Class:     org_cef_CefContext
  * Method:    N_CreateBrowser
- * Signature: (Lorg/cef/CefHandler;JLjava/lang/String;ZLjava/awt/Canvas;)Lorg/cef/CefBrowser;
+ * Signature: (Lorg/cef/CefClientHandler;JLjava/lang/String;ZLjava/awt/Canvas;)Lorg/cef/CefBrowser;
  */
 JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
   (JNIEnv *, jclass, jobject, jlong, jstring, jboolean, jobject);

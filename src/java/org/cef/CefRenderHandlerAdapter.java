@@ -4,7 +4,9 @@
 
 package org.cef;
 
-import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.nio.ByteBuffer;
 
 /**
  * An abstract adapter class for receiving render events. 
@@ -14,8 +16,37 @@ import java.awt.Cursor;
 public abstract class CefRenderHandlerAdapter implements CefRenderHandler {
 
   @Override
-  public void onCursorChange(CefClient client, 
-                             Cursor cursor) {
+  public void onCursorChange(CefBrowser browser, 
+                             int cursorIdentifer) {
     return;
+  }
+
+  @Override
+  public Rectangle getViewRect(CefBrowser browser) {
+    return new Rectangle(0,0,0,0);
+  }
+
+  @Override
+  public Point getScreenPoint(CefBrowser browser, Point viewPoint) {
+    return new Point(0,0);
+  }
+
+  @Override
+  public void onPopupShow(CefBrowser browser, 
+                          boolean show) {
+  }
+
+  @Override
+  public void onPopupSize(CefBrowser browser, 
+                          Rectangle size) {
+  }
+
+  @Override
+  public void onPaint(CefBrowser browser, 
+                      boolean popup,
+                      Rectangle[] dirtyRects, 
+                      ByteBuffer buffer, 
+                      int width, 
+                      int height) {
   }
 }
