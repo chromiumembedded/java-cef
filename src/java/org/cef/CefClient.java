@@ -359,6 +359,32 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   }
 
   @Override
+  public boolean onTooltip(CefBrowser browser, String text) {
+    if (displayHandler_ != null) {
+      return displayHandler_.onTooltip(browser, text);
+    }
+    return false;
+  }
+
+  @Override
+  public void onStatusMessage(CefBrowser browser, String value) {
+    if (displayHandler_ != null) {
+      displayHandler_.onStatusMessage(browser, value);
+    }
+  }
+
+  @Override
+  public boolean onConsoleMessage(CefBrowser browser,
+                                  String message,
+                                  String source,
+                                  int line) {
+    if (displayHandler_ != null) {
+      return displayHandler_.onConsoleMessage(browser, message, source, line);
+    }
+    return false;
+  }
+
+  @Override
   public Rectangle getViewRect(CefBrowser browser) {
     if (osr_enabled_)
       return browser_rect_;

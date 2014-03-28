@@ -20,4 +20,22 @@ public abstract class CefDisplayHandlerAdapter implements CefDisplayHandler {
   public void onTitleChange(CefBrowser browser, String title) {
     return;
   }
+
+  @Override
+  public boolean onTooltip(CefBrowser browser, String text) {
+    return false;
+  }
+
+  @Override
+  public void onStatusMessage(CefBrowser browser, String value) {
+    return;
+  }
+
+  @Override
+  public boolean onConsoleMessage(CefBrowser browser,
+                                  String message,
+                                  String source,
+                                  int line) {
+    return false;
+  }
 }

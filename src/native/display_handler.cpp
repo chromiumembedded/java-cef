@@ -44,18 +44,48 @@ void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
 
 bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser,
                        CefString& text) {
-  return false;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+  jboolean jreturn = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "onTooltip",
+                  "(Lorg/cef/CefBrowser;Ljava/lang/String;)Z",
+                  Boolean,
+                  jreturn,
+                  GetJNIBrowser(browser),
+                  NewJNIString(env, text));
+  return jreturn == JNI_TRUE ? true : false;
 }
 
 void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
                              const CefString& value) {
-  return;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "onStatusMessage",
+                       "(Lorg/cef/CefBrowser;Ljava/lang/String;)V",
+                       GetJNIBrowser(browser),
+                       NewJNIString(env, value));
 }
 
 bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                               const CefString& message,
                               const CefString& source,
                               int line) {
-  REQUIRE_UI_THREAD();
-  return false;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+  jboolean jreturn = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "onConsoleMessage",
+                  "(Lorg/cef/CefBrowser;Ljava/lang/String;Ljava/lang/String;I)Z",
+                  Boolean,
+                  jreturn,
+                  GetJNIBrowser(browser),
+                  NewJNIString(env, message),
+                  NewJNIString(env, source),
+                  line );
+  return jreturn == JNI_TRUE ? true : false;
 }

@@ -23,4 +23,35 @@ public interface CefDisplayHandler {
    * @param title The new title.
    */
   public void onTitleChange(CefBrowser browser, String title);
+
+  /**
+   * Called when the browser is about to display a tooltip.
+   *
+   * @param browser The browser generating the event.
+   * @param text Contains the text that will be displayed in the tooltip.
+   * @return To handle the display of the tooltip yourself return true.
+   */
+  public boolean onTooltip(CefBrowser browser, String text);
+
+  /**
+   * Called when the browser receives a status message. 
+   *
+   * @param browser The browser generating the event.
+   * @param value Contains the text that will be displayed in the status message.
+   */
+  public void onStatusMessage(CefBrowser browser, String value);
+
+  /**
+   * Called to display a console message.
+   *
+   * @param browser The browser generating the event.
+   * @param message 
+   * @param source
+   * @param line
+   * @return true to stop the message from being output to the console.
+   */
+  public boolean onConsoleMessage(CefBrowser browser,
+                                  String message,
+                                  String source,
+                                  int line);
 }

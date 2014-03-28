@@ -118,6 +118,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   private JButton backButton_;
   private JButton forwardButton_;
   private JProgressBar progressBar_;
+  private JLabel status_field_;
 
   public MainFrame(boolean osrEnabled) {
     client_ = new CefClient(false, osrEnabled);
@@ -260,6 +261,11 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     bottomPanel.add(progressBar_);
     bottomPanel.add(Box.createHorizontalStrut(5));
 
+    status_field_ = new JLabel("Info");
+    status_field_.setAlignmentX(LEFT_ALIGNMENT);
+    bottomPanel.add(status_field_);
+    bottomPanel.add(Box.createHorizontalStrut(5));
+
     return bottomPanel;
   }
 
@@ -351,6 +357,24 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   @Override
   public void onTitleChange(CefBrowser browser, String title) {
     setTitle(title);
+  }
+
+  @Override
+  public boolean onTooltip(CefBrowser browser, String text) {
+    return false;
+  }
+
+  @Override
+  public void onStatusMessage(CefBrowser browser, String value) {
+    status_field_.setText(value);
+  }
+
+  @Override
+  public boolean onConsoleMessage(CefBrowser browser,
+                                  String message,
+                                  String source,
+                                  int line) {
+    return false;
   }
 
   @Override
