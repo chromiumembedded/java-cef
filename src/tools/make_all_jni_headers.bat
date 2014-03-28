@@ -14,7 +14,8 @@ goto end
 
 call make_jni_header.bat %1 CefBrowser_N
 call make_jni_header.bat %1 CefClientHandler
-call make_jni_header.bat %1 CefContext
+call make_jni_header.bat %1 CefCommandLine_N
+call make_jni_header.bat %1 CefApp
 call make_jni_header.bat %1 CefQueryCallback_N
 
 :end

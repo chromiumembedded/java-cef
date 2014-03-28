@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "CefContext.h"
+#include "CefApp.h"
 
 #include <string>
 
@@ -31,13 +31,44 @@ static bool g_use_osr = false;
 class ClientApp : public CefApp {
  public:
   explicit ClientApp(const std::string& module_dir,
-                     const std::vector<CefString> args)
-      : module_dir_(module_dir), args_(args) {
+                     const jobject app_handler)
+      : module_dir_(module_dir), app_handler_(NULL) {
+    JNIEnv *env = GetJNIEnv();
+    if (env)
+      app_handler_ = env->NewGlobalRef(app_handler);
+  }
+
+  virtual ~ClientApp() {
+    if (!app_handler_)
+      return;
+    BEGIN_ENV(env)
+    env->DeleteGlobalRef(app_handler_);
+    END_ENV(env)
   }
 
   virtual void OnBeforeCommandLineProcessing(
       const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE {
+    // If the java code has registered an AppHandler, we'll forward
+    // the commandline processing to it before we append the essential
+    // switches "locale_pak" and "use-core-animation".
+    if (app_handler_ != NULL && process_type.empty()) {
+      BEGIN_ENV(env)
+      jstring jprocess_type = NewJNIString(env, process_type);
+      jobject jcommand_line = NewJNIObject(env, "org/cef/CefCommandLine_N");
+      if (jcommand_line != NULL) {
+        SetCefForJNIObject(env, jcommand_line, command_line.get(), "CefCommandLine");
+        JNI_CALL_VOID_METHOD(env,
+                             app_handler_,
+                             "onBeforeCommandLineProcessing",
+                             "(Ljava/lang/String;Lorg/cef/CefCommandLine;)V",
+                             jprocess_type,
+                             jcommand_line);
+        SetCefForJNIObject<CefCommandLine>(env, jcommand_line, NULL, "CefCommandLine");
+      }
+      END_ENV(env)
+    }
+
     if (process_type.empty()) {
 #if defined(OS_MACOSX)
       // Specify a path for the locale.pak file because CEF will fail to locate
@@ -51,56 +82,15 @@ class ClientApp : public CefApp {
       if (!g_use_osr)
         command_line->AppendSwitch("use-core-animation");
 #endif  // defined(OS_MACOSX)
-
-      // Forward switches and arguments from Java to Cef
-      bool parseSwitchesDone = false;
-      for (size_t i=0;i< args_.size();i++){
-        CefString tmp = args_.at(i);
-        if (parseSwitchesDone || tmp.length() < 2) {
-          command_line->AppendArgument(tmp);
-          continue;
-        }
-        // Arguments with '--', '-' and, on Windows, '/' prefixes are considered
-        // switches.
-        std::string cppStr = tmp.ToString();
-        size_t switchCnt = cppStr.find("--") == 0 ? 2 :
-#if defined(OS_WIN)
-                           cppStr.find("/") == 0 ? 1 :
-#endif
-                           cppStr.find("-") == 0 ? 1 : 0;
-        switch (switchCnt) {
-          case 2:
-            // An argument of "--" will terminate switch parsing with all
-            // subsequent tokens
-            if (cppStr.length() == 2) {
-              parseSwitchesDone = true;
-              continue;
-            }
-            // FALL THRU
-          case 1: {
-            // Switches can optionally have a value specified using the '='
-            // delimiter (e.g. "-switch=value").
-            size_t equalPos = cppStr.find("=",switchCnt);
-            if (equalPos != std::string::npos) {
-              command_line->AppendSwitchWithValue(
-                  cppStr.substr(switchCnt, equalPos - switchCnt),
-                  cppStr.substr(equalPos + 1));
-            } else {
-              command_line->AppendSwitch(cppStr.substr(switchCnt));
-            }
-            break;
-          }
-          case 0:
-            command_line->AppendArgument(tmp);
-            break;
-        }
-      }
     }
   }
 
+  // TODO(jcef): Extend this class to be able to handle all methods of
+  // CefApp within the the Java world (see CefAppHandler.java).
+
  private:
   std::string module_dir_;
-  std::vector<CefString> args_;
+  jobject app_handler_;
 
   IMPLEMENT_REFCOUNTING(ClientApp);
 };
@@ -119,9 +109,9 @@ std::string GetHelperPath(const std::string& module_dir) {
 }  // namespace
 
 
-JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
-  (JNIEnv *env, jclass c, jstring argPathToJavaDLL, jstring cachePath,
-   jboolean osrEnabled, jobjectArray args) {
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
+  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler,
+   jstring cachePath, jboolean osrEnabled) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -151,9 +141,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
   CefString(&settings.locales_dir_path) = module_dir + "/locales";
 #endif
 
-  std::vector<CefString> vals;
-  GetJNIStringArray(env, args, vals);
-  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, vals));
+  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));
 #if defined(OS_MACOSX)
   if (!g_use_osr) {
     return util_mac::CefInitializeOnMainThread(main_args, settings,
@@ -165,8 +153,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefContext_N_1Initialize
       JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1Shutdown
-  (JNIEnv *env, jclass) {
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
+  (JNIEnv *env, jobject) {
 #if defined(OS_MACOSX)
   if (!g_use_osr) {
     util_mac::CefQuitMessageLoopOnMainThread();
@@ -176,13 +164,13 @@ JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1Shutdown
   CefShutdown();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefContext_N_1DoMessageLoopWork
-  (JNIEnv *env, jclass) {
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
+  (JNIEnv *env, jobject) {
   CefDoMessageLoopWork();
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
-  (JNIEnv *env, jclass, jobject handler, jlong windowHandle,
+JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1CreateBrowser
+  (JNIEnv *env, jobject, jobject handler, jlong windowHandle,
    jstring url, jboolean transparent, jobject canvas) {
 #if defined(OS_MACOSX)
   if (!g_use_osr) {
@@ -227,8 +215,8 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefContext_N_1CreateBrowser
   return browser;
 }
 
-JNIEXPORT jlong JNICALL Java_org_cef_CefContext_N_1GetWindowHandle
-  (JNIEnv *, jclass, jlong displayHandle) {
+JNIEXPORT jlong JNICALL Java_org_cef_CefApp_N_1GetWindowHandle
+  (JNIEnv *, jobject, jlong displayHandle) {
   CefWindowHandle windowHandle = NULL;
 #if defined(OS_WIN)
   windowHandle = ::WindowFromDC((HDC)displayHandle);

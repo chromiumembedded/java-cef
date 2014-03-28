@@ -35,8 +35,10 @@
       'sources': [
         'native/CefBrowser_N.cpp',
         'native/CefBrowser_N.h',
-        'native/CefContext.cpp',
-        'native/CefContext.h',
+        'native/CefApp.cpp',
+        'native/CefApp.h',
+        'native/CefCommandLine_N.cpp',
+        'native/CefCommandLine_N.h',
         'native/CefQueryCallback_N.cpp',
         'native/CefQueryCallback_N.h',
         'native/CefClientHandler.cpp',

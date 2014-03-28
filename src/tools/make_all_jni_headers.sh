@@ -8,7 +8,8 @@ if [ -z "$1" ]; then
 else
   ./make_jni_header.sh $1 CefBrowser_N
   ./make_jni_header.sh $1 CefClientHandler
-  ./make_jni_header.sh $1 CefContext
+  ./make_jni_header.sh $1 CefCommandLine_N
+  ./make_jni_header.sh $1 CefApp
   ./make_jni_header.sh $1 CefQueryCallback_N
 fi
 

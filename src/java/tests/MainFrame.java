@@ -33,13 +33,16 @@ import javax.swing.Timer;
 import org.cef.CefBrowser;
 import org.cef.CefClient;
 import org.cef.CefDisplayHandler;
-import org.cef.CefContext;
+import org.cef.CefApp;
 import org.cef.CefFocusHandlerAdapter;
 import org.cef.CefLoadHandlerAdapter;
 import org.cef.CefMessageRouterHandler;
 import org.cef.CefQueryCallback;
+import org.cef.OS;
 
 public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRouterHandler {
+  private static final long serialVersionUID = -2295538706810864538L;
+  private static CefApp cefApp_ = null;
   private static MainFrame frame_;
   public static void main(String [] args) {
     // Timer used to pump the CEF message loop in osr mode.
@@ -47,18 +50,23 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       public void actionPerformed(ActionEvent evt) {
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
-            CefContext.doMessageLoopWork();
+            cefApp_.doMessageLoopWork();
           }
         });
       }
     });
 
-    // load required native libraries
-    CefContext.loadLibraries();
+    // initialize CefApp
+    try {
+      cefApp_ = CefApp.getInstance(args);
+    } catch(UnsatisfiedLinkError e) {
+      e.printStackTrace();
+      System.exit(0);
+    }
 
     // OSR mode is enabled by default on Linux.
     boolean osrEnabledArg = true;
-    if (CefContext.isWindows() || CefContext.isMacintosh()) {
+    if (OS.isWindows() || OS.isMacintosh()) {
       // OSR mode is disabled by default on Windows and Mac OS X.
       osrEnabledArg = false;
       for (String arg : args) {
@@ -72,13 +80,12 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     final boolean osrEnabled = osrEnabledArg;
     System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
 
-    final String[] argsForCef = args;
     frame_ = new MainFrame(osrEnabled); 
     frame_.addWindowListener(new WindowAdapter() {
       @Override
       public void windowOpened(WindowEvent e) {
-        if (osrEnabled || !CefContext.isMacintosh()) {
-          CefContext.initialize("", osrEnabled, argsForCef);
+        if (osrEnabled || !OS.isMacintosh()) {
+          cefApp_.initialize("", osrEnabled);
           timer.start();
         }
         frame_.createBrowser();
@@ -88,12 +95,12 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       public void windowClosing(WindowEvent e) {
         frame_.destroyBrowser();
         frame_.dispose();
-        if (osrEnabled || !CefContext.isMacintosh()) {
+        if (osrEnabled || !OS.isMacintosh()) {
           timer.stop();
         }
-        CefContext.shutdown();
+        cefApp_.shutdown();
         System.out.println("shutdown complete");
-        if (osrEnabled || !CefContext.isMacintosh()) {
+        if (osrEnabled || !OS.isMacintosh()) {
           System.exit(0);
         }
       }
@@ -106,8 +113,8 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     // process until the message loop will be quit. See
     // http://stackoverflow.com/questions/5642802/termination-of-program-on-main-thread-exit
     // for further information about the Java threading system.
-    if (!osrEnabled && CefContext.isMacintosh()) {
-      CefContext.initialize("", osrEnabled, argsForCef);
+    if (!osrEnabled && OS.isMacintosh()) {
+      cefApp_.initialize("", osrEnabled);
     }
   }
 
@@ -239,7 +246,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       @Override
       public void actionPerformed(ActionEvent e) {
         if (reloadButton_.getText().equalsIgnoreCase("reload")) {
-          int mask = CefContext.isMacintosh()
+          int mask = OS.isMacintosh()
                      ? ActionEvent.META_MASK
                      : ActionEvent.CTRL_MASK;
           if ((e.getModifiers() & mask) != 0) {

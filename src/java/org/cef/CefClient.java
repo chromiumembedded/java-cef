@@ -108,7 +108,11 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
 
   public void createBrowser(String url) {
     assert(browser_ == null);
-    browser_ = CefContext.createBrowser(this, getWindowHandle(), url, isTransparent_, (osr_enabled_ ? null : canvas_));
+    browser_ = CefApp.getInstance().createBrowser(this,
+                                                  getWindowHandle(),
+                                                  url,
+                                                  isTransparent_,
+                                                  (osr_enabled_ ? null : canvas_));
   }
 
   public void destroyBrowser() {
@@ -210,10 +214,10 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
       if (osr_enabled_) {
         NativeSurface surface = ((GLCanvas)canvas_).getNativeSurface();
         surface.lockSurface();
-        window_handle_ = CefContext.getWindowHandle(surface.getSurfaceHandle());
+        window_handle_ = CefApp.getInstance().getWindowHandle(surface.getSurfaceHandle());
         surface.unlockSurface();
         assert (window_handle_ != 0);
-      } else if (CefContext.isMacintosh()) {
+      } else if (OS.isMacintosh()) {
         try {
           Class<?> cls = Class.forName("org.cef.mac.CefBrowserWindowMac");
           CefBrowserWindow browserWindow = (CefBrowserWindow)cls.newInstance();
@@ -421,7 +425,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
       return browser_rect_;
 
     Rectangle tmp = canvas_.getBounds();
-    if (CefContext.isMacintosh()) {
+    if (OS.isMacintosh()) {
       Container parent = canvas_.getParent();
       while (parent != null) {
         Container next = parent.getParent();
