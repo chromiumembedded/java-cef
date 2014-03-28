@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_CefBrowser_N
- * Method:    N_Close
- * Signature: ()V
+ * Method:    N_CanGoBack
+ * Signature: ()Z
  */
-JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Close
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1CanGoBack
   (JNIEnv *, jobject);
 
 /*
@@ -25,10 +25,50 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1GoBack
 
 /*
  * Class:     org_cef_CefBrowser_N
+ * Method:    N_CanGoForward
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1CanGoForward
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
  * Method:    N_GoForward
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1GoForward
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_IsLoading
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1IsLoading
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_Reload
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Reload
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_ReloadIgnoreCache
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1ReloadIgnoreCache
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_StopLoad
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1StopLoad
   (JNIEnv *, jobject);
 
 /*
@@ -41,11 +81,107 @@ JNIEXPORT jint JNICALL Java_org_cef_CefBrowser_1N_N_1GetIdentifier
 
 /*
  * Class:     org_cef_CefBrowser_N
+ * Method:    N_IsPopup
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1IsPopup
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_HasDocument
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1HasDocument
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
  * Method:    N_LoadURL
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1LoadURL
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_LoadString
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1LoadString
+  (JNIEnv *, jobject, jstring, jstring);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_ExecuteJavaScript
+ * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1ExecuteJavaScript
+  (JNIEnv *, jobject, jstring, jstring, jint);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_GetURL
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_cef_CefBrowser_1N_N_1GetURL
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_Close
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Close
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_SetFocus
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_GetZoomLevel
+ * Signature: ()D
+ */
+JNIEXPORT jdouble JNICALL Java_org_cef_CefBrowser_1N_N_1GetZoomLevel
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_SetZoomLevel
+ * Signature: (D)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetZoomLevel
+  (JNIEnv *, jobject, jdouble);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_StartDownload
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1StartDownload
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_ShowDevTools
+ * Signature: (Lorg/cef/CefClientHandler;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1ShowDevTools
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_CloseDevTools
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1CloseDevTools
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_cef_CefBrowser_N
@@ -86,14 +222,6 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseEvent
  */
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SendMouseWheelEvent
   (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     org_cef_CefBrowser_N
- * Method:    N_SetFocus
- * Signature: (Z)V
- */
-JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
-  (JNIEnv *, jobject, jboolean);
 
 #ifdef __cplusplus
 }

@@ -32,14 +32,15 @@ class CefBrowser_N implements CefBrowser {
     close();
     super.finalize();
   }
-  
+
   @Override
-  public void close() {
+  public boolean canGoBack() {
     try {
-      N_Close();
+      return N_CanGoBack();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
+    return false;
   }
 
   @Override
@@ -52,6 +53,16 @@ class CefBrowser_N implements CefBrowser {
   }
 
   @Override
+  public boolean canGoForward() {
+    try {
+      return N_CanGoForward();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return false;
+  }
+
+  @Override
   public void goForward() {
     try {
       N_GoForward();
@@ -59,7 +70,44 @@ class CefBrowser_N implements CefBrowser {
       ule.printStackTrace();
     }
   }
-  
+
+  @Override
+  public boolean isLoading() {
+    try {
+      return N_IsLoading();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return false;
+  }
+
+  @Override
+  public void reload() {
+    try {
+      N_Reload();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void reloadIgnoreCache() {
+    try {
+      N_ReloadIgnoreCache();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    } 
+  }
+
+  @Override
+  public void stopLoad() {
+    try {
+      N_StopLoad();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
   @Override
   public int getIdentifier() {
     try {
@@ -69,11 +117,123 @@ class CefBrowser_N implements CefBrowser {
       return -1;
     }
   }
-  
+
+  @Override
+  public boolean isPopup() {
+    try {
+      return N_IsPopup();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return false;
+  }
+
+  @Override
+  public boolean hasDocument() {
+    try {
+      return N_HasDocument();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return false;
+  }
+
   @Override
   public void loadURL(String url) {
     try {
       N_LoadURL(url);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void loadString(String val, String url) {
+    try {
+      N_LoadString(val, url);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void executeJavaScript(String code, String url, int line) {
+    try {
+      N_ExecuteJavaScript(code, url, line);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public String getURL() {
+    try {
+      return N_GetURL();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return "";
+  }
+
+  @Override
+  public void close() {
+    try {
+      N_Close();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void setFocus(boolean enable) {
+    try {
+      N_SetFocus(enable);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public double getZoomLevel() {
+    try {
+      return N_GetZoomLevel();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return 0.0;
+  }
+
+  @Override
+  public void setZoomLevel(double zoomLevel) {
+    try {
+      N_SetZoomLevel(zoomLevel);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void startDownload(String url) {
+    try {
+      N_StartDownload(url);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void showDevTools(CefClientHandler clientHandler) {
+    try {
+      N_ShowDevTools(clientHandler);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void closeDevTools() {
+    try {
+      N_CloseDevTools();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -124,24 +284,31 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void setFocus(boolean enable) {
-    try {
-      N_SetFocus(enable);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  private final native void N_Close();
+  private final native boolean N_CanGoBack();
   private final native void N_GoBack();
+  private final native boolean N_CanGoForward();
   private final native void N_GoForward();
+  private final native boolean N_IsLoading();
+  private final native void N_Reload();
+  private final native void N_ReloadIgnoreCache();
+  private final native void N_StopLoad();
   private final native int N_GetIdentifier();
+  private final native boolean N_IsPopup();
+  private final native boolean N_HasDocument();
   private final native void N_LoadURL(String url);
+  private final native void N_LoadString(String val, String url);
+  private final native void N_ExecuteJavaScript(String code, String url, int line);
+  private final native String N_GetURL();
+  private final native void N_Close();
+  private final native void N_SetFocus(boolean enable);
+  private final native double N_GetZoomLevel();
+  private final native void N_SetZoomLevel(double zoomLevel);
+  private final native void N_StartDownload(String url);
+  private final native void N_ShowDevTools(CefClientHandler clientHandler);
+  private final native void N_CloseDevTools();
   private final native void N_WasResized(int width, int height);
   private final native void N_Invalidate(Rectangle rect);
   private final native void N_SendKeyEvent(KeyEvent e);
   private final native void N_SendMouseEvent(MouseEvent e);
   private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
-  private final native void N_SetFocus(boolean enable);
 }

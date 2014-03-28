@@ -117,8 +117,12 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   private JMenu bookmarkMenu_;
   private JButton backButton_;
   private JButton forwardButton_;
+  private JButton reloadButton_;
   private JProgressBar progressBar_;
   private JLabel status_field_;
+  private double zoomLevel_ = 0.0;
+  private JLabel zoom_label_;
+  private String errorMsg_ = "";
 
   public MainFrame(boolean osrEnabled) {
     client_ = new CefClient(false, osrEnabled);
@@ -145,7 +149,31 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
                                        boolean canGoForward) {
         backButton_.setEnabled(canGoBack);
         forwardButton_.setEnabled(canGoForward);
+        reloadButton_.setText( isLoading ? "Abort" : "Reload");
         progressBar_.setIndeterminate(isLoading);
+
+        if (!isLoading && !errorMsg_.isEmpty()) {
+          browser.loadString(errorMsg_, address_field_.getText());
+          errorMsg_ = "";
+        }
+      }
+
+      @Override
+      public void onLoadError(CefBrowser browser,
+                              int frameIdentifer,
+                              ErrorCode errorCode,
+                              String errorText,
+                              String failedUrl) {
+        if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED) {
+          errorMsg_  = "<html><head>";
+          errorMsg_ += "<title>Error while loading</title>";
+          errorMsg_ += "</head><body>";
+          errorMsg_ += "<h1>" + errorCode + "</h1>";
+          errorMsg_ += "<h3>Failed to load " + failedUrl + "</h3>";
+          errorMsg_ += "<p>" + errorText + "</p>";
+          errorMsg_ += "</body></html>";
+          browser.stopLoad();
+        }
       }
     });
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
@@ -205,10 +233,33 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     controlPanel.add(forwardButton_);
     controlPanel.add(Box.createHorizontalStrut(5));
 
+    reloadButton_ = new JButton("Reload");
+    reloadButton_.setAlignmentX(LEFT_ALIGNMENT);
+    reloadButton_.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (reloadButton_.getText().equalsIgnoreCase("reload")) {
+          int mask = CefContext.isMacintosh()
+                     ? ActionEvent.META_MASK
+                     : ActionEvent.CTRL_MASK;
+          if ((e.getModifiers() & mask) != 0) {
+            System.out.println("Reloading - ignoring cached values");
+            client_.getBrowser().reloadIgnoreCache();
+          } else {
+            System.out.println("Reloading - using cached values");
+            client_.getBrowser().reload();
+          }
+        } else {
+          client_.getBrowser().stopLoad();
+        }
+      }
+    });
+    controlPanel.add(reloadButton_);
+    controlPanel.add(Box.createHorizontalStrut(5));
+
     JLabel addressLabel = new JLabel("Address:");
     addressLabel.setAlignmentX(LEFT_ALIGNMENT);
     controlPanel.add(addressLabel);
-
     controlPanel.add(Box.createHorizontalStrut(5));
 
     address_field_ = new JTextField(100);
@@ -227,7 +278,6 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     controlPanel.add(address_field_);
-
     controlPanel.add(Box.createHorizontalStrut(5));
 
     JButton goButton = new JButton("Go");
@@ -239,8 +289,32 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     controlPanel.add(goButton);
-
     controlPanel.add(Box.createHorizontalStrut(5));
+
+    JButton minusButton = new JButton("-");
+    minusButton.setAlignmentX(CENTER_ALIGNMENT);
+    minusButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().setZoomLevel(--zoomLevel_);
+        zoom_label_.setText(new Double(zoomLevel_).toString());
+      }
+    });
+    controlPanel.add(minusButton);
+
+    zoom_label_ = new JLabel("0.0");
+    controlPanel.add(zoom_label_);
+
+    JButton plusButton = new JButton("+");
+    plusButton.setAlignmentX(CENTER_ALIGNMENT);
+    plusButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().setZoomLevel(++zoomLevel_);
+        zoom_label_.setText(new Double(zoomLevel_).toString());
+      }
+    });
+    controlPanel.add(plusButton);
 
     return controlPanel;
   }
@@ -314,8 +388,68 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     bookmarkMenu_.add(addBookmarkItem);
     bookmarkMenu_.addSeparator();
 
+    JMenu testMenu = new JMenu("Tests");
+
+    JMenuItem testJSItem = new JMenuItem("JavaScript alert");
+    testJSItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().executeJavaScript("alert('Hello World');", address_field_.getText(), 1);
+      }
+    });
+    testMenu.add(testJSItem);
+
+    JMenuItem testShowText = new JMenuItem("Show Text");
+    testShowText.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().loadString("<html><body><h1>Hello World</h1></body></html>", address_field_.getText());
+      }
+    });
+    testMenu.add(testShowText);
+
+    JMenuItem showInfo = new JMenuItem("Show Info");
+    showInfo.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CefBrowser browser = client_.getBrowser();
+        String info =  "<html><head><title>Browser status</title></head>";
+               info += "<body><h1>Browser status</h1><table border=\"0\">";
+               info += "<tr><td>CanGoBack</td><td>" + browser.canGoBack() + "</td></tr>";
+               info += "<tr><td>CanGoForward</td><td>" + browser.canGoForward() + "</td></tr>";
+               info += "<tr><td>IsLoading</td><td>" + browser.isLoading() + "</td></tr>";
+               info += "<tr><td>isPopup</td><td>" + browser.isPopup() + "</td></tr>";
+               info += "<tr><td>hasDocument</td><td>" + browser.hasDocument() + "</td></tr>";
+               info += "<tr><td>Url</td><td>" + browser.getURL() + "</td></tr>";
+               info += "<tr><td>Zoom-Level</td><td>" + browser.getZoomLevel() + "</td></tr>";
+               info += "</table></body></html>";
+        String js = "var x=window.open(); x.document.open(); x.document.write('" + info + "'); x.document.close();";
+        browser.executeJavaScript(js, "", 0);
+      }
+    });
+    testMenu.add(showInfo);
+
+    JMenuItem showDevTools = new JMenuItem("Show DevTools");
+    showDevTools.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().showDevTools(client_);
+      }
+    });
+    testMenu.add(showDevTools);
+
+    JMenuItem closeDevTools = new JMenuItem("Close DevTools");
+    closeDevTools.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        client_.getBrowser().closeDevTools();
+      }
+    });
+    testMenu.add(closeDevTools);
+
     menuBar.add(fileMenu);
     menuBar.add(bookmarkMenu_);
+    menuBar.add(testMenu);
 
     return menuBar;
   }

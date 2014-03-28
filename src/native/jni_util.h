@@ -148,6 +148,11 @@ jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_va
   } \
 }
 
+#define JNI_GET_BROWSER_OR_RETURN(env, obj, ...) \
+  GetCefFromJNIObject<CefBrowser>(env, obj, "CefBrowser"); \
+  if (!browser.get()) \
+    return __VA_ARGS__;
+
 // Set the CEF base object for an existing JNI object. A reference will be
 // added to the base object. If a previous base object existed a reference
 // will be removed from that object.
