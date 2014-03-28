@@ -6,6 +6,7 @@ package tests;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +25,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -33,6 +35,7 @@ import org.cef.CefClient;
 import org.cef.CefDisplayHandler;
 import org.cef.CefContext;
 import org.cef.CefFocusHandlerAdapter;
+import org.cef.CefLoadHandlerAdapter;
 import org.cef.CefMessageRouterHandler;
 import org.cef.CefQueryCallback;
 
@@ -112,6 +115,9 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   private String last_selected_file_ = "";
   private CefClient client_;
   private JMenu bookmarkMenu_;
+  private JButton backButton_;
+  private JButton forwardButton_;
+  private JProgressBar progressBar_;
 
   public MainFrame(boolean osrEnabled) {
     client_ = new CefClient(false, osrEnabled);
@@ -128,6 +134,17 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         } else {
           policy.getLastComponent(frame_).requestFocus();
         }
+      }
+    });
+    client_.addLoadHandler(new CefLoadHandlerAdapter() {
+      @Override
+      public void onLoadingStateChange(CefBrowser browser,
+                                       boolean isLoading,
+                                       boolean canGoBack,
+                                       boolean canGoForward) {
+        backButton_.setEnabled(canGoBack);
+        forwardButton_.setEnabled(canGoForward);
+        progressBar_.setIndeterminate(isLoading);
       }
     });
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
@@ -154,6 +171,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     JPanel contentPanel = new JPanel(new BorderLayout());
     contentPanel.add(createControlPanel(), BorderLayout.NORTH);
     contentPanel.add(client_.getCanvas(), BorderLayout.CENTER);
+    contentPanel.add(createBottomPanel(), BorderLayout.SOUTH);
     return contentPanel;
   }
 
@@ -162,31 +180,28 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
 
     controlPanel.add(Box.createHorizontalStrut(5));
-
     controlPanel.add(Box.createHorizontalStrut(5));
-    
-    JButton backButton = new JButton("Back");
-    backButton.setAlignmentX(LEFT_ALIGNMENT);
-    backButton.addActionListener(new ActionListener() {
+
+    backButton_ = new JButton("Back");
+    backButton_.setAlignmentX(LEFT_ALIGNMENT);
+    backButton_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         client_.getBrowser().goBack();
       }
     });
-    controlPanel.add(backButton);
-    
+    controlPanel.add(backButton_);
     controlPanel.add(Box.createHorizontalStrut(5));
-    
-    JButton forwardButton = new JButton("Forward");
-    forwardButton.setAlignmentX(LEFT_ALIGNMENT);
-    forwardButton.addActionListener(new ActionListener() {
+
+    forwardButton_ = new JButton("Forward");
+    forwardButton_.setAlignmentX(LEFT_ALIGNMENT);
+    forwardButton_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         client_.getBrowser().goForward();
       }
     });
-    controlPanel.add(forwardButton);
-
+    controlPanel.add(forwardButton_);
     controlPanel.add(Box.createHorizontalStrut(5));
 
     JLabel addressLabel = new JLabel("Address:");
@@ -228,7 +243,26 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
 
     return controlPanel;
   }
-  
+
+  private JPanel createBottomPanel() {
+    JPanel bottomPanel = new JPanel();
+    bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+
+    bottomPanel.add(Box.createHorizontalStrut(5));
+    bottomPanel.add(Box.createHorizontalStrut(5));
+
+    progressBar_ = new JProgressBar();
+    Dimension progressBarSize = progressBar_.getMaximumSize();
+    progressBarSize.width = 100;
+    progressBar_.setMinimumSize(progressBarSize);
+    progressBar_.setMaximumSize(progressBarSize);
+
+    bottomPanel.add(progressBar_);
+    bottomPanel.add(Box.createHorizontalStrut(5));
+
+    return bottomPanel;
+  }
+
   private JMenuBar createMenuBar() {
     JMenuBar menuBar = new JMenuBar();
 

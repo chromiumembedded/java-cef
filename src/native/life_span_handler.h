@@ -1,0 +1,41 @@
+// Copyright (c) 2014 The Chromium Embedded Framework Authors. All rights
+// reserved. Use of this source code is governed by a BSD-style license that
+// can be found in the LICENSE file.
+
+#ifndef CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
+#define CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
+#pragma once
+
+#include <jni.h>
+#include "include/cef_life_span_handler.h"
+
+// LifeSpanHandler implementation.
+class LifeSpanHandler : public CefLifeSpanHandler {
+ public:
+  LifeSpanHandler(JNIEnv* env, jobject handler);
+  virtual ~LifeSpanHandler();
+
+  // CefLifeSpanHandler methods
+  virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefFrame> frame,
+                             const CefString& target_url,
+                             const CefString& target_frame_name,
+                             const CefPopupFeatures& popupFeatures,
+                             CefWindowInfo& windowInfo,
+                             CefRefPtr<CefClient>& client,
+                             CefBrowserSettings& settings,
+                             bool* no_javascript_access) OVERRIDE;
+  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual bool RunModal(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+ protected:
+  jobject jhandler_;
+
+  // Include the default reference counting implementation.
+  IMPLEMENT_REFCOUNTING(LifeSpanHandler);
+  // Include the default locking implementation.
+  IMPLEMENT_LOCKING(LifeSpanHandler);
+};
+
+#endif  // CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_

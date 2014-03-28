@@ -14,6 +14,7 @@
 #include "display_handler.h"
 #include "focus_handler.h"
 #include "life_span_handler.h"
+#include "load_handler.h"
 #include "message_router_handler.h"
 #include "render_handler.h"
 
@@ -62,6 +63,22 @@ CefRefPtr<CefLifeSpanHandler> ClientHandler::GetLifeSpanHandler() {
     if (!result.get()) {
       result = new LifeSpanHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefLifeSpanHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefLoadHandler> ClientHandler::GetLoadHandler() {
+  CefRefPtr<CefLoadHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getLoadHandler", "()Lorg/cef/CefLoadHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefLoadHandler>(env, handler, "CefLoadHandler");
+    if (!result.get()) {
+      result = new LoadHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefLoadHandler");
     }
   }
   END_ENV(env)
@@ -220,42 +237,6 @@ void ClientHandler::RemoveBrowser(CefRefPtr<CefBrowser> browser) {
     message_router_->OnBeforeClose(browser);
 }
 
-void ClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame) {
-  REQUIRE_UI_THREAD();
-}
-
-void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                              CefRefPtr<CefFrame> frame,
-                              int httpStatusCode) {
-  REQUIRE_UI_THREAD();
-}
-
-void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame,
-                                ErrorCode errorCode,
-                                const CefString& errorText,
-                                const CefString& failedUrl) {
-  REQUIRE_UI_THREAD();
-
-  // Don't display an error for downloaded files.
-  if (errorCode == ERR_ABORTED)
-    return;
-
-  // Display a load error message.
-  std::stringstream ss;
-  ss << "<html><body><h2>Failed to load URL " << std::string(failedUrl) <<
-        " with error " << std::string(errorText) << " (" << errorCode <<
-        ").</h2></body></html>";
-  frame->LoadString(ss.str(), failedUrl);
-}
-
-void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                              TerminationStatus status) {
-  if (message_router_)
-    message_router_->OnRenderProcessTerminated(browser);
-}
-
 bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefRequest> request,
@@ -282,6 +263,12 @@ bool ClientHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 void ClientHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                         const CefString& url,
                                         bool& allow_os_execution) {
+}
+
+void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                              TerminationStatus status) {
+  if (message_router_)
+    message_router_->OnRenderProcessTerminated(browser);
 }
 
 void ClientHandler::SetJBrowser(jobject jbrowser) { 

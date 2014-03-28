@@ -31,7 +31,12 @@ import javax.swing.ToolTipManager;
 /**
  * Client that owns a browser and renderer.
  */
-public class CefClient extends CefClientHandler implements CefLifeSpanHandler, CefDisplayHandler, CefRenderHandler, CefFocusHandler, CefMessageRouterHandler  {
+public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
+                                                           CefDisplayHandler,
+                                                           CefRenderHandler,
+                                                           CefFocusHandler,
+                                                           CefMessageRouterHandler,
+                                                           CefLoadHandler {
   private boolean osr_enabled_;
   private boolean isTransparent_;
   private CefRenderer renderer_;
@@ -42,6 +47,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler, C
   private CefDisplayHandler displayHandler_ = null;
   private CefFocusHandler focusHandler_ = null;
   private CefLifeSpanHandler lifeSpanHandler_ = null;
+  private CefLoadHandler loadHandler_ = null;
   private CefMessageRouterHandler msgRouterHandler_ = null;
 
   public CefClient(boolean transparent, boolean osr) {
@@ -95,6 +101,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler, C
     removeFocusHandler(this);
     removeLifeSpanHandler(this);
     removeMessageRouterHandler(this);
+    removeLoadHandler(this);
     removeRenderHandler(this);
     super.finalize();
   }
@@ -154,6 +161,16 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler, C
     msgRouterHandler_ = null;
   }
 
+  public CefClient addLoadHandler(CefLoadHandler handler) {
+    if (loadHandler_ == null)
+      loadHandler_ = handler;
+    return this;
+  }
+
+  public void removeLoadHandler() {
+    loadHandler_ = null;
+  }
+
   @Override
   protected CefDisplayHandler getDisplayHandler() {
     return this;
@@ -171,6 +188,11 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler, C
 
   @Override
   protected CefMessageRouterHandler getMessageRouterHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefLoadHandler getLoadHandler() {
     return this;
   }
 
@@ -441,5 +463,38 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler, C
                               long query_id) {
     if (msgRouterHandler_ != null)
       msgRouterHandler_.onQueryCanceled(browser, query_id);
+  }
+
+  @Override
+  public void onLoadingStateChange(CefBrowser browser,
+                                   boolean isLoading,
+                                   boolean canGoBack,
+                                   boolean canGoForward) {
+    if (loadHandler_ != null)
+      loadHandler_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+  }
+
+  @Override
+  public void onLoadStart(CefBrowser browser, int frameIdentifer) {
+    if (loadHandler_ != null)
+      loadHandler_.onLoadStart(browser, frameIdentifer);
+  }
+
+  @Override
+  public void onLoadEnd(CefBrowser browser,
+                        int frameIdentifier,
+                        int httpStatusCode) {
+    if (loadHandler_ != null)
+      loadHandler_.onLoadEnd(browser, frameIdentifier, httpStatusCode);
+  }
+
+  @Override
+  public void onLoadError(CefBrowser browser,
+                          int frameIdentifer,
+                          ErrorCode errorCode,
+                          String errorText,
+                          String failedUrl) {
+    if (loadHandler_ != null)
+      loadHandler_.onLoadError(browser, frameIdentifer, errorCode, errorText, failedUrl);
   }
 }

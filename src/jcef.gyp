@@ -49,6 +49,8 @@
         'native/focus_handler.h',
         'native/life_span_handler.cpp',
         'native/life_span_handler.h',
+        'native/load_handler.cpp',
+        'native/load_handler.h',
         'native/message_router_handler.cpp',
         'native/message_router_handler.h',
         'native/render_handler.cpp',

@@ -17,7 +17,6 @@ class ClientHandler : public CefClient,
                       public CefDragHandler,
                       public CefGeolocationHandler,
                       public CefKeyboardHandler,
-                      public CefLoadHandler,
                       public CefRequestHandler {
  public:
   ClientHandler(JNIEnv* env, jobject handler);
@@ -41,9 +40,7 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
-    return this;
-  }
+  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE {
     return this;
@@ -100,20 +97,6 @@ class ClientHandler : public CefClient,
   void SetBrowser(CefRefPtr<CefBrowser> browser);
   void RemoveBrowser(CefRefPtr<CefBrowser> browser);
 
-  // CefLoadHandler methods
-  virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame) OVERRIDE;
-  virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                         CefRefPtr<CefFrame> frame,
-                         int httpStatusCode) OVERRIDE;
-  virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
-                           ErrorCode errorCode,
-                           const CefString& errorText,
-                           const CefString& failedUrl) OVERRIDE;
-  virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                         TerminationStatus status) OVERRIDE;
-
   // CefRequestHandler methods
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
@@ -130,6 +113,8 @@ class ClientHandler : public CefClient,
   virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                    const CefString& url,
                                    bool& allow_os_execution) OVERRIDE;
+  virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                         TerminationStatus status) OVERRIDE;
 
   CefRefPtr<CefBrowser> GetBrowser() { return browser_; }
   jobject GetJBrowser() { return jbrowser_; }

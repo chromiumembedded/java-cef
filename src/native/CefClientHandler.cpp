@@ -33,6 +33,11 @@ JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeMessageRouterHandl
   SetCefForJNIObject<MessageRouterHandler>(env, msgRouterHandler, NULL, "CefMessageRouterHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeLoadHandler
+  (JNIEnv *env, jobject clientHandler, jobject loadHandler) {
+  SetCefForJNIObject<CefLoadHandler>(env, loadHandler, NULL, "CefLoadHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeRenderHandler
   (JNIEnv *env, jobject clientHandler, jobject renderHandler) {
   SetCefForJNIObject<CefRenderHandler>(env, renderHandler, NULL, "CefRenderHandler");
