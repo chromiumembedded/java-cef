@@ -28,7 +28,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
-import org.cef.CefClientDelegate.FocusSource;
+import org.cef.CefFocusHandler.FocusSource;
 
 /**
  * Client that owns a browser and renderer.
@@ -36,17 +36,18 @@ import org.cef.CefClientDelegate.FocusSource;
 public class CefClient implements CefHandler {
   private boolean osr_enabled_;
   private boolean isTransparent_;
-  private CefClientDelegate delegate_;
   private CefRenderer renderer_;
   private Canvas canvas_;
   private long window_handle_ = 0;
   private CefBrowser browser_ = null;
   private int browser_id_ = -1;
   private Rectangle browser_rect_ = new Rectangle(0, 0, 0, 0);
+  private CefDisplayHandler displayHandler_ = null;
+  private CefFocusHandler focusHandler_ = null;
+  private CefMessageRouterHandler msgRouterHandler_ = null;
+  private CefRenderHandler renderHandler_ = null;
 
-  public CefClient(CefClientDelegate delegate, boolean transparent, boolean osr) {
-    assert(delegate != null);
-    delegate_ = delegate;
+  public CefClient(boolean transparent, boolean osr) {
     isTransparent_ = transparent;
     osr_enabled_ = osr;
     if (osr_enabled_) {
@@ -110,6 +111,46 @@ public class CefClient implements CefHandler {
 
   public CefBrowser getBrowser() {
     return browser_;
+  }
+
+  public CefClient addDisplayHandler(CefDisplayHandler handler) {
+    if (displayHandler_ == null)
+      displayHandler_ = handler;
+    return this;
+  }
+
+  public void removeDisplayHandler() {
+    displayHandler_ = null;
+  }
+
+  public CefClient addFocusHandler(CefFocusHandler handler) {
+    if (focusHandler_ == null)
+      focusHandler_ = handler;
+    return this;
+  }
+
+  public void removeFocusHandler() {
+    focusHandler_ = null;
+  }
+
+  public CefClient addMessageRouterHandler(CefMessageRouterHandler handler) {
+    if (msgRouterHandler_ == null)
+      msgRouterHandler_ = handler;
+    return this;
+  }
+
+  public void removeMessageRouterHandler() {
+    msgRouterHandler_ = null;
+  }
+
+  public CefClient addRenderHandler(CefRenderHandler handler) {
+    if (renderHandler_ == null)
+      renderHandler_ = handler;
+    return this;
+  }
+
+  public void removeRenderHandler() {
+    renderHandler_ = null;
   }
 
   public Canvas getCanvas() {
@@ -257,14 +298,14 @@ public class CefClient implements CefHandler {
 
   @Override
   public void onAddressChange(CefBrowser browser, String url) {
-    if (browser_.getIdentifier() == browser_id_)
-      delegate_.onAddressChange(this, url);
+    if (browser_.getIdentifier() == browser_id_ && displayHandler_ != null)
+      displayHandler_.onAddressChange(this, url);
   }
 
   @Override
   public void onTitleChange(CefBrowser browser, String title) {
-    if (browser_.getIdentifier() == browser_id_)
-      delegate_.onTitleChange(this, title);
+    if (browser_.getIdentifier() == browser_id_ && displayHandler_ != null)
+      displayHandler_.onTitleChange(this, title);
   }
 
   @Override
@@ -328,20 +369,24 @@ public class CefClient implements CefHandler {
   @Override
   public void onCursorChange(CefBrowser browser,
                              int cursorType) {
-    delegate_.onCursorChange(this, new Cursor(cursorType));
+    if (renderHandler_ != null)
+      renderHandler_.onCursorChange(this, new Cursor(cursorType));
   }
 
   @Override
   public void onTakeFocus(CefBrowser browser, boolean next) {
     browser.setFocus(false);
-    delegate_.onTakeFocus(this, next);
+    if (focusHandler_ != null)
+      focusHandler_.onTakeFocus(this, next);
   }
 
   @Override
   public boolean onSetFocus(CefBrowser browser, long source) {
     FocusSource src = (source == 0) ? FocusSource.FOCUS_SOURCE_NAVIGATION
                                     : FocusSource.FOCUS_SOURCE_SYSTEM;
-    boolean alreadyHandled = delegate_.onSetFocus(this,src);
+    if (focusHandler_ == null)
+      return false;
+    boolean alreadyHandled = focusHandler_.onSetFocus(this,src);
     if (!alreadyHandled)
       canvas_.requestFocus();
     return alreadyHandled;
@@ -349,7 +394,8 @@ public class CefClient implements CefHandler {
 
   @Override
   public void onGotFocus(CefBrowser browser) {
-    delegate_.onGotFocus(this);
+    if (focusHandler_ != null)
+      focusHandler_.onGotFocus(this);
   }
 
   @Override
@@ -358,12 +404,14 @@ public class CefClient implements CefHandler {
                       String request,
                       boolean persistent,
                       CefQueryCallback callback) {
-    delegate_.onQuery(this, query_id, request, persistent, callback);
+    if (msgRouterHandler_ != null)
+      msgRouterHandler_.onQuery(this, query_id, request, persistent, callback);
   }
 
   @Override
   public void onQueryCanceled(CefBrowser browser,
                               long query_id) {
-    delegate_.onQueryCanceled(this, query_id);
+    if (msgRouterHandler_ != null)
+      msgRouterHandler_.onQueryCanceled(this, query_id);
   }
 }

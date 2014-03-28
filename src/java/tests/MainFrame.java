@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.net.URL;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -31,11 +30,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.cef.CefClient;
-import org.cef.CefClientDelegate;
+import org.cef.CefDisplayHandler;
 import org.cef.CefContext;
+import org.cef.CefFocusHandlerAdapter;
+import org.cef.CefMessageRouterHandler;
 import org.cef.CefQueryCallback;
+import org.cef.CefRenderHandler;
 
-public class MainFrame extends JFrame implements CefClientDelegate {
+public class MainFrame extends JFrame implements CefDisplayHandler, CefRenderHandler, CefMessageRouterHandler {
+  private static MainFrame frame_;
   public static void main(String [] args) {
     // Timer used to pump the CEF message loop in osr mode.
     final Timer timer = new Timer(33, new ActionListener() {
@@ -65,21 +68,21 @@ public class MainFrame extends JFrame implements CefClientDelegate {
     System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
 
     final String[] argsForCef = args;
-    final MainFrame frame = new MainFrame(osrEnabled); 
-    frame.addWindowListener(new WindowAdapter() {
+    frame_ = new MainFrame(osrEnabled); 
+    frame_.addWindowListener(new WindowAdapter() {
       @Override
       public void windowOpened(WindowEvent e) {
         if (osrEnabled || !CefContext.isMacintosh()) {
           CefContext.initialize("", osrEnabled, argsForCef);
           timer.start();
         }
-        frame.createBrowser();
+        frame_.createBrowser();
       }
 
       @Override
       public void windowClosing(WindowEvent e) {
-        frame.destroyBrowser();
-        frame.dispose();
+        frame_.destroyBrowser();
+        frame_.dispose();
         if (osrEnabled || !CefContext.isMacintosh()) {
           timer.stop();
         }
@@ -91,8 +94,8 @@ public class MainFrame extends JFrame implements CefClientDelegate {
       }
     });
 
-    frame.setSize(800, 600);
-    frame.setVisible(true);
+    frame_.setSize(800, 600);
+    frame_.setVisible(true);
 
     // On Mac OS X the message loop is performed by calling initialize, which will block the main
     // process until the message loop will be quit. See
@@ -109,7 +112,23 @@ public class MainFrame extends JFrame implements CefClientDelegate {
   private JMenu bookmarkMenu_;
 
   public MainFrame(boolean osrEnabled) {
-    client_ = new CefClient(this, false, osrEnabled);
+    client_ = new CefClient(false, osrEnabled);
+    client_.addDisplayHandler(this);
+    client_.addMessageRouterHandler(this);
+    client_.addRenderHandler(this);
+    client_.addFocusHandler(new CefFocusHandlerAdapter() {
+      @Override
+      public void onTakeFocus(CefClient client, boolean next) {
+        FocusTraversalPolicy policy = getFocusTraversalPolicy();
+        if (policy == null)
+          return;
+        if (next) {
+          policy.getFirstComponent(frame_).requestFocus();
+        } else {
+          policy.getLastComponent(frame_).requestFocus();
+        }
+      }
+    });
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
 
     JMenuBar menuBar = createMenuBar();
@@ -302,29 +321,6 @@ public class MainFrame extends JFrame implements CefClientDelegate {
   @Override
   public void onCursorChange(CefClient client, Cursor cursor) {
     setCursor(cursor);
-  }
-
-  @Override
-  public void onTakeFocus(CefClient client, boolean next) {
-    FocusTraversalPolicy policy = getFocusTraversalPolicy();
-    if (policy == null)
-      return;
-    if (next) {
-      policy.getFirstComponent(this).requestFocus();
-    } else {
-      policy.getLastComponent(this).requestFocus();
-    }
-  }
-
-  @Override
-  public boolean onSetFocus(CefClient client, FocusSource source) {
-    // Currently nothing to do.
-    return false;
-  }
-
-  @Override
-  public void onGotFocus(CefClient client) {
-    // Currently nothing to do.
   }
 
   @Override
