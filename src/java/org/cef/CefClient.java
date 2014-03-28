@@ -339,11 +339,42 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
     if (browser_ != null)
       browser_.sendKeyEvent(e);
   }
+  
+  @Override
+  public boolean onBeforePopup(CefBrowser browser,
+                               String target_url,
+                               String target_frame_name) {
+    if (lifeSpanHandler_ != null)
+      return lifeSpanHandler_.onBeforePopup(browser,
+                                            target_url,
+                                            target_frame_name);
+    return false;
+  }
 
   @Override
   public void onAfterCreated(CefBrowser browser) {
     if (lifeSpanHandler_ != null)
       lifeSpanHandler_.onAfterCreated(browser);
+  }
+
+  @Override
+  public boolean runModal(CefBrowser browser) {
+    if (lifeSpanHandler_ != null)
+      return lifeSpanHandler_.runModal(browser);
+    return false;
+  }
+
+  @Override
+  public boolean doClose(CefBrowser browser) {
+    if (lifeSpanHandler_ != null)
+      return lifeSpanHandler_.doClose(browser);
+    return false;
+  }
+
+  @Override
+  public void onBeforeClose(CefBrowser browser) {
+    if (lifeSpanHandler_ != null)
+      lifeSpanHandler_.onBeforeClose(browser);
   }
 
   @Override

@@ -9,9 +9,30 @@ package org.cef;
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
-public class CefLifeSpanHandlerAdapter implements CefLifeSpanHandler {
+public abstract class CefLifeSpanHandlerAdapter implements CefLifeSpanHandler {
+
+  @Override
+  public boolean onBeforePopup(CefBrowser browser,
+                               String target_url,
+                               String target_frame_name) {
+    return false;
+  }
 
   @Override
   public void onAfterCreated(CefBrowser browser) {
+  }
+
+  @Override
+  public boolean runModal(CefBrowser browser) {
+    return false;
+  }
+
+  @Override
+  public boolean doClose(CefBrowser browser) {
+    return false;
+  }
+
+  @Override
+  public void onBeforeClose(CefBrowser browser) {
   }
 }

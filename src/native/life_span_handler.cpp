@@ -30,7 +30,19 @@ bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
     // Cancel popups in off-screen rendering mode.
     return true;
   }
-  return false;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+  jboolean jreturn = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "onBeforePopup",
+                  "(Lorg/cef/CefBrowser;Ljava/lang/String;Ljava/lang/String;)Z",
+                  Boolean,
+                  jreturn,
+                  GetJNIBrowser(browser),
+                  NewJNIString(env, target_url),
+                  NewJNIString(env, target_frame_name));
+  return (jreturn == JNI_TRUE);
 }
 
 void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -47,16 +59,42 @@ void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 }
 
 bool LifeSpanHandler::RunModal(CefRefPtr<CefBrowser> browser) {
-  return false;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+  jboolean jreturn = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "runModal",
+                  "(Lorg/cef/CefBrowser;)Z",
+                  Boolean,
+                  jreturn,
+                  GetJNIBrowser(browser));
+  return (jreturn == JNI_TRUE);
 }
 
 bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
-  REQUIRE_UI_THREAD();
-  return false;
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+  jboolean jreturn = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "doClose",
+                  "(Lorg/cef/CefBrowser;)Z",
+                  Boolean,
+                  jreturn,
+                  GetJNIBrowser(browser));
+  return (jreturn == JNI_TRUE);
 }
 
 void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "onBeforeClose",
+                       "(Lorg/cef/CefBrowser;)V",
+                       GetJNIBrowser(browser));
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
   client->RemoveBrowser(browser);
 }
