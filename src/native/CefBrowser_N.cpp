@@ -6,6 +6,8 @@
 #include "include/cef_browser.h"
 #include "jni_util.h"
 #include "client_handler.h"
+#include "render_handler.h"
+#include "life_span_handler.h"
 
 #if defined(OS_LINUX)
 #include <gdk/gdkkeysyms.h>
@@ -13,6 +15,7 @@
 
 #if defined(OS_MACOSX)
 #include <Carbon/Carbon.h>
+#include "util_mac.h"
 #endif
 
 #if defined(OS_WIN)
@@ -116,6 +119,72 @@ int GetMacKeyCodeFromChar(int key_char) {
 
 }  // namespace
 
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1CreateBrowser
+  (JNIEnv *env, jobject jbrowser, jobject jclientHandler, jlong windowHandle,
+   jstring url, jboolean transparent, jobject canvas) {
+  CefRefPtr<ClientHandler> clientHandler = GetCefFromJNIObject<ClientHandler>(env, 
+                                                                              jclientHandler, 
+                                                                              "CefClientHandler");
+  CefRefPtr<LifeSpanHandler> lifeSpanHandler = (LifeSpanHandler*)clientHandler->GetLifeSpanHandler().get();
+  if (!lifeSpanHandler.get())
+    return JNI_FALSE;
+
+  CefWindowInfo windowInfo;
+#if defined(OS_WIN) || defined(OS_MACOSX)
+  if (canvas != NULL) {
+    CefRect rect;
+    CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)clientHandler->GetRenderHandler().get();
+    if (renderHandler.get()) {
+      renderHandler->GetViewRect(jbrowser, rect);
+    }
+#if defined(OS_WIN)
+    HWND parent = GetHwndOfCanvas(canvas, env);
+    RECT winRect = {0,0, rect.width, rect.height};
+    windowInfo.SetAsChild(parent,winRect);
+#elif defined(OS_MACOSX)
+    CefWindowHandle parentView = util_mac::GetParentView((CefWindowHandle)windowHandle);
+    util_mac::TranslateRect(parentView, rect);
+    windowInfo.SetAsChild(parentView, rect.x, rect.y, rect.width, rect.height);
+#endif
+  } else
+#endif
+  {
+    windowInfo.SetAsOffScreen((CefWindowHandle)windowHandle);
+    windowInfo.SetTransparentPainting(transparent);
+  }
+  CefBrowserSettings settings;
+  CefRefPtr<CefBrowser> browserObj;
+  CefString strUrl = GetJNIString(env, url);
+
+  jobject globalRef = env->NewGlobalRef(jbrowser);
+  lifeSpanHandler->registerJBrowser(globalRef);
+  bool result = CefBrowserHost::CreateBrowser(windowInfo,
+                                              clientHandler.get(),
+                                              strUrl,
+                                              settings,
+                                              NULL);
+  if (!result) {
+    lifeSpanHandler->unregisterJBrowser(globalRef);
+    env->DeleteGlobalRef(globalRef);
+    return JNI_FALSE;
+  }
+  return JNI_TRUE;
+}
+
+JNIEXPORT jlong JNICALL Java_org_cef_CefBrowser_1N_N_1GetWindowHandle
+  (JNIEnv *env, jobject obj, jlong displayHandle) {
+  CefWindowHandle windowHandle = NULL;
+#if defined(OS_WIN)
+  windowHandle = ::WindowFromDC((HDC)displayHandle);
+#elif defined(OS_LINUX)
+  // TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
+  // until CEF has moved from GTK to Aura.
+#elif defined(OS_MACOSX)
+  ASSERT(util_mac::IsNSView((void*)displayHandle));
+#endif
+  return (jlong)windowHandle;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1CanGoBack
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
@@ -216,6 +285,13 @@ JNIEXPORT jstring JNICALL Java_org_cef_CefBrowser_1N_N_1GetURL
   return NewJNIString(env, browser->GetMainFrame()->GetURL());
 }
 
+JNIEXPORT
+void JNICALL Java_org_cef_CefBrowser_1N_N_1ParentWindowWillClose
+  (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->ParentWindowWillClose();
+}
+
 JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1Close
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
@@ -231,14 +307,10 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1SetFocus
   (JNIEnv *env, jobject obj, jboolean enable) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   if (browser->GetHost()->IsWindowRenderingDisabled()) {
-    browser->GetHost()->SendFocusEvent(enable == JNI_TRUE);
+    browser->GetHost()->SendFocusEvent(enable != JNI_FALSE);
   } else {
-    browser->GetHost()->SetFocus(enable == JNI_TRUE);
+    browser->GetHost()->SetFocus(enable != JNI_FALSE);
   }
-#if defined(OS_WIN)
-  if (enable == JNI_FALSE)
-    SetFocus(browser->GetHost()->GetOpenerWindowHandle());
-#endif
 }
 
 JNIEXPORT jdouble JNICALL Java_org_cef_CefBrowser_1N_N_1GetZoomLevel

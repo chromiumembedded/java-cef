@@ -8,6 +8,7 @@
 #include <string>
 #include <jni.h>
 #include "include/cef_base.h"
+#include "include/cef_app.h"
 
 #ifdef __OBJC__
 @class NSView;
@@ -25,17 +26,15 @@ std::string GetAbsPath(const std::string& path);
 // Returns true if |ptr| is an NSView instance.
 bool IsNSView(void* ptr);
 
+CefWindowHandle GetParentView(CefWindowHandle childView);
+void TranslateRect(CefWindowHandle view, CefRect& orig);
+
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
                                CefRefPtr<CefApp> application);
 
 void CefQuitMessageLoopOnMainThread();
 
-jobject CefCreateBrowserOnMainThread(jobject jCefClient,
-                                     jlong windowHandle,
-                                     jstring url,
-                                     jboolean transparent,
-                                     jobject canvas);
 }  // namespace util_mac
 
 #endif  // CEF_TESTS_CEFCLIENT_UTIL_MAC_H_

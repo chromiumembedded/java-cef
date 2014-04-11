@@ -44,7 +44,7 @@ bool MessageRouterHandler::OnQuery(CefRefPtr<CefBrowser> browser,
                        NewJNIString(env, request),
                        (jboolean)persistent,
                        query_callback);
-  return (result == JNI_TRUE);
+  return (result != JNI_FALSE);
 }
 
 void MessageRouterHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser,

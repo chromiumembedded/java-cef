@@ -24,10 +24,6 @@
 
 namespace {
 
-// TODO(jcef): We may want to support both windowed and osr use cases in 
-// the same application, in which case we shouldn't use a global variable.
-static bool g_use_osr = false;
-
 class ClientApp : public CefApp {
  public:
   explicit ClientApp(const std::string& module_dir,
@@ -79,8 +75,7 @@ class ClientApp : public CefApp {
       command_line->AppendSwitchWithValue("locale_pak", locale_path);
       // If windowed rendering is used, we need the browser window as CALayer
       // due Java7 is CALayer based instead of NSLayer based.
-      if (!g_use_osr)
-        command_line->AppendSwitch("use-core-animation");
+      command_line->AppendSwitch("use-core-animation");
 #endif  // defined(OS_MACOSX)
     }
   }
@@ -110,8 +105,7 @@ std::string GetHelperPath(const std::string& module_dir) {
 
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
-  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler,
-   jstring cachePath, jboolean osrEnabled) {
+  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -119,9 +113,6 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
     return false;
   }
   SetJVM(jvm);
-
-  // Keep information if offscreen or windowed rendering is used.
-  g_use_osr = (osrEnabled == JNI_TRUE);
 
 #if defined(OS_WIN)
   CefMainArgs main_args(::GetModuleHandle(NULL));
@@ -143,11 +134,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
 
   CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));
 #if defined(OS_MACOSX)
-  if (!g_use_osr) {
-    return util_mac::CefInitializeOnMainThread(main_args, settings,
-                                                client_app.get()) ?
-        JNI_TRUE : JNI_FALSE;
-  }
+  return util_mac::CefInitializeOnMainThread(main_args, settings,
+                                              client_app.get()) ?
+      JNI_TRUE : JNI_FALSE;
 #endif
   return CefInitialize(main_args, settings, client_app.get(), NULL) ?
       JNI_TRUE : JNI_FALSE;
@@ -156,75 +145,13 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
   (JNIEnv *env, jobject) {
 #if defined(OS_MACOSX)
-  if (!g_use_osr) {
-    util_mac::CefQuitMessageLoopOnMainThread();
-    return;
-  }
-#endif
+  util_mac::CefQuitMessageLoopOnMainThread();
+#else
   CefShutdown();
+#endif
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
   (JNIEnv *env, jobject) {
   CefDoMessageLoopWork();
-}
-
-JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1CreateBrowser
-  (JNIEnv *env, jobject, jobject handler, jlong windowHandle,
-   jstring url, jboolean transparent, jobject canvas) {
-#if defined(OS_MACOSX)
-  if (!g_use_osr) {
-    return util_mac::CefCreateBrowserOnMainThread(handler, windowHandle, url,
-                                                   transparent, canvas);
-  }
-#endif
-  jobject browser = NewJNIObject(env, "org/cef/CefBrowser_N");
-  if (!browser)
-    return NULL;
-
-  CefRefPtr<CefBrowser> browserObj;
-
-  CefRefPtr<ClientHandler> client = GetCefFromJNIObject<ClientHandler>(env, handler, "CefClientHandler");
-  client->SetJBrowser(browser);
-
-  CefWindowInfo windowInfo;
-#if defined(OS_WIN)
-  if (!g_use_osr) {
-    HWND parent = GetHwndOfCanvas(canvas, env);
-    CefRect rect;
-    CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)client->GetRenderHandler().get();
-    if (renderHandler.get()) {
-      renderHandler->GetViewRect(NULL, rect);
-    }
-    RECT winRect = {0,0, rect.width, rect.height};
-    windowInfo.SetAsChild(parent,winRect);
-  }
-  else
-#endif
-  {
-    windowInfo.SetAsOffScreen((CefWindowHandle)windowHandle);
-    windowInfo.SetTransparentPainting(transparent);
-  }
-  CefBrowserSettings settings;
-
-  browserObj = CefBrowserHost::CreateBrowserSync(windowInfo, client.get(),
-                                                 GetJNIString(env, url),
-                                                 settings, NULL);
-  SetCefForJNIObject(env, browser, browserObj.get(), "CefBrowser");
-
-  return browser;
-}
-
-JNIEXPORT jlong JNICALL Java_org_cef_CefApp_N_1GetWindowHandle
-  (JNIEnv *, jobject, jlong displayHandle) {
-  CefWindowHandle windowHandle = NULL;
-#if defined(OS_WIN)
-  windowHandle = ::WindowFromDC((HDC)displayHandle);
-#elif defined(OS_LINUX)
-  // TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
-  // until CEF has moved from GTK to Aura.
-#elif defined(OS_MACOSX)
-  ASSERT(util_mac::IsNSView((void*)displayHandle));
-#endif
-  return (jlong)windowHandle;
 }

@@ -6,6 +6,7 @@
 #define CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
 #pragma once
 
+#include <list>
 #include <jni.h>
 #include "include/cef_life_span_handler.h"
 
@@ -29,8 +30,12 @@ class LifeSpanHandler : public CefLifeSpanHandler {
   virtual bool RunModal(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+
+  void registerJBrowser(jobject browser);
+  void unregisterJBrowser(jobject browser);
  protected:
   jobject jhandler_;
+  std::list<jobject> jbrowsers_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(LifeSpanHandler);

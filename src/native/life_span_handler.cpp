@@ -42,20 +42,27 @@ bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                   GetJNIBrowser(browser),
                   NewJNIString(env, target_url),
                   NewJNIString(env, target_frame_name));
-  return (jreturn == JNI_TRUE);
+  return (jreturn != JNI_FALSE);
 }
 
 void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
-  CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
-  client->SetBrowser(browser);
-
   JNIEnv* env = GetJNIEnv();
-  if (!env)
-  	return;
-  JNI_CALL_VOID_METHOD(env, jhandler_, 
-                       "onAfterCreated", 
-                      "(Lorg/cef/CefBrowser;)V",
-                       GetJNIBrowser(browser));
+  if (!env || jbrowsers_.empty())
+    return;
+
+  jobject jbrowser = jbrowsers_.front();
+  jbrowsers_.pop_front();
+
+  CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
+  client->OnAfterCreated();
+
+  if (SetCefForJNIObject(env, jbrowser, browser.get(), "CefBrowser")) {
+    JNI_CALL_VOID_METHOD(env, jhandler_,
+                         "onAfterCreated",
+                         "(Lorg/cef/CefBrowser;)V",
+                         jbrowser);
+  }
+  env->DeleteGlobalRef(jbrowser);
 }
 
 bool LifeSpanHandler::RunModal(CefRefPtr<CefBrowser> browser) {
@@ -69,7 +76,7 @@ bool LifeSpanHandler::RunModal(CefRefPtr<CefBrowser> browser) {
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser));
-  return (jreturn == JNI_TRUE);
+  return (jreturn != JNI_FALSE);
 }
 
 bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -83,7 +90,7 @@ bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser));
-  return (jreturn == JNI_TRUE);
+  return (jreturn != JNI_FALSE);
 }
 
 void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
@@ -96,5 +103,13 @@ void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
                        "(Lorg/cef/CefBrowser;)V",
                        GetJNIBrowser(browser));
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
-  client->RemoveBrowser(browser);
+  client->OnBeforeClose(browser);
+}
+
+void LifeSpanHandler::registerJBrowser(jobject browser) {
+  jbrowsers_.push_back(browser);
+}
+
+void LifeSpanHandler::unregisterJBrowser(jobject browser) {
+  jbrowsers_.remove(browser);
 }

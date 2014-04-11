@@ -7,9 +7,7 @@ package org.cef;
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.glu.GLU;
 
 class CefRenderer {
   private boolean transparent_;
@@ -30,6 +28,7 @@ class CefRenderer {
     return transparent_;
   }
 
+  @SuppressWarnings("static-access")
   protected void initialize(GL2 gl2) {
     if (initialized_)
       return;
@@ -58,6 +57,7 @@ class CefRenderer {
       gl2.glDeleteTextures(1, texture_id_, 0);
   }
 
+  @SuppressWarnings("static-access")
   protected void render(GL2 gl2) {
     if (view_width_ == 0 || view_height_ == 0)
       return;
@@ -164,6 +164,7 @@ class CefRenderer {
     original_popup_rect_.setBounds(0, 0, 0, 0);
   }
 
+  @SuppressWarnings("static-access")
   protected void onPaint(GL2 gl2,
                          boolean popup,
                          Rectangle[] dirtyRects,

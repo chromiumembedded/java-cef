@@ -8,8 +8,6 @@
 #include "jni_util.h"
 #include "util.h"
 
-#include <iostream>
-
 LoadHandler::LoadHandler(JNIEnv* env, jobject handler) {
   jhandler_ = env->NewGlobalRef(handler);
 }

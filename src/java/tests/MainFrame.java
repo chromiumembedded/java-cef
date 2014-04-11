@@ -7,7 +7,7 @@ package tests;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FocusTraversalPolicy;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,14 +27,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import org.cef.CefBrowser;
 import org.cef.CefClient;
 import org.cef.CefDisplayHandler;
 import org.cef.CefApp;
-import org.cef.CefFocusHandlerAdapter;
 import org.cef.CefLoadHandlerAdapter;
 import org.cef.CefMessageRouterHandler;
 import org.cef.CefQueryCallback;
@@ -42,28 +39,7 @@ import org.cef.OS;
 
 public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRouterHandler {
   private static final long serialVersionUID = -2295538706810864538L;
-  private static CefApp cefApp_ = null;
-  private static MainFrame frame_;
   public static void main(String [] args) {
-    // Timer used to pump the CEF message loop in osr mode.
-    final Timer timer = new Timer(33, new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            cefApp_.doMessageLoopWork();
-          }
-        });
-      }
-    });
-
-    // initialize CefApp
-    try {
-      cefApp_ = CefApp.getInstance(args);
-    } catch(UnsatisfiedLinkError e) {
-      e.printStackTrace();
-      System.exit(0);
-    }
-
     // OSR mode is enabled by default on Linux.
     boolean osrEnabledArg = true;
     if (OS.isWindows() || OS.isMacintosh()) {
@@ -77,45 +53,19 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     }
 
-    final boolean osrEnabled = osrEnabledArg;
-    System.out.println("Offscreen rendering " + (osrEnabled ? "enabled" : "disabled"));
+    System.out.println("Offscreen rendering " + (osrEnabledArg ? "enabled" : "disabled"));
 
-    frame_ = new MainFrame(osrEnabled); 
-    frame_.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowOpened(WindowEvent e) {
-        if (osrEnabled || !OS.isMacintosh()) {
-          cefApp_.initialize("", osrEnabled);
-          timer.start();
-        }
-        frame_.createBrowser();
-      }
-
+    final MainFrame frame = new MainFrame(osrEnabledArg, args); 
+    frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        frame_.destroyBrowser();
-        frame_.dispose();
-        if (osrEnabled || !OS.isMacintosh()) {
-          timer.stop();
-        }
-        cefApp_.shutdown();
-        System.out.println("shutdown complete");
-        if (osrEnabled || !OS.isMacintosh()) {
-          System.exit(0);
-        }
+        frame.dispose();
+        CefApp.getInstance().dispose();
       }
     });
 
-    frame_.setSize(800, 600);
-    frame_.setVisible(true);
-
-    // On Mac OS X the message loop is performed by calling initialize, which will block the main
-    // process until the message loop will be quit. See
-    // http://stackoverflow.com/questions/5642802/termination-of-program-on-main-thread-exit
-    // for further information about the Java threading system.
-    if (!osrEnabled && OS.isMacintosh()) {
-      cefApp_.initialize("", osrEnabled);
-    }
+    frame.setSize(800, 600);
+    frame.setVisible(true);
   }
 
   private JTextField address_field_;
@@ -130,24 +80,12 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   private double zoomLevel_ = 0.0;
   private JLabel zoom_label_;
   private String errorMsg_ = "";
+  private CefBrowser browser_;
 
-  public MainFrame(boolean osrEnabled) {
-    client_ = new CefClient(false, osrEnabled);
+  public MainFrame(boolean osrEnabled, String [] args) {
+    client_ = CefApp.getInstance(args).createClient();
     client_.addDisplayHandler(this);
     client_.addMessageRouterHandler(this);
-    client_.addFocusHandler(new CefFocusHandlerAdapter() {
-      @Override
-      public void onTakeFocus(CefBrowser browser, boolean next) {
-        FocusTraversalPolicy policy = getFocusTraversalPolicy();
-        if (policy == null)
-          return;
-        if (next) {
-          policy.getFirstComponent(frame_).requestFocus();
-        } else {
-          policy.getLastComponent(frame_).requestFocus();
-        }
-      }
-    });
     client_.addLoadHandler(new CefLoadHandlerAdapter() {
       @Override
       public void onLoadingStateChange(CefBrowser browser,
@@ -183,6 +121,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         }
       }
     });
+    browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
 
     JMenuBar menuBar = createMenuBar();
@@ -194,19 +133,10 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     setJMenuBar(menuBar);
   }
 
-  private void createBrowser() {
-    client_.createBrowser("http://www.google.com");
-  }
-  
-  private void destroyBrowser() {
-    client_.destroyBrowser();
-    client_ = null;
-  }
-
   private JPanel createContentPanel() {
     JPanel contentPanel = new JPanel(new BorderLayout());
     contentPanel.add(createControlPanel(), BorderLayout.NORTH);
-    contentPanel.add(client_.getCanvas(), BorderLayout.CENTER);
+    contentPanel.add(browser_.getUIComponent(), BorderLayout.CENTER);
     contentPanel.add(createBottomPanel(), BorderLayout.SOUTH);
     return contentPanel;
   }
@@ -223,7 +153,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     backButton_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().goBack();
+        browser_.goBack();
       }
     });
     controlPanel.add(backButton_);
@@ -234,7 +164,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     forwardButton_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().goForward();
+        browser_.goForward();
       }
     });
     controlPanel.add(forwardButton_);
@@ -251,13 +181,13 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
                      : ActionEvent.CTRL_MASK;
           if ((e.getModifiers() & mask) != 0) {
             System.out.println("Reloading - ignoring cached values");
-            client_.getBrowser().reloadIgnoreCache();
+            browser_.reloadIgnoreCache();
           } else {
             System.out.println("Reloading - using cached values");
-            client_.getBrowser().reload();
+            browser_.reload();
           }
         } else {
-          client_.getBrowser().stopLoad();
+          browser_.stopLoad();
         }
       }
     });
@@ -274,13 +204,14 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     address_field_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().loadURL(address_field_.getText());
+        browser_.loadURL(address_field_.getText());
       }
     });
     address_field_.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent arg0) {
-        client_.getBrowser().setFocus(false);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+            .clearGlobalFocusOwner();
         address_field_.requestFocus();
       }
     });
@@ -292,7 +223,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     goButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().loadURL(address_field_.getText());
+        browser_.loadURL(address_field_.getText());
       }
     });
     controlPanel.add(goButton);
@@ -303,7 +234,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     minusButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().setZoomLevel(--zoomLevel_);
+        browser_.setZoomLevel(--zoomLevel_);
         zoom_label_.setText(new Double(zoomLevel_).toString());
       }
     });
@@ -317,7 +248,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     plusButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().setZoomLevel(++zoomLevel_);
+        browser_.setZoomLevel(++zoomLevel_);
         zoom_label_.setText(new Double(zoomLevel_).toString());
       }
     });
@@ -365,7 +296,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         File selectedFile = fc.getSelectedFile(); 
         if (selectedFile != null) {
           last_selected_file_ = selectedFile.getAbsolutePath();
-          client_.getBrowser().loadURL("file:///" + selectedFile.getAbsolutePath());
+          browser_.loadURL("file:///" + selectedFile.getAbsolutePath());
         }
       }
     });
@@ -401,7 +332,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     testJSItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().executeJavaScript("alert('Hello World');", address_field_.getText(), 1);
+        browser_.executeJavaScript("alert('Hello World');", address_field_.getText(), 1);
       }
     });
     testMenu.add(testJSItem);
@@ -410,7 +341,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     testShowText.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().loadString("<html><body><h1>Hello World</h1></body></html>", address_field_.getText());
+        browser_.loadString("<html><body><h1>Hello World</h1></body></html>", address_field_.getText());
       }
     });
     testMenu.add(testShowText);
@@ -419,19 +350,18 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     showInfo.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        CefBrowser browser = client_.getBrowser();
         String info =  "<html><head><title>Browser status</title></head>";
                info += "<body><h1>Browser status</h1><table border=\"0\">";
-               info += "<tr><td>CanGoBack</td><td>" + browser.canGoBack() + "</td></tr>";
-               info += "<tr><td>CanGoForward</td><td>" + browser.canGoForward() + "</td></tr>";
-               info += "<tr><td>IsLoading</td><td>" + browser.isLoading() + "</td></tr>";
-               info += "<tr><td>isPopup</td><td>" + browser.isPopup() + "</td></tr>";
-               info += "<tr><td>hasDocument</td><td>" + browser.hasDocument() + "</td></tr>";
-               info += "<tr><td>Url</td><td>" + browser.getURL() + "</td></tr>";
-               info += "<tr><td>Zoom-Level</td><td>" + browser.getZoomLevel() + "</td></tr>";
+               info += "<tr><td>CanGoBack</td><td>" + browser_.canGoBack() + "</td></tr>";
+               info += "<tr><td>CanGoForward</td><td>" + browser_.canGoForward() + "</td></tr>";
+               info += "<tr><td>IsLoading</td><td>" + browser_.isLoading() + "</td></tr>";
+               info += "<tr><td>isPopup</td><td>" + browser_.isPopup() + "</td></tr>";
+               info += "<tr><td>hasDocument</td><td>" + browser_.hasDocument() + "</td></tr>";
+               info += "<tr><td>Url</td><td>" + browser_.getURL() + "</td></tr>";
+               info += "<tr><td>Zoom-Level</td><td>" + browser_.getZoomLevel() + "</td></tr>";
                info += "</table></body></html>";
         String js = "var x=window.open(); x.document.open(); x.document.write('" + info + "'); x.document.close();";
-        browser.executeJavaScript(js, "", 0);
+        browser_.executeJavaScript(js, "", 0);
       }
     });
     testMenu.add(showInfo);
@@ -440,7 +370,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     showDevTools.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().showDevTools(client_);
+        browser_.showDevTools(client_);
       }
     });
     testMenu.add(showDevTools);
@@ -449,7 +379,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     closeDevTools.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().closeDevTools();
+        browser_.closeDevTools();
       }
     });
     testMenu.add(closeDevTools);
@@ -483,7 +413,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     menuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        client_.getBrowser().loadURL(e.getActionCommand());
+        browser_.loadURL(e.getActionCommand());
       }
     });
     bookmarkMenu_.add(menuItem);

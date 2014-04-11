@@ -4,15 +4,24 @@
 
 package org.cef;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.Rectangle;
+import java.awt.Component;
 
 /**
  * Interface representing a browser.
  */
 public interface CefBrowser extends CefNative {
+
+  /**
+   * Get the underlying UI component (e.g. java.awt.Canvas).
+   * @return The underlying UI component.
+   */
+  public Component getUIComponent();
+
+  /**
+   * Get an implementation of CefRenderHandler if any.
+   * @return An instance of CefRenderHandler or null.
+   */
+  public CefRenderHandler getRenderHandler();
 
   //
   // The following methods are forwarded to CefBrowser.
@@ -163,35 +172,4 @@ public interface CefBrowser extends CefNative {
    * if one exists for this browser instance.
    */
   void closeDevTools();
-
-  /**
-   * Notify that the browser was resized.
-   * @param width The new width of the browser
-   * @param height The new height of the browser
-   */
-  public void wasResized(int width, int height);
-
-  /**
-   * Invalidate the specified rectangle.
-   * @param rect The rectangle to invalidate.
-   */
-  public void invalidate(Rectangle rect);
-
-  /**
-   * Send a key event.
-   * @param e The event to send.
-   */
-  public void sendKeyEvent(KeyEvent e);
-
-  /**
-   * Send a mouse event.
-   * @param e The event to send.
-   */
-  public void sendMouseEvent(MouseEvent e);
-
-  /**
-   * Send a mouse wheel event.
-   * @param e The event to send.
-   */
-  public void sendMouseWheelEvent(MouseWheelEvent e);
 }

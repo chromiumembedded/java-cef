@@ -56,7 +56,7 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
                   jreturn, 
                   GetJNIBrowser(browser),
                   jsource);
-  return jreturn == JNI_TRUE ? true : false;
+  return (jreturn != JNI_FALSE);
 }
 
 void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {

@@ -282,7 +282,7 @@ jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return NULL;
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
-  return client->GetJBrowser();
+  return client->getBrowser(browser);
 }
 
 jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname) {

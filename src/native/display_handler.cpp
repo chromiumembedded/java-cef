@@ -55,7 +55,7 @@ bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser,
                   jreturn,
                   GetJNIBrowser(browser),
                   NewJNIString(env, text));
-  return jreturn == JNI_TRUE ? true : false;
+  return (jreturn != JNI_FALSE);
 }
 
 void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
@@ -87,5 +87,5 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                   NewJNIString(env, message),
                   NewJNIString(env, source),
                   line );
-  return jreturn == JNI_TRUE ? true : false;
+  return (jreturn != JNI_FALSE);
 }

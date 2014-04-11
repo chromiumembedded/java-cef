@@ -9,6 +9,22 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_CefBrowser_N
+ * Method:    N_CreateBrowser
+ * Signature: (Lorg/cef/CefClientHandler;JLjava/lang/String;ZLjava/awt/Canvas;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefBrowser_1N_N_1CreateBrowser
+  (JNIEnv *, jobject, jobject, jlong, jstring, jboolean, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_GetWindowHandle
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_cef_CefBrowser_1N_N_1GetWindowHandle
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_cef_CefBrowser_N
  * Method:    N_CanGoBack
  * Signature: ()Z
  */
@@ -125,6 +141,14 @@ JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1ExecuteJavaScript
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_cef_CefBrowser_1N_N_1GetURL
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefBrowser_N
+ * Method:    N_ParentWindowWillClose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefBrowser_1N_N_1ParentWindowWillClose
   (JNIEnv *, jobject);
 
 /*

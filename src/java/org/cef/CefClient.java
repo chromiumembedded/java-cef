@@ -4,29 +4,15 @@
 
 package org.cef;
 
-import java.awt.Cursor;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.nio.ByteBuffer;
-import javax.media.nativewindow.NativeSurface;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
-import javax.media.opengl.GLCapabilities;
-import javax.swing.JPopupMenu;
-import javax.swing.ToolTipManager;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Client that owns a browser and renderer.
@@ -37,66 +23,26 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                                                            CefFocusHandler,
                                                            CefMessageRouterHandler,
                                                            CefLoadHandler {
-  private boolean osr_enabled_;
-  private boolean isTransparent_;
-  private CefRenderer renderer_;
-  private Canvas canvas_;
-  private long window_handle_ = 0;
-  private CefBrowser browser_ = null;
-  private Rectangle browser_rect_ = new Rectangle(0, 0, 0, 0);
+  private HashMap<Integer,CefBrowser> browser_ = new HashMap<Integer,CefBrowser>();
   private CefDisplayHandler displayHandler_ = null;
   private CefFocusHandler focusHandler_ = null;
   private CefLifeSpanHandler lifeSpanHandler_ = null;
   private CefLoadHandler loadHandler_ = null;
   private CefMessageRouterHandler msgRouterHandler_ = null;
 
-  public CefClient(boolean transparent, boolean osr) {
+  /**
+   * The CTOR is only accessible within this package.
+   * Use CefApp.createClient() to create an instance of
+   * this class.
+   * @see org.cef.CefApp.createClient()
+   */
+  CefClient() throws UnsatisfiedLinkError {
     super();
-    isTransparent_ = transparent;
-    osr_enabled_ = osr;
-    if (osr_enabled_) {
-      renderer_ = new CefRenderer(transparent);
-      createGLCanvas();
-    } else {
-      // Disabling lightweight of popup menu is required because
-      // otherwise it will be displayed behind the content of canvas_
-      JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-
-      renderer_ = null;
-      canvas_ = new Canvas() {
-        @Override
-        public void setBounds(int x, int y, int width, int height) {
-          super.setBounds(x, y, width, height);
-          if (browser_ != null) {
-            browser_.wasResized(width, height);
-          }
-        }
-
-        @Override
-        public void setBounds(Rectangle r) {
-          setBounds(r.x, r.y, r.width, r.height);
-        }
-
-        @Override
-        public void setSize(int width, int height) {
-          super.setSize(width, height);
-          if (browser_ != null)
-            browser_.wasResized(width, height);
-        }
-
-        @Override
-        public void setSize(Dimension d) {
-          setSize(d.width, d.height);
-        }
-      };
-    }
   }
-  
+
   @Override
   protected void finalize() throws Throwable {
-    if (browser_ != null)
-      destroyBrowser();
+    destroyAllBrowser();
     removeDisplayHandler(this);
     removeFocusHandler(this);
     removeLifeSpanHandler(this);
@@ -106,23 +52,30 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
     super.finalize();
   }
 
-  public void createBrowser(String url) {
-    assert(browser_ == null);
-    browser_ = CefApp.getInstance().createBrowser(this,
-                                                  getWindowHandle(),
-                                                  url,
-                                                  isTransparent_,
-                                                  (osr_enabled_ ? null : canvas_));
+  public CefBrowser createBrowser(String url,
+                                  boolean isOffscreenRendered,
+                                  boolean isTransparent) {
+    return CefBrowserFactory.create(this, url, isOffscreenRendered, isTransparent);
   }
 
-  public void destroyBrowser() {
-    assert(browser_ != null);
-    browser_.close();
-    browser_ = null;
+  public void destroyBrowser(CefBrowser browser) {
+    Integer browserId = new Integer(browser.getIdentifier());
+    if (browser_.remove(browserId) != null) {
+      browser.close();
+    }
   }
 
-  public CefBrowser getBrowser() {
-    return browser_;
+  @Override
+  protected CefBrowser getBrowser(int identifier) {
+    return browser_.get(new Integer(identifier));
+  }
+
+  public void destroyAllBrowser() {
+    Collection<CefBrowser> browserList = browser_.values();
+    for (CefBrowser browser : browserList) {
+      browser.close();
+    }
+    browser_.clear();
   }
 
   public CefClient addDisplayHandler(CefDisplayHandler handler) {
@@ -205,150 +158,11 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
     return this;
   }
 
-  public Canvas getCanvas() {
-    return canvas_;
-  }
-
-  private long getWindowHandle() {
-    if (window_handle_ == 0) {
-      if (osr_enabled_) {
-        NativeSurface surface = ((GLCanvas)canvas_).getNativeSurface();
-        surface.lockSurface();
-        window_handle_ = CefApp.getInstance().getWindowHandle(surface.getSurfaceHandle());
-        surface.unlockSurface();
-        assert (window_handle_ != 0);
-      } else if (OS.isMacintosh()) {
-        try {
-          Class<?> cls = Class.forName("org.cef.mac.CefBrowserWindowMac");
-          CefBrowserWindow browserWindow = (CefBrowserWindow)cls.newInstance();
-          if (browserWindow != null) {
-            window_handle_ = browserWindow.getWindowHandleOfCanvas(canvas_);
-          }
-        } catch (ClassNotFoundException e) {
-          // Ignore exceptions
-        } catch (InstantiationException e) {
-          // Ignore exceptions
-        } catch (IllegalAccessException e) {
-          // Ignore exceptions
-        }
-      }
-    }
-    return window_handle_;
-  }
-
-  private void createGLCanvas() {
-    GLProfile glprofile = GLProfile.getDefault();
-    GLCapabilities glcapabilities = new GLCapabilities(glprofile);
-    canvas_ = new GLCanvas(glcapabilities);
-
-    ((GLCanvas)canvas_).addGLEventListener(new GLEventListener() {
-      @Override
-      public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-        browser_rect_.setBounds(x, y, width, height);
-        if (browser_ != null)
-          browser_.wasResized(width, height);
-      }
-
-      @Override
-      public void init(GLAutoDrawable glautodrawable) {
-        renderer_.initialize(glautodrawable.getGL().getGL2());
-      }
-
-      @Override
-      public void dispose(GLAutoDrawable glautodrawable) {
-        renderer_.cleanup(glautodrawable.getGL().getGL2());
-      }
-
-      @Override
-      public void display(GLAutoDrawable glautodrawable) {
-        renderer_.render(glautodrawable.getGL().getGL2());
-      }
-    });
-
-    canvas_.addMouseListener(new MouseListener() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        onMouseEvent(e);
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        onMouseEvent(e);
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        onMouseEvent(e);
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-        onMouseEvent(e);
-      }
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        onMouseEvent(e);
-      }
-    });
-
-    canvas_.addMouseMotionListener(new MouseMotionListener() {
-      @Override
-      public void mouseMoved(MouseEvent e) {
-        onMouseEvent(e);
-      }
-
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        onMouseEvent(e);
-      }
-    });
-
-    canvas_.addMouseWheelListener(new MouseWheelListener() {
-      @Override
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        onMouseWheelEvent(e);
-      }
-    });
-
-    canvas_.addKeyListener(new KeyListener() {
-      @Override
-      public void keyTyped(KeyEvent e) {
-        onKeyEvent(e);
-      }
-
-      @Override
-      public void keyPressed(KeyEvent e) {
-        onKeyEvent(e);
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        onKeyEvent(e);
-      }
-    });
-  }
-
-  private void onMouseEvent(MouseEvent e) {
-    if (browser_ != null)
-      browser_.sendMouseEvent(e);
-  }
-  
-  private void onMouseWheelEvent(MouseWheelEvent e) {
-    if (browser_ != null)
-      browser_.sendMouseWheelEvent(e);
-  }
-
-  private void onKeyEvent(KeyEvent e) {
-    if (browser_ != null)
-      browser_.sendKeyEvent(e);
-  }
-  
   @Override
   public boolean onBeforePopup(CefBrowser browser,
                                String target_url,
                                String target_frame_name) {
-    if (lifeSpanHandler_ != null)
+    if (lifeSpanHandler_ != null && browser != null)
       return lifeSpanHandler_.onBeforePopup(browser,
                                             target_url,
                                             target_frame_name);
@@ -357,45 +171,51 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
 
   @Override
   public void onAfterCreated(CefBrowser browser) {
+    if (browser == null)
+      return;
+
+    // keep browser reference
+    Integer identifier = browser.getIdentifier();
+    browser_.put(identifier, browser);
     if (lifeSpanHandler_ != null)
       lifeSpanHandler_.onAfterCreated(browser);
   }
 
   @Override
   public boolean runModal(CefBrowser browser) {
-    if (lifeSpanHandler_ != null)
+    if (lifeSpanHandler_ != null && browser != null)
       return lifeSpanHandler_.runModal(browser);
     return false;
   }
 
   @Override
   public boolean doClose(CefBrowser browser) {
-    if (lifeSpanHandler_ != null)
+    if (lifeSpanHandler_ != null && browser != null)
       return lifeSpanHandler_.doClose(browser);
     return false;
   }
 
   @Override
   public void onBeforeClose(CefBrowser browser) {
-    if (lifeSpanHandler_ != null)
+    if (lifeSpanHandler_ != null && browser != null)
       lifeSpanHandler_.onBeforeClose(browser);
   }
 
   @Override
   public void onAddressChange(CefBrowser browser, String url) {
-    if (displayHandler_ != null)
+    if (displayHandler_ != null && browser != null)
       displayHandler_.onAddressChange(browser, url);
   }
 
   @Override
   public void onTitleChange(CefBrowser browser, String title) {
-    if (displayHandler_ != null)
+    if (displayHandler_ != null && browser != null)
       displayHandler_.onTitleChange(browser, title);
   }
 
   @Override
   public boolean onTooltip(CefBrowser browser, String text) {
-    if (displayHandler_ != null) {
+    if (displayHandler_ != null && browser != null) {
       return displayHandler_.onTooltip(browser, text);
     }
     return false;
@@ -403,7 +223,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
 
   @Override
   public void onStatusMessage(CefBrowser browser, String value) {
-    if (displayHandler_ != null) {
+    if (displayHandler_ != null && browser != null) {
       displayHandler_.onStatusMessage(browser, value);
     }
   }
@@ -413,7 +233,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                                   String message,
                                   String source,
                                   int line) {
-    if (displayHandler_ != null) {
+    if (displayHandler_ != null && browser != null) {
       return displayHandler_.onConsoleMessage(browser, message, source, line);
     }
     return false;
@@ -421,12 +241,16 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
 
   @Override
   public Rectangle getViewRect(CefBrowser browser) {
-    if (osr_enabled_)
-      return browser_rect_;
+    if (browser == null)
+      return new Rectangle(0,0,0,0);
 
-    Rectangle tmp = canvas_.getBounds();
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      return realHandler.getViewRect(browser);
+    
+    Rectangle tmp = browser.getUIComponent().getBounds();
     if (OS.isMacintosh()) {
-      Container parent = canvas_.getParent();
+      Container parent = browser.getUIComponent().getParent();
       while (parent != null) {
         Container next = parent.getParent();
         if (next != null && next instanceof Window)
@@ -443,7 +267,13 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
 
   @Override
   public Point getScreenPoint(CefBrowser browser, Point viewPoint) {
-    Point screenPoint = canvas_.getLocationOnScreen();
+    if (browser == null)
+      return new Point(0,0);
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      return realHandler.getScreenPoint(browser,viewPoint);
+    Point screenPoint = browser.getUIComponent().getLocationOnScreen();
     screenPoint.translate(viewPoint.x, viewPoint.y);
     return screenPoint;
   }
@@ -451,17 +281,23 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   @Override
   public void onPopupShow(CefBrowser browser,
                           boolean show) {
-    if (!show) {
-      Rectangle old_rect = renderer_.getPopupRect();
-      renderer_.clearPopupRects();
-      browser_.invalidate(old_rect);
-    }
+    if (browser == null)
+      return;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      realHandler.onPopupShow(browser, show);
   }
 
   @Override
   public void onPopupSize(CefBrowser browser,
                           Rectangle size) {
-    renderer_.onPopupSize(size);
+    if (browser == null)
+      return;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      realHandler.onPopupSize(browser, size);
   }
 
   @Override
@@ -471,38 +307,73 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                       ByteBuffer buffer,
                       int width,
                       int height) {
-    ((GLCanvas)canvas_).getContext().makeCurrent();
-    renderer_.onPaint(((GLCanvas)canvas_).getGL().getGL2(), popup, dirtyRects, buffer, width, height);
-    ((GLCanvas)canvas_).getContext().release();
-    ((GLCanvas)canvas_).display();
+    if (browser == null)
+      return;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      realHandler.onPaint(browser, popup, dirtyRects, buffer, width, height);
   }
 
   @Override
   public void onCursorChange(CefBrowser browser,
                              int cursorType) {
-    if (browser_ != null)
-      getCanvas().setCursor(new Cursor(cursorType));
+    if (browser == null)
+      return;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      realHandler.onCursorChange(browser, cursorType);
   }
 
   @Override
   public void onTakeFocus(CefBrowser browser, boolean next) {
+    if (browser == null)
+      return;
+
     browser.setFocus(false);
+    Container parent = browser.getUIComponent().getParent();
+    if (parent != null) {
+      FocusTraversalPolicy policy = null;
+      while (parent != null) {
+        policy = parent.getFocusTraversalPolicy();
+        if (policy != null)
+          break;
+        parent = parent.getParent();
+      }
+      if (policy != null) {
+        Component nextComp = next ? policy.getComponentAfter(parent, browser.getUIComponent())
+                                  : policy.getComponentBefore(parent, browser.getUIComponent());
+        if (nextComp == null) {
+          policy.getDefaultComponent(parent).requestFocus();
+        } else {
+          nextComp.requestFocus();
+        }
+      }
+    }
     if (focusHandler_ != null)
       focusHandler_.onTakeFocus(browser, next);
   }
 
   @Override
   public boolean onSetFocus(CefBrowser browser, FocusSource source) {
+    if (browser == null)
+      return false;
+
     boolean alreadyHandled = false;
     if (focusHandler_ != null)
       alreadyHandled = focusHandler_.onSetFocus(browser, source);
-    if (!alreadyHandled && canvas_ != null)
-      canvas_.requestFocus();
+    if (!alreadyHandled)
+      browser.getUIComponent().requestFocus();
     return alreadyHandled;
   }
 
   @Override
   public void onGotFocus(CefBrowser browser) {
+    if (browser == null)
+      return;
+
+    browser.setFocus(true);
     if (focusHandler_ != null)
       focusHandler_.onGotFocus(browser);
   }
@@ -514,7 +385,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                          boolean persistent,
                          CefQueryCallback callback) {
     boolean alreadyHandled = false;
-    if (msgRouterHandler_ != null)
+    if (msgRouterHandler_ != null && browser != null)
       alreadyHandled = msgRouterHandler_.onQuery(browser, query_id, request, persistent, callback);
     return alreadyHandled;
   }
@@ -522,7 +393,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   @Override
   public void onQueryCanceled(CefBrowser browser,
                               long query_id) {
-    if (msgRouterHandler_ != null)
+    if (msgRouterHandler_ != null && browser != null)
       msgRouterHandler_.onQueryCanceled(browser, query_id);
   }
 
@@ -531,13 +402,13 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                                    boolean isLoading,
                                    boolean canGoBack,
                                    boolean canGoForward) {
-    if (loadHandler_ != null)
+    if (loadHandler_ != null && browser != null)
       loadHandler_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
   }
 
   @Override
   public void onLoadStart(CefBrowser browser, int frameIdentifer) {
-    if (loadHandler_ != null)
+    if (loadHandler_ != null && browser != null)
       loadHandler_.onLoadStart(browser, frameIdentifer);
   }
 
@@ -545,7 +416,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   public void onLoadEnd(CefBrowser browser,
                         int frameIdentifier,
                         int httpStatusCode) {
-    if (loadHandler_ != null)
+    if (loadHandler_ != null && browser != null)
       loadHandler_.onLoadEnd(browser, frameIdentifier, httpStatusCode);
   }
 
@@ -555,7 +426,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                           ErrorCode errorCode,
                           String errorText,
                           String failedUrl) {
-    if (loadHandler_ != null)
+    if (loadHandler_ != null && browser != null)
       loadHandler_.onLoadError(browser, frameIdentifer, errorCode, errorText, failedUrl);
   }
 }

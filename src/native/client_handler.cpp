@@ -29,12 +29,14 @@
 #include "jni_util.h"
 #include "util.h"
 
-ClientHandler::ClientHandler(JNIEnv* env, jobject handler)
-  : jbrowser_(NULL) {
+ClientHandler::ClientHandler(JNIEnv* env, jobject handler) {
   jhandler_ = env->NewGlobalRef(handler);
 }
 
 ClientHandler::~ClientHandler() {
+  BEGIN_ENV(env)
+  env->DeleteGlobalRef(jhandler_);
+  END_ENV(env)
 }
 
 CefRefPtr<CefDisplayHandler> ClientHandler::GetDisplayHandler() {
@@ -197,15 +199,10 @@ bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-void ClientHandler::SetBrowser(CefRefPtr<CefBrowser> browser) { 
+void ClientHandler::OnAfterCreated() {
   REQUIRE_UI_THREAD();
 
   AutoLock lock_scope(this);
-  if (!browser_.get())   {
-    // We need to keep the main child window, but not popup windows.
-    browser_ = browser;
-  }
-
   if (!message_router_) {
     CefRefPtr<MessageRouterHandler> handler;
     handler = GetMessageRouterHandler();
@@ -218,21 +215,10 @@ void ClientHandler::SetBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ClientHandler::RemoveBrowser(CefRefPtr<CefBrowser> browser) {
+void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
   AutoLock lock_scope(this);
-  if (browser_->GetIdentifier() == browser->GetIdentifier()) {
-    // Free the browser pointer so that the browser can be destroyed.
-    browser_ = NULL;
-
-    JNIEnv* env = GetJNIEnv();
-    if(env) {
-      env->DeleteGlobalRef(jbrowser_);
-      env->DeleteGlobalRef(jhandler_);
-      jbrowser_ = jhandler_ = NULL;
-    }
-  }
   if (message_router_)
     message_router_->OnBeforeClose(browser);
 }
@@ -271,7 +257,16 @@ void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     message_router_->OnRenderProcessTerminated(browser);
 }
 
-void ClientHandler::SetJBrowser(jobject jbrowser) { 
-  JNIEnv* env = GetJNIEnv();
-  jbrowser_ = env->NewGlobalRef(jbrowser);
+jobject ClientHandler::getBrowser(CefRefPtr<CefBrowser> browser) {
+  jobject jbrowser = NULL;
+  BEGIN_ENV(env)
+  JNI_CALL_METHOD(env, 
+                  jhandler_, 
+                  "getBrowser", 
+                  "(I)Lorg/cef/CefBrowser;", 
+                  Object, 
+                  jbrowser, 
+                  browser->GetIdentifier());
+  END_ENV(env)
+  return jbrowser;
 }

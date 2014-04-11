@@ -7,15 +7,24 @@ package org.cef;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.Canvas;
 import java.awt.Rectangle;
 
-class CefBrowser_N implements CefBrowser {
+/**
+ * This class represents all methods which are connected to the
+ * native counterpart CEF.
+ * The visibility of this class is "package". To create a new
+ * CefBrowser instance, please use CefBrowserFactory.
+ */
+abstract class CefBrowser_N implements CefBrowser {
   // Used internally to store a pointer to the CEF object.
   private long N_CefHandle = 0;
+  private boolean isPending_ = false;
 
   @Override
   public void setNativeRef(String identifer, long nativeRef) {
     N_CefHandle = nativeRef;
+    isPending_ = false;
   }
 
   @Override
@@ -23,8 +32,33 @@ class CefBrowser_N implements CefBrowser {
     return N_CefHandle;
   }
 
-  // Constructor is called by native code.
-  CefBrowser_N() {
+  /**
+   * Create a new browser.
+   */
+  protected void createBrowser(CefClientHandler clientHandler,
+                               long windowHandle,
+                               String url,
+                               boolean transparent,
+                               Canvas canvas) {
+    if (N_CefHandle == 0 && !isPending_) {
+      try {
+        isPending_ = N_CreateBrowser(clientHandler, windowHandle, url, transparent, canvas);
+      } catch (UnsatisfiedLinkError err) {
+        err.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Returns the native window handle for the specified native surface handle.
+   */
+  protected final long getWindowHandle(long surfaceHandle) {
+    try {
+      return N_GetWindowHandle(surfaceHandle);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+    return 0;
   }
 
   @Override
@@ -178,6 +212,7 @@ class CefBrowser_N implements CefBrowser {
   @Override
   public void close() {
     try {
+      getUIComponent().removeNotify();
       N_Close();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
@@ -239,8 +274,23 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void wasResized(int width, int height) {
+  /**
+   * Notify CEF that the parent window will close.
+   */
+  protected final void parentWindowWillClose() {
+    try {
+      N_ParentWindowWillClose();
+    } catch(UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+  * Notify that the browser was resized.
+  * @param width The new width of the browser
+  * @param height The new height of the browser
+  */
+  protected final void wasResized(int width, int height) {
     try {
       N_WasResized(width, height);
     } catch (UnsatisfiedLinkError ule) {
@@ -248,8 +298,11 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void invalidate(Rectangle rect) {
+  /**
+  * Invalidate the specified rectangle.
+  * @param rect The rectangle to invalidate.
+  */
+  protected final void invalidate(Rectangle rect) {
     try {
       N_Invalidate(rect);
     } catch (UnsatisfiedLinkError ule) {
@@ -257,8 +310,11 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void sendKeyEvent(KeyEvent e) {
+  /**
+  * Send a key event.
+  * @param e The event to send.
+  */
+  protected final void sendKeyEvent(KeyEvent e) {
     try {
       N_SendKeyEvent(e);
     } catch (UnsatisfiedLinkError ule) {
@@ -266,8 +322,11 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void sendMouseEvent(MouseEvent e) {
+  /**
+   * Send a mouse event.
+   * @param e The event to send.
+   */
+  protected final void sendMouseEvent(MouseEvent e) {
     try {
       N_SendMouseEvent(e);
     } catch (UnsatisfiedLinkError ule) {
@@ -275,8 +334,11 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
-  @Override
-  public void sendMouseWheelEvent(MouseWheelEvent e) {
+  /**
+   * Send a mouse wheel event.
+   * @param e The event to send.
+   */
+  protected final void sendMouseWheelEvent(MouseWheelEvent e) {
     try {
       N_SendMouseWheelEvent(e);
     } catch (UnsatisfiedLinkError ule) {
@@ -284,6 +346,8 @@ class CefBrowser_N implements CefBrowser {
     }
   }
 
+  private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle, String url, boolean transparent, Canvas canvas);
+  private final native long N_GetWindowHandle(long surfaceHandle);
   private final native boolean N_CanGoBack();
   private final native void N_GoBack();
   private final native boolean N_CanGoForward();
@@ -299,6 +363,7 @@ class CefBrowser_N implements CefBrowser {
   private final native void N_LoadString(String val, String url);
   private final native void N_ExecuteJavaScript(String code, String url, int line);
   private final native String N_GetURL();
+  private final native void N_ParentWindowWillClose();
   private final native void N_Close();
   private final native void N_SetFocus(boolean enable);
   private final native double N_GetZoomLevel();

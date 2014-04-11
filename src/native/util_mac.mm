@@ -2,11 +2,11 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#import "util_mac.mm"
+#import "util_mac.h"
 #import <Cocoa/Cocoa.h>
+#import <Foundation/NSLock.h>
 #import <jni.h>
 #include <objc/runtime.h>
-#include <iostream>
 #include "include/cef_app.h"
 #include "include/cef_application_mac.h"
 #include "include/cef_browser.h"
@@ -18,7 +18,8 @@
 namespace {
 
 BOOL g_handling_send_event = false;
-CefRefPtr<ClientHandler> g_client_handler = NULL;
+bool g_init_result = false;
+NSCondition *g_lock_initialize = NULL;
 
 }  // namespace
 
@@ -63,70 +64,6 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
 // This is only a small stub class to transport data between
 // JNI function calls and the Obj-C implementations. The Obj-C
 // implementation is addressed by calling "performSelectorOnMainThread".
-@interface BrowserStub : NSObject {
-  jobject canvas_;
-  jlong windowHandle_;
-  jstring url_;
-  jobject result_;
-  jobject cefClient_;
-  jboolean transparent_;
-}
-
-- (id) initWithValues:(jobject)cefClient
-         windowHandle:(jlong)windowHandle
-               urlStr:(jstring)url
-        isTransparent:(jboolean)transparent
-               canvas:(jobject)canvas;
-- (jobject) canvas;
-- (jlong) windowHandle;
-- (jstring) url;
-- (jboolean) transparent;
-- (jobject) cefClient;
-- (void) setResult:(jobject)result;
-- (jobject) result;
-
-@end  // interface BrowserStub
-
-@implementation BrowserStub
-
-- (id) initWithValues:(jobject)cefClient
-         windowHandle:(jlong)windowHandle
-               urlStr:(jstring)url
-        isTransparent:(jboolean)transparent
-               canvas:(jobject)canvas {
-  if (self = [super init]) {
-    cefClient_ = cefClient;
-    windowHandle_ = windowHandle;
-    url_ = url;
-    transparent_ = transparent;
-    canvas_ = canvas;
-  }
-  return self;
-}
-- (jobject) canvas {
-  return canvas_;
-}
-- (jlong) windowHandle {
-  return windowHandle_;
-}
-- (jstring) url {
-  return url_;
-}
-- (jboolean) transparent {
-  return transparent_;
-}
-- (jobject) cefClient {
-  return cefClient_;
-}
-- (void) setResult:(jobject)result {
-  result_ = result;
-}
-- (jobject) result {
-  return result_;
-}
-
-@end  // implementation BrowserStub
-
 @interface SystemStub : NSObject {
   CefMainArgs args_;
   CefSettings settings_;
@@ -182,7 +119,6 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
 
 + (void) initialize:(SystemStub*)stub;
 + (void) quitMessageLoop;
-+ (void) createBrowser:(BrowserStub*)stub;
 
 @end  // interface CefHandler
 
@@ -190,65 +126,20 @@ CefRefPtr<ClientHandler> g_client_handler = NULL;
 
 + (void) initialize:(SystemStub*)stub {
   // Initialize CEF
-  bool result = CefInitialize([stub args], [stub settings], [stub application],
-                              NULL);
-  [stub setResult:result];
+  [g_lock_initialize lock];
+  CefRefPtr<CefApp> app = [stub application];
+  g_init_result = CefInitialize([stub args], [stub settings], app, NULL);
+  [g_lock_initialize signal];
+  [g_lock_initialize unlock];
+
   // Run the application message loop.
   CefRunMessageLoop();
   // Shut down CEF.
   CefShutdown();
-  // Free memory.
-  g_client_handler = NULL;
-  [stub setResult:true];
 }
 
 + (void) quitMessageLoop {
   CefQuitMessageLoop();
-}
-
-+ (void) createBrowser:(BrowserStub*)stub {
-  BEGIN_ENV(env)
-  jobject browser = NewJNIObject(env, "org/cef/CefBrowser_N");
-  if (browser) {
-    g_client_handler = GetCefFromJNIObject<ClientHandler>(env, [stub cefClient], "CefClientHandler");
-    g_client_handler->SetJBrowser(browser);
-    CefWindowInfo windowInfo;
-    if (![stub canvas]) {
-      windowInfo.SetAsOffScreen((CefWindowHandle)[stub windowHandle]);
-      windowInfo.SetTransparentPainting([stub transparent]);
-    } else {
-      CefRect rect;
-      CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)g_client_handler->GetRenderHandler().get();
-      if (renderHandler.get()) {
-        renderHandler->GetViewRect(NULL, rect);
-        int screenX, screenY;
-        renderHandler->GetScreenPoint(NULL, rect.x, rect.y, screenX, screenY);
-      }
-      NSWindow* window = (NSWindow*)[stub windowHandle];
-      NSView* parentView = [window contentView];
-      NSRect bounds = [parentView bounds];
-      // translate java's window origin to Obj-C's window origin
-      int systemX = rect.x;
-      int systemY = bounds.size.height - rect.height - rect.y;
-      windowInfo.SetAsChild(parentView, systemX, systemY, rect.width, rect.height);
-    }
-    CefBrowserSettings settings;
-    CefRefPtr<CefBrowser> browserObj;
-    CefString strUrl = GetJNIString(env, [stub url]);
-    browserObj = CefBrowserHost::CreateBrowserSync(windowInfo,
-                                                   g_client_handler.get(),
-                                                   strUrl,
-                                                   settings,
-                                                   NULL);
-    if ([stub canvas]) {
-      NSView* browserView = browserObj->GetHost()->GetWindowHandle();
-      [browserView setWantsLayer:YES];
-      AddLayerToComponent([stub canvas], env, browserView);
-    }
-    SetCefForJNIObject(env, browser, browserObj.get(), "CefBrowser");
-  }
-  [stub setResult:browser];
-  END_ENV(env)
 }
 
 @end  // implementation CefHandler
@@ -270,41 +161,39 @@ bool IsNSView(void* ptr) {
   return result;
 }
 
+CefWindowHandle GetParentView(CefWindowHandle childView) {
+  NSWindow* window = (NSWindow*)childView;
+  return (CefWindowHandle)[window contentView];
+}
+
+// translate java's window origin to Obj-C's window origin
+void TranslateRect(CefWindowHandle view, CefRect& orig) {
+  orig.y = [view bounds].size.height - orig.height - orig.y;
+}
+
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
                                CefRefPtr<CefApp> application) {
   SystemStub* stub = [[SystemStub alloc] initWithValues:args
                                                settings:settings
                                             application:application];
+  // we're not using waitUntilDone here because we want to return true
+  // or false to the caller of this method.
+  g_lock_initialize = [[NSCondition alloc] init];
+  [g_lock_initialize lock];
   [[CefHandler class] performSelectorOnMainThread:@selector(initialize:)
                                        withObject:stub
-                                    waitUntilDone:YES];
-  bool result = [stub result];
+                                    waitUntilDone:NO];
+  [g_lock_initialize wait];
+  [g_lock_initialize unlock];
+  [g_lock_initialize release];
   [stub release];
-  return result;
+  return g_init_result;
 }
 
 void CefQuitMessageLoopOnMainThread() {
   [[CefHandler class] performSelectorOnMainThread:@selector(quitMessageLoop)
                                        withObject:nil
                                     waitUntilDone:YES];
-}
-
-jobject CefCreateBrowserOnMainThread(jobject jCefClient,
-                                     jlong windowHandle,
-                                     jstring url,
-                                     jboolean transparent,
-                                     jobject canvas) {
-  BrowserStub* stub = [[BrowserStub alloc] initWithValues:jCefClient
-                                             windowHandle:windowHandle
-                                                   urlStr:url
-                                            isTransparent:transparent
-                                                   canvas:canvas];
-  [[CefHandler class] performSelectorOnMainThread:@selector(createBrowser:)
-                                       withObject:stub
-                                    waitUntilDone:YES];
-  jobject result = [stub result];
-  [stub release];
-  return result;
 }
 }  // namespace util_mac

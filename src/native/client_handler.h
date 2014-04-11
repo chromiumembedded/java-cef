@@ -94,8 +94,8 @@ class ClientHandler : public CefClient,
                              bool* is_keyboard_shortcut) OVERRIDE;
 
   // Methods to set and remove a browser ref
-  void SetBrowser(CefRefPtr<CefBrowser> browser);
-  void RemoveBrowser(CefRefPtr<CefBrowser> browser);
+  void OnAfterCreated();
+  void OnBeforeClose(CefRefPtr<CefBrowser> browser);
 
   // CefRequestHandler methods
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
@@ -116,17 +116,15 @@ class ClientHandler : public CefClient,
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                          TerminationStatus status) OVERRIDE;
 
-  CefRefPtr<CefBrowser> GetBrowser() { return browser_; }
-  jobject GetJBrowser() { return jbrowser_; }
-  void SetJBrowser(jobject jbrowser);
+
+  jobject getBrowser(CefRefPtr<CefBrowser> browser);
 
  protected:
 
-  jobject jbrowser_;
   jobject jhandler_;
 
   // The child browser window
-  CefRefPtr<CefBrowser> browser_;
+  std::map<int,jobject> browserMap_;
 
   CefRefPtr<CefMessageRouterBrowserSide> message_router_;
 
