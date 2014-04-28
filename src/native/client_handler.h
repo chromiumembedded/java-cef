@@ -12,7 +12,6 @@
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient,
-                      public CefKeyboardHandler,
                       public CefRequestHandler {
  public:
   ClientHandler(JNIEnv* env, jobject handler);
@@ -26,9 +25,7 @@ class ClientHandler : public CefClient,
   virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
   virtual CefRefPtr<CefGeolocationHandler> GetGeolocationHandler() OVERRIDE;
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE {
-    return this;
-  }
+  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
@@ -42,12 +39,6 @@ class ClientHandler : public CefClient,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
-
-  // CefKeyboardHandler methods
-  virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
-                             const CefKeyEvent& event,
-                             CefEventHandle os_event,
-                             bool* is_keyboard_shortcut) OVERRIDE;
 
   // Methods to set and remove a browser ref
   void OnAfterCreated();

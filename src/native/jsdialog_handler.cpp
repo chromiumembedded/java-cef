@@ -49,13 +49,9 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
       break;
   }
 
-  jobject jboolRef = NewJNIObject(env, "org/cef/misc/BoolRef");
+  jobject jboolRef = NewJNIBoolRef(env, suppress_message);
   if (!jboolRef)
     return false;
-  JNI_CALL_VOID_METHOD(env, jboolRef, 
-                       "set",
-                       "(Z)V",
-                       (suppress_message ? JNI_TRUE : JNI_FALSE));
 
   jobject jcallback = NewJNIObject(env, "org/cef/callback/CefJSDialogCallback_N");
   if (!jcallback)
@@ -79,13 +75,7 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
                   jcallback,
                   jboolRef);
 
-  jboolean boolRefRes = (suppress_message ? JNI_TRUE : JNI_FALSE);
-  JNI_CALL_METHOD(env, jboolRef, 
-                  "get",
-                   "()Z",
-                   Boolean,
-                   boolRefRes);
-  suppress_message = (boolRefRes != JNI_FALSE);
+  suppress_message = GetJNIBoolRef(env, jboolRef);
 
   if (jresult == JNI_FALSE) {
     // If the java method returns "false", the callback won't be used and therefore

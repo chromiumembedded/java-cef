@@ -85,6 +85,8 @@
         'native/geolocation_handler.h',
         'native/jsdialog_handler.cpp',
         'native/jsdialog_handler.h',
+        'native/keyboard_handler.cpp',
+        'native/keyboard_handler.h',
         'native/render_handler.cpp',
         'native/render_handler.h',
         'native/run_file_dialog_callback.cpp',

@@ -23,6 +23,7 @@
 #include "drag_handler.h"
 #include "geolocation_handler.h"
 #include "jsdialog_handler.h"
+#include "keyboard_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -140,6 +141,22 @@ CefRefPtr<CefJSDialogHandler> ClientHandler::GetJSDialogHandler() {
   return result;
 }
 
+CefRefPtr<CefKeyboardHandler> ClientHandler::GetKeyboardHandler() {
+  CefRefPtr<CefKeyboardHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getKeyboardHandler", "()Lorg/cef/handler/CefKeyboardHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefKeyboardHandler>(env, handler, "CefKeyboardHandler");
+    if (!result.get()) {
+      result = new KeyboardHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefKeyboardHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
 CefRefPtr<CefDragHandler> ClientHandler::GetDragHandler() {
   CefRefPtr<CefDragHandler> result = NULL;
   BEGIN_ENV(env)
@@ -243,13 +260,6 @@ bool ClientHandler::OnProcessMessageReceived(
   if (message_router_)
     return message_router_->OnProcessMessageReceived(
         browser, source_process,  message);
-  return false;
-}
-
-bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
-                                  const CefKeyEvent& event,
-                                  CefEventHandle os_event,
-                                  bool* is_keyboard_shortcut) {
   return false;
 }
 

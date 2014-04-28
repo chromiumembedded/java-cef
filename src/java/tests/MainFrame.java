@@ -67,6 +67,7 @@ import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefGeolocationHandlerAdapter;
 import org.cef.handler.CefJSDialogHandlerAdapter;
+import org.cef.handler.CefKeyboardHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
 import org.cef.misc.BoolRef;
@@ -255,6 +256,23 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
           suppress_message.set(true);
           System.out.println("The " + dialog_type + " from origin \"" + origin_url + "\" was suppressed.");
           System.out.println("   The content of the suppressed dialog was: \"" + message_text + "\"");
+        }
+        return false;
+      }
+    });
+    client_.addKeyboardHandler(new CefKeyboardHandlerAdapter() {
+      @Override
+      public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
+        if (!event.focus_on_editable_field && event.windows_key_code == 0x20) {
+          // Special handling for the space character when an input element does not
+          // have focus. Handling the event in OnPreKeyEvent() keeps the event from
+          // being processed in the renderer. If we instead handled the event in the
+          // OnKeyEvent() method the space key would cause the window to scroll in
+          // addition to showing the alert box.
+          if (event.type == CefKeyEvent.EventType.KEYEVENT_RAWKEYDOWN) {
+            browser_.executeJavaScript("alert('You pressed the space bar!');", "", 0);
+          }
+          return true;
         }
         return false;
       }

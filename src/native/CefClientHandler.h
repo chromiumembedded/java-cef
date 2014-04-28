@@ -73,6 +73,14 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHa
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_removeKeyboardHandler
+ * Signature: (Lorg/cef/handler/CefKeyboardHandler;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeKeyboardHandler
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeFocusHandler
  * Signature: (Lorg/cef/handler/CefFocusHandler;)V
  */

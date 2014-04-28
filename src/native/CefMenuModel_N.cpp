@@ -539,22 +539,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefMenuModel_1N_N_1GetAccelerat
   if (!success)
     return JNI_FALSE;
 
-  JNI_CALL_VOID_METHOD(env, jkey_code, 
-                       "set",
-                       "(I)V",
-                       key_code);
-  JNI_CALL_VOID_METHOD(env, jshift_pressed,
-                       "set",
-                       "(Z)V",
-                       (shift_pressed ? JNI_TRUE : JNI_FALSE));
-  JNI_CALL_VOID_METHOD(env, jctrl_pressed,
-                       "set",
-                       "(Z)V",
-                       (ctrl_pressed ? JNI_TRUE : JNI_FALSE));
-  JNI_CALL_VOID_METHOD(env, jalt_pressed,
-                       "set",
-                       "(Z)V",
-                       (alt_pressed ? JNI_TRUE : JNI_FALSE));
+  SetJNIIntRef(env, jkey_code, key_code);
+  SetJNIBoolRef(env, jshift_pressed, shift_pressed);
+  SetJNIBoolRef(env, jctrl_pressed, ctrl_pressed);
+  SetJNIBoolRef(env, jalt_pressed, alt_pressed);
   return JNI_TRUE;
 }
 
@@ -577,21 +565,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefMenuModel_1N_N_1GetAccelerat
   if (!success)
     return JNI_FALSE;
 
-  JNI_CALL_VOID_METHOD(env, jkey_code, 
-                       "set",
-                       "(I)V",
-                       key_code);
-  JNI_CALL_VOID_METHOD(env, jshift_pressed,
-                       "set",
-                       "(Z)V",
-                       (shift_pressed ? JNI_TRUE : JNI_FALSE));
-  JNI_CALL_VOID_METHOD(env, jctrl_pressed,
-                       "set",
-                       "(Z)V",
-                       (ctrl_pressed ? JNI_TRUE : JNI_FALSE));
-  JNI_CALL_VOID_METHOD(env, jalt_pressed,
-                       "set",
-                       "(Z)V",
-                       (alt_pressed ? JNI_TRUE : JNI_FALSE));
+  SetJNIIntRef(env, jkey_code, key_code);
+  SetJNIBoolRef(env, jshift_pressed, shift_pressed);
+  SetJNIBoolRef(env, jctrl_pressed, ctrl_pressed);
+  SetJNIBoolRef(env, jalt_pressed, alt_pressed);
   return JNI_TRUE;
 }

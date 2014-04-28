@@ -36,6 +36,7 @@ import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefGeolocationHandler;
 import org.cef.handler.CefJSDialogHandler;
+import org.cef.handler.CefKeyboardHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
@@ -51,6 +52,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefDragHandler,
                                                            CefGeolocationHandler,
                                                            CefJSDialogHandler,
+                                                           CefKeyboardHandler,
                                                            CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
@@ -69,6 +71,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefDragHandler dragHandler_ = null;
   private CefGeolocationHandler geolocationHandler_ = null;
   private CefJSDialogHandler jsDialogHandler_ = null;
+  private CefKeyboardHandler keyboardHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -95,6 +98,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeDragHandler(this);
     removeGeolocationHandler(this);
     removeJSDialogHandler(this);
+    removeKeyboardHandler(this);
     super.finalize();
   }
 
@@ -194,6 +198,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     jsDialogHandler_ = null;
   }
 
+  public CefClient addKeyboardHandler(CefKeyboardHandler handler) {
+    if (keyboardHandler_ == null)
+      keyboardHandler_ = handler;
+    return this;
+  }
+
+  public void removeKeyboardHandler() {
+    keyboardHandler_ = null;
+  }
+
   public CefClient addFocusHandler(CefFocusHandler handler) {
     if (focusHandler_ == null)
       focusHandler_ = handler;
@@ -266,6 +280,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefJSDialogHandler getJSDialogHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefKeyboardHandler getKeyboardHandler() {
     return this;
   }
 
@@ -684,5 +703,21 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public void onDialogClosed(CefBrowser browser) {
     if (jsDialogHandler_ != null && browser != null)
       jsDialogHandler_.onDialogClosed(browser);
+  }
+
+  @Override
+  public boolean onPreKeyEvent(CefBrowser browser,
+                               CefKeyEvent event,
+                               BoolRef is_keyboard_shortcut) {
+    if (keyboardHandler_ != null && browser != null)
+      return keyboardHandler_.onPreKeyEvent(browser, event, is_keyboard_shortcut);
+    return false;
+  }
+
+  @Override
+  public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
+    if (keyboardHandler_ != null && browser != null)
+      return keyboardHandler_.onKeyEvent(browser, event);
+    return false;
   }
 }

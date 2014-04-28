@@ -48,6 +48,11 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHa
   SetCefForJNIObject<CefJSDialogHandler>(env, jsdialogHandler, NULL, "CefJSDialogHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeKeyboardHandler
+  (JNIEnv *env, jobject clientHandler, jobject keyboardHandler) {
+  SetCefForJNIObject<CefKeyboardHandler>(env, keyboardHandler, NULL, "CefKeyboardHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
   (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
   SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");

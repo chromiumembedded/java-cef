@@ -81,6 +81,79 @@ jobject NewJNIObject(JNIEnv* env, const char* class_name) {
   return NewJNIObject(env, cls);
 }
 
+jobject NewJNIObject(JNIEnv* env, const char* class_name, const char* sig, ...) {
+  jclass cls = env->FindClass(class_name);
+  if (!cls)
+    return NULL;
+
+  jmethodID initID = env->GetMethodID(cls, "<init>", sig);
+  if (initID == 0) {
+    env->ExceptionClear();
+    return NULL;
+  }
+
+  va_list ap;
+  va_start(ap, sig);
+
+  jobject obj = env->NewObjectV(cls, initID, ap);
+  if (obj == NULL) {
+    env->ExceptionClear();
+    return NULL;
+  }
+
+  return obj;
+}
+
+jobject NewJNIBoolRef(JNIEnv* env, bool initValue) {
+  jobject jboolRef = NewJNIObject(env, "org/cef/misc/BoolRef");
+  if (!jboolRef)
+    return NULL;
+  SetJNIBoolRef(env, jboolRef, initValue);
+  return jboolRef;
+}
+
+jobject NewJNIIntRef(JNIEnv* env, int initValue) {
+  jobject jintRef = NewJNIObject(env, "org/cef/misc/IntRef");
+  if (!jintRef)
+    return NULL;
+  SetJNIIntRef(env, jintRef, initValue);
+  return jintRef;
+}
+
+bool GetJNIBoolRef(JNIEnv* env, jobject jboolRef) {
+  jboolean boolRefRes = JNI_FALSE;
+  JNI_CALL_METHOD(env, jboolRef, 
+                  "get",
+                   "()Z",
+                   Boolean,
+                   boolRefRes);
+  return (boolRefRes != JNI_FALSE);
+}
+
+int GetJNIIntRef(JNIEnv* env, jobject jintRef) {
+  jint intRefRes = -1;
+  JNI_CALL_METHOD(env, jintRef, 
+                  "get",
+                  "()I",
+                  Int,
+                  intRefRes);
+  return intRefRes;
+}
+
+void SetJNIBoolRef(JNIEnv* env, jobject jboolRef, bool boolValue) {
+  JNI_CALL_VOID_METHOD(env, jboolRef, 
+                       "set",
+                       "(Z)V",
+                       (boolValue ? JNI_TRUE : JNI_FALSE));
+}
+
+void SetJNIIntRef(JNIEnv* env, jobject jintRef, int intValue) {
+  JNI_CALL_VOID_METHOD(env, jintRef, 
+                       "set",
+                       "(I)V",
+                       intValue);
+}
+
 CefString GetJNIString(JNIEnv* env, jstring jstr)
 {
   CefString cef_str;

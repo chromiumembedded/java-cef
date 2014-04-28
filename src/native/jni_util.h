@@ -51,6 +51,19 @@ HWND GetHwndOfCanvas(jobject canvas, JNIEnv *env);
 // Create a new JNI object and call the default constructor.
 jobject NewJNIObject(JNIEnv* env, jclass cls);
 jobject NewJNIObject(JNIEnv* env, const char* class_name);
+jobject NewJNIObject(JNIEnv* env, const char* class_name, const char* sig, ...);
+
+// Create a new primitive reference
+jobject NewJNIBoolRef(JNIEnv* env, bool initValue);
+jobject NewJNIIntRef(JNIEnv* env, int initValue) ;
+
+// Retrieve primitive reference values
+bool GetJNIBoolRef(JNIEnv* env, jobject jboolRef);
+int GetJNIIntRef(JNIEnv* env, jobject jintRef);
+
+// Set primitive reference values
+void SetJNIBoolRef(JNIEnv* env, jobject jboolRef, bool boolValue);
+void SetJNIIntRef(JNIEnv* env, jobject jintRef, int intValue);
 
 // Retrieve a String value.
 CefString GetJNIString(JNIEnv* env, jstring jstr);
