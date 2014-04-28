@@ -26,6 +26,7 @@ class ClientHandler : public CefClient,
   virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE {
     return this;
   }
+  virtual CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE {
     return this;

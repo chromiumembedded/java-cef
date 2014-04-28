@@ -15,6 +15,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Vector;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,7 +41,9 @@ import org.cef.CefClient;
 import org.cef.CefApp;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
+import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
@@ -408,6 +415,19 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     }
   }
 
+  private class SaveAs implements CefStringVisitor {
+    private PrintWriter fileWriter_;
+
+    public SaveAs(String fName) throws FileNotFoundException, UnsupportedEncodingException {
+      fileWriter_ = new PrintWriter(fName, "UTF-8");
+    }
+
+    @Override
+    public void visit(String string) {
+      fileWriter_.write(string);
+    }
+  }
+
   private JMenuBar createMenuBar() {
     JMenuBar menuBar = new JMenuBar();
 
@@ -428,6 +448,32 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     fileMenu.add(openFileItem);
+
+    JMenuItem openFileDialog = new JMenuItem("Save as...");
+    openFileDialog.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CefRunFileDialogCallback callback = new CefRunFileDialogCallback() {
+          @Override
+          public void onFileDialogDismissed(CefBrowser browser, Vector<String> filePaths) {
+            if (!filePaths.isEmpty()) {
+              try {
+                SaveAs saveContent = new SaveAs(filePaths.get(0));
+                browser_.getSource(saveContent);
+              } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                browser_.executeJavaScript("alert(\"Can't save file\");", address_field_.getText(), 0);
+              }
+            }
+          }
+        };
+        browser_.runFileDialog(FileDialogMode.FILE_DIALOG_SAVE,
+                               getTitle(),
+                               "index.html",
+                               null,
+                               callback);
+      }
+    });
+    fileMenu.add(openFileDialog);
 
     JMenuItem printItem = new JMenuItem("Print...");
     printItem.addActionListener(new ActionListener() {

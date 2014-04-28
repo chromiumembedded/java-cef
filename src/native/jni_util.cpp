@@ -132,6 +132,36 @@ jobjectArray NewJNIStringArray(JNIEnv* env,
   return arr;
 }
 
+jobject NewJNIStringVector(JNIEnv* env,
+                           const std::vector<CefString>& vals) {
+
+  jobject jvector = NewJNIObject(env, "java/util/Vector");
+  if (!jvector)
+    return NULL;
+
+  std::vector<CefString>::const_iterator iter;
+  for (iter = vals.begin(); iter != vals.end(); ++iter) {
+    jstring argument = NewJNIString(env, *iter);
+    JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",argument);
+  }
+  return jvector;
+}
+
+void GetJNIStringVector(JNIEnv* env, jobject jvector,
+                        std::vector<CefString>& vals) {
+  if (!jvector)
+    return;
+
+  jint jsize=0;
+  JNI_CALL_METHOD(env, jvector, "size", "()I", Int, jsize);
+
+  for (jint index=0; index< jsize; index++) {
+    jobject str=NULL;
+    JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str, index);
+    vals.push_back(GetJNIString(env, (jstring)str));
+  }
+}
+
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
                     const char* field_name, int* value) {
   jfieldID field = env->GetFieldID(cls, field_name, "I");
@@ -299,4 +329,22 @@ jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_va
 
   jobject jsource = env->GetStaticObjectField(sourceCls, fieldId);
   return jsource;
+}
+
+bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const char* enum_valname) {
+  if(!jenum)
+    return false;
+
+  jobject compareTo = GetJNIEnumValue(env, class_name, enum_valname);
+  if (compareTo) {
+    jboolean isEqual = JNI_FALSE;
+    JNI_CALL_METHOD(env, jenum,
+                    "equals",
+                    "(Ljava/lang/Object;)Z",
+                    Boolean,
+                    isEqual,
+                    compareTo);
+    return (isEqual != JNI_FALSE);
+  }
+  return false;
 }

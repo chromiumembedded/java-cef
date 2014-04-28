@@ -9,9 +9,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.Canvas;
 import java.awt.Rectangle;
+import java.util.Vector;
 
+import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefDialogHandler.FileDialogMode;
 
 /**
  * This class represents all methods which are connected to the
@@ -275,6 +278,19 @@ abstract class CefBrowser_N implements CefBrowser {
   }
 
   @Override
+  public void runFileDialog(FileDialogMode mode,
+                            String title,
+                            String defaultFileName,
+                            Vector<String> acceptTypes,
+                            CefRunFileDialogCallback callback) {
+    try {
+      N_RunFileDialog(mode, title, defaultFileName, acceptTypes, callback);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
   public void startDownload(String url) {
     try {
       N_StartDownload(url);
@@ -429,6 +445,7 @@ abstract class CefBrowser_N implements CefBrowser {
   private final native void N_SetFocus(boolean enable);
   private final native double N_GetZoomLevel();
   private final native void N_SetZoomLevel(double zoomLevel);
+  private final native void N_RunFileDialog(FileDialogMode mode, String title, String defaultFileName, Vector<String> acceptTypes, CefRunFileDialogCallback callback);
   private final native void N_StartDownload(String url);
   private final native void N_Print();
   private final native void N_Find(int identifier, String searchText, boolean forward, boolean matchCase, boolean findNext);

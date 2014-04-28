@@ -1,0 +1,28 @@
+// Copyright (c) 2014 The Chromium Embedded Framework Authors. All rights
+// reserved. Use of this source code is governed by a BSD-style license that
+// can be found in the LICENSE file.
+
+package org.cef.callback;
+
+import java.util.Vector;
+import org.cef.handler.CefNative;
+
+/**
+ * Callback interface for asynchronous continuation of file dialog requests.
+ */
+public interface CefFileDialogCallback extends CefNative {
+
+  /**
+   * Continue the file selection with the specified file_paths. This may be
+   * a single value or a list of values depending on the dialog mode. An empty
+   * value is treated the same as calling Cancel().
+   * 
+   * @param filePaths list of selected file paths or an empty list.
+   */
+  public void Continue(Vector<String> filePaths);
+
+  /**
+   * Cancel the file selection.
+   */
+  public void cancel();
+}

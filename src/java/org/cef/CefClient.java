@@ -13,10 +13,13 @@ import java.awt.Window;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
+import org.cef.callback.CefFileDialogCallback;
 import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefDialogHandler;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefLifeSpanHandler;
@@ -28,7 +31,8 @@ import org.cef.handler.CefRenderHandler;
 /**
  * Client that owns a browser and renderer.
  */
-public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
+public class CefClient extends CefClientHandler implements CefDialogHandler,
+                                                           CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
                                                            CefFocusHandler,
@@ -40,6 +44,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   private CefLifeSpanHandler lifeSpanHandler_ = null;
   private CefLoadHandler loadHandler_ = null;
   private CefMessageRouterHandler msgRouterHandler_ = null;
+  private CefDialogHandler dialogHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -54,6 +59,7 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   @Override
   protected void finalize() throws Throwable {
     destroyAllBrowser();
+    removeDialogHandler(this);
     removeDisplayHandler(this);
     removeFocusHandler(this);
     removeLifeSpanHandler(this);
@@ -87,6 +93,16 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
       browser.close();
     }
     browser_.clear();
+  }
+
+  public CefClient addDialogHandler(CefDialogHandler handler) {
+    if (dialogHandler_ == null)
+      dialogHandler_ = handler;
+    return this;
+  }
+
+  public void removeDialogHandler() {
+    dialogHandler_ = null;
   }
 
   public CefClient addDisplayHandler(CefDisplayHandler handler) {
@@ -138,6 +154,11 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
   public void removeLoadHandler() {
     loadHandler_ = null;
   }
+
+  @Override 
+  protected CefDialogHandler getDialogHandler() {
+    return this;
+  };
 
   @Override
   protected CefDisplayHandler getDisplayHandler() {
@@ -439,5 +460,17 @@ public class CefClient extends CefClientHandler implements CefLifeSpanHandler,
                           String failedUrl) {
     if (loadHandler_ != null && browser != null)
       loadHandler_.onLoadError(browser, frameIdentifer, errorCode, errorText, failedUrl);
+  }
+
+  @Override
+  public boolean onFileDialog(CefBrowser browser,
+                              FileDialogMode mode,
+                              String title,
+                              String defaultFileName,
+                              Vector<String> acceptTypes,
+                              CefFileDialogCallback callback) {
+    if (dialogHandler_ != null && browser != null)
+      return dialogHandler_.onFileDialog(browser, mode, title, defaultFileName, acceptTypes, callback);
+    return false;
   }
 }

@@ -66,6 +66,12 @@ jstring NewJNIString(JNIEnv* env, const CefString& str);
 jobjectArray NewJNIStringArray(JNIEnv* env,
                                const std::vector<CefString>& vals);
 
+jobject NewJNIStringVector(JNIEnv* env,
+                           const std::vector<CefString>& vals);
+
+void GetJNIStringVector(JNIEnv* env, jobject jvector,
+                        std::vector<CefString>& vals);
+
 // Retrieve the int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
                     const char* field_name, int* value);
@@ -106,6 +112,8 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y);
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 
 jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname);
+
+bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const char* enum_valname);
 
 // Helper macros for defining and retrieving static ints.
 #define JNI_STATIC(name) _static_##name

@@ -17,6 +17,7 @@
 #include "load_handler.h"
 #include "message_router_handler.h"
 #include "render_handler.h"
+#include "dialog_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -37,6 +38,22 @@ ClientHandler::~ClientHandler() {
   BEGIN_ENV(env)
   env->DeleteGlobalRef(jhandler_);
   END_ENV(env)
+}
+
+CefRefPtr<CefDialogHandler> ClientHandler::GetDialogHandler() {
+  CefRefPtr<CefDialogHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getDialogHandler", "()Lorg/cef/handler/CefDialogHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefDialogHandler>(env, handler, "CefDialogHandler");
+    if (!result.get()) {
+      result = new DialogHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefDialogHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
 }
 
 CefRefPtr<CefDisplayHandler> ClientHandler::GetDisplayHandler() {

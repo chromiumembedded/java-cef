@@ -13,6 +13,11 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler
   SetCefForJNIObject(env, clientHandler, client.get(), "CefClientHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDialogHandler
+  (JNIEnv *env, jobject clientHandler, jobject dialogHandler) {
+  SetCefForJNIObject<CefDialogHandler>(env, dialogHandler, NULL, "CefDialogHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDisplayHandler
   (JNIEnv *env, jobject clientHandler, jobject displayHandler) {
   SetCefForJNIObject<CefDisplayHandler>(env, displayHandler, NULL, "CefDisplayHandler");

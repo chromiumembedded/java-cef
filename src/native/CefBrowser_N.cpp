@@ -11,6 +11,7 @@
 #include "render_handler.h"
 #include "life_span_handler.h"
 #include "string_visitor.h"
+#include "run_file_dialog_callback.h"
 
 #if defined(OS_LINUX)
 #include <gdk/gdkkeysyms.h>
@@ -347,6 +348,38 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetZoomLevel
   (JNIEnv *env, jobject obj, jdouble zoom) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->SetZoomLevel(zoom);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog
+  (JNIEnv *env, jobject obj, jobject jmode, jstring jtitle, 
+   jstring jdefaultFileName , jobject jacceptTypes, jobject jcallback) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+
+  std::vector<CefString> accept_types;
+  GetJNIStringVector(env, jacceptTypes, accept_types);
+
+  CefBrowserHost::FileDialogMode mode;
+  if (IsJNIEnumValue(env, jmode, 
+                     "org/cef/handler/CefDialogHandler$FileDialogMode",
+                     "FILE_DIALOG_OPEN")) {
+    mode = FILE_DIALOG_OPEN;
+  } else if (IsJNIEnumValue(env, jmode,
+                            "org/cef/handler/CefDialogHandler$FileDialogMode",
+                            "FILE_DIALOG_OPEN_MULTIPLE")) {
+    mode = FILE_DIALOG_OPEN_MULTIPLE;
+  } else if (IsJNIEnumValue(env, jmode,
+                            "org/cef/handler/CefDialogHandler$FileDialogMode",
+                            "FILE_DIALOG_SAVE")) {
+    mode = FILE_DIALOG_SAVE;
+  } else {
+    mode = FILE_DIALOG_OPEN;
+  }
+
+  browser->GetHost()->RunFileDialog(mode,
+                                    GetJNIString(env, jtitle),
+                                    GetJNIString(env, jdefaultFileName),
+                                    accept_types,
+                                    new RunFileDialogCallback(env, jcallback));
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StartDownload

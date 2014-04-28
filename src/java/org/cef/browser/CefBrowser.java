@@ -5,9 +5,12 @@
 package org.cef.browser;
 
 import java.awt.Component;
+import java.util.Vector;
 
+import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefNative;
 import org.cef.handler.CefRenderHandler;
 
@@ -183,6 +186,27 @@ public interface CefBrowser extends CefNative {
    * @param zoomLevel The zoom level to be set.
    */
   public void setZoomLevel(double zoomLevel);
+
+  /**
+   * Call to run a file chooser dialog. Only a single file chooser dialog may be
+   * pending at any given time.The dialog will be initiated asynchronously on
+   * the UI thread.
+   * 
+   * @param mode represents the type of dialog to display.
+   * @param title  to be used for the dialog and may be empty to show the
+   * default title ("Open" or "Save" depending on the mode).
+   * @param defaultFileName the default file name to select in the dialog.
+   * @param acceptTypes is a list of valid lower-cased MIME types or file 
+   * extensions specified in an input element and is used to restrict selectable 
+   * files to such types.
+   * @param callback will be executed after the dialog is dismissed or 
+   * immediately if another dialog is already pending.
+   */
+  public void runFileDialog(FileDialogMode mode,
+                            String title,
+                            String defaultFileName,
+                            Vector<String> acceptTypes,
+                            CefRunFileDialogCallback callback);
 
   /**
    * Download the file at url using CefDownloadHandler.
