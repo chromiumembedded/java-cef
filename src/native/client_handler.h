@@ -12,7 +12,6 @@
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient,
-                      public CefGeolocationHandler,
                       public CefKeyboardHandler,
                       public CefRequestHandler {
  public:
@@ -25,9 +24,7 @@ class ClientHandler : public CefClient,
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
   virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
-  virtual CefRefPtr<CefGeolocationHandler> GetGeolocationHandler() OVERRIDE {
-    return this;
-  }
+  virtual CefRefPtr<CefGeolocationHandler> GetGeolocationHandler() OVERRIDE;
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE {
     return this;
   }
@@ -44,13 +41,6 @@ class ClientHandler : public CefClient,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
-
-  // CefGeolocationHandler methods
-  virtual void OnRequestGeolocationPermission(
-      CefRefPtr<CefBrowser> browser,
-      const CefString& requesting_url,
-      int request_id,
-      CefRefPtr<CefGeolocationCallback> callback) OVERRIDE;
 
   // CefKeyboardHandler methods
   virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,

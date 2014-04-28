@@ -21,6 +21,7 @@
 #include "download_handler.h"
 #include "context_menu_handler.h"
 #include "drag_handler.h"
+#include "geolocation_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -100,6 +101,22 @@ CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
     if (!result.get()) {
       result = new DownloadHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefDownloadHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefGeolocationHandler> ClientHandler::GetGeolocationHandler() {
+  CefRefPtr<CefGeolocationHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getGeolocationHandler", "()Lorg/cef/handler/CefGeolocationHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefGeolocationHandler>(env, handler, "CefGeolocationHandler");
+    if (!result.get()) {
+      result = new GeolocationHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefGeolocationHandler");
     }
   }
   END_ENV(env)
@@ -210,15 +227,6 @@ bool ClientHandler::OnProcessMessageReceived(
     return message_router_->OnProcessMessageReceived(
         browser, source_process,  message);
   return false;
-}
-
-void ClientHandler::OnRequestGeolocationPermission(
-      CefRefPtr<CefBrowser> browser,
-      const CefString& requesting_url,
-      int request_id,
-      CefRefPtr<CefGeolocationCallback> callback) {
-  // Allow geolocation access from all websites.
-  callback->Continue(true);
 }
 
 bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,

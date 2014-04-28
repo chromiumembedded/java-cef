@@ -35,11 +35,14 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.cef.CefClient;
 import org.cef.CefApp;
@@ -50,6 +53,7 @@ import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefDragData;
+import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -60,7 +64,7 @@ import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
-import org.cef.handler.CefDragHandler.DragOperationMask;
+import org.cef.handler.CefGeolocationHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
 
@@ -88,6 +92,13 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       public void windowClosing(WindowEvent e) {
         frame_.dispose();
         CefApp.getInstance().dispose();
+
+        new Timer(3000, new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+          }
+        }).start();
       }
     });
 
@@ -204,6 +215,29 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         return false;
       }
     });
+    client_.addGeolocationHandler(new CefGeolocationHandlerAdapter() {
+      @Override
+      public void onRequestGeolocationPermission(CefBrowser browser,
+                                                 String requesting_url,
+                                                 int request_id,
+                                                 CefGeolocationCallback callback) {
+        final CefGeolocationCallback cb = callback;
+        final String reqUrl = requesting_url;
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            int dialogResult = JOptionPane.showConfirmDialog(frame_,
+                "The URL \n" + reqUrl +
+                "\nwants to request your geolocation." +
+                "\nDo you want to proceed?",
+                "Geolocation requested",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+            cb.Continue(dialogResult == JOptionPane.YES_OPTION);
+          }
+        });
+      }
+    });
 
     browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
@@ -213,6 +247,8 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
     addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
     addBookmark("Download Test", "http://cefbuilds.com");
+    addBookmark("Geolocation Test","http://slides.html5rocks.com/#geolocation");
+    bookmarkMenu_.addSeparator();
     addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
     setJMenuBar(menuBar);

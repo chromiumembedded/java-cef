@@ -23,6 +23,7 @@ import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefDragData;
 import org.cef.callback.CefFileDialogCallback;
+import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefClientHandler;
@@ -32,6 +33,7 @@ import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
+import org.cef.handler.CefGeolocationHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
@@ -44,6 +46,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefDialogHandler,
                                                            CefDownloadHandler,
                                                            CefDragHandler,
+                                                           CefGeolocationHandler,
                                                            CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
@@ -60,6 +63,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefDownloadHandler downloadHandler_ = null;
   private CefContextMenuHandler contextMenuHandler_ = null;
   private CefDragHandler dragHandler_ = null;
+  private CefGeolocationHandler geolocationHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -84,6 +88,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeLoadHandler(this);
     removeRenderHandler(this);
     removeDragHandler(this);
+    removeGeolocationHandler(this);
     super.finalize();
   }
 
@@ -163,6 +168,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     dragHandler_ = null;
   }
 
+  public CefClient addGeolocationHandler(CefGeolocationHandler handler) {
+    if (geolocationHandler_ == null)
+      geolocationHandler_ = handler;
+    return this;
+  }
+
+  public void removeGeolocationHandler() {
+    geolocationHandler_ = null;
+  }
+
   public CefClient addFocusHandler(CefFocusHandler handler) {
     if (focusHandler_ == null)
       focusHandler_ = handler;
@@ -225,6 +240,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefDragHandler getDragHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefGeolocationHandler getGeolocationHandler() {
     return this;
   }
 
@@ -583,5 +603,22 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     if (dragHandler_ != null && browser != null)
       return dragHandler_.onDragEnter(browser, dragData, mask);
     return false;
+  }
+
+  @Override
+  public void onRequestGeolocationPermission(CefBrowser browser,
+                                             String requesting_url,
+                                             int request_id,
+                                             CefGeolocationCallback callback) {
+    if (geolocationHandler_ != null && browser != null)
+      geolocationHandler_.onRequestGeolocationPermission(browser, requesting_url, request_id, callback);
+  }
+
+  @Override
+  public void onCancelGeolocationPermission(CefBrowser browser,
+                                            String requesting_url,
+                                            int request_id) {
+    if (geolocationHandler_ != null && browser != null)
+      geolocationHandler_.onCancelGeolocationPermission(browser, requesting_url, request_id);
   }
 }
