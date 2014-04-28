@@ -333,6 +333,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StartDownload
   browser->GetHost()->StartDownload(GetJNIString(env, url));
 }
 
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print
+  (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->Print();
+}
+
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ShowDevTools
   (JNIEnv *env, jobject obj, jobject clientHandler) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);

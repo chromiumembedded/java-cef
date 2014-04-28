@@ -167,6 +167,11 @@ public interface CefBrowser extends CefNative {
   public void startDownload(String url);
 
   /**
+   * Print the current browser contents.
+   */
+  public void print();
+
+  /**
    * Open developer tools in its own window.
    */
   void showDevTools(CefClientHandler client);

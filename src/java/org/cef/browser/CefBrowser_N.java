@@ -259,6 +259,15 @@ abstract class CefBrowser_N implements CefBrowser {
   }
 
   @Override
+  public void print() {
+    try {
+      N_Print();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
   public void showDevTools(CefClientHandler clientHandler) {
     try {
       N_ShowDevTools(clientHandler);
@@ -371,6 +380,7 @@ abstract class CefBrowser_N implements CefBrowser {
   private final native double N_GetZoomLevel();
   private final native void N_SetZoomLevel(double zoomLevel);
   private final native void N_StartDownload(String url);
+  private final native void N_Print();
   private final native void N_ShowDevTools(CefClientHandler clientHandler);
   private final native void N_CloseDevTools();
   private final native void N_WasResized(int width, int height);

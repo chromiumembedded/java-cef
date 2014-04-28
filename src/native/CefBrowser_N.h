@@ -193,6 +193,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StartDownload
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_Print
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_ShowDevTools
  * Signature: (Lorg/cef/handler/CefClientHandler;)V
  */

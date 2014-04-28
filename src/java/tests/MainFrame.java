@@ -303,6 +303,15 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     });
     fileMenu.add(openFileItem);
 
+    JMenuItem printItem = new JMenuItem("Print...");
+    printItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.print();
+      }
+    });
+    fileMenu.add(printItem);
+
     fileMenu.addSeparator();
 
     JMenuItem exitItem = new JMenuItem("Exit");
