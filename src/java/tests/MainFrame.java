@@ -54,6 +54,7 @@ import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefDragData;
 import org.cef.callback.CefGeolocationCallback;
+import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -65,8 +66,10 @@ import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefGeolocationHandlerAdapter;
+import org.cef.handler.CefJSDialogHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
+import org.cef.misc.BoolRef;
 
 public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRouterHandler {
   private static final long serialVersionUID = -2295538706810864538L;
@@ -236,6 +239,24 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
             cb.Continue(dialogResult == JOptionPane.YES_OPTION);
           }
         });
+      }
+    });
+    client_.addJSDialogHandler(new CefJSDialogHandlerAdapter() {
+      @Override
+      public boolean onJSDialog(CefBrowser browser,
+                                String origin_url,
+                                String accept_lang,
+                                JSDialogType dialog_type,
+                                String message_text,
+                                String default_prompt_text,
+                                CefJSDialogCallback callback,
+                                BoolRef suppress_message) {
+        if (message_text.equalsIgnoreCase("Never displayed")) {
+          suppress_message.set(true);
+          System.out.println("The " + dialog_type + " from origin \"" + origin_url + "\" was suppressed.");
+          System.out.println("   The content of the suppressed dialog was: \"" + message_text + "\"");
+        }
+        return false;
       }
     });
 
@@ -811,6 +832,15 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     testMenu.add(testJSItem);
+
+    JMenuItem jsAlertItem = new JMenuItem("JavaScript alert (will be suppressed)");
+    jsAlertItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.executeJavaScript("alert('Never displayed');", "http://dontshow.me", 1);
+      }
+    });
+    testMenu.add(jsAlertItem);
 
     JMenuItem testShowText = new JMenuItem("Show Text");
     testShowText.addActionListener(new ActionListener() {

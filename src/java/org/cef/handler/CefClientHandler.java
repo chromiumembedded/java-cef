@@ -95,6 +95,12 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefGeolocationHandler getGeolocationHandler();
 
   /**
+   *  Return the handler for javascript dialog requests.
+   * This method is a callback method and is called by
+   * the native code.
+   */
+  abstract protected CefJSDialogHandler getJSDialogHandler();
+  /**
    * Return the handler for focus events.
    * This method is a callback method and is called by
    * the native code.
@@ -137,7 +143,6 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
-
   protected void removeDialogHandler(CefDialogHandler h) {
     try {
       N_removeDialogHandler(h);
@@ -173,6 +178,14 @@ public abstract class CefClientHandler implements CefNative {
   protected void removeGeolocationHandler(CefGeolocationHandler h) {
     try {
       N_removeGeolocationHandler(h);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+  }
+
+  protected void removeJSDialogHandler(CefJSDialogHandler h) {
+    try {
+      N_removeJSDialogHandler(h);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -225,6 +238,7 @@ public abstract class CefClientHandler implements CefNative {
   private final native void N_removeDownloadHandler(CefDisplayHandler h);
   private final native void N_removeDragHandler(CefDragHandler h);
   private final native void N_removeGeolocationHandler(CefGeolocationHandler h);
+  private final native void N_removeJSDialogHandler(CefJSDialogHandler h);
   private final native void N_removeFocusHandler(CefFocusHandler h);
   private final native void N_removeLifeSpanHandler(CefLifeSpanHandler h);
   private final native void N_removeMessageRouterHandler(CefMessageRouterHandler h);

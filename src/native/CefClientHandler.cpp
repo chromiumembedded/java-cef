@@ -43,6 +43,11 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeGeolocatio
   SetCefForJNIObject<CefGeolocationHandler>(env, geolocationHandler, NULL, "CefGeolocationHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHandler
+  (JNIEnv *env, jobject clientHandler, jobject jsdialogHandler) {
+  SetCefForJNIObject<CefJSDialogHandler>(env, jsdialogHandler, NULL, "CefJSDialogHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
   (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
   SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");

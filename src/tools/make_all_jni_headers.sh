@@ -15,6 +15,7 @@ else
   ./make_jni_header.sh $1 org.cef.callback.CefDragData_N
   ./make_jni_header.sh $1 org.cef.callback.CefFileDialogCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefGeolocationCallback_N
+  ./make_jni_header.sh $1 org.cef.callback.CefJSDialogCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefMenuModel_N
   ./make_jni_header.sh $1 org.cef.callback.CefQueryCallback_N
   ./make_jni_header.sh $1 org.cef.handler.CefClientHandler

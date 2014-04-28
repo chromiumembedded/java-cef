@@ -24,6 +24,7 @@ import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefDragData;
 import org.cef.callback.CefFileDialogCallback;
 import org.cef.callback.CefGeolocationCallback;
+import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefClientHandler;
@@ -34,10 +35,12 @@ import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefGeolocationHandler;
+import org.cef.handler.CefJSDialogHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefRenderHandler;
+import org.cef.misc.BoolRef;
 
 /**
  * Client that owns a browser and renderer.
@@ -47,6 +50,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefDownloadHandler,
                                                            CefDragHandler,
                                                            CefGeolocationHandler,
+                                                           CefJSDialogHandler,
                                                            CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
@@ -64,6 +68,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefContextMenuHandler contextMenuHandler_ = null;
   private CefDragHandler dragHandler_ = null;
   private CefGeolocationHandler geolocationHandler_ = null;
+  private CefJSDialogHandler jsDialogHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -89,6 +94,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeRenderHandler(this);
     removeDragHandler(this);
     removeGeolocationHandler(this);
+    removeJSDialogHandler(this);
     super.finalize();
   }
 
@@ -178,6 +184,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     geolocationHandler_ = null;
   }
 
+  public CefClient addJSDialogHandler(CefJSDialogHandler handler) {
+    if (jsDialogHandler_ == null)
+      jsDialogHandler_ = handler;
+    return this;
+  }
+
+  public void removeJSDialogHandler() {
+    jsDialogHandler_ = null;
+  }
+
   public CefClient addFocusHandler(CefFocusHandler handler) {
     if (focusHandler_ == null)
       focusHandler_ = handler;
@@ -245,6 +261,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefGeolocationHandler getGeolocationHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefJSDialogHandler getJSDialogHandler() {
     return this;
   }
 
@@ -620,5 +641,48 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                             int request_id) {
     if (geolocationHandler_ != null && browser != null)
       geolocationHandler_.onCancelGeolocationPermission(browser, requesting_url, request_id);
+  }
+
+  @Override
+  public boolean onJSDialog(CefBrowser browser,
+                            String origin_url,
+                            String accept_lang,
+                            JSDialogType dialog_type,
+                            String message_text,
+                            String default_prompt_text,
+                            CefJSDialogCallback callback,
+                            BoolRef suppress_message) {
+    if (jsDialogHandler_ != null && browser != null)
+      return jsDialogHandler_.onJSDialog(browser,
+                                         origin_url,
+                                         accept_lang,
+                                         dialog_type,
+                                         message_text,
+                                         default_prompt_text,
+                                         callback,
+                                         suppress_message);
+    return false;
+  }
+
+  @Override
+  public boolean onBeforeUnloadDialog(CefBrowser browser,
+                                      String message_text,
+                                      boolean is_reload,
+                                      CefJSDialogCallback callback) {
+    if (jsDialogHandler_ != null && browser != null)
+      return jsDialogHandler_.onBeforeUnloadDialog(browser, message_text, is_reload, callback);
+    return false;
+  }
+
+  @Override
+  public void onResetDialogState(CefBrowser browser) {
+    if (jsDialogHandler_ != null && browser != null)
+      jsDialogHandler_.onResetDialogState(browser);
+  }
+
+  @Override
+  public void onDialogClosed(CefBrowser browser) {
+    if (jsDialogHandler_ != null && browser != null)
+      jsDialogHandler_.onDialogClosed(browser);
   }
 }

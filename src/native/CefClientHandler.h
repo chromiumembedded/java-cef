@@ -65,6 +65,14 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeGeolocatio
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_removeJSDialogHandler
+ * Signature: (Lorg/cef/handler/CefJSDialogHandler;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHandler
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeFocusHandler
  * Signature: (Lorg/cef/handler/CefFocusHandler;)V
  */

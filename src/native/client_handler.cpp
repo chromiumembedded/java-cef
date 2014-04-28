@@ -22,6 +22,7 @@
 #include "context_menu_handler.h"
 #include "drag_handler.h"
 #include "geolocation_handler.h"
+#include "jsdialog_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -117,6 +118,22 @@ CefRefPtr<CefGeolocationHandler> ClientHandler::GetGeolocationHandler() {
     if (!result.get()) {
       result = new GeolocationHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefGeolocationHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefJSDialogHandler> ClientHandler::GetJSDialogHandler() {
+  CefRefPtr<CefJSDialogHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getJSDialogHandler", "()Lorg/cef/handler/CefJSDialogHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefJSDialogHandler>(env, handler, "CefJSDialogHandler");
+    if (!result.get()) {
+      result = new JSDialogHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefJSDialogHandler");
     }
   }
   END_ENV(env)
