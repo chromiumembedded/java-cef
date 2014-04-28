@@ -6,6 +6,7 @@ package org.cef.browser;
 
 import java.awt.Component;
 
+import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefNative;
 import org.cef.handler.CefRenderHandler;
@@ -96,6 +97,30 @@ public interface CefBrowser extends CefNative {
   // The following methods are forwarded to the mainFrame.
   //
 
+  /**
+   * Save this frame's HTML source to a temporary file and open it in the
+   * default text viewing application. This method can only be called from the
+   * browser process.
+   */
+  public void viewSource();
+
+  /**
+   * Retrieve this frame's HTML source as a string sent to the specified
+   * visitor.
+   * 
+   * @param visitor
+   */
+  public void getSource(CefStringVisitor visitor);
+
+  /**
+   * Retrieve this frame's display text as a string sent to the specified
+   * visitor.
+   * 
+   * @param visitor
+   */
+  public void getText(CefStringVisitor visitor);
+
+  
   /**
    * Load the specified URL in the main frame.
    * @param url The URL to load.

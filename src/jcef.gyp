@@ -57,6 +57,8 @@
         'native/message_router_handler.h',
         'native/render_handler.cpp',
         'native/render_handler.h',
+        'native/string_visitor.cpp',
+        'native/string_visitor.h',
         'native/jni_util.h',
         'native/jni_util.cpp',
         'native/util.h',

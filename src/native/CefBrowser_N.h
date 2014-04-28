@@ -113,6 +113,30 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1HasDocument
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_ViewSource
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ViewSource
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetSource
+ * Signature: (Lorg/cef/callback/CefStringVisitor;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetSource
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetText
+ * Signature: (Lorg/cef/callback/CefStringVisitor;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetText
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_LoadURL
  * Signature: (Ljava/lang/String;)V
  */

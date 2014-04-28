@@ -28,13 +28,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.cef.CefClient;
 import org.cef.CefApp;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
@@ -370,7 +372,41 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       browser_.stopFinding(true);
       super.dispose();
     }
-  };
+  }
+
+  @SuppressWarnings("serial")
+  private class ShowText extends JDialog implements CefStringVisitor {
+    private JTextArea textArea_ = new JTextArea();
+
+    public ShowText(String title) {
+      super(frame_, title, false);
+      setLayout(new BorderLayout());
+      setSize(800, 600);
+
+      JPanel controlPanel = new JPanel();
+      controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+      JButton doneButton = new JButton("Done");
+      doneButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          setVisible(false);
+          dispose();
+        }
+      });
+      controlPanel.add(doneButton);
+
+      add(new JScrollPane(textArea_));
+      add(controlPanel, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void visit(String string) {
+      if (!isVisible()) {
+        setVisible(true);
+      }
+      textArea_.append(string);
+    }
+  }
 
   private JMenuBar createMenuBar() {
     JMenuBar menuBar = new JMenuBar();
@@ -410,6 +446,37 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     fileMenu.add(searchItem);
+
+    fileMenu.addSeparator();
+
+    JMenuItem viewSource = new JMenuItem("View source");
+    viewSource.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.viewSource();
+      }
+    });
+    fileMenu.add(viewSource);
+
+    JMenuItem getSource = new JMenuItem("Get source...");
+    getSource.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ShowText visitor = new ShowText("Source of \"" + address_field_.getText() + "\"");
+        browser_.getSource(visitor);
+      }
+    });
+    fileMenu.add(getSource);
+
+    JMenuItem getText = new JMenuItem("Get text...");
+    getText.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ShowText visitor = new ShowText("Content of \"" + address_field_.getText() + "\"");
+        browser_.getText(visitor);
+      }
+    });
+    fileMenu.add(getText);
 
     fileMenu.addSeparator();
 

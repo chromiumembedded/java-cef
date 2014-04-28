@@ -4,10 +4,13 @@
 
 #include "CefBrowser_N.h"
 #include "include/cef_browser.h"
+#include "include/cef_task.h"
+#include "include/cef_runnable.h"
 #include "jni_util.h"
 #include "client_handler.h"
 #include "render_handler.h"
 #include "life_span_handler.h"
+#include "string_visitor.h"
 
 #if defined(OS_LINUX)
 #include <gdk/gdkkeysyms.h>
@@ -255,6 +258,25 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1HasDocument
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
                                                             JNI_FALSE);
   return browser->HasDocument() ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ViewSource
+  (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  CefRefPtr<CefFrame> mainFrame = browser->GetMainFrame();
+  CefPostTask(TID_UI, NewCefRunnableMethod(mainFrame.get(), &CefFrame::ViewSource));
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetSource
+  (JNIEnv *env, jobject obj, jobject jvisitor) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetMainFrame()->GetSource(new StringVisitor(env, jvisitor));
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetText
+  (JNIEnv *env, jobject obj, jobject jvisitor) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetMainFrame()->GetText(new StringVisitor(env, jvisitor));
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadURL

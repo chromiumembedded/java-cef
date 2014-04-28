@@ -10,6 +10,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.Canvas;
 import java.awt.Rectangle;
 
+import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 
 /**
@@ -172,6 +173,30 @@ abstract class CefBrowser_N implements CefBrowser {
       ule.printStackTrace();
     }
     return false;
+  }
+
+  public void viewSource() {
+    try {
+      N_ViewSource();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void getSource(CefStringVisitor visitor) {
+    try {
+      N_GetSource(visitor);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void getText(CefStringVisitor visitor) {
+    try {
+      N_GetText(visitor);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
   }
 
   @Override
@@ -392,6 +417,9 @@ abstract class CefBrowser_N implements CefBrowser {
   private final native int N_GetIdentifier();
   private final native boolean N_IsPopup();
   private final native boolean N_HasDocument();
+  private final native void N_ViewSource();
+  private final native void N_GetSource(CefStringVisitor visitor);
+  private final native void N_GetText(CefStringVisitor visitor);
   private final native void N_LoadURL(String url);
   private final native void N_LoadString(String val, String url);
   private final native void N_ExecuteJavaScript(String code, String url, int line);
