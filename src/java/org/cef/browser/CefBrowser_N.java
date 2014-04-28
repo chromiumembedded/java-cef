@@ -268,6 +268,28 @@ abstract class CefBrowser_N implements CefBrowser {
   }
 
   @Override
+  public void find(int identifier,
+                   String searchText,
+                   boolean forward,
+                   boolean matchCase,
+                   boolean findNext) {
+    try {
+      N_Find(identifier, searchText, forward, matchCase, findNext);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void stopFinding(boolean clearSelection) {
+    try {
+      N_StopFinding(clearSelection);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
   public void showDevTools(CefClientHandler clientHandler) {
     try {
       N_ShowDevTools(clientHandler);
@@ -381,6 +403,8 @@ abstract class CefBrowser_N implements CefBrowser {
   private final native void N_SetZoomLevel(double zoomLevel);
   private final native void N_StartDownload(String url);
   private final native void N_Print();
+  private final native void N_Find(int identifier, String searchText, boolean forward, boolean matchCase, boolean findNext);
+  private final native void N_StopFinding(boolean clearSelection);
   private final native void N_ShowDevTools(CefClientHandler clientHandler);
   private final native void N_CloseDevTools();
   private final native void N_WasResized(int width, int height);

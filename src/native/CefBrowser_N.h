@@ -201,6 +201,22 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_Find
+ * Signature: (ILjava/lang/String;ZZZ)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find
+  (JNIEnv *, jobject, jint, jstring, jboolean, jboolean, jboolean);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_StopFinding
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopFinding
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_ShowDevTools
  * Signature: (Lorg/cef/handler/CefClientHandler;)V
  */

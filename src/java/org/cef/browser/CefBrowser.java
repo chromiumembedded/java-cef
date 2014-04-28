@@ -172,6 +172,27 @@ public interface CefBrowser extends CefNative {
   public void print();
 
   /**
+   * Search for some kind of text on the page.
+   * 
+   * @param identifier can be used to have multiple searches running simultaniously.
+   * @param searchText to be searched for.
+   * @param forward indicates whether to search forward or backward within the page.
+   * @param matchCase indicates whether the search should be case-sensitive.
+   * @param findNext indicates whether this is the first request or a follow-up.
+   */
+  public void find(int identifier,
+                   String searchText,
+                   boolean forward,
+                   boolean matchCase,
+                   boolean findNext);
+
+  /**
+   * Cancel all searches that are currently going on.
+   * @param clearSelection Set to true to reset selection.
+   */
+  public void stopFinding(boolean clearSelection);
+
+  /**
    * Open developer tools in its own window.
    */
   void showDevTools(CefClientHandler client);

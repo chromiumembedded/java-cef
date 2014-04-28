@@ -18,6 +18,8 @@ import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,6 +28,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import org.cef.CefClient;
@@ -55,19 +58,20 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
 
     System.out.println("Offscreen rendering " + (osrEnabledArg ? "enabled" : "disabled"));
 
-    final MainFrame frame = new MainFrame(osrEnabledArg, args); 
-    frame.addWindowListener(new WindowAdapter() {
+    frame_ = new MainFrame(osrEnabledArg, args); 
+    frame_.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        frame.dispose();
+        frame_.dispose();
         CefApp.getInstance().dispose();
       }
     });
 
-    frame.setSize(800, 600);
-    frame.setVisible(true);
+    frame_.setSize(800, 600);
+    frame_.setVisible(true);
   }
 
+  private static MainFrame frame_;
   private JTextField address_field_;
   private String last_selected_file_ = "";
   private CefClient client_;
@@ -282,6 +286,92 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     return bottomPanel;
   }
 
+  @SuppressWarnings("serial")
+  private class SearchDialog extends JDialog {
+    private JTextField searchField_  = new JTextField(30);
+    private JCheckBox caseCheckBox_ = new JCheckBox("Case sensitive");
+    private int identifier_ = (int)Math.random();
+    private JButton prevButton_ = new JButton("Prev");
+    private JButton nextButton_ = new JButton("Next");
+
+    public SearchDialog() {
+      super(frame_, "Find...", false);
+
+      setLayout(new BorderLayout());
+      setSize(400, 100);
+
+      JPanel searchPanel = new JPanel();
+      searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
+      searchPanel.add(Box.createHorizontalStrut(5));
+      searchPanel.add(new JLabel("Search:"));
+      searchPanel.add(searchField_);
+
+      JPanel controlPanel = new JPanel();
+      controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+      controlPanel.add(Box.createHorizontalStrut(5));
+
+      JButton searchButton = new JButton("Search");
+      searchButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (searchField_.getText() == null || searchField_.getText().isEmpty())
+            return;
+
+          setTitle("Find \"" + searchField_.getText() + "\"");
+          boolean matchCase = caseCheckBox_.isSelected();
+          browser_.find(identifier_, searchField_.getText(), true, matchCase, false);
+          prevButton_.setEnabled(true);
+          nextButton_.setEnabled(true);
+        }
+      });
+      controlPanel.add(searchButton);
+  
+      prevButton_.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          boolean matchCase = caseCheckBox_.isSelected();
+          setTitle("Find \"" + searchField_.getText() + "\"");
+          browser_.find(identifier_, searchField_.getText(), false, matchCase, true);
+        }
+      });
+      prevButton_.setEnabled(false);
+      controlPanel.add(prevButton_);
+
+      nextButton_.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          boolean matchCase = caseCheckBox_.isSelected();
+          setTitle("Find \"" + searchField_.getText() + "\"");
+          browser_.find(identifier_, searchField_.getText(), true, matchCase, true);
+        }
+      });
+      nextButton_.setEnabled(false);
+      controlPanel.add(nextButton_);
+
+      controlPanel.add(Box.createHorizontalStrut(50));
+
+      JButton doneButton = new JButton("Done");
+      doneButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          setVisible(false);
+          dispose();
+        }
+      });
+      controlPanel.add(doneButton);
+
+      add(searchPanel, BorderLayout.NORTH);
+      add(caseCheckBox_);
+      add(controlPanel,BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void dispose() {
+      browser_.stopFinding(true);
+      super.dispose();
+    }
+  };
+
   private JMenuBar createMenuBar() {
     JMenuBar menuBar = new JMenuBar();
 
@@ -311,6 +401,15 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     fileMenu.add(printItem);
+
+    JMenuItem searchItem = new JMenuItem("Search...");
+    searchItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new SearchDialog().setVisible(true);
+      }
+    });
+    fileMenu.add(searchItem);
 
     fileMenu.addSeparator();
 

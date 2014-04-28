@@ -339,6 +339,23 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print
   browser->GetHost()->Print();
 }
 
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find
+  (JNIEnv *env, jobject obj, jint identifier, jstring searchText, 
+  jboolean forward, jboolean matchCase, jboolean findNext) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->Find((int)identifier, 
+                           GetJNIString(env, searchText),
+                           (forward != JNI_FALSE),
+                           (matchCase != JNI_FALSE),
+                           (findNext != JNI_FALSE));
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopFinding
+  (JNIEnv *env, jobject obj, jboolean clearSelection) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->StopFinding(clearSelection != JNI_FALSE);
+}
+
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ShowDevTools
   (JNIEnv *env, jobject obj, jobject clientHandler) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
