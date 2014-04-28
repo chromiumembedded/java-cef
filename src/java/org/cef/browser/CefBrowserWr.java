@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef;
+package org.cef.browser;
 
 import java.awt.Canvas;
 import java.awt.Component;
@@ -14,7 +14,10 @@ import java.awt.event.FocusListener;
 
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
+
 import org.cef.OS;
+import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefRenderHandler;
 
 /**
  * This class represents a windowed rendered browser.
@@ -101,7 +104,7 @@ class CefBrowserWr extends CefBrowser_N {
   private long getWindowHandle() {
     if (window_handle_ == 0 && OS.isMacintosh()) {
       try {
-        Class<?> cls = Class.forName("org.cef.mac.CefBrowserWindowMac");
+        Class<?> cls = Class.forName("org.cef.browser.mac.CefBrowserWindowMac");
         CefBrowserWindow browserWindow = (CefBrowserWindow)cls.newInstance();
         if (browserWindow != null) {
           window_handle_ = browserWindow.getWindowHandleOfCanvas(canvas_);

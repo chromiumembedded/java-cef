@@ -25,7 +25,7 @@ void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
   	return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onAddressChange", 
-                       "(Lorg/cef/CefBrowser;Ljava/lang/String;)V", 
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V", 
                        GetJNIBrowser(browser),
                        NewJNIString(env, url));
 }
@@ -37,7 +37,7 @@ void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   	return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onTitleChange", 
-                       "(Lorg/cef/CefBrowser;Ljava/lang/String;)V", 
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V", 
                        GetJNIBrowser(browser),
                        NewJNIString(env, title));
 }
@@ -50,7 +50,7 @@ bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser,
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onTooltip",
-                  "(Lorg/cef/CefBrowser;Ljava/lang/String;)Z",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)Z",
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser),
@@ -65,7 +65,7 @@ void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_,
                        "onStatusMessage",
-                       "(Lorg/cef/CefBrowser;Ljava/lang/String;)V",
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
                        GetJNIBrowser(browser),
                        NewJNIString(env, value));
 }
@@ -80,7 +80,7 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onConsoleMessage",
-                  "(Lorg/cef/CefBrowser;Ljava/lang/String;Ljava/lang/String;I)Z",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Ljava/lang/String;I)Z",
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser),

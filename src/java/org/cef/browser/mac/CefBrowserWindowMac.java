@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef.mac;
+package org.cef.browser.mac;
 
 import java.awt.Canvas;
 import java.awt.Component;
@@ -10,7 +10,8 @@ import java.awt.peer.ComponentPeer;
 import sun.lwawt.LWComponentPeer;
 import sun.lwawt.PlatformWindow;
 import sun.lwawt.macosx.CPlatformWindow;
-import org.cef.CefBrowserWindow;
+
+import org.cef.browser.CefBrowserWindow;
 
 public class CefBrowserWindowMac implements CefBrowserWindow {
   @Override

@@ -13,6 +13,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.SwingUtilities;
 
+import org.cef.handler.CefAppHandler;
+import org.cef.handler.CefAppHandlerAdapter;
+
 /**
  * Exposes static methods for managing the global CEF context.
  */

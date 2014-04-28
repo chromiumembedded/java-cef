@@ -21,10 +21,17 @@ goto end
 
 set OUT_PATH=".\native"
 set CLS_PATH=".\third_party\jogamp\jar\*;.\out\%1"
+set CLS_NAME=""
 
-call javah.exe -force -classpath %CLS_PATH% -d %OUT_PATH% org.cef.%2
-del /F %OUT_PATH%\%2.h
-rename %OUT_PATH%\org_cef_%2.h %2.h
+SET TMP="%2"
+:loop
+for /F "tokens=1,* delims=." %%F in (%TMP%) DO (
+  set CLS_NAME="%%F"
+  set TMP="%%G"
+  goto loop
+)
+
+call javah.exe -force -classpath %CLS_PATH% -o %OUT_PATH%/%CLS_NAME%.h %2
 
 :end
 endlocal & set RC=%ERRORLEVEL%

@@ -2,7 +2,9 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef;
+package org.cef.handler;
+
+import org.cef.browser.CefBrowser;
 
 /**
  * An abstract adapter class for receiving message router events. 

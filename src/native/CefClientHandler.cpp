@@ -7,43 +7,43 @@
 #include "client_handler.h"
 #include "message_router_handler.h"
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1CefClientHandler_1CTOR
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler_1CTOR
   (JNIEnv *env, jobject clientHandler) {
   CefRefPtr<ClientHandler> client = new ClientHandler(env, clientHandler);
   SetCefForJNIObject(env, clientHandler, client.get(), "CefClientHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeDisplayHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDisplayHandler
   (JNIEnv *env, jobject clientHandler, jobject displayHandler) {
   SetCefForJNIObject<CefDisplayHandler>(env, displayHandler, NULL, "CefDisplayHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeFocusHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
   (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
   SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeLifeSpanHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLifeSpanHandler
   (JNIEnv *env, jobject clientHandler, jobject lifeSpanHandler) {
   SetCefForJNIObject<CefLifeSpanHandler>(env, lifeSpanHandler, NULL, "CefLifeSpanHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeMessageRouterHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouterHandler
   (JNIEnv *env, jobject clientHandler, jobject msgRouterHandler) {
   SetCefForJNIObject<MessageRouterHandler>(env, msgRouterHandler, NULL, "CefMessageRouterHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeLoadHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler
   (JNIEnv *env, jobject clientHandler, jobject loadHandler) {
   SetCefForJNIObject<CefLoadHandler>(env, loadHandler, NULL, "CefLoadHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1removeRenderHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRenderHandler
   (JNIEnv *env, jobject clientHandler, jobject renderHandler) {
   SetCefForJNIObject<CefRenderHandler>(env, renderHandler, NULL, "CefRenderHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefClientHandler_N_1CefClientHandler_1DTOR
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler_1DTOR
   (JNIEnv *env, jobject clientHandler) {
   // delete reference to the native client handler
   SetCefForJNIObject<ClientHandler>(env, clientHandler, NULL, "CefClientHandler");

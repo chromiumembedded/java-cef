@@ -41,7 +41,7 @@ void RenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser,
   	return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onPopupShow", 
-                       "(Lorg/cef/CefBrowser;Z)V", 
+                       "(Lorg/cef/browser/CefBrowser;Z)V", 
                        GetJNIBrowser(browser),
                        (jboolean)show);
 }
@@ -56,7 +56,7 @@ void RenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onPopupSize", 
-                       "(Lorg/cef/CefBrowser;Ljava/awt/Rectangle;)V", 
+                       "(Lorg/cef/browser/CefBrowser;Ljava/awt/Rectangle;)V", 
                        GetJNIBrowser(browser),
                        rect_obj);
   env->DeleteLocalRef(rect_obj);
@@ -76,7 +76,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
   jboolean jtype = type == PET_VIEW ? JNI_FALSE : JNI_TRUE;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onPaint", 
-                       "(Lorg/cef/CefBrowser;Z[Ljava/awt/Rectangle;Ljava/nio/ByteBuffer;II)V", 
+                       "(Lorg/cef/browser/CefBrowser;Z[Ljava/awt/Rectangle;Ljava/nio/ByteBuffer;II)V", 
                        GetJNIBrowser(browser),
                        jtype,
                        rect_array,
@@ -95,7 +95,7 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
   const int cursorId = NativeGetCursorId(cursor);
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onCursorChange", 
-                       "(Lorg/cef/CefBrowser;I)V", 
+                       "(Lorg/cef/browser/CefBrowser;I)V", 
                        GetJNIBrowser(browser),
                        cursorId);
 }
@@ -108,7 +108,7 @@ bool RenderHandler::GetViewRect(jobject browser, CefRect& rect) {
   jobject jreturn = NULL;
   JNI_CALL_METHOD(env, jhandler_, 
                   "getViewRect", 
-                  "(Lorg/cef/CefBrowser;)Ljava/awt/Rectangle;",
+                  "(Lorg/cef/browser/CefBrowser;)Ljava/awt/Rectangle;",
                   Object,
                   jreturn, 
                   browser);
@@ -136,7 +136,7 @@ bool RenderHandler::GetScreenPoint(jobject browser,
 
   JNI_CALL_METHOD(env, jhandler_, 
                   "getScreenPoint", 
-                  "(Lorg/cef/CefBrowser;Ljava/awt/Point;)Ljava/awt/Point;",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/awt/Point;)Ljava/awt/Point;",
                   Object,
                   jreturn, 
                   browser,

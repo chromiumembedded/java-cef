@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     org_cef_CefApp
  * Method:    N_Initialize
- * Signature: (Ljava/lang/String;Lorg/cef/CefAppHandler;)Z
+ * Signature: (Ljava/lang/String;Lorg/cef/handler/CefAppHandler;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
   (JNIEnv *, jobject, jstring, jobject);

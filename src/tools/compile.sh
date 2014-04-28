@@ -15,7 +15,7 @@ else
     mkdir -p "$OUT_PATH"
   fi
 
-  javac -cp $CLS_PATH -d $OUT_PATH java/tests/*.java java/org/cef/*.java
+  javac -cp $CLS_PATH -d $OUT_PATH java/tests/*.java java/org/cef/*.java java/org/cef/browser/*.java java/org/cef/handler/*.java
 fi
 
 cd tools

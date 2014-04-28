@@ -13,10 +13,9 @@ else
   else
     export OUT_PATH="./native"
     export CLS_PATH="./third_party/jogamp/jar/*:./out/$1"
+    export CLS_NAME="${2##*.}"
 
-    javah -force -classpath $CLS_PATH -d $OUT_PATH org.cef.$2
-    rm -f $OUT_PATH/$2.h
-    mv $OUT_PATH/org_cef_$2.h $OUT_PATH/$2.h
+    javah -force -classpath $CLS_PATH -o $OUT_PATH/$CLS_NAME.h $2
   fi
 fi
 

@@ -14,6 +14,17 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefBrowserFactory;
+import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefFocusHandler;
+import org.cef.handler.CefLifeSpanHandler;
+import org.cef.handler.CefLoadHandler;
+import org.cef.handler.CefMessageRouterHandler;
+import org.cef.handler.CefQueryCallback;
+import org.cef.handler.CefRenderHandler;
+
 /**
  * Client that owns a browser and renderer.
  */

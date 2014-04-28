@@ -6,10 +6,10 @@
 if [ -z "$1" ]; then
   echo "ERROR: Please specify a target platform: linux32, linux64 or macosx64"
 else
-  ./make_jni_header.sh $1 CefBrowser_N
-  ./make_jni_header.sh $1 CefClientHandler
-  ./make_jni_header.sh $1 CefCommandLine_N
-  ./make_jni_header.sh $1 CefApp
-  ./make_jni_header.sh $1 CefQueryCallback_N
+  ./make_jni_header.sh $1 org.cef.CefApp
+  ./make_jni_header.sh $1 org.cef.browser.CefBrowser_N
+  ./make_jni_header.sh $1 org.cef.handler.CefClientHandler
+  ./make_jni_header.sh $1 org.cef.handler.CefCommandLine_N
+  ./make_jni_header.sh $1 org.cef.handler.CefQueryCallback_N
 fi
 

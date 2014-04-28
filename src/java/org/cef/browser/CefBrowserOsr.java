@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef;
+package org.cef.browser;
 
 import java.awt.Component;
 import java.awt.Cursor;
@@ -25,6 +25,9 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.SwingUtilities;
+
+import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefRenderHandler;
 
 /**
  * This class represents an off-screen rendered browser.

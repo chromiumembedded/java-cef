@@ -51,13 +51,13 @@ class ClientApp : public CefApp {
     if (app_handler_ != NULL && process_type.empty()) {
       BEGIN_ENV(env)
       jstring jprocess_type = NewJNIString(env, process_type);
-      jobject jcommand_line = NewJNIObject(env, "org/cef/CefCommandLine_N");
+      jobject jcommand_line = NewJNIObject(env, "org/cef/handler/CefCommandLine_N");
       if (jcommand_line != NULL) {
         SetCefForJNIObject(env, jcommand_line, command_line.get(), "CefCommandLine");
         JNI_CALL_VOID_METHOD(env,
                              app_handler_,
                              "onBeforeCommandLineProcessing",
-                             "(Ljava/lang/String;Lorg/cef/CefCommandLine;)V",
+                             "(Ljava/lang/String;Lorg/cef/handler/CefCommandLine;)V",
                              jprocess_type,
                              jcommand_line);
         SetCefForJNIObject<CefCommandLine>(env, jcommand_line, NULL, "CefCommandLine");

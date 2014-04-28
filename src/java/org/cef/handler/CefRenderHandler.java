@@ -2,11 +2,13 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef;
+package org.cef.handler;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
+
+import org.cef.browser.CefBrowser;
 
 /**
  * Implement this interface to handle events when window rendering is disabled.

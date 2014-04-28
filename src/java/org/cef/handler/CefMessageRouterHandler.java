@@ -2,7 +2,9 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef;
+package org.cef.handler;
+
+import org.cef.browser.CefBrowser;
 
 /**
  * Implement this interface to handle queries. All methods will be executed on

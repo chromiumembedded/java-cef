@@ -28,14 +28,14 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
-import org.cef.CefBrowser;
 import org.cef.CefClient;
-import org.cef.CefDisplayHandler;
 import org.cef.CefApp;
-import org.cef.CefLoadHandlerAdapter;
-import org.cef.CefMessageRouterHandler;
-import org.cef.CefQueryCallback;
 import org.cef.OS;
+import org.cef.browser.CefBrowser;
+import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.handler.CefMessageRouterHandler;
+import org.cef.handler.CefQueryCallback;
 
 public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRouterHandler {
   private static final long serialVersionUID = -2295538706810864538L;
@@ -277,6 +277,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     status_field_.setAlignmentX(LEFT_ALIGNMENT);
     bottomPanel.add(status_field_);
     bottomPanel.add(Box.createHorizontalStrut(5));
+    bottomPanel.add(Box.createVerticalStrut(21));
 
     return bottomPanel;
   }

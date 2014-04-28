@@ -36,7 +36,7 @@ bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onBeforePopup",
-                  "(Lorg/cef/CefBrowser;Ljava/lang/String;Ljava/lang/String;)Z",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Ljava/lang/String;)Z",
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser),
@@ -59,7 +59,7 @@ void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   if (SetCefForJNIObject(env, jbrowser, browser.get(), "CefBrowser")) {
     JNI_CALL_VOID_METHOD(env, jhandler_,
                          "onAfterCreated",
-                         "(Lorg/cef/CefBrowser;)V",
+                         "(Lorg/cef/browser/CefBrowser;)V",
                          jbrowser);
   }
   env->DeleteGlobalRef(jbrowser);
@@ -72,7 +72,7 @@ bool LifeSpanHandler::RunModal(CefRefPtr<CefBrowser> browser) {
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "runModal",
-                  "(Lorg/cef/CefBrowser;)Z",
+                  "(Lorg/cef/browser/CefBrowser;)Z",
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser));
@@ -86,7 +86,7 @@ bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "doClose",
-                  "(Lorg/cef/CefBrowser;)Z",
+                  "(Lorg/cef/browser/CefBrowser;)Z",
                   Boolean,
                   jreturn,
                   GetJNIBrowser(browser));
@@ -100,7 +100,7 @@ void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_,
                        "onBeforeClose",
-                       "(Lorg/cef/CefBrowser;)V",
+                       "(Lorg/cef/browser/CefBrowser;)V",
                        GetJNIBrowser(browser));
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
   client->OnBeforeClose(browser);

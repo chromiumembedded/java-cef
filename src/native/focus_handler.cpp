@@ -23,7 +23,7 @@ void FocusHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) {
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onTakeFocus", 
-                       "(Lorg/cef/CefBrowser;Z)V", 
+                       "(Lorg/cef/browser/CefBrowser;Z)V", 
                        GetJNIBrowser(browser),
                        (jboolean)next);
 }
@@ -37,12 +37,12 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
   switch (source) {
     case FOCUS_SOURCE_NAVIGATION:
       jsource = GetJNIEnumValue(env, 
-                                "org/cef/CefFocusHandler$FocusSource",
+                                "org/cef/handler/CefFocusHandler$FocusSource",
                                 "FOCUS_SOURCE_NAVIGATION");
       break;
     case FOCUS_SOURCE_SYSTEM:
       jsource = GetJNIEnumValue(env, 
-                                "org/cef/CefFocusHandler$FocusSource",
+                                "org/cef/handler/CefFocusHandler$FocusSource",
                                 "FOCUS_SOURCE_SYSTEM");
       break;
     default:
@@ -51,7 +51,7 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
 
   JNI_CALL_METHOD(env, jhandler_, 
                   "onSetFocus", 
-                  "(Lorg/cef/CefBrowser;Lorg/cef/CefFocusHandler$FocusSource;)Z",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefFocusHandler$FocusSource;)Z",
                   Boolean,
                   jreturn, 
                   GetJNIBrowser(browser),
@@ -65,6 +65,6 @@ void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
   	return;
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onGotFocus", 
-                       "(Lorg/cef/CefBrowser;)V", 
+                       "(Lorg/cef/browser/CefBrowser;)V", 
                        GetJNIBrowser(browser));
 }
