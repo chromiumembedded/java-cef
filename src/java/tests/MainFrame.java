@@ -48,9 +48,13 @@ import org.cef.browser.CefBrowser;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
+import org.cef.callback.CefContextMenuParams;
+import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
+import org.cef.callback.CefMenuModel.MenuId;
+import org.cef.handler.CefContextMenuHandlerAdapter;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
@@ -145,6 +149,38 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     });
     downloadDialog_ = new DownloadDialog(this);
     client_.addDownloadHandler(downloadDialog_);
+    client_.addContextMenuHandler(new CefContextMenuHandlerAdapter() {
+      @Override
+      public void onBeforeContextMenu(CefBrowser browser,
+                                      CefContextMenuParams params,
+                                      CefMenuModel model) {
+        model.addItem(CefMenuModel.MenuId.MENU_ID_FIND, "Find...");
+        if (params.hasImageContents())
+          model.addItem(CefMenuModel.MenuId.MENU_ID_USER_FIRST, "Download Image...");
+      }
+      @Override
+      public boolean onContextMenuCommand(CefBrowser browser,
+                                          CefContextMenuParams params,
+                                          int commandId,
+                                          int eventFlags) {
+        switch (commandId) {
+          case MenuId.MENU_ID_VIEW_SOURCE:
+            ShowText visitor = new ShowText("Source of \"" + address_field_.getText() + "\"");
+            browser_.getSource(visitor);
+            return true;
+          case MenuId.MENU_ID_FIND:
+            SearchDialog search = new SearchDialog();
+            search.setVisible(true);
+            return true;
+          case MenuId.MENU_ID_USER_FIRST:
+            browser_.startDownload(params.getSourceUrl());
+            return true;
+          default:
+            return false;
+        }
+      }
+    });
+
     browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
 

@@ -19,6 +19,7 @@
 #include "render_handler.h"
 #include "dialog_handler.h"
 #include "download_handler.h"
+#include "context_menu_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -39,6 +40,21 @@ ClientHandler::~ClientHandler() {
   BEGIN_ENV(env)
   env->DeleteGlobalRef(jhandler_);
   END_ENV(env)
+}
+CefRefPtr<CefContextMenuHandler> ClientHandler::GetContextMenuHandler() {
+  CefRefPtr<CefContextMenuHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getContextMenuHandler", "()Lorg/cef/handler/CefContextMenuHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefContextMenuHandler>(env, handler, "CefContextMenuHandler");
+    if (!result.get()) {
+      result = new ContextMenuHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefContextMenuHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
 }
 
 CefRefPtr<CefDialogHandler> ClientHandler::GetDialogHandler() {
@@ -176,22 +192,6 @@ bool ClientHandler::OnProcessMessageReceived(
   if (message_router_)
     return message_router_->OnProcessMessageReceived(
         browser, source_process,  message);
-  return false;
-}
-
-void ClientHandler::OnBeforeContextMenu(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefRefPtr<CefContextMenuParams> params,
-    CefRefPtr<CefMenuModel> model) {
-}
-
-bool ClientHandler::OnContextMenuCommand(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefRefPtr<CefContextMenuParams> params,
-    int command_id,
-    EventFlags event_flags) {
   return false;
 }
 

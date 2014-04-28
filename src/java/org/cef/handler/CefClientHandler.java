@@ -55,6 +55,12 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefBrowser getBrowser(int identifier);
 
   /**
+   * Return the handler for context menus. If no handler is provided the
+   * default implementation will be used.
+   */
+  abstract protected CefContextMenuHandler getContextMenuHandler();
+
+  /**
    * Return the handler for dialogs. If no handler is provided the
    * default implementation will be used.
    */
@@ -108,6 +114,15 @@ public abstract class CefClientHandler implements CefNative {
    * the native code.
    */
   abstract protected CefRenderHandler getRenderHandler();
+
+  protected void removeContextMenuHandler(CefContextMenuHandler h) {
+    try {
+      N_removeContextMenuHandler(h);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+  }
+
 
   protected void removeDialogHandler(CefDialogHandler h) {
     try {
@@ -174,6 +189,7 @@ public abstract class CefClientHandler implements CefNative {
   }
 
   private final native void N_CefClientHandler_CTOR();
+  private final native void N_removeContextMenuHandler(CefContextMenuHandler h);
   private final native void N_removeDialogHandler(CefDialogHandler h);
   private final native void N_removeDisplayHandler(CefDisplayHandler h);
   private final native void N_removeDownloadHandler(CefDisplayHandler h);

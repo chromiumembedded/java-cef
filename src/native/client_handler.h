@@ -12,7 +12,6 @@
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient,
-                      public CefContextMenuHandler,
                       public CefDragHandler,
                       public CefGeolocationHandler,
                       public CefKeyboardHandler,
@@ -22,9 +21,7 @@ class ClientHandler : public CefClient,
   virtual ~ClientHandler();
 
   // CefClient methods
-  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE {
-    return this;
-  }
+  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE;
   virtual CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
@@ -50,17 +47,6 @@ class ClientHandler : public CefClient,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
-
-  // CefContextMenuHandler methods
-  virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefContextMenuParams> params,
-                                   CefRefPtr<CefMenuModel> model) OVERRIDE;
-  virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    CefRefPtr<CefContextMenuParams> params,
-                                    int command_id,
-                                    EventFlags event_flags) OVERRIDE;
 
   // CefDragHandler methods
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,

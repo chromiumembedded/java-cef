@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_removeContextMenuHandler
+ * Signature: (Lorg/cef/handler/CefContextMenuHandler;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeContextMenuHandler
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeDialogHandler
  * Signature: (Lorg/cef/handler/CefDialogHandler;)V
  */
