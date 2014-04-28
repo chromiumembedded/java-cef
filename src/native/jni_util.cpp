@@ -141,10 +141,15 @@ jobject NewJNIStringVector(JNIEnv* env,
 
   std::vector<CefString>::const_iterator iter;
   for (iter = vals.begin(); iter != vals.end(); ++iter) {
-    jstring argument = NewJNIString(env, *iter);
-    JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",argument);
+    AddJNIStringToVector(env, jvector, *iter);
   }
   return jvector;
+}
+
+void AddJNIStringToVector(JNIEnv* env, jobject jvector, 
+                          const CefString &str) {
+  jstring argument = NewJNIString(env, str);
+  JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",argument);
 }
 
 void GetJNIStringVector(JNIEnv* env, jobject jvector,

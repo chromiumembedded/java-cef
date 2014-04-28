@@ -69,6 +69,9 @@ jobjectArray NewJNIStringArray(JNIEnv* env,
 jobject NewJNIStringVector(JNIEnv* env,
                            const std::vector<CefString>& vals);
 
+void AddJNIStringToVector(JNIEnv* env, jobject jvector, 
+                          const CefString &str);
+
 void GetJNIStringVector(JNIEnv* env, jobject jvector,
                         std::vector<CefString>& vals);
 

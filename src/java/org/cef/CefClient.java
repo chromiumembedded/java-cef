@@ -21,6 +21,7 @@ import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
+import org.cef.callback.CefDragData;
 import org.cef.callback.CefFileDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
@@ -29,6 +30,7 @@ import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
+import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
@@ -41,6 +43,7 @@ import org.cef.handler.CefRenderHandler;
 public class CefClient extends CefClientHandler implements CefContextMenuHandler,
                                                            CefDialogHandler,
                                                            CefDownloadHandler,
+                                                           CefDragHandler,
                                                            CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
@@ -56,6 +59,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefDialogHandler dialogHandler_ = null;
   private CefDownloadHandler downloadHandler_ = null;
   private CefContextMenuHandler contextMenuHandler_ = null;
+  private CefDragHandler dragHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -79,6 +83,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeMessageRouterHandler(this);
     removeLoadHandler(this);
     removeRenderHandler(this);
+    removeDragHandler(this);
     super.finalize();
   }
 
@@ -148,6 +153,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     downloadHandler_ = null;
   }
 
+  public CefClient addDragHandler(CefDragHandler handler) {
+    if (dragHandler_ == null)
+      dragHandler_ = handler;
+    return this;
+  }
+
+  public void removeDragHandler() {
+    dragHandler_ = null;
+  }
+
   public CefClient addFocusHandler(CefFocusHandler handler) {
     if (focusHandler_ == null)
       focusHandler_ = handler;
@@ -205,6 +220,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefDownloadHandler getDownloadHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefDragHandler getDragHandler() {
     return this;
   }
 
@@ -556,5 +576,12 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public void onContextMenuDismissed(CefBrowser browser) {
     if (contextMenuHandler_ != null && browser != null)
       contextMenuHandler_.onContextMenuDismissed(browser);
+  }
+
+  @Override
+  public boolean onDragEnter(CefBrowser browser, CefDragData dragData, int mask) {
+    if (dragHandler_ != null && browser != null)
+      return dragHandler_.onDragEnter(browser, dragData, mask);
+    return false;
   }
 }

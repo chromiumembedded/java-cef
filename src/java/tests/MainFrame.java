@@ -49,6 +49,7 @@ import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefContextMenuParams;
+import org.cef.callback.CefDragData;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -58,6 +59,8 @@ import org.cef.handler.CefContextMenuHandlerAdapter;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
+import org.cef.handler.CefDragHandler;
+import org.cef.handler.CefDragHandler.DragOperationMask;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
 
@@ -178,6 +181,27 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
           default:
             return false;
         }
+      }
+    });
+    client_.addDragHandler(new CefDragHandler() {
+      @Override
+      public boolean onDragEnter(CefBrowser browser, CefDragData dragData, int mask) {
+        System.out.println("DRAG:");
+        System.out.print("  flags:");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_COPY) != 0)
+          System.out.print(" COPY");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_LINK) != 0)
+          System.out.print(" LINK");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_GENERIC) != 0)
+          System.out.print(" GENERIC");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_PRIVATE) != 0)
+          System.out.print(" PRIVATE");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_MOVE) != 0)
+          System.out.print(" MOVE");
+        if ((mask & CefDragHandler.DragOperationMask.DRAG_OPERATION_DELETE) != 0)
+          System.out.print(" DELETE");
+        System.out.println("\n  " + dragData);
+        return false;
       }
     });
 

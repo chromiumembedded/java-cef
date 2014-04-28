@@ -20,6 +20,7 @@
 #include "dialog_handler.h"
 #include "download_handler.h"
 #include "context_menu_handler.h"
+#include "drag_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -99,6 +100,22 @@ CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
     if (!result.get()) {
       result = new DownloadHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefDownloadHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefDragHandler> ClientHandler::GetDragHandler() {
+  CefRefPtr<CefDragHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getDragHandler", "()Lorg/cef/handler/CefDragHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefDragHandler>(env, handler, "CefDragHandler");
+    if (!result.get()) {
+      result = new DragHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefDragHandler");
     }
   }
   END_ENV(env)
@@ -192,13 +209,6 @@ bool ClientHandler::OnProcessMessageReceived(
   if (message_router_)
     return message_router_->OnProcessMessageReceived(
         browser, source_process,  message);
-  return false;
-}
-
-bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefDragData> dragData,
-                                DragOperationsMask mask) {
-  REQUIRE_UI_THREAD();
   return false;
 }
 
