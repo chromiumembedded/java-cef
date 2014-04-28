@@ -18,6 +18,7 @@ import java.util.Vector;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
 import org.cef.callback.CefFileDialogCallback;
+import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler;
 import org.cef.handler.CefDisplayHandler;
@@ -25,7 +26,6 @@ import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
-import org.cef.handler.CefQueryCallback;
 import org.cef.handler.CefRenderHandler;
 
 /**

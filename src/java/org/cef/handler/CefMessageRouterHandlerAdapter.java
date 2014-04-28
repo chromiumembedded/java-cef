@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefQueryCallback;
 
 /**
  * An abstract adapter class for receiving message router events. 

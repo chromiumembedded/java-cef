@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefQueryCallback;
 
 /**
  * Implement this interface to handle queries. All methods will be executed on

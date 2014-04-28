@@ -28,7 +28,7 @@ bool MessageRouterHandler::OnQuery(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
-  jobject query_callback = NewJNIObject(env, "org/cef/handler/CefQueryCallback_N");
+  jobject query_callback = NewJNIObject(env, "org/cef/callback/CefQueryCallback_N");
   if (!query_callback)
     return false;
   SetCefForJNIObject(env, query_callback, callback.get(), "CefQueryCallback");
@@ -36,7 +36,7 @@ bool MessageRouterHandler::OnQuery(CefRefPtr<CefBrowser> browser,
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, 
                        "onQuery", 
-                       "(Lorg/cef/browser/CefBrowser;JLjava/lang/String;ZLorg/cef/handler/CefQueryCallback;)Z",
+                       "(Lorg/cef/browser/CefBrowser;JLjava/lang/String;ZLorg/cef/callback/CefQueryCallback;)Z",
                        Boolean,
                        result,
                        GetJNIBrowser(browser),

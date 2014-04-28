@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef.handler;
+package org.cef.callback;
 
 class CefQueryCallback_N implements CefQueryCallback {
   // Used internally to store a pointer to the CEF object.
