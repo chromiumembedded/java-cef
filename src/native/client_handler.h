@@ -13,7 +13,6 @@
 // ClientHandler implementation.
 class ClientHandler : public CefClient,
                       public CefContextMenuHandler,
-                      public CefDownloadHandler,
                       public CefDragHandler,
                       public CefGeolocationHandler,
                       public CefKeyboardHandler,
@@ -28,9 +27,7 @@ class ClientHandler : public CefClient,
   }
   virtual CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
-  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE {
-    return this;
-  }
+  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
   virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE {
     return this;
   }
@@ -64,17 +61,6 @@ class ClientHandler : public CefClient,
                                     CefRefPtr<CefContextMenuParams> params,
                                     int command_id,
                                     EventFlags event_flags) OVERRIDE;
-
-  // CefDownloadHandler methods
-  virtual void OnBeforeDownload(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefDownloadItem> download_item,
-      const CefString& suggested_name,
-      CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
-  virtual void OnDownloadUpdated(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefDownloadItem> download_item,
-      CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
 
   // CefDragHandler methods
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,

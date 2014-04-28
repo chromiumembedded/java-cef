@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDisplayHan
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_removeDownloadHandler
+ * Signature: (Lorg/cef/handler/CefDisplayHandler;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDownloadHandler
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeFocusHandler
  * Signature: (Lorg/cef/handler/CefFocusHandler;)V
  */

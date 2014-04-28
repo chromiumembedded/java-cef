@@ -18,6 +18,7 @@
 #include "message_router_handler.h"
 #include "render_handler.h"
 #include "dialog_handler.h"
+#include "download_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -66,6 +67,22 @@ CefRefPtr<CefDisplayHandler> ClientHandler::GetDisplayHandler() {
     if (!result.get()) {
       result = new DisplayHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefDisplayHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
+  CefRefPtr<CefDownloadHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getDownloadHandler", "()Lorg/cef/handler/CefDownloadHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefDownloadHandler>(env, handler, "CefDownloadHandler");
+    if (!result.get()) {
+      result = new DownloadHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefDownloadHandler");
     }
   }
   END_ENV(env)
@@ -176,21 +193,6 @@ bool ClientHandler::OnContextMenuCommand(
     int command_id,
     EventFlags event_flags) {
   return false;
-}
-
-void ClientHandler::OnBeforeDownload(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefDownloadItem> download_item,
-    const CefString& suggested_name,
-    CefRefPtr<CefBeforeDownloadCallback> callback) {
-  REQUIRE_UI_THREAD();
-}
-
-void ClientHandler::OnDownloadUpdated(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefDownloadItem> download_item,
-    CefRefPtr<CefDownloadItemCallback> callback) {
-  REQUIRE_UI_THREAD();
 }
 
 bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,

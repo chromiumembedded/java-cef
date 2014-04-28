@@ -23,6 +23,11 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDisplayHan
   SetCefForJNIObject<CefDisplayHandler>(env, displayHandler, NULL, "CefDisplayHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDownloadHandler
+  (JNIEnv *env, jobject clientHandler, jobject downloadHandler) {
+  SetCefForJNIObject<CefDisplayHandler>(env, downloadHandler, NULL, "CefDownloadHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
   (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
   SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");

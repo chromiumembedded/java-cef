@@ -14,6 +14,9 @@ goto end
 
 call make_jni_header.bat %1 org.cef.CefApp
 call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
+call make_jni_header.bat %1 org.cef.callback.CefBeforeDownloadCallback_N
+call make_jni_header.bat %1 org.cef.callback.CefDownloadItem_N
+call make_jni_header.bat %1 org.cef.callback.CefDownloadItemCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefFileDialogCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefQueryCallback_N
 call make_jni_header.bat %1 org.cef.handler.CefClientHandler

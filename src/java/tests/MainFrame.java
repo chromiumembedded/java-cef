@@ -5,8 +5,10 @@
 package tests;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -41,11 +45,15 @@ import org.cef.CefClient;
 import org.cef.CefApp;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefBeforeDownloadCallback;
+import org.cef.callback.CefDownloadItem;
+import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
 
@@ -94,6 +102,7 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
   private JLabel zoom_label_;
   private String errorMsg_ = "";
   private CefBrowser browser_;
+  private DownloadDialog downloadDialog_;
 
   public MainFrame(boolean osrEnabled, String [] args) {
     client_ = CefApp.getInstance(args).createClient();
@@ -134,6 +143,8 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         }
       }
     });
+    downloadDialog_ = new DownloadDialog(this);
+    client_.addDownloadHandler(downloadDialog_);
     browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
 
@@ -141,9 +152,144 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
 
     // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
     addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
+    addBookmark("Download Test", "http://cefbuilds.com");
     addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
     setJMenuBar(menuBar);
+  }
+
+  @SuppressWarnings("serial")
+  private class DownloadDialog extends JDialog implements CefDownloadHandler {
+    private Map<Integer,DownloadObject> downloadObjects_ = new HashMap<Integer, DownloadObject>();
+    private JPanel downloadPanel_ = new JPanel();
+    private DownloadDialog dialog_ = null;
+
+    public DownloadDialog(Frame owner) {
+      super(owner, "Downloads", false);
+      setVisible(false);
+      setSize(400,300);
+
+      dialog_ = this;
+      downloadPanel_.setLayout(new BoxLayout(downloadPanel_, BoxLayout.Y_AXIS));
+      add(downloadPanel_);
+    }
+
+    private class DownloadObject extends JPanel {
+      private boolean isHidden_ = true;
+      private final int identifier_;
+      private JLabel fileName_ = new JLabel();
+      private JLabel status_ = new JLabel();
+      private JButton dlAbort_ = new JButton();
+      private JButton dlRemoveEntry_ = new JButton("x");
+      private CefDownloadItemCallback callback_;
+      private Color bgColor_;
+
+      DownloadObject(CefDownloadItem downloadItem, String suggestedName) {
+        super();
+        setOpaque(true);
+        setLayout(new BorderLayout());
+        setMaximumSize(new Dimension(dialog_.getWidth()-10, 80));
+        identifier_ = downloadItem.getId();
+        bgColor_ = identifier_%2 == 0 ? Color.WHITE : Color.YELLOW;
+        setBackground(bgColor_); 
+
+        fileName_.setText(suggestedName);
+        add(fileName_, BorderLayout.NORTH);
+
+        status_.setAlignmentX(LEFT_ALIGNMENT);
+        add(status_, BorderLayout.CENTER);
+
+        JPanel controlPane = new JPanel();
+        controlPane.setLayout(new BoxLayout(controlPane, BoxLayout.X_AXIS));
+        controlPane.setOpaque(true);
+        controlPane.setBackground(bgColor_);
+        dlAbort_.setText("Abort");
+        dlAbort_.setEnabled(false);
+        dlAbort_.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (callback_ != null) {
+              fileName_.setText("ABORTED - " + fileName_.getText());
+              callback_.cancel();
+            }
+          }
+        });
+        controlPane.add(dlAbort_);
+
+        dlRemoveEntry_.setEnabled(false);
+        dlRemoveEntry_.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            DownloadObject removed = downloadObjects_.remove(identifier_);
+            if (removed != null) {
+              downloadPanel_.remove(removed);
+              dialog_.repaint();
+            }
+          }
+        });
+        controlPane.add(dlRemoveEntry_);
+        add(controlPane, BorderLayout.SOUTH);
+
+        update(downloadItem, null);
+      }
+
+      // The method humanReadableByteCount() is based on
+      // http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
+      String humanReadableByteCount(long bytes) {
+        int unit = 1024;
+        if (bytes < unit)
+          return bytes + " B";
+
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = "" + ("kMGTPE").charAt(exp-1);
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+      }
+
+      void update(CefDownloadItem downloadItem, CefDownloadItemCallback callback) {
+        int percentComplete = downloadItem.getPercentComplete();
+        String rcvBytes = humanReadableByteCount(downloadItem.getReceivedBytes());
+        String totalBytes = humanReadableByteCount(downloadItem.getTotalBytes());
+        String speed = humanReadableByteCount(downloadItem.getCurrentSpeed()) + "it/s";
+
+        if (downloadItem.getReceivedBytes() >= 5 && isHidden_) {
+          downloadDialog_.setVisible(true);
+          downloadDialog_.toFront();
+          isHidden_ = false;
+        }
+        Runtime.getRuntime().runFinalization();
+
+        callback_ = callback;
+        status_.setText(rcvBytes + " of " + totalBytes + " - " + percentComplete + "%" + " - " + speed);
+        dlAbort_.setEnabled(downloadItem.isInProgress());
+        dlRemoveEntry_.setEnabled(!downloadItem.isInProgress() || downloadItem.isCanceled() || downloadItem.isComplete());
+        if (!downloadItem.isInProgress() && !downloadItem.isCanceled() && !downloadItem.isComplete()) {
+          fileName_.setText("FAILED - " + fileName_.getText());
+          callback.cancel();
+        }
+      }
+    }
+
+    @Override
+    public void onBeforeDownload(CefBrowser browser,
+                                 CefDownloadItem downloadItem,
+                                 String suggestedName,
+                                 CefBeforeDownloadCallback callback) {
+      callback.Continue(suggestedName, true);
+
+      DownloadObject dlObject = new DownloadObject(downloadItem, suggestedName);
+      downloadObjects_.put(downloadItem.getId(), dlObject);
+      downloadPanel_.add(dlObject);
+    }
+
+    @Override
+    public void onDownloadUpdated(CefBrowser browser,
+                                  CefDownloadItem downloadItem,
+                                  CefDownloadItemCallback callback) {
+      DownloadObject dlObject = downloadObjects_.get(downloadItem.getId());
+      if (dlObject == null)
+        return;
+      dlObject.update(downloadItem, callback);
+    }
   }
 
   private JPanel createContentPanel() {
@@ -523,6 +669,17 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
       }
     });
     fileMenu.add(getText);
+
+    fileMenu.addSeparator();
+
+    JMenuItem showDownloads = new JMenuItem("Show Downloads");
+    showDownloads.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        downloadDialog_.setVisible(true);
+      }
+    });
+    fileMenu.add(showDownloads);
 
     fileMenu.addSeparator();
 

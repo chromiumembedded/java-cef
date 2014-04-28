@@ -17,11 +17,15 @@ import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
+import org.cef.callback.CefBeforeDownloadCallback;
+import org.cef.callback.CefDownloadItem;
+import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefFileDialogCallback;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefFocusHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
@@ -32,6 +36,7 @@ import org.cef.handler.CefRenderHandler;
  * Client that owns a browser and renderer.
  */
 public class CefClient extends CefClientHandler implements CefDialogHandler,
+                                                           CefDownloadHandler,
                                                            CefLifeSpanHandler,
                                                            CefDisplayHandler,
                                                            CefRenderHandler,
@@ -45,6 +50,7 @@ public class CefClient extends CefClientHandler implements CefDialogHandler,
   private CefLoadHandler loadHandler_ = null;
   private CefMessageRouterHandler msgRouterHandler_ = null;
   private CefDialogHandler dialogHandler_ = null;
+  private CefDownloadHandler downloadHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -61,6 +67,7 @@ public class CefClient extends CefClientHandler implements CefDialogHandler,
     destroyAllBrowser();
     removeDialogHandler(this);
     removeDisplayHandler(this);
+    removeDownloadHandler(this);
     removeFocusHandler(this);
     removeLifeSpanHandler(this);
     removeMessageRouterHandler(this);
@@ -115,6 +122,16 @@ public class CefClient extends CefClientHandler implements CefDialogHandler,
     displayHandler_ = null;
   }
 
+  public CefClient addDownloadHandler(CefDownloadHandler handler) {
+    if (downloadHandler_ == null)
+      downloadHandler_ = handler;
+    return this;
+  }
+
+  public void removeDownloadHandler() {
+    downloadHandler_ = null;
+  }
+
   public CefClient addFocusHandler(CefFocusHandler handler) {
     if (focusHandler_ == null)
       focusHandler_ = handler;
@@ -162,6 +179,11 @@ public class CefClient extends CefClientHandler implements CefDialogHandler,
 
   @Override
   protected CefDisplayHandler getDisplayHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefDownloadHandler getDownloadHandler() {
     return this;
   }
 
@@ -472,5 +494,22 @@ public class CefClient extends CefClientHandler implements CefDialogHandler,
     if (dialogHandler_ != null && browser != null)
       return dialogHandler_.onFileDialog(browser, mode, title, defaultFileName, acceptTypes, callback);
     return false;
+  }
+
+  @Override
+  public void onBeforeDownload(CefBrowser browser,
+                               CefDownloadItem downloadItem,
+                               String suggestedName,
+                               CefBeforeDownloadCallback callback) {
+    if (downloadHandler_ != null && browser != null)
+      downloadHandler_.onBeforeDownload(browser, downloadItem, suggestedName, callback);
+  }
+
+  @Override
+  public void onDownloadUpdated(CefBrowser browser,
+                                CefDownloadItem downloadItem,
+                                CefDownloadItemCallback callback) {
+    if (downloadHandler_ != null && browser != null)
+      downloadHandler_.onDownloadUpdated(browser, downloadItem, callback);
   }
 }
