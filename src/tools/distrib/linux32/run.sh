@@ -6,4 +6,4 @@
 # Necessary for jcef_helper to find libcef.so.
 export LD_LIBRARY_PATH=./bin/lib/linux32
 
-java -cp "./bin:./bin/*" -Djava.library.path=./bin/lib/linux32 tests.MainFrame
+java -cp "./bin:./bin/*" -Djava.library.path=./bin/lib/linux32 tests.detailed.MainFrame

@@ -23,7 +23,7 @@ set CLS_PATH=".\third_party\jogamp\jar\*;%OUT_PATH%"
 shift
 shift
 
-java -cp %CLS_PATH% -Djava.library.path=%LIB_PATH% tests.MainFrame %*
+java -cp %CLS_PATH% -Djava.library.path=%LIB_PATH% tests.detailed.MainFrame %*
 
 :end
 endlocal & set RC=%ERRORLEVEL%

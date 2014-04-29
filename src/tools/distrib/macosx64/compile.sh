@@ -4,10 +4,10 @@
 # that can be found in the LICENSE file.
 
 # Compile the test program.
-javac -cp "./bin/jcef_app.app/Contents/Java/*" ./tests/*.java
+javac -cp "./bin/jcef_app.app/Contents/Java/*" ./tests/detailed/*.java
 
 # Create the test JAR file.
-jar -cf tests/jcef-tests.jar tests/*.class
+jar -cf tests/jcef-tests.jar tests/detailed/*.class
 
 # Insert the test JAR file into the app bundle.
 cp -f tests/jcef-tests.jar "./bin/jcef_app.app/Contents/Java/"

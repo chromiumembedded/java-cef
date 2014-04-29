@@ -22,7 +22,7 @@ else
     shift
     shift
 
-    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.MainFrame "$@"
+    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame "$@"
   fi
 fi
 

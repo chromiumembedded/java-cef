@@ -51,7 +51,7 @@
                           name="${out.name}"
                    displayname="${out.name}"
                     identifier="org.jcef.jcef_app"
-                 mainclassname="tests.MainFrame">
+                 mainclassname="tests.detailed.MainFrame">
       <classpath dir="${out.path}">
         <include name="jcef.jar"/>
         <include name="jcef-tests.jar"/>
