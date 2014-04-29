@@ -2,10 +2,12 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-package org.cef.handler;
+package org.cef.callback;
 
 import java.util.Map;
 import java.util.Vector;
+
+import org.cef.handler.CefNative;
 
 /**
  * Class used to create and/or parse command line arguments. Arguments with

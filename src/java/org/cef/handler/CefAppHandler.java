@@ -4,6 +4,8 @@
 
 package org.cef.handler;
 
+import org.cef.callback.CefCommandLine;
+
 /**
  * Implement this interface to provide handler implementations. Methods will be
  * called by the process and/or thread indicated.

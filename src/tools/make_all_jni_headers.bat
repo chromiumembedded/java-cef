@@ -15,6 +15,7 @@ goto end
 call make_jni_header.bat %1 org.cef.CefApp
 call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
 call make_jni_header.bat %1 org.cef.callback.CefBeforeDownloadCallback_N
+call make_jni_header.bat %1 org.cef.callback.CefCommandLine_N
 call make_jni_header.bat %1 org.cef.callback.CefContextMenuParams_N
 call make_jni_header.bat %1 org.cef.callback.CefDownloadItem_N
 call make_jni_header.bat %1 org.cef.callback.CefDownloadItemCallback_N
@@ -25,7 +26,6 @@ call make_jni_header.bat %1 org.cef.callback.CefJSDialogCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefMenuModel_N
 call make_jni_header.bat %1 org.cef.callback.CefQueryCallback_N
 call make_jni_header.bat %1 org.cef.handler.CefClientHandler
-call make_jni_header.bat %1 org.cef.handler.CefCommandLine_N
 
 :end
 endlocal & set RC=%ERRORLEVEL%

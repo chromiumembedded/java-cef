@@ -4,6 +4,8 @@
 
 package org.cef.handler;
 
+import org.cef.callback.CefCommandLine;
+
 /**
  * An abstract adapter class for managing app handler events.
  * The methods in this class are using a default implementation.
