@@ -6,8 +6,6 @@ package org.cef.callback;
 
 import java.util.Vector;
 
-import org.cef.handler.CefNative;
-
 /**
  * Class used to represent drag data. The methods of this class may be called
  * on any thread.

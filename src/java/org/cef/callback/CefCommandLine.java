@@ -7,8 +7,6 @@ package org.cef.callback;
 import java.util.Map;
 import java.util.Vector;
 
-import org.cef.handler.CefNative;
-
 /**
  * Class used to create and/or parse command line arguments. Arguments with
  * '--', '-' and, on Windows, '/' prefixes are considered switches. Switches

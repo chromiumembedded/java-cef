@@ -4,8 +4,6 @@
 
 package org.cef.callback;
 
-import org.cef.handler.CefNative;
-
 /**
  * Interface representing a query callback.
  */

@@ -6,8 +6,6 @@ package org.cef.callback;
 
 import java.util.Date;
 
-import org.cef.handler.CefNative;
-
 /**
  * Class used to represent a download item.
  */

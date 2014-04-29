@@ -7,11 +7,11 @@ package org.cef.browser;
 import java.awt.Component;
 import java.util.Vector;
 
+import org.cef.callback.CefNative;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
-import org.cef.handler.CefNative;
 import org.cef.handler.CefRenderHandler;
 
 /**

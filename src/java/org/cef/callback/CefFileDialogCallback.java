@@ -5,7 +5,6 @@
 package org.cef.callback;
 
 import java.util.Vector;
-import org.cef.handler.CefNative;
 
 /**
  * Callback interface for asynchronous continuation of file dialog requests.

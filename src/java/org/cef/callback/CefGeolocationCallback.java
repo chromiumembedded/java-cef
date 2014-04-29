@@ -4,8 +4,6 @@
 
 package org.cef.callback;
 
-import org.cef.handler.CefNative;
-
 /**
  * Callback interface used for asynchronous continuation of geolocation
  * permission requests.

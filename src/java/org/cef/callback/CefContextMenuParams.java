@@ -4,8 +4,6 @@
 
 package org.cef.callback;
 
-import org.cef.handler.CefNative;
-
 /**
  *  Provides information about the context menu state. The methods of this class
  * can only be accessed on browser process the UI thread.

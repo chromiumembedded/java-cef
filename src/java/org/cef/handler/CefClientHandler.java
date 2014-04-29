@@ -7,6 +7,7 @@ package org.cef.handler;
 import java.util.HashMap;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefNative;
 
 /**
  * Implement this interface to provide handler implementations.

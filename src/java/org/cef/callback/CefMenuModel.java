@@ -4,7 +4,6 @@
 
 package org.cef.callback;
 
-import org.cef.handler.CefNative;
 import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
 
