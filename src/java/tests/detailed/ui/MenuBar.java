@@ -1,0 +1,300 @@
+// Copyright (c) 2014 The Chromium Embedded Framework Authors. All rights
+// reserved. Use of this source code is governed by a BSD-style license that
+// can be found in the LICENSE file.
+
+package tests.detailed.ui;
+
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Vector;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import org.cef.browser.CefBrowser;
+import org.cef.callback.CefRunFileDialogCallback;
+import org.cef.callback.CefStringVisitor;
+import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefDialogHandler.FileDialogMode;
+
+import tests.detailed.dialog.DownloadDialog;
+import tests.detailed.dialog.SearchDialog;
+import tests.detailed.dialog.ShowTextDialog;
+
+@SuppressWarnings("serial")
+public class MenuBar extends JMenuBar {
+  class SaveAs implements CefStringVisitor {
+    private PrintWriter fileWriter_;
+
+    public SaveAs(String fName) throws FileNotFoundException, UnsupportedEncodingException {
+      fileWriter_ = new PrintWriter(fName, "UTF-8");
+    }
+
+    @Override
+    public void visit(String string) {
+      fileWriter_.write(string);
+    }
+  }
+
+  private final Frame owner_;
+  private final CefBrowser browser_;
+  private String last_selected_file_ = "";
+  private final JMenu bookmarkMenu_;
+  private final ControlPanel control_pane_;
+  private final DownloadDialog downloadDialog_;
+  private final CefClientHandler client_;
+
+  public MenuBar(Frame owner,
+                 CefBrowser browser,
+                 ControlPanel control_pane,
+                 DownloadDialog downloadDialog,
+                 CefClientHandler clientHandler) {
+    owner_ = owner;
+    browser_ = browser;
+    control_pane_ = control_pane;
+    downloadDialog_ = downloadDialog;
+    client_ = clientHandler;
+
+    setEnabled(browser_ != null);
+
+    JMenu fileMenu = new JMenu("File");
+
+    JMenuItem openFileItem = new JMenuItem("Open file...");
+    openFileItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        JFileChooser fc = new JFileChooser(new File(last_selected_file_));
+        // Show open dialog; this method does not return until the dialog is closed.
+        fc.showOpenDialog(owner_); 
+        File selectedFile = fc.getSelectedFile(); 
+        if (selectedFile != null) {
+          last_selected_file_ = selectedFile.getAbsolutePath();
+          browser_.loadURL("file:///" + selectedFile.getAbsolutePath());
+        }
+      }
+    });
+    fileMenu.add(openFileItem);
+
+    JMenuItem openFileDialog = new JMenuItem("Save as...");
+    openFileDialog.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CefRunFileDialogCallback callback = new CefRunFileDialogCallback() {
+          @Override
+          public void onFileDialogDismissed(CefBrowser browser, Vector<String> filePaths) {
+            if (!filePaths.isEmpty()) {
+              try {
+                SaveAs saveContent = new SaveAs(filePaths.get(0));
+                browser_.getSource(saveContent);
+              } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                browser_.executeJavaScript("alert(\"Can't save file\");", control_pane_.getAddress(), 0);
+              }
+            }
+          }
+        };
+        browser_.runFileDialog(FileDialogMode.FILE_DIALOG_SAVE,
+                               owner_.getTitle(),
+                               "index.html",
+                               null,
+                               callback);
+      }
+    });
+    fileMenu.add(openFileDialog);
+
+    JMenuItem printItem = new JMenuItem("Print...");
+    printItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.print();
+      }
+    });
+    fileMenu.add(printItem);
+
+    JMenuItem searchItem = new JMenuItem("Search...");
+    searchItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new SearchDialog(owner_, browser_).setVisible(true);
+      }
+    });
+    fileMenu.add(searchItem);
+
+    fileMenu.addSeparator();
+
+    JMenuItem viewSource = new JMenuItem("View source");
+    viewSource.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.viewSource();
+      }
+    });
+    fileMenu.add(viewSource);
+
+    JMenuItem getSource = new JMenuItem("Get source...");
+    getSource.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ShowTextDialog visitor = new ShowTextDialog(owner_, "Source of \"" + control_pane_.getAddress() + "\"");
+        browser_.getSource(visitor);
+      }
+    });
+    fileMenu.add(getSource);
+
+    JMenuItem getText = new JMenuItem("Get text...");
+    getText.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ShowTextDialog visitor = new ShowTextDialog(owner_, "Content of \"" + control_pane_.getAddress() + "\"");
+        browser_.getText(visitor);
+      }
+    });
+    fileMenu.add(getText);
+
+    fileMenu.addSeparator();
+
+    JMenuItem showDownloads = new JMenuItem("Show Downloads");
+    showDownloads.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        downloadDialog_.setVisible(true);
+      }
+    });
+    fileMenu.add(showDownloads);
+
+    fileMenu.addSeparator();
+
+    JMenuItem exitItem = new JMenuItem("Exit");
+    exitItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        owner_.dispatchEvent(new WindowEvent(owner_, WindowEvent.WINDOW_CLOSING));
+      }
+    });
+    fileMenu.add(exitItem);
+
+    bookmarkMenu_ = new JMenu("Bookmarks");
+
+    JMenuItem addBookmarkItem = new JMenuItem("Add bookmark");
+    addBookmarkItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        addBookmark(owner_.getTitle(), control_pane_.getAddress());
+      }
+    });
+    bookmarkMenu_.add(addBookmarkItem);
+    bookmarkMenu_.addSeparator();
+
+    JMenu testMenu = new JMenu("Tests");
+
+    JMenuItem testJSItem = new JMenuItem("JavaScript alert");
+    testJSItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.executeJavaScript("alert('Hello World');", control_pane_.getAddress(), 1);
+      }
+    });
+    testMenu.add(testJSItem);
+
+    JMenuItem jsAlertItem = new JMenuItem("JavaScript alert (will be suppressed)");
+    jsAlertItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.executeJavaScript("alert('Never displayed');", "http://dontshow.me", 1);
+      }
+    });
+    testMenu.add(jsAlertItem);
+
+    JMenuItem testShowText = new JMenuItem("Show Text");
+    testShowText.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.loadString("<html><body><h1>Hello World</h1></body></html>", control_pane_.getAddress());
+      }
+    });
+    testMenu.add(testShowText);
+
+    JMenuItem showInfo = new JMenuItem("Show Info");
+    showInfo.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String info =  "<html><head><title>Browser status</title></head>";
+               info += "<body><h1>Browser status</h1><table border=\"0\">";
+               info += "<tr><td>CanGoBack</td><td>" + browser_.canGoBack() + "</td></tr>";
+               info += "<tr><td>CanGoForward</td><td>" + browser_.canGoForward() + "</td></tr>";
+               info += "<tr><td>IsLoading</td><td>" + browser_.isLoading() + "</td></tr>";
+               info += "<tr><td>isPopup</td><td>" + browser_.isPopup() + "</td></tr>";
+               info += "<tr><td>hasDocument</td><td>" + browser_.hasDocument() + "</td></tr>";
+               info += "<tr><td>Url</td><td>" + browser_.getURL() + "</td></tr>";
+               info += "<tr><td>Zoom-Level</td><td>" + browser_.getZoomLevel() + "</td></tr>";
+               info += "</table></body></html>";
+        String js = "var x=window.open(); x.document.open(); x.document.write('" + info + "'); x.document.close();";
+        browser_.executeJavaScript(js, "", 0);
+      }
+    });
+    testMenu.add(showInfo);
+
+    JMenuItem showDevTools = new JMenuItem("Show DevTools");
+    showDevTools.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.showDevTools(client_);
+      }
+    });
+    testMenu.add(showDevTools);
+
+    JMenuItem closeDevTools = new JMenuItem("Close DevTools");
+    closeDevTools.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.closeDevTools();
+      }
+    });
+    testMenu.add(closeDevTools);
+
+    add(fileMenu);
+    add(bookmarkMenu_);
+    add(testMenu);
+  }
+
+  public void addBookmark(String name, String URL) {
+    if (bookmarkMenu_ == null)
+      return;
+
+    // Test if the bookmark already exists. If yes, update URL
+    Component[] entries = bookmarkMenu_.getMenuComponents();
+    for (Component itemEntry : entries) {
+      if( !(itemEntry instanceof JMenuItem) )
+        continue;
+
+      JMenuItem item = (JMenuItem)itemEntry;
+      if (item.getText().equals(name)) {
+         item.setActionCommand(URL);
+         return;
+      }
+    }
+
+    JMenuItem menuItem = new JMenuItem(name);
+    menuItem.setActionCommand(URL);
+    menuItem.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        browser_.loadURL(e.getActionCommand());
+      }
+    });
+    bookmarkMenu_.add(menuItem);
+    validate();
+  }
+
+  public void addBookmarkSeparator() {
+    bookmarkMenu_.addSeparator();
+  }
+}

@@ -8,6 +8,6 @@ if [ -z "$1" ]; then
 else
   cd ../out/$1
   jar -cf jcef.jar org/cef/*.class org/cef/browser/*.class org/cef/callback/*.class org/cef/handler/*.class org/cef/misc/*.class
-  jar -cf jcef-tests.jar tests/*.class
+  jar -cf jcef-tests.jar tests/detailed/*.class tests/detailed/dialog/*.class tests/detailed/handler/*.class tests/detailed/ui/*.class
   cd ../../tools
 fi

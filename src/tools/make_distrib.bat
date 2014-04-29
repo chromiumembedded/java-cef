@@ -51,7 +51,7 @@ copy %OUT_PATH%\jcef.jar %DISTRIB_BIN_PATH%
 
 :: Copy test programs and its sources to the bin directory.
 copy %OUT_PATH%\jcef-tests.jar %DISTRIB_BIN_PATH%
-xcopy /sfy %SOURCE_PATH%\tests\*.java %DISTRIB_BIN_PATH%
+xcopy /sfy %SOURCE_PATH%\tests\* %DISTRIB_BIN_PATH%\tests\
 
 :: Copy CEF Release files to the lib directory.
 if not exist %DISTRIB_LIB_PATH% mkdir %DISTRIB_LIB_PATH%

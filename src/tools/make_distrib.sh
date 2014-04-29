@@ -43,7 +43,7 @@ else
     fi
 
     # Copy test program source file to the tests directory.
-    cp -f $SOURCE_PATH/tests/*.java $DISTRIB_TESTS_PATH
+    cp -rf $SOURCE_PATH/tests $DISTRIB_TESTS_PATH
 
     # Everything else is contained in the app bundle.
     cp -rf $OUT_BINARY_PATH/jcef_app.app $DISTRIB_BIN_PATH
@@ -71,7 +71,7 @@ else
     cp -f $OUT_PATH/$1/jcef.jar $DISTRIB_BIN_PATH
 
     # Copy test program source and JAR file to the bin directory.
-    cp -f $SOURCE_PATH/tests/*.java $DISTRIB_BIN_PATH
+    cp -rf $SOURCE_PATH/tests $DISTRIB_BIN_PATH
     cp -f $OUT_PATH/$1/jcef-tests.jar $DISTRIB_BIN_PATH
 
     # Copy CEF Release files to the lib directory.
