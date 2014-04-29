@@ -72,6 +72,9 @@ CefString GetJNIString(JNIEnv* env, jstring jstr);
 void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
                        std::vector<CefString>& vals);
 
+// Create a new JNI error code.
+jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
+
 // Create a new String value.
 jstring NewJNIString(JNIEnv* env, const CefString& str);
 

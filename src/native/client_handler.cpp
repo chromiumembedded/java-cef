@@ -24,6 +24,7 @@
 #include "geolocation_handler.h"
 #include "jsdialog_handler.h"
 #include "keyboard_handler.h"
+#include "request_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -221,6 +222,22 @@ CefRefPtr<CefRenderHandler> ClientHandler::GetRenderHandler() {
   return result;
 }
 
+CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
+  CefRefPtr<CefRequestHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getRequestHandler", "()Lorg/cef/handler/CefRequestHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefRequestHandler>(env, handler, "CefRequestHandler");
+    if (!result.get()) {
+      result = new RequestHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefRequestHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
 CefRefPtr<CefFocusHandler> ClientHandler::GetFocusHandler() {
   CefRefPtr<CefFocusHandler> result = NULL;
   BEGIN_ENV(env)
@@ -287,36 +304,13 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     message_router_->OnBeforeClose(browser);
 }
 
-bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefRequest> request,
-                                   bool is_redirect) {
+void ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame) {
   if (message_router_)
     message_router_->OnBeforeBrowse(browser, frame);
-  return false;
 }
 
-CefRefPtr<CefResourceHandler> ClientHandler::GetResourceHandler(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      CefRefPtr<CefRequest> request) {
-  return NULL;
-}
-
-bool ClientHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                                   const CefString& origin_url,
-                                   int64 new_size,
-                                   CefRefPtr<CefQuotaCallback> callback) {
-  return false;
-}
-
-void ClientHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
-                                        const CefString& url,
-                                        bool& allow_os_execution) {
-}
-
-void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                              TerminationStatus status) {
+void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) {
   if (message_router_)
     message_router_->OnRenderProcessTerminated(browser);
 }

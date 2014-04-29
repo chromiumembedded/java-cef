@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Frame;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -48,6 +50,8 @@ import org.cef.CefClient;
 import org.cef.CefApp;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefAllowCertificateErrorCallback;
+import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
@@ -68,6 +72,8 @@ import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefGeolocationHandlerAdapter;
 import org.cef.handler.CefJSDialogHandlerAdapter;
 import org.cef.handler.CefKeyboardHandlerAdapter;
+import org.cef.handler.CefRequestHandlerAdapter;
+import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandler;
 import org.cef.misc.BoolRef;
@@ -277,6 +283,26 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
         return false;
       }
     });
+    client_.addRequestHandler(new CefRequestHandlerAdapter() {
+      @Override
+      public boolean getAuthCredentials(CefBrowser browser,
+                                        boolean isProxy,
+                                        String host,
+                                        int port,
+                                        String realm,
+                                        String scheme,
+                                        CefAuthCallback callback) {
+        SwingUtilities.invokeLater(new PasswordDialog(callback));
+        return true;
+      }
+      @Override
+      public boolean onCertificateError(ErrorCode cert_error,
+                                        String request_url,
+                                        CefAllowCertificateErrorCallback callback) {
+        SwingUtilities.invokeLater(new CertError(cert_error, request_url, callback));
+        return true;
+      }
+    });
 
     browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
@@ -287,10 +313,85 @@ public class MainFrame extends JFrame implements CefDisplayHandler, CefMessageRo
     addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
     addBookmark("Download Test", "http://cefbuilds.com");
     addBookmark("Geolocation Test","http://slides.html5rocks.com/#geolocation");
+    addBookmark("Login Test (username:pumpkin, password:pie)","http://www.colostate.edu/~ric/protect/your.html");
+    addBookmark("Certificate-error Test","https://www.k2go.de");
     bookmarkMenu_.addSeparator();
     addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
     setJMenuBar(menuBar);
+  }
+
+  @SuppressWarnings("serial")
+  private class PasswordDialog extends JDialog implements Runnable {
+    private JTextField username_ = new JTextField(20);
+    private JPasswordField password_ = new JPasswordField(20);
+    private CefAuthCallback callback_;
+
+    public PasswordDialog(CefAuthCallback callback) {
+      super(frame_, "Authentication required", true);
+      callback_ = callback;
+      setSize(400,100);
+      setLayout(new GridLayout(0, 2));
+      add(new JLabel("Username:"));
+      add(username_);
+      add(new JLabel("Password:"));
+      add(password_);
+
+      JButton abortButton = new JButton("Abort");
+      abortButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          callback_.cancel();
+          setVisible(false);
+          dispose();
+        }
+      });
+      add(abortButton);
+
+      JButton okButton = new JButton("OK");
+      okButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          if (username_.getText().isEmpty())
+            return;
+          String password = new String(password_.getPassword());
+          callback_.Continue(username_.getText(), password);
+          setVisible(false);
+          dispose();
+        }
+      });
+      add(okButton);
+    }
+
+    @Override
+    public void run() {
+      setVisible(true);
+    }
+  }
+
+  private class CertError implements Runnable {
+    private ErrorCode cert_error_;
+    private String request_url_;
+    private CefAllowCertificateErrorCallback callback_;
+
+    CertError(ErrorCode cert_error, String request_url,CefAllowCertificateErrorCallback callback) {
+      cert_error_ = cert_error;
+      request_url_ = request_url;
+      callback_ = callback;
+    }
+
+    @Override
+    public void run() {
+      int dialogResult = JOptionPane.showConfirmDialog(frame_,
+              "An certificate error (" +
+              cert_error_ + ") occurreed " +
+              "while requesting\n" + request_url_ +
+              "\nDo you want to proceed anyway?",
+              "Certificate error",
+              JOptionPane.YES_NO_OPTION,
+              JOptionPane.ERROR_MESSAGE);
+      callback_.Continue(dialogResult == JOptionPane.YES_OPTION);
+    }
   }
 
   @SuppressWarnings("serial")

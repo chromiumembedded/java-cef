@@ -8,6 +8,8 @@ if [ -z "$1" ]; then
 else
   ./make_jni_header.sh $1 org.cef.CefApp
   ./make_jni_header.sh $1 org.cef.browser.CefBrowser_N
+  ./make_jni_header.sh $1 org.cef.callback.CefAllowCertificateErrorCallback_N
+  ./make_jni_header.sh $1 org.cef.callback.CefAuthCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefBeforeDownloadCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefCommandLine_N
   ./make_jni_header.sh $1 org.cef.callback.CefContextMenuParams_N
@@ -19,6 +21,7 @@ else
   ./make_jni_header.sh $1 org.cef.callback.CefJSDialogCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefMenuModel_N
   ./make_jni_header.sh $1 org.cef.callback.CefQueryCallback_N
+  ./make_jni_header.sh $1 org.cef.callback.CefQuotaCallback_N
   ./make_jni_header.sh $1 org.cef.handler.CefClientHandler
 fi
 

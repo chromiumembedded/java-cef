@@ -17,6 +17,8 @@ import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
+import org.cef.callback.CefAllowCertificateErrorCallback;
+import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefDownloadItem;
@@ -27,6 +29,7 @@ import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefQueryCallback;
+import org.cef.callback.CefQuotaCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -41,6 +44,7 @@ import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefRenderHandler;
+import org.cef.handler.CefRequestHandler;
 import org.cef.misc.BoolRef;
 
 /**
@@ -58,7 +62,8 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefRenderHandler,
                                                            CefFocusHandler,
                                                            CefMessageRouterHandler,
-                                                           CefLoadHandler {
+                                                           CefLoadHandler,
+                                                           CefRequestHandler {
   private HashMap<Integer,CefBrowser> browser_ = new HashMap<Integer,CefBrowser>();
   private CefDisplayHandler displayHandler_ = null;
   private CefFocusHandler focusHandler_ = null;
@@ -72,6 +77,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefGeolocationHandler geolocationHandler_ = null;
   private CefJSDialogHandler jsDialogHandler_ = null;
   private CefKeyboardHandler keyboardHandler_ = null;
+  private CefRequestHandler requestHandler_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -99,6 +105,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeGeolocationHandler(this);
     removeJSDialogHandler(this);
     removeKeyboardHandler(this);
+    removeRequestHandler(this);
     super.finalize();
   }
 
@@ -248,6 +255,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     loadHandler_ = null;
   }
 
+  public CefClient addRequestHandler(CefRequestHandler handler) {
+    if (requestHandler_ == null)
+      requestHandler_ = handler;
+    return this;
+  }
+
+  public void removeRequestHandler() {
+    requestHandler_ = null;
+  }
+
   @Override
   protected CefContextMenuHandler getContextMenuHandler() {
     return this;
@@ -310,6 +327,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefRenderHandler getRenderHandler() {
+    return this;
+  }
+
+  @Override
+  protected CefRequestHandler getRequestHandler() {
     return this;
   }
 
@@ -718,6 +740,38 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
     if (keyboardHandler_ != null && browser != null)
       return keyboardHandler_.onKeyEvent(browser, event);
+    return false;
+  }
+
+  @Override
+  public boolean getAuthCredentials(CefBrowser browser,
+                                    boolean isProxy,
+                                    String host,
+                                    int port,
+                                    String realm,
+                                    String scheme,
+                                    CefAuthCallback callback) {
+    if (requestHandler_ != null && browser != null)
+      return requestHandler_.getAuthCredentials(browser, isProxy, host, port, realm, scheme, callback);
+    return false;
+  }
+
+  @Override
+  public boolean onQuotaRequest(CefBrowser browser,
+                                String origin_url,
+                                long new_size,
+                                CefQuotaCallback callback) {
+    if (requestHandler_ != null && browser != null)
+      return requestHandler_.onQuotaRequest(browser, origin_url, new_size, callback);
+    return false;
+  }
+
+  @Override
+  public boolean onCertificateError(ErrorCode cert_error,
+                                    String request_url,
+                                    CefAllowCertificateErrorCallback callback) {
+    if (requestHandler_ != null)
+      return requestHandler_.onCertificateError(cert_error, request_url, callback);
     return false;
   }
 }

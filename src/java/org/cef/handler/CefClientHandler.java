@@ -143,6 +143,13 @@ public abstract class CefClientHandler implements CefNative {
    */
   abstract protected CefRenderHandler getRenderHandler();
 
+  /**
+   * Return the handler for browser request events.
+   * This method is a callback method and is called by
+   * the native code.
+   */
+  abstract protected CefRequestHandler getRequestHandler();
+
   protected void removeContextMenuHandler(CefContextMenuHandler h) {
     try {
       N_removeContextMenuHandler(h);
@@ -247,6 +254,14 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
+  protected void removeRequestHandler(CefRequestHandler h) {
+    try {
+      N_removeRequestHandler(h);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+  }
+
   private final native void N_CefClientHandler_CTOR();
   private final native void N_removeContextMenuHandler(CefContextMenuHandler h);
   private final native void N_removeDialogHandler(CefDialogHandler h);
@@ -261,5 +276,6 @@ public abstract class CefClientHandler implements CefNative {
   private final native void N_removeMessageRouterHandler(CefMessageRouterHandler h);
   private final native void N_removeLoadHandler(CefLoadHandler h);
   private final native void N_removeRenderHandler(CefRenderHandler h);
+  private final native void N_removeRequestHandler(CefRequestHandler h);
   private final native void N_CefClientHandler_DTOR();
 }

@@ -14,6 +14,8 @@ goto end
 
 call make_jni_header.bat %1 org.cef.CefApp
 call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
+call make_jni_header.bat %1 org.cef.callback.CefAllowCertificateErrorCallback_N
+call make_jni_header.bat %1 org.cef.callback.CefAuthCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefBeforeDownloadCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefCommandLine_N
 call make_jni_header.bat %1 org.cef.callback.CefContextMenuParams_N
@@ -25,6 +27,7 @@ call make_jni_header.bat %1 org.cef.callback.CefGeolocationCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefJSDialogCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefMenuModel_N
 call make_jni_header.bat %1 org.cef.callback.CefQueryCallback_N
+call make_jni_header.bat %1 org.cef.callback.CefQuotaCallback_N
 call make_jni_header.bat %1 org.cef.handler.CefClientHandler
 
 :end
