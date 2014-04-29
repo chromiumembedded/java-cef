@@ -10,19 +10,23 @@ if [ -z "$1" ]; then
 else
   if [ -z "$2" ]; then
     echo "ERROR: Please specify a build type: Debug or Release"
+  elif [ -z "$3" ]; then
+    echo "ERROR: Please specify a run type: detailed or simple"
   else
     export OUT_PATH="./out"
     export LIB_PATH="$OUT_PATH/$2"
     export CLS_PATH="./third_party/jogamp/jar/*:$OUT_PATH/$1"
+    export RUN_TYPE="$3"
 
     # Necessary for jcef_helper to find libcef.so.
     export LD_LIBRARY_PATH=$LIB_PATH
 
-    # Remove the first two params ($1 and $2) and pass the rest to java.
+    # Remove the first three params ($1, $2 and $3) and pass the rest to java.
+    shift
     shift
     shift
 
-    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame "$@"
+    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.$RUN_TYPE.MainFrame "$@"
   fi
 fi
 

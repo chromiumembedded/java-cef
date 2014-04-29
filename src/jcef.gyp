@@ -8,6 +8,11 @@
     'cef_directory': '<(DEPTH)/third_party/cef/<(jcef_platform)',
     'cef_directory_win': '<(DEPTH)\\third_party\\cef\\<(jcef_platform)',
     'jcef_launch_name' : 'jcef_app',
+    'jcef_launch_id' : 'org.jcef.jcef_app',
+    'jcef_launch_class' : 'tests.detailed.MainFrame',
+    'jcef_simple_launch_name' : 'jcef_simple_app',
+    'jcef_simple_launch_id' : 'org.jcef.jcef_simple_app',
+    'jcef_simple_launch_class' : 'tests.simple.MainFrame',
     'version_mac_dylib': '1.0.0',
     'conditions': [
       ['OS=="mac"', {
@@ -388,6 +393,8 @@
                 '-Djdk7.path=<(jdk_directory)',
                 '-Dout.path=<(PRODUCT_DIR)',
                 '-Dout.name=<(jcef_launch_name)',
+                '-Dout.id=<(jcef_launch_id)',
+                '-Dout.mainclass=<(jcef_launch_class)',
                 'bundle',
               ],
             },
@@ -417,6 +424,77 @@
                 '-Rf',
                 '<(cef_directory)/Release/Chromium Embedded Framework.framework',
                 '${BUILT_PRODUCTS_DIR}/<(jcef_launch_name).app/Contents/Frameworks/'
+              ],
+            },
+            {
+              # This postbuid step is responsible for creating the following
+              # helpers:
+              #
+              # jcef Helper EH.app and jcef Helper NP.app are created
+              # from jcef Helper.app.
+              #
+              # The EH helper is marked for an executable heap. The NP helper
+              # is marked for no PIE (ASLR).
+              'postbuild_name': 'Make More Helpers',
+              'action': [
+                '<(cef_directory)/tools/make_more_helpers.sh',
+                'Frameworks',
+                'jcef',
+              ],
+            },
+          ],
+        },  # target jcef_app
+        {
+          'target_name': 'jcef_simple_app',
+          'type': 'none',
+          'dependencies': [
+            'jcef',
+            'jcef_helper',
+          ],
+          'xcode_settings': {
+            'CONTENTS_FOLDER_PATH' : '<(jcef_simple_launch_name).app/Contents',
+          },
+          'actions': [
+            {
+              'action_name': 'Build and bundle Java',
+              'inputs': [],
+              'outputs': ['<(PRODUCT_DIR)/make_java_code.stamp'],
+              'action': [
+                'ant',
+                '-Djdk7.path=<(jdk_directory)',
+                '-Dout.path=<(PRODUCT_DIR)',
+                '-Dout.name=<(jcef_simple_launch_name)',
+                '-Dout.id=<(jcef_simple_launch_id)',
+                '-Dout.mainclass=<(jcef_simple_launch_class)',
+                'bundle',
+              ],
+            },
+          ],
+          'copies': [
+            {
+              # Add libraries and helper app.
+              'destination': '<(PRODUCT_DIR)/<(jcef_simple_launch_name).app/Contents/Frameworks',
+              'files': [
+                '<(PRODUCT_DIR)/jcef Helper.app',
+                '<(cef_directory)/Release/libplugin_carbon_interpose.dylib',
+              ],
+            },
+            {
+              # Add the JCEF library.
+              'destination': '<(PRODUCT_DIR)/<(jcef_simple_launch_name).app/Contents/Java',
+              'files': [
+                '<(PRODUCT_DIR)/libjcef.dylib',
+              ],
+            },
+          ],
+          'postbuilds': [   
+            {
+              'postbuild_name': 'Add framework',
+              'action': [
+                'cp',
+                '-Rf',
+                '<(cef_directory)/Release/Chromium Embedded Framework.framework',
+                '${BUILT_PRODUCTS_DIR}/<(jcef_simple_launch_name).app/Contents/Frameworks/'
               ],
             },
             {

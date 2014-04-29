@@ -5,6 +5,8 @@
   <property name="jdk7.path"  value="${env.JDK_17}"/>
   <property name="out.path"   value="${env.OUT_PATH}"/>
   <property name="out.name"   value="${env.OUT_NAME}"/>
+  <property name="out.id"     value="${env.OUT_ID}"/>
+  <property name="out.mainclass" value="${env.OUT_MAINCLASS}"/>
   
   <taskdef name="bundleapp"
       classname="com.oracle.appbundler.AppBundlerTask"   
@@ -50,8 +52,8 @@
     <bundleapp outputdirectory="${out.path}"
                           name="${out.name}"
                    displayname="${out.name}"
-                    identifier="org.jcef.jcef_app"
-                 mainclassname="tests.detailed.MainFrame">
+                    identifier="${out.id}"
+                 mainclassname="${out.mainclass}">
       <classpath dir="${out.path}">
         <include name="jcef.jar"/>
         <include name="jcef-tests.jar"/>
