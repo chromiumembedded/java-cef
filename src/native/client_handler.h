@@ -22,6 +22,7 @@ class ClientHandler : public CefClient {
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
   virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
+  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
   virtual CefRefPtr<CefGeolocationHandler> GetGeolocationHandler() OVERRIDE;
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
@@ -29,7 +30,7 @@ class ClientHandler : public CefClient {
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
-  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
+
   CefRefPtr<MessageRouterHandler> GetMessageRouterHandler();
 
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -37,7 +38,7 @@ class ClientHandler : public CefClient {
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
 
-  // Methods to set and remove a browser ref
+  // Methods to set and remove a browser ref.
   void OnAfterCreated();
   void OnBeforeClose(CefRefPtr<CefBrowser> browser);
   void OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
@@ -47,10 +48,9 @@ class ClientHandler : public CefClient {
   jobject getBrowser(CefRefPtr<CefBrowser> browser);
 
  protected:
-
   jobject jhandler_;
 
-  // The child browser window
+  // The child browser window.
   std::map<int,jobject> browserMap_;
 
   CefRefPtr<CefMessageRouterBrowserSide> message_router_;

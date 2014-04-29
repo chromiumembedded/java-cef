@@ -14,8 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import org.cef.CefClient;
 import org.cef.CefApp;
+import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
 import org.cef.handler.CefDisplayHandlerAdapter;

@@ -89,6 +89,13 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefDragHandler getDragHandler();
 
   /**
+   * Return the handler for focus events.
+   * This method is a callback method and is called by
+   * the native code.
+   */
+  abstract protected CefFocusHandler getFocusHandler();
+
+  /**
    * Return the handler for geolocation requests.
    * This method is a callback method and is called by
    * the native code.
@@ -110,13 +117,6 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefKeyboardHandler getKeyboardHandler();
 
   /**
-   * Return the handler for focus events.
-   * This method is a callback method and is called by
-   * the native code.
-   */
-  abstract protected CefFocusHandler getFocusHandler();
-
-  /**
    * Return the handler for browser life span events.
    * This method is a callback method and is called by
    * the native code.
@@ -124,18 +124,18 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefLifeSpanHandler getLifeSpanHandler();
 
   /**
-   * Return the handler for message router events.
-   * This method is a callback method and is called by
-   * the native code.
-   */
-  abstract protected CefMessageRouterHandler getMessageRouterHandler();
-
-  /**
    * Return the handler for browser load status events.
    * This method is a callback method and is called by
    * the native code.
    */
   abstract protected CefLoadHandler getLoadHandler();
+
+  /**
+   * Return the handler for message router events.
+   * This method is a callback method and is called by
+   * the native code.
+   */
+  abstract protected CefMessageRouterHandler getMessageRouterHandler();
 
   /**
    * Return the handler for off-screen rendering events.
@@ -191,6 +191,14 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
+  protected void removeFocusHandler(CefFocusHandler h) {
+    try {
+      N_removeFocusHandler(h);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+  }
+
   protected void removeGeolocationHandler(CefGeolocationHandler h) {
     try {
       N_removeGeolocationHandler(h);
@@ -215,14 +223,6 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
-  protected void removeFocusHandler(CefFocusHandler h) {
-    try {
-      N_removeFocusHandler(h);
-    } catch (UnsatisfiedLinkError err) {
-      err.printStackTrace();
-    }
-  }
-
   protected void removeLifeSpanHandler(CefLifeSpanHandler h) {
     try {
       N_removeLifeSpanHandler(h);
@@ -231,17 +231,17 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
-  protected void removeMessageRouterHandler(CefMessageRouterHandler h) {
+  protected void removeLoadHandler(CefLoadHandler h) {
     try {
-      N_removeMessageRouterHandler(h);
+      N_removeLoadHandler(h);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
   }
 
-  protected void removeLoadHandler(CefLoadHandler h) {
+  protected void removeMessageRouterHandler(CefMessageRouterHandler h) {
     try {
-      N_removeLoadHandler(h);
+      N_removeMessageRouterHandler(h);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -269,13 +269,13 @@ public abstract class CefClientHandler implements CefNative {
   private final native void N_removeDisplayHandler(CefDisplayHandler h);
   private final native void N_removeDownloadHandler(CefDisplayHandler h);
   private final native void N_removeDragHandler(CefDragHandler h);
+  private final native void N_removeFocusHandler(CefFocusHandler h);
   private final native void N_removeGeolocationHandler(CefGeolocationHandler h);
   private final native void N_removeJSDialogHandler(CefJSDialogHandler h);
   private final native void N_removeKeyboardHandler(CefKeyboardHandler h);
-  private final native void N_removeFocusHandler(CefFocusHandler h);
   private final native void N_removeLifeSpanHandler(CefLifeSpanHandler h);
-  private final native void N_removeMessageRouterHandler(CefMessageRouterHandler h);
   private final native void N_removeLoadHandler(CefLoadHandler h);
+  private final native void N_removeMessageRouterHandler(CefMessageRouterHandler h);
   private final native void N_removeRenderHandler(CefRenderHandler h);
   private final native void N_removeRequestHandler(CefRequestHandler h);
   private final native void N_CefClientHandler_DTOR();

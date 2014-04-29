@@ -11,19 +11,19 @@
 #include <string>
 #include <vector>
 
+#include "context_menu_handler.h"
+#include "dialog_handler.h"
 #include "display_handler.h"
+#include "download_handler.h"
+#include "drag_handler.h"
 #include "focus_handler.h"
+#include "geolocation_handler.h"
+#include "jsdialog_handler.h"
+#include "keyboard_handler.h"
 #include "life_span_handler.h"
 #include "load_handler.h"
 #include "message_router_handler.h"
 #include "render_handler.h"
-#include "dialog_handler.h"
-#include "download_handler.h"
-#include "context_menu_handler.h"
-#include "drag_handler.h"
-#include "geolocation_handler.h"
-#include "jsdialog_handler.h"
-#include "keyboard_handler.h"
 #include "request_handler.h"
 
 #include "include/cef_browser.h"
@@ -110,6 +110,38 @@ CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
   return result;
 }
 
+CefRefPtr<CefDragHandler> ClientHandler::GetDragHandler() {
+  CefRefPtr<CefDragHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getDragHandler", "()Lorg/cef/handler/CefDragHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefDragHandler>(env, handler, "CefDragHandler");
+    if (!result.get()) {
+      result = new DragHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefDragHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
+CefRefPtr<CefFocusHandler> ClientHandler::GetFocusHandler() {
+  CefRefPtr<CefFocusHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getFocusHandler", "()Lorg/cef/handler/CefFocusHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<CefFocusHandler>(env, handler, "CefFocusHandler");
+    if (!result.get()) {
+      result = new FocusHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefFocusHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
 CefRefPtr<CefGeolocationHandler> ClientHandler::GetGeolocationHandler() {
   CefRefPtr<CefGeolocationHandler> result = NULL;
   BEGIN_ENV(env)
@@ -152,22 +184,6 @@ CefRefPtr<CefKeyboardHandler> ClientHandler::GetKeyboardHandler() {
     if (!result.get()) {
       result = new KeyboardHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefKeyboardHandler");
-    }
-  }
-  END_ENV(env)
-  return result;
-}
-
-CefRefPtr<CefDragHandler> ClientHandler::GetDragHandler() {
-  CefRefPtr<CefDragHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getDragHandler", "()Lorg/cef/handler/CefDragHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefDragHandler>(env, handler, "CefDragHandler");
-    if (!result.get()) {
-      result = new DragHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefDragHandler");
     }
   }
   END_ENV(env)
@@ -232,22 +248,6 @@ CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
     if (!result.get()) {
       result = new RequestHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefRequestHandler");
-    }
-  }
-  END_ENV(env)
-  return result;
-}
-
-CefRefPtr<CefFocusHandler> ClientHandler::GetFocusHandler() {
-  CefRefPtr<CefFocusHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getFocusHandler", "()Lorg/cef/handler/CefFocusHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefFocusHandler>(env, handler, "CefFocusHandler");
-    if (!result.get()) {
-      result = new FocusHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefFocusHandler");
     }
   }
   END_ENV(env)

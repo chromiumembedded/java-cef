@@ -52,31 +52,31 @@ import org.cef.misc.BoolRef;
  */
 public class CefClient extends CefClientHandler implements CefContextMenuHandler,
                                                            CefDialogHandler,
+                                                           CefDisplayHandler,
                                                            CefDownloadHandler,
                                                            CefDragHandler,
+                                                           CefFocusHandler,
                                                            CefGeolocationHandler,
                                                            CefJSDialogHandler,
                                                            CefKeyboardHandler,
                                                            CefLifeSpanHandler,
-                                                           CefDisplayHandler,
-                                                           CefRenderHandler,
-                                                           CefFocusHandler,
-                                                           CefMessageRouterHandler,
                                                            CefLoadHandler,
+                                                           CefMessageRouterHandler,
+                                                           CefRenderHandler,
                                                            CefRequestHandler {
   private HashMap<Integer,CefBrowser> browser_ = new HashMap<Integer,CefBrowser>();
-  private CefDisplayHandler displayHandler_ = null;
-  private CefFocusHandler focusHandler_ = null;
-  private CefLifeSpanHandler lifeSpanHandler_ = null;
-  private CefLoadHandler loadHandler_ = null;
-  private CefMessageRouterHandler msgRouterHandler_ = null;
-  private CefDialogHandler dialogHandler_ = null;
-  private CefDownloadHandler downloadHandler_ = null;
   private CefContextMenuHandler contextMenuHandler_ = null;
+  private CefDialogHandler dialogHandler_ = null;
+  private CefDisplayHandler displayHandler_ = null;
+  private CefDownloadHandler downloadHandler_ = null;
   private CefDragHandler dragHandler_ = null;
+  private CefFocusHandler focusHandler_ = null;
   private CefGeolocationHandler geolocationHandler_ = null;
   private CefJSDialogHandler jsDialogHandler_ = null;
   private CefKeyboardHandler keyboardHandler_ = null;
+  private CefLifeSpanHandler lifeSpanHandler_ = null;
+  private CefLoadHandler loadHandler_ = null;
+  private CefMessageRouterHandler msgRouterHandler_ = null;
   private CefRequestHandler requestHandler_ = null;
 
   /**
@@ -96,18 +96,21 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeDialogHandler(this);
     removeDisplayHandler(this);
     removeDownloadHandler(this);
-    removeFocusHandler(this);
-    removeLifeSpanHandler(this);
-    removeMessageRouterHandler(this);
-    removeLoadHandler(this);
-    removeRenderHandler(this);
     removeDragHandler(this);
+    removeFocusHandler(this);
     removeGeolocationHandler(this);
     removeJSDialogHandler(this);
     removeKeyboardHandler(this);
+    removeLifeSpanHandler(this);
+    removeLoadHandler(this);
+    removeMessageRouterHandler(this);
+    removeRenderHandler(this);
     removeRequestHandler(this);
     super.finalize();
   }
+
+
+  // CefClientHandler
 
   public CefBrowser createBrowser(String url,
                                   boolean isOffscreenRendered,
@@ -122,11 +125,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     }
   }
 
-  @Override
-  protected CefBrowser getBrowser(int identifier) {
-    return browser_.get(new Integer(identifier));
-  }
-
   public void destroyAllBrowser() {
     Collection<CefBrowser> browserList = browser_.values();
     for (CefBrowser browser : browserList) {
@@ -135,134 +133,9 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     browser_.clear();
   }
 
-  public CefClient addContextMenuHandler(CefContextMenuHandler handler) {
-    if (contextMenuHandler_ == null)
-      contextMenuHandler_ = handler;
-    return this;
-  }
-
-  public void removeContextMenuHandler() {
-    contextMenuHandler_ = null;
-  }
-
-  public CefClient addDialogHandler(CefDialogHandler handler) {
-    if (dialogHandler_ == null)
-      dialogHandler_ = handler;
-    return this;
-  }
-
-  public void removeDialogHandler() {
-    dialogHandler_ = null;
-  }
-
-  public CefClient addDisplayHandler(CefDisplayHandler handler) {
-    if (displayHandler_ == null)
-      displayHandler_ = handler;
-    return this;
-  }
-
-  public void removeDisplayHandler() {
-    displayHandler_ = null;
-  }
-
-  public CefClient addDownloadHandler(CefDownloadHandler handler) {
-    if (downloadHandler_ == null)
-      downloadHandler_ = handler;
-    return this;
-  }
-
-  public void removeDownloadHandler() {
-    downloadHandler_ = null;
-  }
-
-  public CefClient addDragHandler(CefDragHandler handler) {
-    if (dragHandler_ == null)
-      dragHandler_ = handler;
-    return this;
-  }
-
-  public void removeDragHandler() {
-    dragHandler_ = null;
-  }
-
-  public CefClient addGeolocationHandler(CefGeolocationHandler handler) {
-    if (geolocationHandler_ == null)
-      geolocationHandler_ = handler;
-    return this;
-  }
-
-  public void removeGeolocationHandler() {
-    geolocationHandler_ = null;
-  }
-
-  public CefClient addJSDialogHandler(CefJSDialogHandler handler) {
-    if (jsDialogHandler_ == null)
-      jsDialogHandler_ = handler;
-    return this;
-  }
-
-  public void removeJSDialogHandler() {
-    jsDialogHandler_ = null;
-  }
-
-  public CefClient addKeyboardHandler(CefKeyboardHandler handler) {
-    if (keyboardHandler_ == null)
-      keyboardHandler_ = handler;
-    return this;
-  }
-
-  public void removeKeyboardHandler() {
-    keyboardHandler_ = null;
-  }
-
-  public CefClient addFocusHandler(CefFocusHandler handler) {
-    if (focusHandler_ == null)
-      focusHandler_ = handler;
-    return this;
-  }
-
-  public void removeFocusHandler() {
-    focusHandler_ = null;
-  }
-
-  public CefClient addLifeSpanHandler(CefLifeSpanHandler handler) {
-    if (lifeSpanHandler_ == null)
-      lifeSpanHandler_ = handler;
-    return this;
-  }
-
-  public void removeLifeSpanHandler() {
-    lifeSpanHandler_ = null;
-  }
-
-  public CefClient addMessageRouterHandler(CefMessageRouterHandler handler) {
-    if (msgRouterHandler_ == null)
-      msgRouterHandler_ = handler;
-    return this;
-  }
-
-  public void removeMessageRouterHandler() {
-    msgRouterHandler_ = null;
-  }
-
-  public CefClient addLoadHandler(CefLoadHandler handler) {
-    if (loadHandler_ == null)
-      loadHandler_ = handler;
-    return this;
-  }
-
-  public void removeLoadHandler() {
-    loadHandler_ = null;
-  }
-
-  public CefClient addRequestHandler(CefRequestHandler handler) {
-    if (requestHandler_ == null)
-      requestHandler_ = handler;
-    return this;
-  }
-
-  public void removeRequestHandler() {
-    requestHandler_ = null;
+  @Override
+  protected CefBrowser getBrowser(int identifier) {
+    return browser_.get(new Integer(identifier));
   }
 
   @Override
@@ -291,6 +164,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
+  protected CefFocusHandler getFocusHandler() {
+    return this;
+  }
+
+  @Override
   protected CefGeolocationHandler getGeolocationHandler() {
     return this;
   }
@@ -306,22 +184,17 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  protected CefFocusHandler getFocusHandler() {
-    return this;
-  }
-
-  @Override
   protected CefLifeSpanHandler getLifeSpanHandler() {
     return this;
   }
 
   @Override
-  protected CefMessageRouterHandler getMessageRouterHandler() {
+  protected CefLoadHandler getLoadHandler() {
     return this;
   }
 
   @Override
-  protected CefLoadHandler getLoadHandler() {
+  protected CefMessageRouterHandler getMessageRouterHandler() {
     return this;
   }
 
@@ -333,6 +206,362 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   @Override
   protected CefRequestHandler getRequestHandler() {
     return this;
+  }
+
+
+  // CefContextMenuHandler
+
+  public CefClient addContextMenuHandler(CefContextMenuHandler handler) {
+    if (contextMenuHandler_ == null)
+      contextMenuHandler_ = handler;
+    return this;
+  }
+
+  public void removeContextMenuHandler() {
+    contextMenuHandler_ = null;
+  }
+
+  @Override
+  public void onBeforeContextMenu(CefBrowser browser,
+                                  CefContextMenuParams params,
+                                  CefMenuModel model) {
+    if (contextMenuHandler_ != null && browser != null)
+      contextMenuHandler_.onBeforeContextMenu(browser, params, model);
+  }
+
+  @Override
+  public boolean onContextMenuCommand(CefBrowser browser,
+                                      CefContextMenuParams params,
+                                      int commandId,
+                                      int eventFlags) {
+    if (contextMenuHandler_ != null && browser != null)
+      return contextMenuHandler_.onContextMenuCommand(browser, params, commandId, eventFlags);
+    return false;
+  }
+
+  @Override
+  public void onContextMenuDismissed(CefBrowser browser) {
+    if (contextMenuHandler_ != null && browser != null)
+      contextMenuHandler_.onContextMenuDismissed(browser);
+  }
+
+
+  // CefDialogHandler
+
+  public CefClient addDialogHandler(CefDialogHandler handler) {
+    if (dialogHandler_ == null)
+      dialogHandler_ = handler;
+    return this;
+  }
+
+  public void removeDialogHandler() {
+    dialogHandler_ = null;
+  }
+
+  @Override
+  public boolean onFileDialog(CefBrowser browser,
+                              FileDialogMode mode,
+                              String title,
+                              String defaultFileName,
+                              Vector<String> acceptTypes,
+                              CefFileDialogCallback callback) {
+    if (dialogHandler_ != null && browser != null)
+      return dialogHandler_.onFileDialog(browser, mode, title, defaultFileName, acceptTypes, callback);
+    return false;
+  }
+
+
+  // CefDisplayHandler
+
+  public CefClient addDisplayHandler(CefDisplayHandler handler) {
+    if (displayHandler_ == null)
+      displayHandler_ = handler;
+    return this;
+  }
+
+  public void removeDisplayHandler() {
+    displayHandler_ = null;
+  }
+
+  @Override
+  public void onAddressChange(CefBrowser browser, String url) {
+    if (displayHandler_ != null && browser != null)
+      displayHandler_.onAddressChange(browser, url);
+  }
+
+  @Override
+  public void onTitleChange(CefBrowser browser, String title) {
+    if (displayHandler_ != null && browser != null)
+      displayHandler_.onTitleChange(browser, title);
+  }
+
+  @Override
+  public boolean onTooltip(CefBrowser browser, String text) {
+    if (displayHandler_ != null && browser != null) {
+      return displayHandler_.onTooltip(browser, text);
+    }
+    return false;
+  }
+
+  @Override
+  public void onStatusMessage(CefBrowser browser, String value) {
+    if (displayHandler_ != null && browser != null) {
+      displayHandler_.onStatusMessage(browser, value);
+    }
+  }
+
+  @Override
+  public boolean onConsoleMessage(CefBrowser browser,
+                                  String message,
+                                  String source,
+                                  int line) {
+    if (displayHandler_ != null && browser != null) {
+      return displayHandler_.onConsoleMessage(browser, message, source, line);
+    }
+    return false;
+  }
+
+
+  // CefDownloadHandler
+
+  public CefClient addDownloadHandler(CefDownloadHandler handler) {
+    if (downloadHandler_ == null)
+      downloadHandler_ = handler;
+    return this;
+  }
+
+  public void removeDownloadHandler() {
+    downloadHandler_ = null;
+  }
+
+  @Override
+  public void onBeforeDownload(CefBrowser browser,
+                               CefDownloadItem downloadItem,
+                               String suggestedName,
+                               CefBeforeDownloadCallback callback) {
+    if (downloadHandler_ != null && browser != null)
+      downloadHandler_.onBeforeDownload(browser, downloadItem, suggestedName, callback);
+  }
+
+  @Override
+  public void onDownloadUpdated(CefBrowser browser,
+                                CefDownloadItem downloadItem,
+                                CefDownloadItemCallback callback) {
+    if (downloadHandler_ != null && browser != null)
+      downloadHandler_.onDownloadUpdated(browser, downloadItem, callback);
+  }
+
+
+  // CefDragHandler
+
+  public CefClient addDragHandler(CefDragHandler handler) {
+    if (dragHandler_ == null)
+      dragHandler_ = handler;
+    return this;
+  }
+
+  public void removeDragHandler() {
+    dragHandler_ = null;
+  }
+
+  @Override
+  public boolean onDragEnter(CefBrowser browser, CefDragData dragData, int mask) {
+    if (dragHandler_ != null && browser != null)
+      return dragHandler_.onDragEnter(browser, dragData, mask);
+    return false;
+  }
+
+
+  // CefFocusHandler
+
+  public CefClient addFocusHandler(CefFocusHandler handler) {
+    if (focusHandler_ == null)
+      focusHandler_ = handler;
+    return this;
+  }
+
+  public void removeFocusHandler() {
+    focusHandler_ = null;
+  }
+
+  @Override
+  public void onTakeFocus(CefBrowser browser, boolean next) {
+    if (browser == null)
+      return;
+
+    browser.setFocus(false);
+    Container parent = browser.getUIComponent().getParent();
+    if (parent != null) {
+      FocusTraversalPolicy policy = null;
+      while (parent != null) {
+        policy = parent.getFocusTraversalPolicy();
+        if (policy != null)
+          break;
+        parent = parent.getParent();
+      }
+      if (policy != null) {
+        Component nextComp = next ? policy.getComponentAfter(parent, browser.getUIComponent())
+                                  : policy.getComponentBefore(parent, browser.getUIComponent());
+        if (nextComp == null) {
+          policy.getDefaultComponent(parent).requestFocus();
+        } else {
+          nextComp.requestFocus();
+        }
+      }
+    }
+    if (focusHandler_ != null)
+      focusHandler_.onTakeFocus(browser, next);
+  }
+
+  @Override
+  public boolean onSetFocus(CefBrowser browser, FocusSource source) {
+    if (browser == null)
+      return false;
+
+    boolean alreadyHandled = false;
+    if (focusHandler_ != null)
+      alreadyHandled = focusHandler_.onSetFocus(browser, source);
+    if (!alreadyHandled)
+      browser.getUIComponent().requestFocus();
+    return alreadyHandled;
+  }
+
+  @Override
+  public void onGotFocus(CefBrowser browser) {
+    if (browser == null)
+      return;
+
+    browser.setFocus(true);
+    if (focusHandler_ != null)
+      focusHandler_.onGotFocus(browser);
+  }
+
+
+  // CefGeolocationHandler
+
+  public CefClient addGeolocationHandler(CefGeolocationHandler handler) {
+    if (geolocationHandler_ == null)
+      geolocationHandler_ = handler;
+    return this;
+  }
+
+  public void removeGeolocationHandler() {
+    geolocationHandler_ = null;
+  }
+
+  @Override
+  public void onRequestGeolocationPermission(CefBrowser browser,
+                                             String requesting_url,
+                                             int request_id,
+                                             CefGeolocationCallback callback) {
+    if (geolocationHandler_ != null && browser != null)
+      geolocationHandler_.onRequestGeolocationPermission(browser, requesting_url, request_id, callback);
+  }
+
+  @Override
+  public void onCancelGeolocationPermission(CefBrowser browser,
+                                            String requesting_url,
+                                            int request_id) {
+    if (geolocationHandler_ != null && browser != null)
+      geolocationHandler_.onCancelGeolocationPermission(browser, requesting_url, request_id);
+  }
+
+
+  // CefJSDialogHandler
+
+  public CefClient addJSDialogHandler(CefJSDialogHandler handler) {
+    if (jsDialogHandler_ == null)
+      jsDialogHandler_ = handler;
+    return this;
+  }
+
+  public void removeJSDialogHandler() {
+    jsDialogHandler_ = null;
+  }
+
+  @Override
+  public boolean onJSDialog(CefBrowser browser,
+                            String origin_url,
+                            String accept_lang,
+                            JSDialogType dialog_type,
+                            String message_text,
+                            String default_prompt_text,
+                            CefJSDialogCallback callback,
+                            BoolRef suppress_message) {
+    if (jsDialogHandler_ != null && browser != null)
+      return jsDialogHandler_.onJSDialog(browser,
+                                         origin_url,
+                                         accept_lang,
+                                         dialog_type,
+                                         message_text,
+                                         default_prompt_text,
+                                         callback,
+                                         suppress_message);
+    return false;
+  }
+
+  @Override
+  public boolean onBeforeUnloadDialog(CefBrowser browser,
+                                      String message_text,
+                                      boolean is_reload,
+                                      CefJSDialogCallback callback) {
+    if (jsDialogHandler_ != null && browser != null)
+      return jsDialogHandler_.onBeforeUnloadDialog(browser, message_text, is_reload, callback);
+    return false;
+  }
+
+  @Override
+  public void onResetDialogState(CefBrowser browser) {
+    if (jsDialogHandler_ != null && browser != null)
+      jsDialogHandler_.onResetDialogState(browser);
+  }
+
+  @Override
+  public void onDialogClosed(CefBrowser browser) {
+    if (jsDialogHandler_ != null && browser != null)
+      jsDialogHandler_.onDialogClosed(browser);
+  }
+
+
+  // CefKeyboardHandler
+
+  public CefClient addKeyboardHandler(CefKeyboardHandler handler) {
+    if (keyboardHandler_ == null)
+      keyboardHandler_ = handler;
+    return this;
+  }
+
+  public void removeKeyboardHandler() {
+    keyboardHandler_ = null;
+  }
+
+  @Override
+  public boolean onPreKeyEvent(CefBrowser browser,
+                               CefKeyEvent event,
+                               BoolRef is_keyboard_shortcut) {
+    if (keyboardHandler_ != null && browser != null)
+      return keyboardHandler_.onPreKeyEvent(browser, event, is_keyboard_shortcut);
+    return false;
+  }
+
+  @Override
+  public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
+    if (keyboardHandler_ != null && browser != null)
+      return keyboardHandler_.onKeyEvent(browser, event);
+    return false;
+  }
+
+
+  // CefLifeSpanHandler
+
+  public CefClient addLifeSpanHandler(CefLifeSpanHandler handler) {
+    if (lifeSpanHandler_ == null)
+      lifeSpanHandler_ = handler;
+    return this;
+  }
+
+  public void removeLifeSpanHandler() {
+    lifeSpanHandler_ = null;
   }
 
   @Override
@@ -378,43 +607,87 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
       lifeSpanHandler_.onBeforeClose(browser);
   }
 
-  @Override
-  public void onAddressChange(CefBrowser browser, String url) {
-    if (displayHandler_ != null && browser != null)
-      displayHandler_.onAddressChange(browser, url);
+
+  // CefLoadHandler
+
+  public CefClient addLoadHandler(CefLoadHandler handler) {
+    if (loadHandler_ == null)
+      loadHandler_ = handler;
+    return this;
+  }
+
+  public void removeLoadHandler() {
+    loadHandler_ = null;
   }
 
   @Override
-  public void onTitleChange(CefBrowser browser, String title) {
-    if (displayHandler_ != null && browser != null)
-      displayHandler_.onTitleChange(browser, title);
+  public void onLoadingStateChange(CefBrowser browser,
+                                   boolean isLoading,
+                                   boolean canGoBack,
+                                   boolean canGoForward) {
+    if (loadHandler_ != null && browser != null)
+      loadHandler_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
   }
 
   @Override
-  public boolean onTooltip(CefBrowser browser, String text) {
-    if (displayHandler_ != null && browser != null) {
-      return displayHandler_.onTooltip(browser, text);
-    }
-    return false;
+  public void onLoadStart(CefBrowser browser, int frameIdentifer) {
+    if (loadHandler_ != null && browser != null)
+      loadHandler_.onLoadStart(browser, frameIdentifer);
   }
 
   @Override
-  public void onStatusMessage(CefBrowser browser, String value) {
-    if (displayHandler_ != null && browser != null) {
-      displayHandler_.onStatusMessage(browser, value);
-    }
+  public void onLoadEnd(CefBrowser browser,
+                        int frameIdentifier,
+                        int httpStatusCode) {
+    if (loadHandler_ != null && browser != null)
+      loadHandler_.onLoadEnd(browser, frameIdentifier, httpStatusCode);
   }
 
   @Override
-  public boolean onConsoleMessage(CefBrowser browser,
-                                  String message,
-                                  String source,
-                                  int line) {
-    if (displayHandler_ != null && browser != null) {
-      return displayHandler_.onConsoleMessage(browser, message, source, line);
-    }
-    return false;
+  public void onLoadError(CefBrowser browser,
+                          int frameIdentifer,
+                          ErrorCode errorCode,
+                          String errorText,
+                          String failedUrl) {
+    if (loadHandler_ != null && browser != null)
+      loadHandler_.onLoadError(browser, frameIdentifer, errorCode, errorText, failedUrl);
   }
+
+
+
+  // CefMessageRouterHandler
+
+  public CefClient addMessageRouterHandler(CefMessageRouterHandler handler) {
+    if (msgRouterHandler_ == null)
+      msgRouterHandler_ = handler;
+    return this;
+  }
+
+  public void removeMessageRouterHandler() {
+    msgRouterHandler_ = null;
+  }
+
+  @Override
+  public boolean onQuery(CefBrowser browser,
+                         long query_id,
+                         String request,
+                         boolean persistent,
+                         CefQueryCallback callback) {
+    boolean alreadyHandled = false;
+    if (msgRouterHandler_ != null && browser != null)
+      alreadyHandled = msgRouterHandler_.onQuery(browser, query_id, request, persistent, callback);
+    return alreadyHandled;
+  }
+
+  @Override
+  public void onQueryCanceled(CefBrowser browser,
+                              long query_id) {
+    if (msgRouterHandler_ != null && browser != null)
+      msgRouterHandler_.onQueryCanceled(browser, query_id);
+  }
+
+
+  // CefRenderHandler
 
   @Override
   public Rectangle getViewRect(CefBrowser browser) {
@@ -503,244 +776,17 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
       realHandler.onCursorChange(browser, cursorType);
   }
 
-  @Override
-  public void onTakeFocus(CefBrowser browser, boolean next) {
-    if (browser == null)
-      return;
 
-    browser.setFocus(false);
-    Container parent = browser.getUIComponent().getParent();
-    if (parent != null) {
-      FocusTraversalPolicy policy = null;
-      while (parent != null) {
-        policy = parent.getFocusTraversalPolicy();
-        if (policy != null)
-          break;
-        parent = parent.getParent();
-      }
-      if (policy != null) {
-        Component nextComp = next ? policy.getComponentAfter(parent, browser.getUIComponent())
-                                  : policy.getComponentBefore(parent, browser.getUIComponent());
-        if (nextComp == null) {
-          policy.getDefaultComponent(parent).requestFocus();
-        } else {
-          nextComp.requestFocus();
-        }
-      }
-    }
-    if (focusHandler_ != null)
-      focusHandler_.onTakeFocus(browser, next);
+  // CefRequestHandler
+
+  public CefClient addRequestHandler(CefRequestHandler handler) {
+    if (requestHandler_ == null)
+      requestHandler_ = handler;
+    return this;
   }
 
-  @Override
-  public boolean onSetFocus(CefBrowser browser, FocusSource source) {
-    if (browser == null)
-      return false;
-
-    boolean alreadyHandled = false;
-    if (focusHandler_ != null)
-      alreadyHandled = focusHandler_.onSetFocus(browser, source);
-    if (!alreadyHandled)
-      browser.getUIComponent().requestFocus();
-    return alreadyHandled;
-  }
-
-  @Override
-  public void onGotFocus(CefBrowser browser) {
-    if (browser == null)
-      return;
-
-    browser.setFocus(true);
-    if (focusHandler_ != null)
-      focusHandler_.onGotFocus(browser);
-  }
-
-  @Override
-  public boolean onQuery(CefBrowser browser,
-                         long query_id,
-                         String request,
-                         boolean persistent,
-                         CefQueryCallback callback) {
-    boolean alreadyHandled = false;
-    if (msgRouterHandler_ != null && browser != null)
-      alreadyHandled = msgRouterHandler_.onQuery(browser, query_id, request, persistent, callback);
-    return alreadyHandled;
-  }
-
-  @Override
-  public void onQueryCanceled(CefBrowser browser,
-                              long query_id) {
-    if (msgRouterHandler_ != null && browser != null)
-      msgRouterHandler_.onQueryCanceled(browser, query_id);
-  }
-
-  @Override
-  public void onLoadingStateChange(CefBrowser browser,
-                                   boolean isLoading,
-                                   boolean canGoBack,
-                                   boolean canGoForward) {
-    if (loadHandler_ != null && browser != null)
-      loadHandler_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
-  }
-
-  @Override
-  public void onLoadStart(CefBrowser browser, int frameIdentifer) {
-    if (loadHandler_ != null && browser != null)
-      loadHandler_.onLoadStart(browser, frameIdentifer);
-  }
-
-  @Override
-  public void onLoadEnd(CefBrowser browser,
-                        int frameIdentifier,
-                        int httpStatusCode) {
-    if (loadHandler_ != null && browser != null)
-      loadHandler_.onLoadEnd(browser, frameIdentifier, httpStatusCode);
-  }
-
-  @Override
-  public void onLoadError(CefBrowser browser,
-                          int frameIdentifer,
-                          ErrorCode errorCode,
-                          String errorText,
-                          String failedUrl) {
-    if (loadHandler_ != null && browser != null)
-      loadHandler_.onLoadError(browser, frameIdentifer, errorCode, errorText, failedUrl);
-  }
-
-  @Override
-  public boolean onFileDialog(CefBrowser browser,
-                              FileDialogMode mode,
-                              String title,
-                              String defaultFileName,
-                              Vector<String> acceptTypes,
-                              CefFileDialogCallback callback) {
-    if (dialogHandler_ != null && browser != null)
-      return dialogHandler_.onFileDialog(browser, mode, title, defaultFileName, acceptTypes, callback);
-    return false;
-  }
-
-  @Override
-  public void onBeforeDownload(CefBrowser browser,
-                               CefDownloadItem downloadItem,
-                               String suggestedName,
-                               CefBeforeDownloadCallback callback) {
-    if (downloadHandler_ != null && browser != null)
-      downloadHandler_.onBeforeDownload(browser, downloadItem, suggestedName, callback);
-  }
-
-  @Override
-  public void onDownloadUpdated(CefBrowser browser,
-                                CefDownloadItem downloadItem,
-                                CefDownloadItemCallback callback) {
-    if (downloadHandler_ != null && browser != null)
-      downloadHandler_.onDownloadUpdated(browser, downloadItem, callback);
-  }
-
-  @Override
-  public void onBeforeContextMenu(CefBrowser browser,
-                                  CefContextMenuParams params,
-                                  CefMenuModel model) {
-    if (contextMenuHandler_ != null && browser != null)
-      contextMenuHandler_.onBeforeContextMenu(browser, params, model);
-  }
-
-  @Override
-  public boolean onContextMenuCommand(CefBrowser browser,
-                                      CefContextMenuParams params,
-                                      int commandId,
-                                      int eventFlags) {
-    if (contextMenuHandler_ != null && browser != null)
-      return contextMenuHandler_.onContextMenuCommand(browser, params, commandId, eventFlags);
-    return false;
-  }
-
-  @Override
-  public void onContextMenuDismissed(CefBrowser browser) {
-    if (contextMenuHandler_ != null && browser != null)
-      contextMenuHandler_.onContextMenuDismissed(browser);
-  }
-
-  @Override
-  public boolean onDragEnter(CefBrowser browser, CefDragData dragData, int mask) {
-    if (dragHandler_ != null && browser != null)
-      return dragHandler_.onDragEnter(browser, dragData, mask);
-    return false;
-  }
-
-  @Override
-  public void onRequestGeolocationPermission(CefBrowser browser,
-                                             String requesting_url,
-                                             int request_id,
-                                             CefGeolocationCallback callback) {
-    if (geolocationHandler_ != null && browser != null)
-      geolocationHandler_.onRequestGeolocationPermission(browser, requesting_url, request_id, callback);
-  }
-
-  @Override
-  public void onCancelGeolocationPermission(CefBrowser browser,
-                                            String requesting_url,
-                                            int request_id) {
-    if (geolocationHandler_ != null && browser != null)
-      geolocationHandler_.onCancelGeolocationPermission(browser, requesting_url, request_id);
-  }
-
-  @Override
-  public boolean onJSDialog(CefBrowser browser,
-                            String origin_url,
-                            String accept_lang,
-                            JSDialogType dialog_type,
-                            String message_text,
-                            String default_prompt_text,
-                            CefJSDialogCallback callback,
-                            BoolRef suppress_message) {
-    if (jsDialogHandler_ != null && browser != null)
-      return jsDialogHandler_.onJSDialog(browser,
-                                         origin_url,
-                                         accept_lang,
-                                         dialog_type,
-                                         message_text,
-                                         default_prompt_text,
-                                         callback,
-                                         suppress_message);
-    return false;
-  }
-
-  @Override
-  public boolean onBeforeUnloadDialog(CefBrowser browser,
-                                      String message_text,
-                                      boolean is_reload,
-                                      CefJSDialogCallback callback) {
-    if (jsDialogHandler_ != null && browser != null)
-      return jsDialogHandler_.onBeforeUnloadDialog(browser, message_text, is_reload, callback);
-    return false;
-  }
-
-  @Override
-  public void onResetDialogState(CefBrowser browser) {
-    if (jsDialogHandler_ != null && browser != null)
-      jsDialogHandler_.onResetDialogState(browser);
-  }
-
-  @Override
-  public void onDialogClosed(CefBrowser browser) {
-    if (jsDialogHandler_ != null && browser != null)
-      jsDialogHandler_.onDialogClosed(browser);
-  }
-
-  @Override
-  public boolean onPreKeyEvent(CefBrowser browser,
-                               CefKeyEvent event,
-                               BoolRef is_keyboard_shortcut) {
-    if (keyboardHandler_ != null && browser != null)
-      return keyboardHandler_.onPreKeyEvent(browser, event, is_keyboard_shortcut);
-    return false;
-  }
-
-  @Override
-  public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
-    if (keyboardHandler_ != null && browser != null)
-      return keyboardHandler_.onKeyEvent(browser, event);
-    return false;
+  public void removeRequestHandler() {
+    requestHandler_ = null;
   }
 
   @Override

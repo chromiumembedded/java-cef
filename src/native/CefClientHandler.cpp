@@ -38,6 +38,11 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeDragHandle
   SetCefForJNIObject<CefDragHandler>(env, dragHandler, NULL, "CefDragHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
+  (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
+  SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeGeolocationHandler
   (JNIEnv *env, jobject clientHandler, jobject geolocationHandler) {
   SetCefForJNIObject<CefGeolocationHandler>(env, geolocationHandler, NULL, "CefGeolocationHandler");
@@ -53,24 +58,19 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeKeyboardHa
   SetCefForJNIObject<CefKeyboardHandler>(env, keyboardHandler, NULL, "CefKeyboardHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler
-  (JNIEnv *env, jobject clientHandler, jobject focusHandler) {
-  SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL, "CefFocusHandler");
-}
-
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLifeSpanHandler
   (JNIEnv *env, jobject clientHandler, jobject lifeSpanHandler) {
   SetCefForJNIObject<CefLifeSpanHandler>(env, lifeSpanHandler, NULL, "CefLifeSpanHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouterHandler
-  (JNIEnv *env, jobject clientHandler, jobject msgRouterHandler) {
-  SetCefForJNIObject<MessageRouterHandler>(env, msgRouterHandler, NULL, "CefMessageRouterHandler");
-}
-
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler
   (JNIEnv *env, jobject clientHandler, jobject loadHandler) {
   SetCefForJNIObject<CefLoadHandler>(env, loadHandler, NULL, "CefLoadHandler");
+}
+
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouterHandler
+  (JNIEnv *env, jobject clientHandler, jobject msgRouterHandler) {
+  SetCefForJNIObject<MessageRouterHandler>(env, msgRouterHandler, NULL, "CefMessageRouterHandler");
 }
 
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRenderHandler
