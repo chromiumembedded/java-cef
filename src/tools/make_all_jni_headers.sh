@@ -28,5 +28,6 @@ else
   ./make_jni_header.sh $1 org.cef.network.CefPostDataElement_N
   ./make_jni_header.sh $1 org.cef.network.CefRequest_N
   ./make_jni_header.sh $1 org.cef.network.CefResponse_N
+  ./make_jni_header.sh $1 org.cef.network.CefURLRequest_N
 fi
 

@@ -82,6 +82,8 @@
         'native/CefRequest_N.h',
         'native/CefResponse_N.cpp',
         'native/CefResponse_N.h',
+        'native/CefURLRequest_N.cpp',
+        'native/CefURLRequest_N.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
         'native/context_menu_handler.cpp',
@@ -120,6 +122,8 @@
         'native/run_file_dialog_callback.h',
         'native/string_visitor.cpp',
         'native/string_visitor.h',
+        'native/url_request_client.cpp',
+        'native/url_request_client.h',
         'native/util.h',
       ],
       'xcode_settings': {

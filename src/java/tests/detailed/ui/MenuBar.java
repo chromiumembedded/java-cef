@@ -31,6 +31,7 @@ import org.cef.network.CefRequest;
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
+import tests.detailed.dialog.UrlRequestDialog;
 
 @SuppressWarnings("serial")
 public class MenuBar extends JMenuBar {
@@ -303,6 +304,16 @@ public class MenuBar extends JMenuBar {
       }
     });
     testMenu.add(closeDevTools);
+
+    JMenuItem testURLRequest = new JMenuItem("URL Request");
+    testURLRequest.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        UrlRequestDialog dlg = new UrlRequestDialog(owner_, "URL Request Test");
+        dlg.setVisible(true);
+      }
+    });
+    testMenu.add(testURLRequest);
 
     add(fileMenu);
     add(bookmarkMenu_);

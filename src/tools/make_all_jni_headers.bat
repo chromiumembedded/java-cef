@@ -34,6 +34,7 @@ call make_jni_header.bat %1 org.cef.network.CefPostData_N
 call make_jni_header.bat %1 org.cef.network.CefPostDataElement_N
 call make_jni_header.bat %1 org.cef.network.CefRequest_N
 call make_jni_header.bat %1 org.cef.network.CefResponse_N
+call make_jni_header.bat %1 org.cef.network.CefURLRequest_N
 
 :end
 endlocal & set RC=%ERRORLEVEL%
