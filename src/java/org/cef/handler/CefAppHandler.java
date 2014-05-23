@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCommandLine;
+import org.cef.callback.CefSchemeRegistrar;
 
 /**
  * Implement this interface to provide handler implementations. Methods will be
@@ -22,5 +23,18 @@ public interface CefAppHandler {
    */
    public void onBeforeCommandLineProcessing(String process_type, CefCommandLine command_line);
 
-   // TODO(JCEF) Add the other callback methods for CefApp (see cef_app.h).
+   /**
+    * Provides an opportunity to register custom schemes. Do not keep a reference
+    * to the |registrar| object. This method is called on the main thread for
+    * each process and the registered schemes should be the same across all
+    * processes.
+    */
+   public void onRegisterCustomSchemes(CefSchemeRegistrar registrar);
+
+   // Inherited of CefBrowserProcessHandler
+   /**
+    * Called on the browser process UI thread immediately after the CEF context
+    * has been initialized.
+    */
+   public void onContextInitialized();
 }

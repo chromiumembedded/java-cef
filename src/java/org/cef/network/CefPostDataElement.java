@@ -74,10 +74,26 @@ public abstract class CefPostDataElement {
 
   @Override
   public String toString() {
+    return toString(null);
+  }
+
+  public String toString(String mimeType) {
     int bytesCnt = getBytesCount();
     byte[] bytes = null;
     if (bytesCnt > 0) {
       bytes = new byte[bytesCnt];
+    }
+
+    boolean asText = false;
+    if (mimeType != null) {
+      if (mimeType.startsWith("text/"))
+        asText = true;
+      else if (mimeType.startsWith("application/xml"))
+        asText = true;
+      else if (mimeType.startsWith("application/xhtml"))
+        asText = true;
+      else if (mimeType.startsWith("application/x-www-form-urlencoded"))
+        asText = true;
     }
 
     String returnValue = "";
@@ -85,10 +101,14 @@ public abstract class CefPostDataElement {
     if (getType() == Type.PDE_TYPE_BYTES) {
       int setBytes = getBytes(bytes.length, bytes);
       returnValue += "    Content-Length: " + bytesCnt + "\n";
-      for (int i=0; i < setBytes; i++) {
-        if (i%40 == 0)
-          returnValue += "\n    ";
-        returnValue += String.format("%02X", bytes[i]) + " ";
+      if (asText) {
+        returnValue += "\n    " + new String(bytes);
+      } else {
+        for (int i=0; i < setBytes; i++) {
+          if (i%40 == 0)
+            returnValue += "\n    ";
+          returnValue += String.format("%02X", bytes[i]) + " ";
+        }
       }
       returnValue += "\n";
     } else if (getType() == Type.PDE_TYPE_FILE) {

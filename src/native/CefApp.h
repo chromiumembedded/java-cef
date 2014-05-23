@@ -31,6 +31,22 @@ JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_cef_CefApp
+ * Method:    N_RegisterSchemeHandlerFactory
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Lorg/cef/callback/CefSchemeHandlerFactory;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory
+  (JNIEnv *, jobject, jstring, jstring, jobject);
+
+/*
+ * Class:     org_cef_CefApp
+ * Method:    N_ClearSchemeHandlerFactories
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -5,13 +5,14 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCommandLine;
+import org.cef.callback.CefSchemeRegistrar;
 
 /**
  * An abstract adapter class for managing app handler events.
  * The methods in this class are using a default implementation.
  * This class exists as convenience for creating handler objects.
  */
-public class CefAppHandlerAdapter implements CefAppHandler {
+public abstract class CefAppHandlerAdapter implements CefAppHandler {
   private String [] args_;
 
   public CefAppHandlerAdapter(String [] args) {
@@ -57,5 +58,15 @@ public class CefAppHandlerAdapter implements CefAppHandler {
         }
       }
     }
+  }
+
+  @Override
+  public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
+    // The default implementation does nothing
+  }
+
+  @Override
+  public void onContextInitialized() {
+    // The default implementation does nothing
   }
 }

@@ -22,6 +22,7 @@ import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 
 import tests.detailed.dialog.DownloadDialog;
+import tests.detailed.handler.AppHandler;
 import tests.detailed.handler.ContextMenuHandler;
 import tests.detailed.handler.DragHandler;
 import tests.detailed.handler.GeolocationHandler;
@@ -85,12 +86,19 @@ public class MainFrame extends JFrame {
     //    application arguments to it, if you want to handle any
     //    chromium or CEF related switches/attributes in
     //    the native world.
-    //
+    CefApp myApp = CefApp.getInstance(args);
+
+    //    We're registering our own AppHandler because we want to
+    //    add an own schemes (search:// and client://) and its corresponding
+    //    protocol handlers. So if you enter "search:something on the web", your
+    //    search request "something on the web" is forwarded to www.google.com
+    CefApp.addAppHandler(new AppHandler(args));
+
     //    By calling the method createClient() the native part
     //    of JCEF/CEF will be initialized and an  instance of
     //    CefClient will be created. You can create one to many
     //    instances of CefClient.
-    client_ = CefApp.getInstance(args).createClient();
+    client_ = myApp.createClient();
 
     // 2) You have the ability to pass different handlers to your
     //    instance of CefClient. Each handler is responsible to
@@ -184,6 +192,8 @@ public class MainFrame extends JFrame {
     menuBar.addBookmark("Login Test (username:pumpkin, password:pie)","http://www.colostate.edu/~ric/protect/your.html");
     menuBar.addBookmark("Certificate-error Test","https://www.k2go.de");
     menuBar.addBookmark("Resource-Handler Test", "http://www.foo.bar/");
+    menuBar.addBookmark("Scheme-Handler Test 1: (scheme \"client\")", "client://tests/handler.html");
+    menuBar.addBookmark("Scheme-Handler Test 2: (scheme \"search\")", "search://do a barrel roll/");
     menuBar.addBookmarkSeparator();
     menuBar.addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     menuBar.addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");

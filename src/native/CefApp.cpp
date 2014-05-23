@@ -11,6 +11,7 @@
 #include "include/cef_path_util.h"
 #include "client_handler.h"
 #include "render_handler.h"
+#include "scheme_handler_factory.h"
 #include "jni_util.h"
 #include "util.h"
 
@@ -24,7 +25,8 @@
 
 namespace {
 
-class ClientApp : public CefApp {
+class ClientApp : public CefApp,
+                  public CefBrowserProcessHandler {
  public:
   explicit ClientApp(const std::string& module_dir,
                      const jobject app_handler)
@@ -80,8 +82,40 @@ class ClientApp : public CefApp {
     }
   }
 
-  // TODO(jcef): Extend this class to be able to handle all methods of
-  // CefApp within the the Java world (see CefAppHandler.java).
+  virtual void OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) OVERRIDE {
+    if (!app_handler_)
+      return;
+
+    BEGIN_ENV(env)
+    jobject jregistrar = NewJNIObject(env, "org/cef/callback/CefSchemeRegistrar_N");
+    if (jregistrar != NULL) {
+      SetCefForJNIObject(env, jregistrar, registrar.get(), "CefSchemeRegistrar");
+      JNI_CALL_VOID_METHOD(env,
+                           app_handler_,
+                           "onRegisterCustomSchemes",
+                           "(Lorg/cef/callback/CefSchemeRegistrar;)V",
+                           jregistrar);
+      SetCefForJNIObject<CefSchemeRegistrar>(env, jregistrar, NULL, "CefSchemeRegistrar");
+    }
+    END_ENV(env)
+  }
+
+  virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE {
+    return this;
+  }
+
+  // CefBrowserProcessHandler
+  virtual void OnContextInitialized() OVERRIDE {
+    if (!app_handler_)
+      return;
+
+    BEGIN_ENV(env)
+    JNI_CALL_VOID_METHOD(env,
+                         app_handler_,
+                         "onContextInitialized",
+                         "()V");
+    END_ENV(env)
+  }
 
  private:
   std::string module_dir_;
@@ -154,4 +188,24 @@ JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
   (JNIEnv *env, jobject) {
   CefDoMessageLoopWork();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory
+  (JNIEnv *env, jobject, jstring jSchemeName, jstring jDomainName, jobject jFactory) {
+  if (!jFactory)
+    return JNI_FALSE;
+
+  CefRefPtr<SchemeHandlerFactory> factory = new SchemeHandlerFactory(env, jFactory);
+  if (!factory)
+    return JNI_FALSE;
+
+  bool result = CefRegisterSchemeHandlerFactory(GetJNIString(env, jSchemeName),
+                                                GetJNIString(env, jDomainName),
+                                                factory.get());
+  return result ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories
+  (JNIEnv *, jobject) {
+  return CefClearSchemeHandlerFactories() ? JNI_TRUE : JNI_FALSE;
 }

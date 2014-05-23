@@ -6,8 +6,6 @@ package org.cef.network;
 
 import java.util.Vector;
 
-import org.cef.network.CefPostDataElement.Type;
-
 /**
  * Class used to represent post data for a web request. The methods of this
  * class may be called on any thread.
@@ -58,12 +56,16 @@ public abstract class CefPostData {
 
   @Override
   public String toString() {
+    return toString(null);
+  }
+
+  public String toString(String mimeType) {
     Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
     getElements(elements);
 
     String returnValue = "";
     for (CefPostDataElement el : elements) {
-      returnValue += el + "\n";
+      returnValue += el.toString(mimeType) + "\n";
     }
     return returnValue;
   }

@@ -39,6 +39,10 @@ bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
                   result,
                   jrequest,
                   jcallback);
+  if (result == JNI_FALSE) {
+    SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
+    SetCefForJNIObject<CefCallback>(env, jcallback, NULL, "CefCallback");
+  }
   return (result != JNI_FALSE);
 }
 
@@ -103,6 +107,13 @@ bool ResourceHandler::ReadResponse(void* data_out,
                   jcallback);
   bool result = (jresult != JNI_FALSE);
   bytes_read = GetJNIIntRef(env, jintRef);
+  if (!result || bytes_read > 0) {
+    // Only if bytes are available at a later time, CefCallback will be called
+    // This is true if result = true and bytes_read == 0)
+    // In all other cases we have to release the reference to the native
+    // CefCallback object.
+    SetCefForJNIObject<CefCallback>(env, jcallback, NULL, "CefCallback");
+  }
   jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
   memmove(data_out, jbyte, (bytes_read < bytes_to_read ? bytes_read : bytes_to_read));
   return result;

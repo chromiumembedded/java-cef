@@ -370,13 +370,18 @@ public abstract class CefRequest {
     Map<String, String> headerMap = new HashMap<>();
     getHeaderMap(headerMap);
     Set<Entry<String,String>> entrySet = headerMap.entrySet();
+    String mimeType = null;
     for (Entry<String,String> entry : entrySet) {
-      returnValue += "    " + entry.getKey() + "=" + entry.getValue() + "\n";
+      String key = entry.getKey();
+      returnValue += "    " + key + "=" + entry.getValue() + "\n";
+      if (key.equals("Content-Type")) {
+        mimeType = entry.getValue();
+      }
     }
 
     CefPostData pd = getPostData();
     if (pd != null) {
-      returnValue += pd;
+      returnValue += pd.toString(mimeType);
     }
 
     return returnValue;

@@ -31,6 +31,11 @@
       <src path="java/tests/"/>
       <src path="java/org/cef/"/>
     </javac>
+    <copy todir="${out.path}">
+      <fileset dir="java" casesensitive="no">
+        <exclude name="**/*.java" />
+      </fileset>
+    </copy>
   </target>
     
   <target name="jar" depends="compile">
@@ -53,7 +58,8 @@
                           name="${out.name}"
                    displayname="${out.name}"
                     identifier="${out.id}"
-                 mainclassname="${out.mainclass}">
+                 mainclassname="${out.mainclass}"
+                          icon="third_party/cef/res/CefIcon.icns">
       <classpath dir="${out.path}">
         <include name="jcef.jar"/>
         <include name="jcef-tests.jar"/>

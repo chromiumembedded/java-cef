@@ -13,6 +13,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.SwingUtilities;
 
+import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.handler.CefAppHandler;
 import org.cef.handler.CefAppHandlerAdapter;
 
@@ -126,6 +127,43 @@ public class CefApp extends CefAppHandlerAdapter {
     CefClient client = new CefClient();
     clients_.add(client);
     return client;
+  }
+
+  /**
+   * Register a scheme handler factory for the specified |scheme_name| and
+   * optional |domain_name|. An empty |domain_name| value for a standard scheme
+   * will cause the factory to match all domain names. The |domain_name| value
+   * will be ignored for non-standard schemes. If |scheme_name| is a built-in
+   * scheme and no handler is returned by |factory| then the built-in scheme
+   * handler factory will be called. If |scheme_name| is a custom scheme then
+   * also implement the CefApp::OnRegisterCustomSchemes() method in all processes.
+   * This function may be called multiple times to change or remove the factory
+   * that matches the specified |scheme_name| and optional |domain_name|.
+   * Returns false if an error occurs. This function may be called on any thread
+   * in the browser process.
+   */
+  public boolean registerSchemeHandlerFactory(String schemeName,
+                                              String domainName,
+                                              CefSchemeHandlerFactory factory) {
+    try {
+      return N_RegisterSchemeHandlerFactory(schemeName, domainName, factory);
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+    return false;
+  }
+
+  /**
+   * Clear all registered scheme handler factories. Returns false on error. This
+   * function may be called on any thread in the browser process.
+   */
+  public boolean clearSchemeHandlerFactories() {
+    try {
+      return N_ClearSchemeHandlerFactories();
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+    return false;
   }
 
   private final Thread context = new Thread() {
@@ -267,4 +305,8 @@ public class CefApp extends CefAppHandlerAdapter {
   private final native boolean N_Initialize(String pathToJavaDLL, CefAppHandler appHandler);
   private final native void N_Shutdown();
   private final native void N_DoMessageLoopWork();
+  private final native boolean N_RegisterSchemeHandlerFactory(String schemeName,
+                                                              String domainName,
+                                                              CefSchemeHandlerFactory factory);
+  private final native boolean N_ClearSchemeHandlerFactories();
 }

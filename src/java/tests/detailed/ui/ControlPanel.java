@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -96,7 +98,7 @@ public class ControlPanel extends JPanel {
     address_field_.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        browser_.loadURL(address_field_.getText());
+        browser_.loadURL(getAddress());
       }
     });
     address_field_.addMouseListener(new MouseAdapter() {
@@ -115,7 +117,7 @@ public class ControlPanel extends JPanel {
     goButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        browser_.loadURL(address_field_.getText());
+        browser_.loadURL(getAddress());
       }
     });
     add(goButton);
@@ -156,7 +158,20 @@ public class ControlPanel extends JPanel {
   }
 
   public String getAddress() {
-    return address_field_.getText();
+    String address = address_field_.getText();
+    // If the URI format is unknown "new URI" will throw an
+    // exception. In this case we interpret the value of the
+    // address field as search request. Therefore we simply add
+    // the "search" scheme.
+    try {
+      URI test = new URI(address);
+      String specific = test.getSchemeSpecificPart();
+      if (specific.indexOf('.') == -1)
+        throw new URISyntaxException(specific, "No dot inside domain");
+    } catch (URISyntaxException e1) {
+      address = "search://" + address;
+    }
+    return address;
   }
 
   public void setAddress(CefBrowser browser, String address) {
