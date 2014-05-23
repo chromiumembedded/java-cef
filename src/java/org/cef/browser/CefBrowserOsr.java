@@ -42,13 +42,18 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   private CefClientHandler clientHandler_;
   private String url_;
   private boolean isTransparent_;
+  private CefRequestContext context_;
 
-  CefBrowserOsr(CefClientHandler clientHandler, String url, boolean transparent) {
+  CefBrowserOsr(CefClientHandler clientHandler,
+                String url,
+                boolean transparent,
+                CefRequestContext context) {
     super();
     isTransparent_ = transparent;
     renderer_ = new CefRenderer(transparent);
     clientHandler_ = clientHandler;
     url_ = url;
+    context_ = context;
     createGLCanvas();
   }
 
@@ -82,7 +87,12 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     canvas_ = new GLCanvas(glcapabilities) {
       @Override
       public void paint(Graphics g) {
-        createBrowser(clientHandler_, getWindowHandle(), url_, isTransparent_, null);
+        createBrowser(clientHandler_,
+                      getWindowHandle(),
+                      url_,
+                      isTransparent_,
+                      null,
+                      context_);
         super.paint(g);
       }
     };

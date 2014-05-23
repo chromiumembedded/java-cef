@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
+import org.cef.browser.CefRequestContext;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
@@ -118,7 +119,18 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public CefBrowser createBrowser(String url,
                                   boolean isOffscreenRendered,
                                   boolean isTransparent) {
-    return CefBrowserFactory.create(this, url, isOffscreenRendered, isTransparent);
+    return createBrowser(url, isOffscreenRendered, isTransparent, null);
+  }
+
+  public CefBrowser createBrowser(String url,
+                                  boolean isOffscreenRendered,
+                                  boolean isTransparent,
+                                  CefRequestContext context) {
+    return CefBrowserFactory.create(this,
+                                    url,
+                                    isOffscreenRendered,
+                                    isTransparent,
+                                    context);
   }
 
   public void destroyBrowser(CefBrowser browser) {

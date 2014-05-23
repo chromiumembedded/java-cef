@@ -13,9 +13,10 @@ public class CefBrowserFactory {
   public static CefBrowser create(CefClientHandler clientHandler,
                                   String url,
                                   boolean isOffscreenRendered,
-                                  boolean isTransparent) {
+                                  boolean isTransparent,
+                                  CefRequestContext context) {
     if (isOffscreenRendered)
-      return new CefBrowserOsr(clientHandler, url, isTransparent);
-    return new CefBrowserWr(clientHandler, url);
+      return new CefBrowserOsr(clientHandler, url, isTransparent, context);
+    return new CefBrowserWr(clientHandler, url, context);
   }
 }

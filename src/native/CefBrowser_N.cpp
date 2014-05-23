@@ -125,7 +125,7 @@ int GetMacKeyCodeFromChar(int key_char) {
 
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
   (JNIEnv *env, jobject jbrowser, jobject jclientHandler, jlong windowHandle,
-   jstring url, jboolean transparent, jobject canvas) {
+  jstring url, jboolean transparent, jobject canvas, jobject jcontext) {
   CefRefPtr<ClientHandler> clientHandler = GetCefFromJNIObject<ClientHandler>(env, 
                                                                               jclientHandler, 
                                                                               "CefClientHandler");
@@ -160,13 +160,17 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
   CefRefPtr<CefBrowser> browserObj;
   CefString strUrl = GetJNIString(env, url);
 
+  CefRefPtr<CefRequestContext> context = NULL;
+  if (jcontext != NULL) {
+    context = GetCefFromJNIObject<CefRequestContext>(env, jcontext, "CefRequestContext");
+  }
   jobject globalRef = env->NewGlobalRef(jbrowser);
   lifeSpanHandler->registerJBrowser(globalRef);
   bool result = CefBrowserHost::CreateBrowser(windowInfo,
                                               clientHandler.get(),
                                               strUrl,
                                               settings,
-                                              NULL);
+                                              context);
   if (!result) {
     lifeSpanHandler->unregisterJBrowser(globalRef);
     env->DeleteGlobalRef(globalRef);
@@ -329,7 +333,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->CloseBrowser(true);
-
   // Clear the browser pointer member of the Java object. This call will
   // release the extra reference to the object added in
   // CefApp::CreateBrowser.

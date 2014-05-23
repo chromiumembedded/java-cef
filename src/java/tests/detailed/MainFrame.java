@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,8 +19,11 @@ import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefRequestContext;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.handler.CefRequestContextHandler;
+import org.cef.network.CefCookieManager;
 
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.handler.AppHandler;
@@ -38,14 +42,21 @@ public class MainFrame extends JFrame {
   private static final long serialVersionUID = -2295538706810864538L;
   public static void main(String [] args) {
     // OSR mode is enabled by default on Linux.
-    boolean osrEnabledArg = true;
-    if (OS.isWindows() || OS.isMacintosh()) {
-      // OSR mode is disabled by default on Windows and Mac OS X.
-      osrEnabledArg = false;
-      for (String arg : args) {
-        if (arg.toLowerCase().equals("--off-screen-rendering-enabled")) {
-          osrEnabledArg = true;
-          break;
+    // and disabled by default on Windows and Mac OS X.
+    boolean osrEnabledArg = OS.isLinux();
+    String cookiePath = null;
+    for (String arg : args) {
+      arg = arg.toLowerCase();
+      if (!OS.isLinux() && arg.equals("--off-screen-rendering-enabled")) {
+        osrEnabledArg = true;
+      } else if(arg.startsWith("--cookie-path=")) {
+        cookiePath = arg.substring("--cookie-path=".length());
+        File testPath = new File(cookiePath);
+        if (!testPath.isDirectory() || !testPath.canWrite()) {
+          System.out.println("Can't use " + cookiePath + " as cookie directory. Check if it exists and if it is writable");
+          cookiePath = null;
+        } else {
+          System.out.println("Storing cookies in " + cookiePath);
         }
       }
     }
@@ -54,7 +65,7 @@ public class MainFrame extends JFrame {
 
     // MainFrame keeps all the knowledge to display the embedded browser
     // frame.
-    final MainFrame frame = new MainFrame(osrEnabledArg, args); 
+    final MainFrame frame = new MainFrame(osrEnabledArg, cookiePath, args); 
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -79,8 +90,9 @@ public class MainFrame extends JFrame {
   private final CefBrowser browser_;
   private ControlPanel control_pane_;
   private StatusPanel status_panel_;
+  private final CefCookieManager cookieManager_;
 
-  public MainFrame(boolean osrEnabled, String [] args) {
+  public MainFrame(boolean osrEnabled, String cookiePath, String [] args) {
 
     // 1) CefApp is the entry point for JCEF. You can pass
     //    application arguments to it, if you want to handle any
@@ -178,12 +190,34 @@ public class MainFrame extends JFrame {
     // 3) Before we can display any content, we require an instance of
     //    CefBrowser itself by calling createBrowser() on the CefClient.
     //    You can create one to many browser instances per CefClient.
-    browser_ = client_.createBrowser("http://www.google.com", osrEnabled, false);
+    //
+    //    If the user has specified the application parameter "--cookie-path="
+    //    we provide our own cookie manager which persists cookies in a directory.
+    CefRequestContext requestContext = null;
+    if (cookiePath != null) {
+      cookieManager_ = CefCookieManager.createManager(cookiePath, false);
+      requestContext = CefRequestContext.createContext(new CefRequestContextHandler() {
+        @Override
+        public CefCookieManager getCookieManager() {
+          return cookieManager_;
+        }
+      });
+    } else {
+      cookieManager_ = CefCookieManager.getGlobalManager();
+    }
+    browser_ = client_.createBrowser("http://www.google.com",
+                                     osrEnabled,
+                                     false,
+                                     requestContext);
 
     //    Last but not least we're setting up the UI for this example implementation.
     getContentPane().add(createContentPanel(), BorderLayout.CENTER);
-    MenuBar menuBar = new MenuBar(this, browser_, control_pane_,
-                                                downloadDialog, client_);
+    MenuBar menuBar = new MenuBar(this,
+                                  browser_,
+                                  control_pane_,
+                                  downloadDialog,
+                                  client_,
+                                  cookieManager_);
 
     // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
     menuBar.addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");

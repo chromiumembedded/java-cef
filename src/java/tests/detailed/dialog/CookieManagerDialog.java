@@ -28,13 +28,14 @@ import org.cef.network.CefCookieManager;
 public class CookieManagerDialog extends JDialog {
 
   private static int testCookieId = 1;
-  private final CefCookieManager manager = CefCookieManager.getGlobalManager();
+  private final CefCookieManager manager;
   private final CookieTableModel tblModel = new CookieTableModel();
 
-  public CookieManagerDialog(Frame owner, String title) {
+  public CookieManagerDialog(Frame owner, String title, CefCookieManager cookieManager) {
     super(owner, title, false);
     setLayout(new BorderLayout());
     setSize(800, 600);
+    manager = cookieManager;
 
     JTable cookieTable = new JTable(tblModel);
     cookieTable.setFillsViewportHeight(true);

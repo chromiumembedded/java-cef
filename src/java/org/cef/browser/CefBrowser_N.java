@@ -27,6 +27,7 @@ abstract class CefBrowser_N implements CefBrowser {
   // Used internally to store a pointer to the CEF object.
   private long N_CefHandle = 0;
   private boolean isPending_ = false;
+  private CefRequestContext_N context_ = null;
 
   @Override
   public void setNativeRef(String identifer, long nativeRef) {
@@ -46,10 +47,17 @@ abstract class CefBrowser_N implements CefBrowser {
                                long windowHandle,
                                String url,
                                boolean transparent,
-                               Canvas canvas) {
+                               Canvas canvas,
+                               CefRequestContext context) {
     if (N_CefHandle == 0 && !isPending_) {
+      context_ = (CefRequestContext_N)context;
       try {
-        isPending_ = N_CreateBrowser(clientHandler, windowHandle, url, transparent, canvas);
+        isPending_ = N_CreateBrowser(clientHandler,
+                                     windowHandle,
+                                     url,
+                                     transparent,
+                                     canvas,
+                                     context);
       } catch (UnsatisfiedLinkError err) {
         err.printStackTrace();
       }
@@ -253,6 +261,8 @@ abstract class CefBrowser_N implements CefBrowser {
   public void close() {
     try {
       getUIComponent().removeNotify();
+      if (context_ != null)
+        context_.destroyNative();
       N_Close();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
@@ -430,7 +440,12 @@ abstract class CefBrowser_N implements CefBrowser {
     }
   }
 
-  private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle, String url, boolean transparent, Canvas canvas);
+  private final native boolean N_CreateBrowser(CefClientHandler clientHandler,
+                                               long windowHandle,
+                                               String url,
+                                               boolean transparent,
+                                               Canvas canvas,
+                                               CefRequestContext context);
   private final native long N_GetWindowHandle(long surfaceHandle);
   private final native boolean N_CanGoBack();
   private final native void N_GoBack();

@@ -29,12 +29,16 @@ class CefBrowserWr extends CefBrowser_N {
   private long window_handle_ = 0;
   private CefClientHandler clientHandler_;
   private String url_;
+  private CefRequestContext context_;
 
   @SuppressWarnings("serial")
-  CefBrowserWr(CefClientHandler clientHandler, String url) {
+  CefBrowserWr(CefClientHandler clientHandler,
+               String url,
+               CefRequestContext context) {
     super();
     clientHandler_ = clientHandler;
     url_ = url;
+    context_ = context;
 
     // Disabling lightweight of popup menu is required because
     // otherwise it will be displayed behind the content of canvas_
@@ -67,7 +71,12 @@ class CefBrowserWr extends CefBrowser_N {
       @Override
       public void paint(Graphics g) {
         if (getNativeRef("CefBrowser") == 0 ) {
-          createBrowser(clientHandler_, getWindowHandle(), url_, false, canvas_);
+          createBrowser(clientHandler_,
+                        getWindowHandle(),
+                        url_,
+                        false,
+                        canvas_,
+                        context_);
         }
       }
 
