@@ -29,23 +29,10 @@ bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
 
   jobject jmode = NULL;
   switch (mode) {
-    case FILE_DIALOG_OPEN:
-      jmode = GetJNIEnumValue(env,
-                              "org/cef/handler/CefDialogHandler$FileDialogMode",
-                              "FILE_DIALOG_OPEN");
-      break;
-    case FILE_DIALOG_OPEN_MULTIPLE:
-      jmode = GetJNIEnumValue(env,
-                              "org/cef/handler/CefDialogHandler$FileDialogMode",
-                              "FILE_DIALOG_OPEN_MULTIPLE");
-      break;
-    case FILE_DIALOG_SAVE:
-      jmode = GetJNIEnumValue(env,
-                              "org/cef/handler/CefDialogHandler$FileDialogMode",
-                              "FILE_DIALOG_SAVE");
-      break;
     default:
-      break;
+    JNI_CASE(env, "org/cef/handler/CefDialogHandler$FileDialogMode", FILE_DIALOG_OPEN, jmode);
+    JNI_CASE(env, "org/cef/handler/CefDialogHandler$FileDialogMode", FILE_DIALOG_OPEN_MULTIPLE, jmode);
+    JNI_CASE(env, "org/cef/handler/CefDialogHandler$FileDialogMode", FILE_DIALOG_SAVE, jmode);
   }
 
   jobject jcallback =  NewJNIObject(env, "org/cef/callback/CefFileDialogCallback_N");

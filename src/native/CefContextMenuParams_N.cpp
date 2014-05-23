@@ -108,34 +108,13 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMe
     return result;
 
   switch (menuParams->GetMediaType()) {
-    case CM_MEDIATYPE_IMAGE:
-      result = GetJNIEnumValue(env,
-                              "org/cef/callback/CefContextMenuParams$MediaType",
-                              "CM_MEDIATYPE_IMAGE");
-      break;
-    case CM_MEDIATYPE_VIDEO:
-      result = GetJNIEnumValue(env,
-                              "org/cef/callback/CefContextMenuParams$MediaType",
-                              "CM_MEDIATYPE_VIDEO");
-      break;
-    case CM_MEDIATYPE_AUDIO:
-      result = GetJNIEnumValue(env,
-                              "org/cef/callback/CefContextMenuParams$MediaType",
-                              "CM_MEDIATYPE_AUDIO");
-      break;
-    case CM_MEDIATYPE_FILE:
-      result = GetJNIEnumValue(env,
-                              "org/cef/callback/CefContextMenuParams$MediaType",
-                              "CM_MEDIATYPE_FILE");
-      break;
-    case CM_MEDIATYPE_PLUGIN:
-      result = GetJNIEnumValue(env,
-                              "org/cef/callback/CefContextMenuParams$MediaType",
-                              "CM_MEDIATYPE_PLUGIN");
-      break;
-    case CM_MEDIATYPE_NONE:
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_IMAGE, result);
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_VIDEO, result);
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_AUDIO, result);
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_FILE, result);
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_PLUGIN, result);
     default:
-      break;
+    JNI_CASE(env, "org/cef/callback/CefContextMenuParams$MediaType", CM_MEDIATYPE_NONE, result);
   }
   return result;
 }

@@ -221,37 +221,13 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefMenuModel_1N_N_1SetLabelAt
 jobject toJType(JNIEnv* env, CefMenuModel::MenuItemType type) {
   jobject result = NULL;
   switch (type) {
-    case MENUITEMTYPE_COMMAND:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_COMMAND");
-      break;
-    case MENUITEMTYPE_CHECK:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_CHECK");
-      break;
-    case MENUITEMTYPE_RADIO:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_RADIO");
-      break;
-    case MENUITEMTYPE_SEPARATOR:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_SEPARATOR");
-      break;
-    case MENUITEMTYPE_SUBMENU:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_SUBMENU");
-      break;
-    case MENUITEMTYPE_NONE:
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_COMMAND, result);
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_CHECK, result);
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_RADIO, result);
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_SEPARATOR, result);
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_SUBMENU, result);
     default:
-      result = GetJNIEnumValue(env,
-                               "org/cef/callback/CefMenuModel$MenuItemType",
-                               "MENUITEMTYPE_NONE");
-      break;
+    JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType", MENUITEMTYPE_NONE, result);
   }
   return result;
 }

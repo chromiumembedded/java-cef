@@ -35,18 +35,9 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
   jboolean jreturn = JNI_FALSE;
   jobject jsource = NULL;
   switch (source) {
-    case FOCUS_SOURCE_NAVIGATION:
-      jsource = GetJNIEnumValue(env, 
-                                "org/cef/handler/CefFocusHandler$FocusSource",
-                                "FOCUS_SOURCE_NAVIGATION");
-      break;
-    case FOCUS_SOURCE_SYSTEM:
-      jsource = GetJNIEnumValue(env, 
-                                "org/cef/handler/CefFocusHandler$FocusSource",
-                                "FOCUS_SOURCE_SYSTEM");
-      break;
+    JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource", FOCUS_SOURCE_NAVIGATION, jsource);
     default:
-      break;
+    JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource", FOCUS_SOURCE_SYSTEM, jsource);
   }
 
   JNI_CALL_METHOD(env, jhandler_, 

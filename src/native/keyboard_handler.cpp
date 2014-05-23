@@ -21,26 +21,10 @@ jobject getjEvent(JNIEnv* env, const CefKeyEvent& event) {
   jobject jkeyEventType = NULL;
   switch (event.type) {
     default:
-    case KEYEVENT_RAWKEYDOWN:
-      jkeyEventType = GetJNIEnumValue(env, 
-                          "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType",
-                          "KEYEVENT_RAWKEYDOWN");
-      break;
-    case KEYEVENT_KEYDOWN:
-      jkeyEventType = GetJNIEnumValue(env, 
-                          "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType",
-                          "KEYEVENT_KEYDOWN");
-      break;
-    case KEYEVENT_KEYUP:
-      jkeyEventType = GetJNIEnumValue(env, 
-                          "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType",
-                          "KEYEVENT_KEYUP");
-      break;
-    case KEYEVENT_CHAR:
-      jkeyEventType = GetJNIEnumValue(env, 
-                          "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType",
-                          "KEYEVENT_CHAR");
-      break;
+    JNI_CASE(env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType", KEYEVENT_RAWKEYDOWN, jkeyEventType);
+    JNI_CASE(env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType", KEYEVENT_KEYDOWN, jkeyEventType);
+    JNI_CASE(env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType", KEYEVENT_KEYUP, jkeyEventType);
+    JNI_CASE(env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType", KEYEVENT_CHAR, jkeyEventType);
   }
 
   jobject jevent = NewJNIObject(env,

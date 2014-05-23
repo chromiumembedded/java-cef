@@ -32,21 +32,9 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
   jobject jdialogType = NULL;
   switch (dialog_type) {
     default:
-    case JSDIALOGTYPE_ALERT:
-      jdialogType = GetJNIEnumValue(env,
-                                    "org/cef/handler/CefJSDialogHandler$JSDialogType",
-                                    "JSDIALOGTYPE_ALERT");
-      break;
-    case JSDIALOGTYPE_CONFIRM:
-      jdialogType = GetJNIEnumValue(env,
-                                    "org/cef/handler/CefJSDialogHandler$JSDialogType",
-                                    "JSDIALOGTYPE_CONFIRM");
-      break;
-    case JSDIALOGTYPE_PROMPT:
-      jdialogType = GetJNIEnumValue(env,
-                                    "org/cef/handler/CefJSDialogHandler$JSDialogType",
-                                    "JSDIALOGTYPE_PROMPT");
-      break;
+    JNI_CASE(env, "org/cef/handler/CefJSDialogHandler$JSDialogType", JSDIALOGTYPE_ALERT, jdialogType);
+    JNI_CASE(env, "org/cef/handler/CefJSDialogHandler$JSDialogType", JSDIALOGTYPE_CONFIRM, jdialogType);
+    JNI_CASE(env, "org/cef/handler/CefJSDialogHandler$JSDialogType", JSDIALOGTYPE_PROMPT, jdialogType);
   }
 
   jobject jboolRef = NewJNIBoolRef(env, suppress_message);
