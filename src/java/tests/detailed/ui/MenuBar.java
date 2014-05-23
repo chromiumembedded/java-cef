@@ -31,10 +31,10 @@ import org.cef.network.CefRequest;
 
 import tests.detailed.dialog.CookieManagerDialog;
 import tests.detailed.dialog.DownloadDialog;
-import tests.detailed.dialog.WebPluginManagerDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
 import tests.detailed.dialog.UrlRequestDialog;
+import tests.detailed.dialog.WebPluginManagerDialog;
 
 @SuppressWarnings("serial")
 public class MenuBar extends JMenuBar {
