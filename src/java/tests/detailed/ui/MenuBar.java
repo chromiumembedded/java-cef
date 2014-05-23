@@ -19,12 +19,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
+import org.cef.network.CefRequest;
 
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
@@ -221,6 +223,48 @@ public class MenuBar extends JMenuBar {
       }
     });
     testMenu.add(testShowText);
+
+    JMenuItem showForm = new JMenuItem("RequestHandler Test");
+    showForm.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String form = "<html><head><title>RequestHandler test</title></head>";
+               form+= "<body><h1>RequestHandler test</h1>";
+               form+= "<form action=\"http://www.google.com/\" method=\"post\">";
+               form+= "<input type=\"text\" name=\"searchFor\"/>";
+               form+= "<input type=\"submit\"/><br/>";
+               form+= "<input type=\"checkbox\" name=\"sendAsGet\"> Use GET instead of POST";
+               form+= "<p>This form tries to send the content of the text field as HTTP-POST request to http://www.google.com.</p>";
+               form+= "<h2>Testcase 1</h2>";
+               form+= "Try to enter the word <b>\"ignore\"</b> into the text field and press \"submit\".<br />";
+               form+= "The request will be rejected by the application.";
+               form+= "<p>See implementation of <u>tests.RequestHandler.onBeforeBrowse(CefBrowser, CefRequest, boolean)</u> for details</p>";
+               form+= "<h2>Testcase 2</h2>";
+               form+= "Due Google doesn't allow the POST method, the server replies with a 405 error.</br>";
+               form+= "If you activate the checkbox \"Use GET instead of POST\", the application will change the POST request into a GET request.";
+               form+= "<p>See implementation of <u>tests.RequestHandler.onBeforeResourceLoad(CefBrowser, CefRequest)</u> for details</p>";
+               form+= "</form>";
+               form+="</body></html>";
+        browser_.loadString(form, control_pane_.getAddress());
+      }
+    });
+    testMenu.add(showForm);
+
+    JMenuItem httpRequest = new JMenuItem("Manual HTTP request");
+    httpRequest.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String searchFor = JOptionPane.showInputDialog(owner_, "Search on google:");
+        if (searchFor != null && !searchFor.isEmpty()) {
+          CefRequest myRequest =  CefRequest.create();
+          myRequest.setMethod("GET");
+          myRequest.setURL("http://www.google.com/#q=" + searchFor);
+          myRequest.setFirstPartyForCookies("http://www.google.com/#q=" + searchFor);
+          browser_.loadRequest(myRequest);
+        }
+      }
+    });
+    testMenu.add(httpRequest);
 
     JMenuItem showInfo = new JMenuItem("Show Info");
     showInfo.addActionListener(new ActionListener() {

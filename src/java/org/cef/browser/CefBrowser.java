@@ -13,6 +13,7 @@ import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
+import org.cef.network.CefRequest;
 
 /**
  * Interface representing a browser.
@@ -123,7 +124,13 @@ public interface CefBrowser extends CefNative {
    */
   public void getText(CefStringVisitor visitor);
 
-  
+  /**
+   * Load the request represented by the request object.
+   * 
+   * @param request The request object.
+   */
+  public void loadRequest(CefRequest request);
+
   /**
    * Load the specified URL in the main frame.
    * @param url The URL to load.

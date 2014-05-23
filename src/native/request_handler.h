@@ -21,6 +21,10 @@ class RequestHandler : public CefRequestHandler {
                               CefRefPtr<CefRequest> request,
                               bool is_redirect) OVERRIDE;
 
+  virtual bool OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    CefRefPtr<CefRequest> request) OVERRIDE;
+
   virtual bool GetAuthCredentials(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   bool isProxy,

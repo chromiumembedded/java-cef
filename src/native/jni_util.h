@@ -134,6 +134,12 @@ jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_va
 
 bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const char* enum_valname);
 
+// Helper macro for handling jni enum values in a switch statement
+#define JNI_CASE(env, cls, type, result) \
+  case type: \
+    result = GetJNIEnumValue(env,cls,#type); \
+    break;
+
 // Helper macros for defining and retrieving static ints.
 #define JNI_STATIC(name) _static_##name
 
@@ -187,6 +193,8 @@ template <class T>
 bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName) {
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
+  if (!obj)
+    return false;
   JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
 
   T* oldbase = reinterpret_cast<T*>(previousValue);
@@ -208,7 +216,8 @@ template <class T>
 T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
-  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
+  if (obj != NULL)
+    JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
 
   if (previousValue != 0)
     return reinterpret_cast<T*>(previousValue);

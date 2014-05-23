@@ -8,6 +8,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
+import org.cef.network.CefRequest;
 
 /**
  * Implement this interface to handle events related to browser requests. The
@@ -15,8 +16,36 @@ import org.cef.callback.CefQuotaCallback;
  */
 public interface CefRequestHandler {
 
-  // TODO(jcef) add boolean onBeforeBrowse(...)
-  // TODO(jcef) add boolean onBeforeResourceLoad(...) 
+  /**
+   * Called on the UI thread before browser navigation. Return true to cancel
+   * the navigation or false to allow the navigation to proceed. The request
+   * object cannot be modified in this callback.
+   * 
+   * CefLoadHandler.onLoadingStateChange() will be called twice in all cases.
+   * If the navigation is allowed CefLoadHandler.onLoadStart() and
+   * CefLoadHandler.onLoadEnd() will be called. If the navigation is canceled
+   * CefLoadHandler.onLoadError() will be called with an errorCode value of
+   * ERR_ABORTED.
+   * 
+   * @param browser The corresponding browser.
+   * @param request The request itself. Can't be modified.
+   * @param is_redirect true if the request was redirected.
+   * @return true to cancel or false to allow to proceed.
+   */
+  boolean onBeforeBrowse(CefBrowser browser,
+                         CefRequest request,
+                         boolean is_redirect);
+
+  /**
+   * Called on the IO thread before a resource request is loaded.
+   * 
+   * @param browser The corresponding browser.
+   * @param request The request object may be modified.
+   * @return To cancel the request return true otherwise return false.
+   */
+  boolean onBeforeResourceLoad(CefBrowser browser,
+                               CefRequest request);
+
   // TODO(jcef) add CefResourceHandler getResourceHandler(...)
   // TODO(jcef) add void onResourceRedirect(...)
 

@@ -46,6 +46,7 @@ import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefRequestHandler;
 import org.cef.misc.BoolRef;
+import org.cef.network.CefRequest;
 
 /**
  * Client that owns a browser and renderer.
@@ -787,6 +788,22 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   public void removeRequestHandler() {
     requestHandler_ = null;
+  }
+
+  @Override
+  public boolean onBeforeBrowse(CefBrowser browser,
+                                CefRequest request,
+                                boolean is_redirect) {
+    if (requestHandler_ != null && browser != null)
+      return requestHandler_.onBeforeBrowse(browser, request, is_redirect);
+    return false;
+  }
+
+  @Override
+  public boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request) {
+    if (requestHandler_ != null && browser != null)
+      return requestHandler_.onBeforeResourceLoad(browser, request);
+    return false;
   }
 
   @Override

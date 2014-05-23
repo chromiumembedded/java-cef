@@ -280,6 +280,15 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetText
   browser->GetMainFrame()->GetText(new StringVisitor(env, jvisitor));
 }
 
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadRequest
+  (JNIEnv *env, jobject obj, jobject jrequest) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  CefRefPtr<CefRequest> request = GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
+  if (!request.get())
+    return;
+  browser->GetMainFrame()->LoadRequest(request);
+}
+
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadURL
   (JNIEnv *env, jobject obj, jstring url) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);

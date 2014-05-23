@@ -15,6 +15,7 @@ import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
+import org.cef.network.CefRequest;
 
 /**
  * This class represents all methods which are connected to the
@@ -197,6 +198,15 @@ abstract class CefBrowser_N implements CefBrowser {
   public void getText(CefStringVisitor visitor) {
     try {
       N_GetText(visitor);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
+  public void loadRequest(CefRequest request) {
+    try {
+      N_LoadRequest(request);
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -436,6 +446,7 @@ abstract class CefBrowser_N implements CefBrowser {
   private final native void N_ViewSource();
   private final native void N_GetSource(CefStringVisitor visitor);
   private final native void N_GetText(CefStringVisitor visitor);
+  private final native void N_LoadRequest(CefRequest request);
   private final native void N_LoadURL(String url);
   private final native void N_LoadString(String val, String url);
   private final native void N_ExecuteJavaScript(String code, String url, int line);

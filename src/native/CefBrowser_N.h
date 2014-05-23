@@ -137,6 +137,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetText
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_LoadRequest
+ * Signature: (Lorg/cef/network/CefRequest;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadRequest
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_LoadURL
  * Signature: (Ljava/lang/String;)V
  */

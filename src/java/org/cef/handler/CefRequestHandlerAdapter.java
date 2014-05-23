@@ -9,6 +9,7 @@ import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
+import org.cef.network.CefRequest;
 
 /**
  * An abstract adapter class for receiving browser request events.
@@ -16,6 +17,18 @@ import org.cef.handler.CefLoadHandler.ErrorCode;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
+  @Override
+  public boolean onBeforeBrowse(CefBrowser browser,
+                                CefRequest request,
+                                boolean is_redirect) {
+    return false;
+  }
+
+  @Override
+  public boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request) {
+    return false;
+  }
+
   @Override
   public boolean getAuthCredentials(CefBrowser browser,
                                     boolean isProxy,

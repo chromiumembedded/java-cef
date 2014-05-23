@@ -5,7 +5,10 @@
 package tests.detailed.handler;
 
 import java.awt.Frame;
+import java.util.HashMap;
+import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.cef.browser.CefBrowser;
@@ -13,6 +16,9 @@ import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.handler.CefRequestHandlerAdapter;
 import org.cef.handler.CefLoadHandler.ErrorCode;
+import org.cef.network.CefPostData;
+import org.cef.network.CefPostDataElement;
+import org.cef.network.CefRequest;
 
 import tests.detailed.dialog.CertErrorDialog;
 import tests.detailed.dialog.PasswordDialog;
@@ -25,6 +31,94 @@ public class RequestHandler extends CefRequestHandlerAdapter {
   }
 
   @Override
+  public boolean onBeforeBrowse(CefBrowser browser,
+                                CefRequest request,
+                                boolean is_redirect) {
+    CefPostData postData = request.getPostData();
+    if (postData != null) {
+      Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
+      postData.getElements(elements);
+      for (CefPostDataElement el : elements) {
+        int numBytes = el.getBytesCount();
+        if (numBytes <= 0)
+          continue;
+
+        byte[] readBytes = new byte[numBytes];
+        if (el.getBytes(numBytes, readBytes) <= 0)
+          continue;
+
+        String readString = new String(readBytes);
+        if (readString.indexOf("ignore") > -1) {
+          SwingUtilities.invokeLater( new Runnable() {
+            @Override
+            public void run() {
+              JOptionPane.showMessageDialog(owner_,
+                  "The request was rejected because you've entered \"ignore\" into the form.");
+            }
+          });
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean onBeforeResourceLoad(CefBrowser browser,
+                                      CefRequest request) {
+    // If you send a HTTP-POST request to http://www.google.com/
+    // google rejects your request because they don't allow HTTP-POST.
+    //
+    // This test extracts the value of the test form.
+    // (see "Show Form" entry within BrowserMenuBar)
+    // and sends its value as HTTP-GET request to Google.
+    if (request.getMethod().equalsIgnoreCase("POST") &&
+        request.getURL().equals("http://www.google.com/")) {
+      String forwardTo = "http://www.google.com/#q=";
+      CefPostData postData = request.getPostData();
+      boolean sendAsGet = false;
+      if (postData != null) {
+        Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
+        postData.getElements(elements);
+        for (CefPostDataElement el : elements) {
+          int numBytes = el.getBytesCount();
+          if (numBytes <= 0)
+            continue;
+
+          byte[] readBytes = new byte[numBytes];
+          if (el.getBytes(numBytes, readBytes) <= 0)
+            continue;
+
+          String readString = new String(readBytes).trim();
+          String[] stringPairs = readString.split("&");
+          for (String s : stringPairs) {
+            int startPos = s.indexOf('=');
+            if (s.startsWith("searchFor"))
+              forwardTo += s.substring(startPos+1);
+            else if (s.startsWith("sendAsGet")) {
+              sendAsGet = true;
+            }
+          }
+        }
+        if (sendAsGet)
+          postData.removeElements();
+      }
+      if (sendAsGet) {
+        request.setFlags(0);
+        request.setMethod("GET");
+        request.setURL(forwardTo);
+        request.setFirstPartyForCookies(forwardTo);
+        HashMap<String, String> headerMap = new HashMap<>();
+        request.getHeaderMap(headerMap);
+        headerMap.remove("Content-Type");
+        headerMap.remove("Origin");
+        request.setHeaderMap(headerMap);
+      }
+    }
+    return false;
+  }
+
+    @Override
   public boolean getAuthCredentials(CefBrowser browser,
                                     boolean isProxy,
                                     String host,
