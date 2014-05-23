@@ -46,7 +46,19 @@ public interface CefRequestHandler {
   boolean onBeforeResourceLoad(CefBrowser browser,
                                CefRequest request);
 
-  // TODO(jcef) add CefResourceHandler getResourceHandler(...)
+  /**
+   * Called on the IO thread before a resource is loaded. To allow the resource
+   * to load normally return NULL. To specify a handler for the resource return
+   * a CefResourceHandler object. The |request| object should not be modified in
+   * this callback.
+   * 
+   * @param browser The corresponding browser.
+   * @param request The request itself. Should not be modified in this callback.
+   * @return a CefResourceHandler instance or NULL.
+   */
+  CefResourceHandler getResourceHandler(CefBrowser browser,
+                                        CefRequest request);
+
   // TODO(jcef) add void onResourceRedirect(...)
 
   /**

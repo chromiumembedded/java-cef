@@ -12,6 +12,7 @@ else
   ./make_jni_header.sh $1 org.cef.callback.CefAuthCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefBeforeDownloadCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefCommandLine_N
+  ./make_jni_header.sh $1 org.cef.callback.CefCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefContextMenuParams_N
   ./make_jni_header.sh $1 org.cef.callback.CefDownloadItem_N
   ./make_jni_header.sh $1 org.cef.callback.CefDownloadItemCallback_N
@@ -26,5 +27,6 @@ else
   ./make_jni_header.sh $1 org.cef.network.CefPostData_N
   ./make_jni_header.sh $1 org.cef.network.CefPostDataElement_N
   ./make_jni_header.sh $1 org.cef.network.CefRequest_N
+  ./make_jni_header.sh $1 org.cef.network.CefResponse_N
 fi
 

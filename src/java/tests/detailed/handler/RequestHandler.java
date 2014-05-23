@@ -15,6 +15,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.handler.CefRequestHandlerAdapter;
+import org.cef.handler.CefResourceHandler;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.network.CefPostData;
 import org.cef.network.CefPostDataElement;
@@ -118,7 +119,19 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     return false;
   }
 
-    @Override
+  @Override
+  public CefResourceHandler getResourceHandler(CefBrowser browser,
+                                               CefRequest request) {
+    // the non existing domain "foo.bar" is handled by the ResourceHandler implementation
+    // E.g. if you try to load the URL http://www.foo.bar, you'll be forwarded
+    // to the ResourceHandler class.
+    if (request.getURL().endsWith("foo.bar/")) {
+      return new ResourceHandler();
+    }
+    return null;
+  }
+
+  @Override
   public boolean getAuthCredentials(CefBrowser browser,
                                     boolean isProxy,
                                     String host,

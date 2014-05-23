@@ -45,6 +45,7 @@ import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefRequestHandler;
+import org.cef.handler.CefResourceHandler;
 import org.cef.misc.BoolRef;
 import org.cef.network.CefRequest;
 
@@ -804,6 +805,14 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     if (requestHandler_ != null && browser != null)
       return requestHandler_.onBeforeResourceLoad(browser, request);
     return false;
+  }
+
+  @Override
+  public CefResourceHandler getResourceHandler(CefBrowser browser,
+                                               CefRequest request) {
+    if (requestHandler_ != null && browser != null)
+      return requestHandler_.getResourceHandler(browser, request);
+    return null;
   }
 
   @Override

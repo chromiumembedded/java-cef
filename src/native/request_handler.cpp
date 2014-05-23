@@ -3,6 +3,7 @@
 // can be found in the LICENSE file.
 
 #include "request_handler.h"
+#include "resource_handler.h"
 #include "client_handler.h"
 
 #include "jni_util.h"
@@ -71,6 +72,39 @@ bool RequestHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
 
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
   return (result != JNI_FALSE);
+}
+
+CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
+                                            CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefRequest> request) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
+  if (!jrequest)
+    return false;
+  SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
+
+  jobject jhandler = NULL;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "getResourceHandler",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;)"
+                  "Lorg/cef/handler/CefResourceHandler;",
+                  Object,
+                  jhandler,
+                  GetJNIBrowser(browser),
+                  jrequest);
+  if (!jhandler)
+    return NULL;
+  CefRefPtr<CefResourceHandler> handler = NULL;
+  handler = GetCefFromJNIObject<CefResourceHandler>(env, jhandler, "CefResourceHandler");
+  if (!handler.get()) {
+    handler = new ResourceHandler(env, jhandler);
+    SetCefForJNIObject(env, jhandler, handler.get(), "CefResourceHandler");
+  }
+  return handler;
 }
 
 bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,

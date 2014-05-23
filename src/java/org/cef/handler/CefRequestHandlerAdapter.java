@@ -30,6 +30,12 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
   }
 
   @Override
+  public CefResourceHandler getResourceHandler(CefBrowser browser,
+                                               CefRequest request) {
+    return null;
+  }
+
+  @Override
   public boolean getAuthCredentials(CefBrowser browser,
                                     boolean isProxy,
                                     String host,

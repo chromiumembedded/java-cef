@@ -18,6 +18,7 @@ call make_jni_header.bat %1 org.cef.callback.CefAllowCertificateErrorCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefAuthCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefBeforeDownloadCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefCommandLine_N
+call make_jni_header.bat %1 org.cef.callback.CefCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefContextMenuParams_N
 call make_jni_header.bat %1 org.cef.callback.CefDownloadItem_N
 call make_jni_header.bat %1 org.cef.callback.CefDownloadItemCallback_N
@@ -32,6 +33,7 @@ call make_jni_header.bat %1 org.cef.handler.CefClientHandler
 call make_jni_header.bat %1 org.cef.network.CefPostData_N
 call make_jni_header.bat %1 org.cef.network.CefPostDataElement_N
 call make_jni_header.bat %1 org.cef.network.CefRequest_N
+call make_jni_header.bat %1 org.cef.network.CefResponse_N
 
 :end
 endlocal & set RC=%ERRORLEVEL%

@@ -183,6 +183,7 @@ public class MainFrame extends JFrame {
     menuBar.addBookmark("Geolocation Test","http://slides.html5rocks.com/#geolocation");
     menuBar.addBookmark("Login Test (username:pumpkin, password:pie)","http://www.colostate.edu/~ric/protect/your.html");
     menuBar.addBookmark("Certificate-error Test","https://www.k2go.de");
+    menuBar.addBookmark("Resource-Handler Test", "http://www.foo.bar/");
     menuBar.addBookmarkSeparator();
     menuBar.addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     menuBar.addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");

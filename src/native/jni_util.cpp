@@ -120,6 +120,14 @@ jobject NewJNIIntRef(JNIEnv* env, int initValue) {
   return jintRef;
 }
 
+jobject NewJNIStringRef(JNIEnv* env, const CefString& initValue) {
+  jobject jstringRef = NewJNIObject(env, "org/cef/misc/StringRef");
+  if (!jstringRef)
+    return NULL;
+  SetJNIStringRef(env, jstringRef, initValue);
+  return jstringRef;
+}
+
 bool GetJNIBoolRef(JNIEnv* env, jobject jboolRef) {
   jboolean boolRefRes = JNI_FALSE;
   JNI_CALL_METHOD(env, jboolRef, 
@@ -140,6 +148,16 @@ int GetJNIIntRef(JNIEnv* env, jobject jintRef) {
   return intRefRes;
 }
 
+CefString GetJNIStringRef(JNIEnv* env, jobject jstringRef) {
+  jobject jstr = NULL;
+  JNI_CALL_METHOD(env, jstringRef, 
+                  "get",
+                  "()Ljava/lang/String;",
+                  Object,
+                  jstr);
+  return GetJNIString(env, (jstring)jstr);
+}
+
 void SetJNIBoolRef(JNIEnv* env, jobject jboolRef, bool boolValue) {
   JNI_CALL_VOID_METHOD(env, jboolRef, 
                        "set",
@@ -152,6 +170,42 @@ void SetJNIIntRef(JNIEnv* env, jobject jintRef, int intValue) {
                        "set",
                        "(I)V",
                        intValue);
+}
+
+void SetJNIStringRef(JNIEnv* env, jobject jstringRef, const CefString& stringValue) {
+  JNI_CALL_VOID_METHOD(env, jstringRef, 
+                       "set",
+                       "(Ljava/lang/String;)V",
+                       NewJNIString(env, stringValue));
+}
+
+jobject NewJNIDate(JNIEnv* env, const CefTime& time) {
+  jobject jdate = NewJNIObject(env, "java/util/Date");
+  if (!jdate)
+    return NULL;
+  double timestamp = time.GetDoubleT() * 1000;
+  JNI_CALL_VOID_METHOD(env, jdate, "setTime", "(J)V",(jlong)timestamp);
+  return jdate;
+}
+
+jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
+  jobject jcookie = NewJNIObject(env,
+                                 "org/cef/network/CefCookie",
+                                 "(Ljava/lang/String;Ljava/lang/String;"
+                                 "Ljava/lang/String;Ljava/lang/String;"
+                                 "ZZLjava/util/Date;Ljava/util/Date;"
+                                 "ZLjava/util/Date;)V",
+                                 NewJNIString(env, CefString(&cookie.name)),
+                                 NewJNIString(env, CefString(&cookie.value)),
+                                 NewJNIString(env, CefString(&cookie.domain)),
+                                 NewJNIString(env, CefString(&cookie.path)),
+                                 (cookie.secure != 0 ? JNI_TRUE : JNI_FALSE),
+                                 (cookie.httponly != 0 ? JNI_TRUE : JNI_FALSE),
+                                 NewJNIDate(env, cookie.creation),
+                                 NewJNIDate(env, cookie.last_access),
+                                 (cookie.has_expires != 0 ? JNI_TRUE : JNI_FALSE),
+                                 NewJNIDate(env, cookie.expires));
+  return jcookie;
 }
 
 CefString GetJNIString(JNIEnv* env, jstring jstr)

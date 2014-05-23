@@ -85,12 +85,7 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetStartTi
   if (!downloadItem.get())
     return NULL;
   CefTime start = downloadItem->GetStartTime();
-  jobject jstart = NewJNIObject(env, "java/util/Date");
-  if (jstart) {
-    double timestamp = start.GetDoubleT() * 1000;
-    JNI_CALL_VOID_METHOD(env, jstart, "setTime", "(J)V",(jlong)timestamp);
-  }
-  return jstart;
+  return NewJNIDate(env, start);
 }
 
 JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime
@@ -100,12 +95,7 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime
   if (!downloadItem.get())
     return NULL;
   CefTime end = downloadItem->GetEndTime();
-  jobject jend = NewJNIObject(env, "java/util/Date");
-  if (jend) {
-    double timestamp = end.GetDoubleT() * 1000;
-    JNI_CALL_VOID_METHOD(env, jend, "setTime", "(J)V",(jlong)timestamp);
-  }
-  return jend;
+  return NewJNIDate(env, end);
 }
 
 JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetFullPath
