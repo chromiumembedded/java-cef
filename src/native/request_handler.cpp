@@ -107,6 +107,23 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
   return handler;
 }
 
+void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
+                                        const CefString& old_url,
+                                        CefString& new_url) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+  jobject jstringRef = NewJNIStringRef(env, new_url);
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "onResourceRedirect",
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Lorg/cef/misc/StringRef;)V",
+                       GetJNIBrowser(browser),
+                       NewJNIString(env, old_url),
+                       jstringRef);
+  new_url = GetJNIStringRef(env, jstringRef);
+}
+
 bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         bool isProxy,

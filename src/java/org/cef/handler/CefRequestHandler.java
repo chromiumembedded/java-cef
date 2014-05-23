@@ -8,6 +8,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
+import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 
 /**
@@ -59,7 +60,16 @@ public interface CefRequestHandler {
   CefResourceHandler getResourceHandler(CefBrowser browser,
                                         CefRequest request);
 
-  // TODO(jcef) add void onResourceRedirect(...)
+  /**
+   * Called on the IO thread when a resource load is redirected.
+   * 
+   * @param browser The corresponding browser.
+   * @param old_url Contains the old URL.
+   * @param new_url Contains the new URL and can be changed if desired.
+   */
+  void onResourceRedirect(CefBrowser browser,
+                          String old_url,
+                          StringRef new_url);
 
   /**
    * Called on the IO thread when the browser needs credentials from the user.

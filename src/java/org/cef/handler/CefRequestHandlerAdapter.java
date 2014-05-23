@@ -9,6 +9,7 @@ import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
+import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 
 /**
@@ -33,6 +34,12 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
   public CefResourceHandler getResourceHandler(CefBrowser browser,
                                                CefRequest request) {
     return null;
+  }
+
+  @Override
+  public void onResourceRedirect(CefBrowser browser,
+                                 String old_url,
+                                 StringRef new_url) {
   }
 
   @Override
