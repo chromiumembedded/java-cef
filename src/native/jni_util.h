@@ -74,6 +74,9 @@ jobject NewJNIDate(JNIEnv* env, const CefTime& time);
 // Create a new cookie object
 jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie);
 
+// Retrieve a Cookie value
+CefCookie GetJNICookie(JNIEnv* env, jobject jcookie);
+
 // Retrieve a String value.
 CefString GetJNIString(JNIEnv* env, jstring jstr);
 
@@ -99,6 +102,15 @@ void AddJNIStringToVector(JNIEnv* env, jobject jvector,
 
 void GetJNIStringVector(JNIEnv* env, jobject jvector,
                         std::vector<CefString>& vals);
+
+bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
+                       const char* field_name, CefString *value);
+
+bool GetJNIFieldDate(JNIEnv* env, jclass cls, jobject obj,
+                     const char* field_name, CefTime* value);
+
+bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
+                        const char* field_name, int* value);
 
 // Retrieve the int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,

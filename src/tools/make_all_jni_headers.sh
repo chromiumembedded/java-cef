@@ -25,6 +25,7 @@ else
   ./make_jni_header.sh $1 org.cef.callback.CefQuotaCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefSchemeRegistrar_N
   ./make_jni_header.sh $1 org.cef.handler.CefClientHandler
+  ./make_jni_header.sh $1 org.cef.network.CefCookieManager_N
   ./make_jni_header.sh $1 org.cef.network.CefPostData_N
   ./make_jni_header.sh $1 org.cef.network.CefPostDataElement_N
   ./make_jni_header.sh $1 org.cef.network.CefRequest_N

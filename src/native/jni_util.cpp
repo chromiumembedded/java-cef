@@ -189,6 +189,8 @@ jobject NewJNIDate(JNIEnv* env, const CefTime& time) {
 }
 
 jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
+  bool hasExpires = (cookie.has_expires != 0);
+  jobject jExpiresDate = hasExpires ? NewJNIDate(env, cookie.expires) : NULL;
   jobject jcookie = NewJNIObject(env,
                                  "org/cef/network/CefCookie",
                                  "(Ljava/lang/String;Ljava/lang/String;"
@@ -203,9 +205,39 @@ jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
                                  (cookie.httponly != 0 ? JNI_TRUE : JNI_FALSE),
                                  NewJNIDate(env, cookie.creation),
                                  NewJNIDate(env, cookie.last_access),
-                                 (cookie.has_expires != 0 ? JNI_TRUE : JNI_FALSE),
-                                 NewJNIDate(env, cookie.expires));
+                                 (hasExpires ? JNI_TRUE : JNI_FALSE),
+                                 jExpiresDate);
   return jcookie;
+}
+
+CefCookie GetJNICookie(JNIEnv* env, jobject jcookie) {
+  CefCookie cookie;
+
+  jclass cls = env->FindClass("org/cef/network/CefCookie");
+  if (!cls)
+    return cookie;
+
+  CefString name(&cookie.name);
+  CefString value(&cookie.value);
+  CefString domain(&cookie.domain);
+  CefString path(&cookie.path);
+  CefTime creation, lastAccess, expires;
+
+  GetJNIFieldString(env, cls, jcookie, "name", &name);
+  GetJNIFieldString(env, cls, jcookie, "value", &value);
+  GetJNIFieldString(env, cls, jcookie, "domain", &domain); 
+  GetJNIFieldString(env, cls, jcookie, "path", &path);
+  GetJNIFieldBoolean(env, cls, jcookie, "secure", &cookie.secure);
+  GetJNIFieldBoolean(env, cls, jcookie, "httponly", &cookie.httponly);
+  GetJNIFieldDate(env, cls, jcookie, "creation", &creation);
+  cookie.creation = creation;
+  GetJNIFieldDate(env, cls, jcookie, "lastAccess", &lastAccess);
+  cookie.last_access = lastAccess;
+  GetJNIFieldBoolean(env, cls, jcookie, "hasExpires", &cookie.has_expires);
+  GetJNIFieldDate(env, cls, jcookie, "expires", &expires);
+  cookie.expires = expires;
+
+  return cookie;
 }
 
 CefString GetJNIString(JNIEnv* env, jstring jstr)
@@ -349,6 +381,48 @@ void GetJNIStringVector(JNIEnv* env, jobject jvector,
     JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str, index);
     vals.push_back(GetJNIString(env, (jstring)str));
   }
+}
+
+bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
+                       const char* field_name, CefString *value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "Ljava/lang/String;");
+  if (field) {
+    jstring jstr = (jstring)env->GetObjectField(obj, field);
+    const char* chr = NULL;
+    if(jstr)
+      chr = env->GetStringUTFChars(jstr, NULL);
+    if(chr)
+      *value = chr;
+    env->ReleaseStringUTFChars(jstr, chr);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
+bool GetJNIFieldDate(JNIEnv* env, jclass cls, jobject obj,
+                     const char* field_name, CefTime* value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "Ljava/util/Date;");
+  if (field) {
+    jobject jdate = env->GetObjectField(obj, field);
+    long timestamp = 0;
+    JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
+    value->SetDoubleT((double)(timestamp/1000));
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
+bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
+                        const char* field_name, int* value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "Z");
+  if (field) {
+    *value = env->GetBooleanField(obj, field) != JNI_FALSE ? 1 : 0;
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
 }
 
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,

@@ -28,6 +28,7 @@ import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.network.CefRequest;
 
+import tests.detailed.dialog.CookieManagerDialog;
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
@@ -172,6 +173,16 @@ public class MenuBar extends JMenuBar {
       }
     });
     fileMenu.add(showDownloads);
+
+    JMenuItem showCookies = new JMenuItem("Show Cookies");
+    showCookies.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CookieManagerDialog cookieManager = new CookieManagerDialog(owner_, "Cookie Manager");
+        cookieManager.setVisible(true);
+      }
+    });
+    fileMenu.add(showCookies);
 
     fileMenu.addSeparator();
 
