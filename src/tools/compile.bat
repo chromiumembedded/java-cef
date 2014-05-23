@@ -17,7 +17,7 @@ set OUT_PATH=".\out\%1"
 set CLS_PATH=".\third_party\jogamp\jar\*;.\java"
 
 if not exist %OUT_PATH% mkdir %OUT_PATH%
-javac -cp %CLS_PATH% -d %OUT_PATH% java/tests/detailed/*.java java/tests/simple/*.java java/org/cef/*.java java/org/cef/browser/*.java java/org/cef/callback/*.java java/org/cef/handler/*.java java/org/cef/misc/*.java
+javac -cp %CLS_PATH% -d %OUT_PATH% java/tests/detailed/*.java java/tests/simple/*.java java/org/cef/*.java java/org/cef/browser/*.java java/org/cef/callback/*.java java/org/cef/handler/*.java java/org/cef/misc/*.java java/org/cef/network/*.java
 
 :end
 endlocal & set RC=%ERRORLEVEL%

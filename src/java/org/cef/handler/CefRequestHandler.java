@@ -11,12 +11,22 @@ import org.cef.callback.CefQuotaCallback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefWebPluginInfo;
 
 /**
  * Implement this interface to handle events related to browser requests. The
  * methods of this class will be called on the thread indicated.
  */
 public interface CefRequestHandler {
+
+  /**
+   * Process termination status values.
+   */
+  enum TerminationStatus {
+    TS_ABNORMAL_TERMINATION,  //!< Non-zero exit status.
+    TS_PROCESS_WAS_KILLED,    //!< SIGKILL or task manager kill.
+    TS_PROCESS_CRASHED        //!< Segmentation fault.
+  }
 
   /**
    * Called on the UI thread before browser navigation. Return true to cancel
@@ -142,7 +152,30 @@ public interface CefRequestHandler {
                              String request_url,
                              CefAllowCertificateErrorCallback callback);
 
-  // TODO(jcef) add boolean onBeforePluginLoad(...)
-  // TODO(jcef) add void onPluginCrashed(...)
-  // TODO(jcef) add void onRenderProcessTerminated(...)
+  /**
+   * Called on the browser process IO thread before a plugin is loaded.
+   * @return true to block loading of the plugin.
+   *
+   * @bug https://code.google.com/p/chromiumembedded/issues/detail?id=1211&q=OnBeforePluginLoad
+   */
+  boolean onBeforePluginLoad(CefBrowser browser,
+                             String url,
+                             String policyUrl,
+                             CefWebPluginInfo info);
+
+  /**
+   * Called on the browser process UI thread when a plugin has crashed.
+   * @param browser  The corresponding browser.
+   * @param pluginPath the path of the plugin that crashed.
+   */
+  void onPluginCrashed(CefBrowser browser,
+                       String pluginPath);
+
+  /**
+   * Called on the browser process UI thread when the render process
+   * terminates unexpectedly. |status| indicates how the process
+   * terminated.
+   */
+  void onRenderProcessTerminated(CefBrowser browser,
+                                 TerminationStatus status);
 }

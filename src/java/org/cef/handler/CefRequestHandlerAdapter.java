@@ -12,6 +12,7 @@ import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefWebPluginInfo;
 
 /**
  * An abstract adapter class for receiving browser request events.
@@ -73,5 +74,23 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
                                     String request_url,
                                     CefAllowCertificateErrorCallback callback) {
     return false;
+  }
+
+  @Override
+  public boolean onBeforePluginLoad(CefBrowser browser,
+                                    String url,
+                                    String policyUrl,
+                                    CefWebPluginInfo info) {
+    return false;
+  }
+
+  @Override
+  public void onPluginCrashed(CefBrowser browser,
+                              String pluginPath) {
+  }
+
+  @Override
+  public void onRenderProcessTerminated(CefBrowser browser,
+                                        TerminationStatus status) {
   }
 }

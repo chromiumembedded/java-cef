@@ -90,6 +90,10 @@
         'native/CefSchemeRegistrar_N.h',
         'native/CefURLRequest_N.cpp',
         'native/CefURLRequest_N.h',
+        'native/CefWebPluginInfo_N.cpp',
+        'native/CefWebPluginInfo_N.h',
+        'native/CefWebPluginManager_N.cpp',
+        'native/CefWebPluginManager_N.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
         'native/completion_handler.cpp',
@@ -139,6 +143,10 @@
         'native/url_request_client.cpp',
         'native/url_request_client.h',
         'native/util.h',
+        'native/web_plugin_unstable_callback.cpp',
+        'native/web_plugin_unstable_callback.h',
+        'native/web_plugin_visitor.cpp',
+        'native/web_plugin_visitor.h',
       ],
       'xcode_settings': {
         # Default path that will be changed by install_name_tool in dependent targets.

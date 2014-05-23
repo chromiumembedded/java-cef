@@ -247,9 +247,69 @@ bool RequestHandler::OnCertificateError(cef_errorcode_t cert_error,
   return (result != JNI_FALSE);
 }
 
+bool RequestHandler::OnBeforePluginLoad(CefRefPtr<CefBrowser> browser,
+                                        const CefString& url,
+                                        const CefString& policy_url,
+                                        CefRefPtr<CefWebPluginInfo> info) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jinfo = NewJNIObject(env, "org/cef/network/CefWebPluginInfo_N");
+  if (!jinfo)
+    return false;
+  SetCefForJNIObject(env, jinfo, info.get(), "CefWebPluginInfo");
+
+  jboolean jresult = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                       "onBeforePluginLoad",
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
+                       "Ljava/lang/String;Lorg/cef/network/CefWebPluginInfo;)Z",
+                       Boolean,
+                       jresult,
+                       GetJNIBrowser(browser),
+                       NewJNIString(env, url),
+                       NewJNIString(env, policy_url),
+                       jinfo);
+
+  SetCefForJNIObject<CefWebPluginInfo>(env, jinfo, NULL, "CefWebPluginInfo");
+  return (jresult != JNI_FALSE);
+}
+
+void RequestHandler::OnPluginCrashed(CefRefPtr<CefBrowser> browser,
+                                      const CefString& plugin_path) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                            "onPluginCrashed",
+                            "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
+                            GetJNIBrowser(browser),
+                            NewJNIString(env, plugin_path));
+}
+
 void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                                TerminationStatus status) {
   // forward request to clienthandler to make the message_router_ happy
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
   client->OnRenderProcessTerminated(browser);
+
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jobject jstatus = NULL;
+  switch (status) {
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus", TS_ABNORMAL_TERMINATION, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus", TS_PROCESS_WAS_KILLED, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus", TS_PROCESS_CRASHED, jstatus);
+  }
+
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                            "onRenderProcessTerminated",
+                            "(Lorg/cef/browser/CefBrowser;"
+                            "Lorg/cef/handler/CefRequestHandler$TerminationStatus;)V",
+                            GetJNIBrowser(browser),
+                            jstatus);
 }

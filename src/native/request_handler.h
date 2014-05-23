@@ -58,6 +58,14 @@ class RequestHandler : public CefRequestHandler {
       const CefString& request_url,
       CefRefPtr<CefAllowCertificateErrorCallback> callback) OVERRIDE;
 
+  virtual bool OnBeforePluginLoad(CefRefPtr<CefBrowser> browser,
+                                  const CefString& url,
+                                  const CefString& policy_url,
+                                  CefRefPtr<CefWebPluginInfo> info) OVERRIDE;
+
+  virtual void OnPluginCrashed(CefRefPtr<CefBrowser> browser,
+                               const CefString& plugin_path) OVERRIDE;
+                                  
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                          TerminationStatus status) OVERRIDE;
 

@@ -50,6 +50,7 @@ import org.cef.handler.CefResourceHandler;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefWebPluginInfo;
 
 /**
  * Client that owns a browser and renderer.
@@ -874,5 +875,29 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     if (requestHandler_ != null)
       return requestHandler_.onCertificateError(cert_error, request_url, callback);
     return false;
+  }
+
+  @Override
+  public boolean onBeforePluginLoad(CefBrowser browser,
+                                    String url,
+                                    String policyUrl,
+                                    CefWebPluginInfo info) {
+    if (requestHandler_ != null)
+      return requestHandler_.onBeforePluginLoad(browser, url, policyUrl, info);
+    return false;
+  }
+
+  @Override
+  public void onPluginCrashed(CefBrowser browser,
+                              String pluginPath) {
+    if (requestHandler_ != null)
+      requestHandler_.onPluginCrashed(browser, pluginPath);
+  }
+
+  @Override
+  public void onRenderProcessTerminated(CefBrowser browser,
+                                        TerminationStatus status) {
+    if (requestHandler_ != null)
+      requestHandler_.onRenderProcessTerminated(browser, status);
   }
 }

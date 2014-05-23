@@ -20,6 +20,7 @@ import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.network.CefPostData;
 import org.cef.network.CefPostDataElement;
 import org.cef.network.CefRequest;
+import org.cef.network.CefWebPluginInfo;
 
 import tests.detailed.dialog.CertErrorDialog;
 import tests.detailed.dialog.PasswordDialog;
@@ -149,5 +150,31 @@ public class RequestHandler extends CefRequestHandlerAdapter {
                                     CefAllowCertificateErrorCallback callback) {
     SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
     return true;
+  }
+
+  @Override
+  public boolean onBeforePluginLoad(CefBrowser browser,
+                                    String url,
+                                    String policyUrl,
+                                    CefWebPluginInfo info) {
+    System.out.println("Loading Plug-In");
+    System.out.println("    url: " + url);
+    System.out.println("    policyUrl: " + policyUrl);
+    System.out.println("    name: " + info.getName());
+    System.out.println("    version: " + info.getVersion());
+    System.out.println("    path: " + info.getPath());
+    System.out.println("    description: " + info.getDescription() + "\n");
+    return false;
+  }
+
+  @Override
+  public void onPluginCrashed(CefBrowser browser, String pluginPath) {
+    System.out.println("Plugin " + pluginPath  + "CRASHED");
+  }
+
+  @Override
+  public void onRenderProcessTerminated(CefBrowser browser,
+                                        TerminationStatus status) {
+    System.out.println("render process terminated: " + status);
   }
 }
