@@ -9,6 +9,7 @@ import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
+import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 
@@ -59,6 +60,12 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
                                 long new_size,
                                 CefQuotaCallback callback) {
     return false;
+  }
+
+  @Override
+  public void onProtocolExecution(CefBrowser browser,
+                                  String url,
+                                  BoolRef allow_os_execution) {
   }
 
   @Override

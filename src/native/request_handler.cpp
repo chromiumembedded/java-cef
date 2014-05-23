@@ -198,6 +198,23 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
   return (result != JNI_FALSE);
 }
 
+void RequestHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
+                                         const CefString& url,
+                                         bool& allow_os_execution) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jobject jboolRef = NewJNIBoolRef(env, allow_os_execution);
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "onProtocolExecution",
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Lorg/cef/misc/BoolRef;)V",
+                       GetJNIBrowser(browser),
+                       NewJNIString(env, url),
+                       jboolRef);
+  allow_os_execution = GetJNIBoolRef(env, jboolRef);
+}
+                                   
 bool RequestHandler::OnCertificateError(cef_errorcode_t cert_error,
                                         const CefString& request_url,
                                         CefRefPtr<CefAllowCertificateErrorCallback> callback) {

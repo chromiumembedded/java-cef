@@ -8,6 +8,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefQuotaCallback;
+import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 
@@ -111,7 +112,16 @@ public interface CefRequestHandler {
                          long new_size,
                          CefQuotaCallback callback);
 
-  // TODO(jcef) add void onProtocolExecution(...)
+  /** 
+   * Called on the UI thread to handle requests for URLs with an unknown
+   * protocol component. Set |allow_os_execution| to true to attempt execution
+   * via the registered OS protocol handler, if any.
+   * SECURITY WARNING: YOU SHOULD USE THIS METHOD TO ENFORCE RESTRICTIONS BASED
+   * ON SCHEME, HOST OR OTHER URL ANALYSIS BEFORE ALLOWING OS EXECUTION.
+   */
+  void onProtocolExecution(CefBrowser browser,
+                           String url,
+                           BoolRef allow_os_execution);
 
   /**
    * Called on the UI thread to handle requests for URLs with an invalid

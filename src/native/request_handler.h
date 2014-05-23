@@ -49,6 +49,10 @@ class RequestHandler : public CefRequestHandler {
                               int64 new_size,
                               CefRefPtr<CefQuotaCallback> callback) OVERRIDE;
 
+  virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
+                                   const CefString& url,
+                                   bool& allow_os_execution) OVERRIDE;
+
   virtual bool OnCertificateError(
       cef_errorcode_t cert_error,
       const CefString& request_url,

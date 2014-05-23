@@ -848,6 +848,14 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
+  public void onProtocolExecution(CefBrowser browser,
+                                  String url,
+                                  BoolRef allow_os_execution) {
+    if (requestHandler_ != null && browser != null)
+      requestHandler_.onProtocolExecution(browser, url, allow_os_execution);
+  }
+
+  @Override
   public boolean onCertificateError(ErrorCode cert_error,
                                     String request_url,
                                     CefAllowCertificateErrorCallback callback) {
