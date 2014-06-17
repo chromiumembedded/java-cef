@@ -164,7 +164,12 @@ public class ControlPanel extends JPanel {
     // address field as search request. Therefore we simply add
     // the "search" scheme.
     try {
+      address = address.replaceAll(" ", "%20");
       URI test = new URI(address);
+      if (test.getScheme() != null)
+        return address;
+      if (test.getHost() != null && test.getPath() != null)
+        return address;
       String specific = test.getSchemeSpecificPart();
       if (specific.indexOf('.') == -1)
         throw new URISyntaxException(specific, "No dot inside domain");

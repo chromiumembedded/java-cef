@@ -28,9 +28,13 @@ public class SearchSchemeHandler extends CefResourceHandlerAdapter {
   @Override
   public boolean processRequest(CefRequest request,
                                 CefCallback callback) {
-    // cut away "scheme://" and the trailing "/"
+    // cut away "scheme://"
     String requestUrl = request.getURL();
-    String newUrl = requestUrl.substring(scheme.length()+3, requestUrl.length()-1);
+    String newUrl = requestUrl.substring(scheme.length()+3);
+    // cut away a trailing "/" if any
+    if (newUrl.indexOf('/') == newUrl.length()-1) {
+      newUrl = newUrl.substring(0, newUrl.length()-1);
+    }
     newUrl = "http://www.google.com/#q=" + newUrl;
 
     CefRequest newRequest = CefRequest.create();
