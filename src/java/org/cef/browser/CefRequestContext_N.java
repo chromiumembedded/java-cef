@@ -55,7 +55,8 @@ class CefRequestContext_N extends CefRequestContext implements CefNative {
     return result;
   }
 
-  public final void destroyNative() {
+  @Override
+  public void dispose() {
     try {
       N_CefRequestContext_DTOR();
     } catch(UnsatisfiedLinkError ule) {

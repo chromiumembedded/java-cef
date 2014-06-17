@@ -248,7 +248,8 @@ CefString GetJNIString(JNIEnv* env, jstring jstr)
     chr = env->GetStringUTFChars(jstr, NULL);
   if(chr)
     cef_str = chr;
-  env->ReleaseStringUTFChars(jstr, chr);
+  if(jstr)
+    env->ReleaseStringUTFChars(jstr, chr);
   return cef_str;
 }
 

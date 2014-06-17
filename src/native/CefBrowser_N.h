@@ -17,6 +17,14 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_CreateDevTools
+ * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefClientHandler;JZLjava/awt/Canvas;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
+  (JNIEnv *, jobject, jobject, jobject, jlong, jboolean, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_GetWindowHandle
  * Signature: (J)J
  */
@@ -254,14 +262,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopFinding
   (JNIEnv *, jobject, jboolean);
-
-/*
- * Class:     org_cef_browser_CefBrowser_N
- * Method:    N_ShowDevTools
- * Signature: (Lorg/cef/handler/CefClientHandler;)V
- */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ShowDevTools
-  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N

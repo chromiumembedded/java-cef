@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,12 +26,12 @@ import javax.swing.JOptionPane;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
-import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.network.CefCookieManager;
 import org.cef.network.CefRequest;
 
 import tests.detailed.dialog.CookieManagerDialog;
+import tests.detailed.dialog.DevToolsDialog;
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
@@ -58,20 +60,17 @@ public class MenuBar extends JMenuBar {
   private final JMenu bookmarkMenu_;
   private final ControlPanel control_pane_;
   private final DownloadDialog downloadDialog_;
-  private final CefClientHandler client_;
   private final CefCookieManager cookieManager_;
 
   public MenuBar(Frame owner,
                  CefBrowser browser,
                  ControlPanel control_pane,
                  DownloadDialog downloadDialog,
-                 CefClientHandler clientHandler,
                  CefCookieManager cookieManager) {
     owner_ = owner;
     browser_ = browser;
     control_pane_ = control_pane;
     downloadDialog_ = downloadDialog;
-    client_ = clientHandler;
     cookieManager_ = cookieManager;
 
     setEnabled(browser_ != null);
@@ -317,23 +316,23 @@ public class MenuBar extends JMenuBar {
     });
     testMenu.add(showInfo);
 
-    JMenuItem showDevTools = new JMenuItem("Show DevTools");
+    final JMenuItem showDevTools = new JMenuItem("Show DevTools");
     showDevTools.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        browser_.showDevTools(client_);
+        DevToolsDialog devToolsDlg =
+            new DevToolsDialog(owner_, "DEV Tools", browser_);
+        devToolsDlg.addComponentListener(new ComponentAdapter() {
+          @Override
+          public void componentHidden(ComponentEvent e) {
+            showDevTools.setEnabled(true);
+          }
+        });
+        devToolsDlg.setVisible(true);
+        showDevTools.setEnabled(false);
       }
     });
     testMenu.add(showDevTools);
-
-    JMenuItem closeDevTools = new JMenuItem("Close DevTools");
-    closeDevTools.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        browser_.closeDevTools();
-      }
-    });
-    testMenu.add(closeDevTools);
 
     JMenuItem testURLRequest = new JMenuItem("URL Request");
     testURLRequest.addActionListener(new ActionListener() {

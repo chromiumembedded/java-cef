@@ -30,15 +30,25 @@ class CefBrowserWr extends CefBrowser_N {
   private CefClientHandler clientHandler_;
   private String url_;
   private CefRequestContext context_;
+  private CefBrowserWr parent_ = null;
+  private CefBrowserWr devTools_ = null;
 
-  @SuppressWarnings("serial")
   CefBrowserWr(CefClientHandler clientHandler,
                String url,
                CefRequestContext context) {
+    this(clientHandler, url, context, null);
+  }
+
+  @SuppressWarnings("serial")
+  private CefBrowserWr(CefClientHandler clientHandler,
+                       String url,
+                       CefRequestContext context,
+                       CefBrowserWr parent) {
     super();
     clientHandler_ = clientHandler;
     url_ = url;
     context_ = context;
+    parent_ = parent;
 
     // Disabling lightweight of popup menu is required because
     // otherwise it will be displayed behind the content of canvas_
@@ -71,12 +81,20 @@ class CefBrowserWr extends CefBrowser_N {
       @Override
       public void paint(Graphics g) {
         if (getNativeRef("CefBrowser") == 0 ) {
-          createBrowser(clientHandler_,
-                        getWindowHandle(),
-                        url_,
-                        false,
-                        canvas_,
-                        context_);
+          if (parent_ != null) {
+            createDevTools(parent_,
+                           clientHandler_,
+                           getWindowHandle(),
+                           false,
+                           canvas_);
+          } else {
+            createBrowser(clientHandler_,
+                          getWindowHandle(),
+                          url_,
+                          false,
+                          canvas_,
+                          context_);
+          }
         }
       }
 
@@ -108,6 +126,25 @@ class CefBrowserWr extends CefBrowser_N {
   @Override
   public CefRenderHandler getRenderHandler() {
     return null;
+  }
+
+  @Override
+  public synchronized void close() {
+    if (context_ != null)
+      context_.dispose();
+    if (parent_ != null) {
+      parent_.closeDevTools();
+      parent_.devTools_ = null;
+      parent_ = null;
+    }
+    super.close();
+  }
+
+  @Override
+  public synchronized CefBrowser getDevTools() {
+    if (devTools_ == null)
+      devTools_ = new CefBrowserWr(clientHandler_, url_, context_, this);
+    return devTools_;
   }
 
   private long getWindowHandle() {

@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
-import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.network.CefRequest;
@@ -248,13 +247,8 @@ public interface CefBrowser {
   public void stopFinding(boolean clearSelection);
 
   /**
-   * Open developer tools in its own window.
+   * Get an instance of the dev tools to be displayed in its own window or to be
+   * embedded within your UI. Only one instance per browser is available.
    */
-  void showDevTools(CefClientHandler client);
-
-  /**
-   * Explicitly close the developer tools window
-   * if one exists for this browser instance.
-   */
-  void closeDevTools();
+  public CefBrowser getDevTools();
 }

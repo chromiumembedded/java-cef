@@ -26,7 +26,6 @@ import org.cef.network.CefRequest;
  */
 abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private boolean isPending_ = false;
-  private CefRequestContext_N context_ = null;
 
   /**
    * Create a new browser.
@@ -38,7 +37,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                Canvas canvas,
                                CefRequestContext context) {
     if (getNativeRef("CefBrowser") == 0 && !isPending_) {
-      context_ = (CefRequestContext_N)context;
       try {
         isPending_ = N_CreateBrowser(clientHandler,
                                      windowHandle,
@@ -46,6 +44,27 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                      transparent,
                                      canvas,
                                      context);
+      } catch (UnsatisfiedLinkError err) {
+        err.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Create a new browser as dev tools
+   */
+  protected final void createDevTools(CefBrowser parent,
+                                      CefClientHandler clientHandler,
+                                      long windowHandle,
+                                      boolean transparent,
+                                      Canvas canvas) {
+    if (getNativeRef("CefBrowser") == 0 && !isPending_) {
+      try {
+        isPending_ = N_CreateDevTools(parent,
+                                      clientHandler,
+                                      windowHandle,
+                                      transparent,
+                                      canvas);
       } catch (UnsatisfiedLinkError err) {
         err.printStackTrace();
       }
@@ -248,9 +267,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   @Override
   public void close() {
     try {
-      getUIComponent().removeNotify();
-      if (context_ != null)
-        context_.destroyNative();
       N_Close();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
@@ -338,17 +354,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
   }
 
-  @Override
-  public void showDevTools(CefClientHandler clientHandler) {
-    try {
-      N_ShowDevTools(clientHandler);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  @Override
-  public void closeDevTools() {
+  protected final void closeDevTools() {
     try {
       N_CloseDevTools();
     } catch (UnsatisfiedLinkError ule) {
@@ -434,6 +440,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                                boolean transparent,
                                                Canvas canvas,
                                                CefRequestContext context);
+  private final native boolean N_CreateDevTools(CefBrowser parent,
+                                                CefClientHandler clientHandler,
+                                                long windowHandle,
+                                                boolean transparent,
+                                                Canvas canvas);
   private final native long N_GetWindowHandle(long surfaceHandle);
   private final native boolean N_CanGoBack();
   private final native void N_GoBack();
@@ -464,7 +475,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private final native void N_Print();
   private final native void N_Find(int identifier, String searchText, boolean forward, boolean matchCase, boolean findNext);
   private final native void N_StopFinding(boolean clearSelection);
-  private final native void N_ShowDevTools(CefClientHandler clientHandler);
   private final native void N_CloseDevTools();
   private final native void N_WasResized(int width, int height);
   private final native void N_Invalidate(Rectangle rect);

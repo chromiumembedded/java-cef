@@ -227,7 +227,6 @@ public class MainFrame extends JFrame {
                                   browser_,
                                   control_pane_,
                                   downloadDialog,
-                                  client_,
                                   cookieManager_);
 
     // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.

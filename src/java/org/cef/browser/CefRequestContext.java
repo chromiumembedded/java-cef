@@ -41,6 +41,8 @@ public abstract class CefRequestContext {
     return CefRequestContext_N.createNative(handler);
   }
 
+  public abstract void dispose();
+
   /**
    * Returns true if this object is the global context.
    */

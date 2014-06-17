@@ -43,17 +43,28 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   private String url_;
   private boolean isTransparent_;
   private CefRequestContext context_;
+  private CefBrowserOsr parent_ = null;
+  private CefBrowserOsr devTools_ = null;;
 
   CefBrowserOsr(CefClientHandler clientHandler,
                 String url,
                 boolean transparent,
                 CefRequestContext context) {
+    this(clientHandler, url, transparent, context, null);
+  }
+
+  private CefBrowserOsr(CefClientHandler clientHandler,
+                        String url,
+                        boolean transparent,
+                        CefRequestContext context,
+                        CefBrowserOsr parent) {
     super();
     isTransparent_ = transparent;
     renderer_ = new CefRenderer(transparent);
     clientHandler_ = clientHandler;
     url_ = url;
     context_ = context;
+    parent_ = parent;
     createGLCanvas();
   }
 
@@ -65,6 +76,30 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   @Override
   public CefRenderHandler getRenderHandler() {
     return this;
+  }
+
+  @Override
+  public synchronized void close() {
+    if (context_ != null)
+      context_.dispose();
+    if (parent_ != null) {
+      parent_.closeDevTools();
+      parent_.devTools_ = null;
+      parent_ = null;
+    }
+    super.close();
+  }
+
+  @Override
+  public synchronized CefBrowser getDevTools() {
+    if (devTools_ == null) {
+      devTools_ = new CefBrowserOsr(clientHandler_,
+                                    url_,
+                                    isTransparent_,
+                                    context_,
+                                    this);
+    }
+    return devTools_;
   }
 
   private long getWindowHandle() {
@@ -87,12 +122,20 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     canvas_ = new GLCanvas(glcapabilities) {
       @Override
       public void paint(Graphics g) {
-        createBrowser(clientHandler_,
-                      getWindowHandle(),
-                      url_,
-                      isTransparent_,
-                      null,
-                      context_);
+        if (parent_ != null) {
+          createDevTools(parent_,
+                         clientHandler_,
+                         getWindowHandle(),
+                         isTransparent_,
+                         null);
+        } else {
+          createBrowser(clientHandler_,
+                        getWindowHandle(),
+                        url_,
+                        isTransparent_,
+                        null,
+                        context_);
+        }
         super.paint(g);
       }
     };

@@ -121,15 +121,22 @@ int GetMacKeyCodeFromChar(int key_char) {
 }
 #endif  // defined(OS_MACOSX)
 
-}  // namespace
+jboolean create(JNIEnv* env,
+                jobject jbrowser,
+                jobject jparentBrowser,
+                jobject jclientHandler,
+                jlong windowHandle,
+                jstring url,
+                jboolean transparent,
+                jobject canvas,
+                jobject jcontext) {
+  CefRefPtr<ClientHandler> clientHandler =
+      GetCefFromJNIObject<ClientHandler>(env, jclientHandler, "CefClientHandler");
+  if (!clientHandler.get())
+    return JNI_FALSE;
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
-  (JNIEnv *env, jobject jbrowser, jobject jclientHandler, jlong windowHandle,
-  jstring url, jboolean transparent, jobject canvas, jobject jcontext) {
-  CefRefPtr<ClientHandler> clientHandler = GetCefFromJNIObject<ClientHandler>(env, 
-                                                                              jclientHandler, 
-                                                                              "CefClientHandler");
-  CefRefPtr<LifeSpanHandler> lifeSpanHandler = (LifeSpanHandler*)clientHandler->GetLifeSpanHandler().get();
+  CefRefPtr<LifeSpanHandler> lifeSpanHandler =
+      (LifeSpanHandler*)clientHandler->GetLifeSpanHandler().get();
   if (!lifeSpanHandler.get())
     return JNI_FALSE;
 
@@ -137,7 +144,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
 #if defined(OS_WIN) || defined(OS_MACOSX)
   if (canvas != NULL) {
     CefRect rect;
-    CefRefPtr<RenderHandler> renderHandler = (RenderHandler*)clientHandler->GetRenderHandler().get();
+    CefRefPtr<RenderHandler> renderHandler =
+        (RenderHandler*)clientHandler->GetRenderHandler().get();
     if (renderHandler.get()) {
       renderHandler->GetViewRect(jbrowser, rect);
     }
@@ -146,7 +154,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
     RECT winRect = {0,0, rect.width, rect.height};
     windowInfo.SetAsChild(parent,winRect);
 #elif defined(OS_MACOSX)
-    CefWindowHandle parentView = util_mac::GetParentView((CefWindowHandle)windowHandle);
+    CefWindowHandle parentView =
+        util_mac::GetParentView((CefWindowHandle)windowHandle);
     util_mac::TranslateRect(parentView, rect);
     windowInfo.SetAsChild(parentView, rect.x, rect.y, rect.width, rect.height);
 #endif
@@ -160,12 +169,23 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
   CefRefPtr<CefBrowser> browserObj;
   CefString strUrl = GetJNIString(env, url);
 
-  CefRefPtr<CefRequestContext> context = NULL;
-  if (jcontext != NULL) {
-    context = GetCefFromJNIObject<CefRequestContext>(env, jcontext, "CefRequestContext");
-  }
+  CefRefPtr<CefRequestContext> context = 
+      GetCefFromJNIObject<CefRequestContext>(env, jcontext, "CefRequestContext");
+
+  CefRefPtr<CefBrowser> parentBrowser =
+      GetCefFromJNIObject<CefBrowser>(env, jparentBrowser, "CefBrowser");
+
   jobject globalRef = env->NewGlobalRef(jbrowser);
   lifeSpanHandler->registerJBrowser(globalRef);
+
+  // If parentBrowser is set, we want to show the DEV-Tools for that browser
+  if (parentBrowser.get() != NULL) {
+    parentBrowser->GetHost()->ShowDevTools(windowInfo,
+                                           clientHandler.get(),
+                                           settings);
+    return JNI_TRUE;
+  }
+
   bool result = CefBrowserHost::CreateBrowser(windowInfo,
                                               clientHandler.get(),
                                               strUrl,
@@ -177,6 +197,24 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
     return JNI_FALSE;
   }
   return JNI_TRUE;
+}
+
+}  // namespace
+
+JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
+  (JNIEnv *env, jobject jbrowser, jobject jclientHandler, jlong windowHandle,
+  jstring url, jboolean transparent, jobject canvas, jobject jcontext) {
+
+  return create(env, jbrowser, NULL, jclientHandler, windowHandle, url,
+      transparent, canvas, jcontext);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
+  (JNIEnv *env, jobject jbrowser, jobject jparent, jobject jclientHandler,
+   jlong windowHandle, jboolean transparent, jobject canvas) {
+
+  return create(env, jbrowser, jparent, jclientHandler, windowHandle, NULL,
+      transparent, canvas, NULL);
 }
 
 JNIEXPORT jlong JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle
@@ -421,19 +459,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopFinding
   (JNIEnv *env, jobject obj, jboolean clearSelection) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->StopFinding(clearSelection != JNI_FALSE);
-}
-
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ShowDevTools
-  (JNIEnv *env, jobject obj, jobject clientHandler) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  CefRefPtr<CefClient> client = GetCefFromJNIObject<CefClient>(env,
-                                                               clientHandler,
-                                                               "CefClientHandler");
-  if (client.get()) {
-    CefWindowInfo windowInfo;
-    CefBrowserSettings settings;
-    browser->GetHost()->ShowDevTools(windowInfo, client, settings);
-  }
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CloseDevTools
