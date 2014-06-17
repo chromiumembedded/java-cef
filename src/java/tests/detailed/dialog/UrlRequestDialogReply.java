@@ -9,6 +9,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -23,6 +25,7 @@ import javax.swing.SwingUtilities;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefURLRequestClient;
 import org.cef.network.CefRequest;
+import org.cef.network.CefResponse;
 import org.cef.network.CefURLRequest;
 import org.cef.network.CefURLRequest.Status;
 
@@ -35,6 +38,7 @@ public class UrlRequestDialogReply extends JDialog implements CefURLRequestClien
   private final JButton cancelButton_ = new JButton("Cancel");
   private CefURLRequest urlRequest_ = null;
   private final Frame owner_;
+  private ByteArrayOutputStream byteStream_ = new ByteArrayOutputStream();
 
   public UrlRequestDialogReply(Frame owner, String title) {
     super(owner, title, false);
@@ -49,6 +53,7 @@ public class UrlRequestDialogReply extends JDialog implements CefURLRequestClien
     doneButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        urlRequest_.finalize();
         setVisible(false);
         dispose();
       }
@@ -106,15 +111,34 @@ public class UrlRequestDialogReply extends JDialog implements CefURLRequestClien
     } else {
       sentRequest_.append(request.toString());
       cancelButton_.setEnabled(true);
-      updateStatus();
+      updateStatus("", false);
     }
   }
 
-  private void updateStatus() {
-    Status status = urlRequest_.getRequestStatus();
-    statusLabel_.setText("HTTP-Request status: " + status);
-    if (status == Status.UR_FAILED || status == Status.UR_CANCELED || status == Status.UR_SUCCESS){
-      cancelButton_.setEnabled(false);
+  private void updateStatus(final String updateMsg, final boolean printByteStream) {
+    final Status status = urlRequest_.getRequestStatus();
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        statusLabel_.setText("HTTP-Request status: " + status);
+        if (status != Status.UR_UNKNOWN && status != Status.UR_IO_PENDING) {
+          cancelButton_.setEnabled(false);
+        }
+        repliedResult_.append(updateMsg);
+        if (printByteStream) {
+          try {
+            repliedResult_.append("\n\n" + byteStream_.toString("UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            repliedResult_.append("\n\n" + byteStream_.toString());
+          }
+        }
+      }
+    };
+
+    if (SwingUtilities.isEventDispatchThread()) {
+      runnable.run();
+    } else {
+      SwingUtilities.invokeLater(runnable);
     }
   }
 
@@ -133,35 +157,27 @@ public class UrlRequestDialogReply extends JDialog implements CefURLRequestClien
 
   @Override
   public void onRequestComplete(CefURLRequest request) {
-    repliedResult_.append("onRequestCompleted\n\n");
-    repliedResult_.append(request.getResponse().toString());
-    updateStatus();
+    String updateStr = "onRequestCompleted\n\n";
+    CefResponse response = request.getResponse();
+    boolean isText = response.getHeader("Content-Type").startsWith("text");
+    updateStr+= response.toString();
+    updateStatus(updateStr, isText);
   }
 
   @Override
   public void onUploadProgress(CefURLRequest request, int current, int total) {
-    repliedResult_.append("onUploadProgress: " + current + "/" + total + " bytes\n");
-    updateStatus();
+    updateStatus("onUploadProgress: " + current + "/" + total + " bytes\n", false);
   }
 
   @Override
   public void onDownloadProgress(CefURLRequest request, int current, int total) {
-    repliedResult_.append("onDownloadProgress: " + current + "/" + total + " bytes\n");
-    updateStatus();
+    updateStatus("onDownloadProgress: " + current + "/" + total + " bytes\n", false);
   }
 
   @Override
   public void onDownloadData(CefURLRequest request, byte[] data, int data_length) {
-    repliedResult_.append("onDownloadData: " + data_length + " bytes:");
-    String byteStr = "";
-    for (int i=0; i < data_length; i++) {
-      if (i%40 == 0)
-        byteStr += "\n    ";
-      byteStr += String.format("%02X", data[i]) + " ";
-    }
-    byteStr += "\n";
-    repliedResult_.append(byteStr);
-    updateStatus();
+    byteStream_.write(data, 0, data_length);
+    updateStatus("onDownloadData: " + data_length + " bytes\n", false);
   }
 
   @Override

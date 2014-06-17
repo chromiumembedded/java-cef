@@ -46,13 +46,11 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
   }
 
   @Override
-  protected void finalize() throws Throwable {
+  public void finalize() {
     try {
       N_CefURLRequest_DTOR();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
-    } finally {
-      super.finalize();
     }
   }
 

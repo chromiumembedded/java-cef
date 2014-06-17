@@ -2,19 +2,180 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+
 #include "CefURLRequest_N.h"
+#include "include/cef_task.h"
+#include "include/cef_runnable.h"
 #include "include/cef_request.h"
 #include "include/cef_urlrequest.h"
 #include "url_request_client.h"
 #include "jni_util.h"
+
+#if defined(OS_WIN)
+#define WAIT_COND HANDLE
+#define INIT_WAIT(cond) cond = CreateEvent(NULL, FALSE, FALSE, NULL);
+#define WAIT(section, cond) { \
+  section->Unlock(); \
+  WaitForSingleObject(cond, INFINITE); \
+  section->Lock(); \
+}
+#define WAKE_UP(cond) SetEvent(cond);
+#define RELEASE_WAIT(cond) CloseHandle(cond);
+
+#else // OS_MACOSX and OS_LINUX
+
+#include <pthread.h>
+#define WAIT_COND pthread_cond_t
+#define INIT_WAIT(cond) pthread_cond_init(&cond, NULL);
+#define WAIT(section, cond) pthread_cond_wait(&cond, &section->lock_);
+#define WAKE_UP(cond) pthread_cond_signal(&cond);
+#define RELEASE_WAIT(cond) pthread_cond_destroy(&cond);
+
+#endif // OS_WIN
+
+namespace {
+class CriticalWait {
+ public:
+  CriticalWait(CefCriticalSection* section) : section_(section) {
+    INIT_WAIT(cond_);
+  }
+
+  virtual ~CriticalWait() {
+    RELEASE_WAIT(cond_);
+  }
+
+  void wait() {
+    WAIT(section_, cond_);
+  }
+
+  void wakeUp() {
+    WAKE_UP(cond_);
+  }
+
+  CefCriticalSection *section_;
+  WAIT_COND cond_;
+};
+
+class URLRequest : public CefTask {
+ public:
+
+  explicit URLRequest(CefThreadId threadId,
+                      CefRefPtr<CefRequest> request,
+                      CefRefPtr<URLRequestClient> client)
+      : threadId_(threadId), request_(request), client_(client),
+        waitCond_(&critsec_) {
+  }
+
+  virtual ~URLRequest() {
+  } 
+
+  bool Create() {
+    if (!urlRequest_.get())
+      Dispatch(REQ_CREATE);
+    return (urlRequest_.get() != NULL);
+  }
+
+  CefURLRequest::Status GetRequestStatus() {
+    if (!urlRequest_.get())
+      return UR_UNKNOWN;
+    Dispatch(REQ_STATUS);
+    return status_;
+  }
+
+  CefURLRequest::ErrorCode GetRequestError() {
+    if (!urlRequest_.get())
+      return ERR_FAILED;
+    Dispatch(REQ_ERROR);
+    return error_;
+  }
+
+  CefRefPtr<CefResponse> GetResponse() {
+    if (!urlRequest_.get())
+      return NULL;
+    Dispatch(REQ_RESPONSE);
+    return response_;
+  }
+
+  void Cancel() {
+    if(!urlRequest_.get())
+      return;
+    Dispatch(REQ_CANCEL);
+  }
+
+ private:
+  enum URLRequestMode {
+    REQ_CREATE,
+    REQ_STATUS,
+    REQ_ERROR,
+    REQ_RESPONSE,
+    REQ_CANCEL,
+  };
+
+  CefThreadId threadId_;
+  CefRefPtr<CefRequest> request_;
+  CefRefPtr<URLRequestClient> client_;
+
+  // sync method calls
+  CriticalWait waitCond_;
+  URLRequestMode mode_;
+
+  // result values
+  CefRefPtr<CefURLRequest> urlRequest_;
+  CefURLRequest::Status status_;
+  CefURLRequest::ErrorCode error_;
+  CefRefPtr<CefResponse> response_;
+
+  void Dispatch(URLRequestMode mode) {
+    Lock();
+    mode_ = mode;
+    if (CefCurrentlyOn(threadId_)) {
+      Unlock();
+      Execute();
+    } else {
+      CefPostTask(threadId_, this);
+      waitCond_.wait();
+      Unlock();
+    }
+  }
+
+  virtual void Execute() {
+    Lock();
+    switch (mode_) {
+      case REQ_CREATE:
+        urlRequest_ =  CefURLRequest::Create(request_, client_.get());
+        break;
+      case REQ_STATUS:
+        status_ = urlRequest_->GetRequestStatus();
+        break;
+      case REQ_ERROR:
+        error_ = urlRequest_->GetRequestError();
+        break;
+      case REQ_RESPONSE:
+        response_ = urlRequest_->GetResponse();
+        break;
+      case REQ_CANCEL:
+        urlRequest_->Cancel();
+        break;
+    }
+    waitCond_.wakeUp();
+    Unlock();
+  }
+
+  IMPLEMENT_LOCKING(URLRequest);
+  IMPLEMENT_REFCOUNTING(URLRequest);
+};
+
+
+}  // namespace
+
 
 JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1CTOR
   (JNIEnv *env, jobject obj, jobject jrequest, jobject jRequestClient) {
   CefRefPtr<URLRequestClient> client = URLRequestClient::Create(env, jRequestClient, obj);
   CefRefPtr<CefRequest> request = GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
 
-  CefRefPtr<CefURLRequest> urlRequest = CefURLRequest::Create(request, client.get());
-  if (!urlRequest.get())
+  CefRefPtr<URLRequest> urlRequest = new URLRequest(TID_UI, request, client);
+  if (!urlRequest->Create())
     return;
   SetCefForJNIObject(env, obj, urlRequest.get(), "CefURLRequest");
 }
@@ -24,8 +185,8 @@ JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetRequestSta
   jobject result = GetJNIEnumValue(env,
                                    "org/cef/network/CefURLRequest$Status",
                                    "UR_UNKNOWN");
-  CefRefPtr<CefURLRequest> urlRequest =
-      GetCefFromJNIObject<CefURLRequest>(env, obj, "CefURLRequest");
+  CefRefPtr<URLRequest> urlRequest =
+      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
   if (!urlRequest.get())
     return result;
 
@@ -42,8 +203,8 @@ JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetRequestSta
 
 JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetRequestError
   (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefURLRequest> urlRequest =
-      GetCefFromJNIObject<CefURLRequest>(env, obj, "CefURLRequest");
+  CefRefPtr<URLRequest> urlRequest =
+      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
   if (!urlRequest.get())
     return NewJNIErrorCode(env, ERR_FAILED);
   return NewJNIErrorCode(env, urlRequest->GetRequestError());
@@ -51,8 +212,8 @@ JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetRequestErr
 
 JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetResponse
   (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefURLRequest> urlRequest =
-      GetCefFromJNIObject<CefURLRequest>(env, obj, "CefURLRequest");
+  CefRefPtr<URLRequest> urlRequest =
+      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
   if (!urlRequest.get())
     return NULL;
 
@@ -67,19 +228,14 @@ JNIEXPORT jobject JNICALL Java_org_cef_network_CefURLRequest_1N_N_1GetResponse
 
 JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1Cancel
   (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefURLRequest> urlRequest =
-      GetCefFromJNIObject<CefURLRequest>(env, obj, "CefURLRequest");
+  CefRefPtr<URLRequest> urlRequest =
+      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
   if (!urlRequest.get())
     return;
-
-  CefRefPtr<URLRequestClient> client = (URLRequestClient*)urlRequest->GetClient().get();
-  if (!client.get())
-    return;
-
   urlRequest->Cancel();
 }
 
 JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1DTOR
   (JNIEnv *env, jobject obj) {
-  SetCefForJNIObject<CefPostData>(env, obj, NULL, "CefURLRequest");
+  SetCefForJNIObject<URLRequest>(env, obj, NULL, "CefURLRequest");
 }

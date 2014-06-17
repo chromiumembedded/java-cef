@@ -45,6 +45,8 @@ public abstract class CefURLRequest {
     return CefURLRequest_N.createNative(request, client);
   }
 
+  public abstract void finalize();
+
   /**
    * Returns the request object used to create this URL request. The returned
    * object is read-only and should not be modified.
