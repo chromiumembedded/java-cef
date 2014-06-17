@@ -117,7 +117,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
   @SuppressWarnings("serial")
   private void createGLCanvas() {
-    GLProfile glprofile = GLProfile.getDefault();
+    GLProfile glprofile = GLProfile.getMaxFixedFunc(true);
     GLCapabilities glcapabilities = new GLCapabilities(glprofile);
     canvas_ = new GLCanvas(glcapabilities) {
       @Override
