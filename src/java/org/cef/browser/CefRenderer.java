@@ -19,6 +19,7 @@ class CefRenderer {
   private float spin_y_ = 0f;
   private Rectangle popup_rect_ = new Rectangle(0, 0, 0, 0);
   private Rectangle original_popup_rect_ = new Rectangle(0, 0, 0, 0);
+  private boolean use_draw_pixels_ = false;
 
   protected CefRenderer(boolean transparent) {
     transparent_ = transparent;
@@ -32,6 +33,15 @@ class CefRenderer {
   protected void initialize(GL2 gl2) {
     if (initialized_context_ == gl2)
       return;
+
+    initialized_context_ = gl2;
+
+    if (!gl2.getContext().isHardwareRasterizer()) {
+      // Workaround for Windows Remote Desktop which requires pot textures.
+      System.out.println("opengl rendering may be slow as hardware rendering isn't available");
+      use_draw_pixels_ = true;
+      return;
+    }
 
     gl2.glHint(gl2.GL_POLYGON_SMOOTH_HINT, gl2.GL_NICEST);
 
@@ -48,8 +58,6 @@ class CefRenderer {
     gl2.glTexParameteri(gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_MIN_FILTER, gl2.GL_NEAREST);
     gl2.glTexParameteri(gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_MAG_FILTER, gl2.GL_NEAREST);
     gl2.glTexEnvf(gl2.GL_TEXTURE_ENV, gl2.GL_TEXTURE_ENV_MODE, gl2.GL_MODULATE);
-
-    initialized_context_ = gl2;
   }
   
   protected void cleanup(GL2 gl2) {
@@ -59,7 +67,7 @@ class CefRenderer {
 
   @SuppressWarnings("static-access")
   protected void render(GL2 gl2) {
-    if (view_width_ == 0 || view_height_ == 0)
+    if (use_draw_pixels_ || view_width_ == 0 || view_height_ == 0)
       return;
 
     assert(initialized_context_ != null);
@@ -172,6 +180,13 @@ class CefRenderer {
                          int width,
                          int height) {
     initialize(gl2);
+
+    if (use_draw_pixels_) {
+      gl2.glRasterPos2f(-1, 1);
+      gl2.glPixelZoom(1, -1);
+      gl2.glDrawPixels(width, height, GL2.GL_BGRA, GL2.GL_UNSIGNED_BYTE, buffer);
+      return;
+    }
 
     if (transparent_) {
       // Enable alpha blending.
