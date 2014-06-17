@@ -7,7 +7,6 @@ package org.cef.browser;
 import java.awt.Component;
 import java.util.Vector;
 
-import org.cef.callback.CefNative;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
@@ -18,7 +17,7 @@ import org.cef.network.CefRequest;
 /**
  * Interface representing a browser.
  */
-public interface CefBrowser extends CefNative {
+public interface CefBrowser {
 
   /**
    * Get the underlying UI component (e.g. java.awt.Canvas).

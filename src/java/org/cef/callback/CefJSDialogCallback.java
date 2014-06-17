@@ -8,7 +8,7 @@ package org.cef.callback;
  * Callback interface used for asynchronous continuation of JavaScript dialog
  * requests.
  */
-public interface CefJSDialogCallback extends CefNative {
+public interface CefJSDialogCallback {
   /**
    * Continue the JS dialog request.
    * 

@@ -4,19 +4,7 @@
 
 package org.cef.callback;
 
-class CefCallback_N implements CefCallback {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefCallback_N extends CefNativeAdapter implements CefCallback {
 
   CefCallback_N() {
   }

@@ -16,7 +16,7 @@ import java.util.Vector;
  * subsequent tokens, regardless of prefix, being interpreted as non-switch
  * arguments. Switch names are considered case-insensitive.
  */
-public interface CefCommandLine  extends CefNative {
+public interface CefCommandLine {
 
   /**
    * Reset the command-line switches and arguments but leave the program

@@ -11,6 +11,7 @@ import java.awt.Canvas;
 import java.awt.Rectangle;
 import java.util.Vector;
 
+import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
@@ -23,22 +24,9 @@ import org.cef.network.CefRequest;
  * The visibility of this class is "package". To create a new
  * CefBrowser instance, please use CefBrowserFactory.
  */
-abstract class CefBrowser_N implements CefBrowser {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
+abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private boolean isPending_ = false;
   private CefRequestContext_N context_ = null;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-    isPending_ = false;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
 
   /**
    * Create a new browser.
@@ -49,7 +37,7 @@ abstract class CefBrowser_N implements CefBrowser {
                                boolean transparent,
                                Canvas canvas,
                                CefRequestContext context) {
-    if (N_CefHandle == 0 && !isPending_) {
+    if (getNativeRef("CefBrowser") == 0 && !isPending_) {
       context_ = (CefRequestContext_N)context;
       try {
         isPending_ = N_CreateBrowser(clientHandler,

@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Callback interface used for asynchronous continuation of quota requests.
  */
-public interface CefQuotaCallback extends CefNative {
+public interface CefQuotaCallback {
   /**
    * Continue the quota request.
    * 

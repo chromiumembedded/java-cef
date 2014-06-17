@@ -5,7 +5,6 @@
 package org.cef.browser;
 
 import org.cef.handler.CefRequestContextHandler;
-import org.cef.callback.CefNative;
 
 /**
  * A request context provides request handling for a set of related browser
@@ -22,7 +21,7 @@ import org.cef.callback.CefNative;
  * passed into the CefClient.createBrowser method and all other request
  * context objects will be ignored.
  */
-public abstract class CefRequestContext implements CefNative {
+public abstract class CefRequestContext {
 
   // This CTOR can't be called directly. Call method create() instead.
   CefRequestContext() {

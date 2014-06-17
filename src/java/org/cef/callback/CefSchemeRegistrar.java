@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Class that manages custom scheme registrations.
  */
-public interface CefSchemeRegistrar extends CefNative {
+public interface CefSchemeRegistrar {
 
   /**
    * Register a custom scheme. This method should not be called for the built-in

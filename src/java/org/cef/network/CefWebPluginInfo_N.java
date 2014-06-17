@@ -4,24 +4,9 @@
 
 package org.cef.network;
 
-import org.cef.callback.CefNative;
+import org.cef.callback.CefNativeAdapter;
 
-class CefWebPluginInfo_N implements CefNative, CefWebPluginInfo {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  CefWebPluginInfo_N() {
-  }
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefWebPluginInfo_N extends CefNativeAdapter implements CefWebPluginInfo {
 
   @Override
   public String getName() {

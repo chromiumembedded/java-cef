@@ -9,7 +9,7 @@ import java.util.Vector;
 /**
  * Callback interface for asynchronous continuation of file dialog requests.
  */
-public interface CefFileDialogCallback extends CefNative {
+public interface CefFileDialogCallback {
 
   /**
    * Continue the file selection with the specified file_paths. This may be

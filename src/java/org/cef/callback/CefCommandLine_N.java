@@ -7,19 +7,7 @@ package org.cef.callback;
 import java.util.Map;
 import java.util.Vector;
 
-class CefCommandLine_N implements CefCommandLine {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
 
   @Override
   public void reset() {

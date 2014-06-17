@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Generic callback interface used for asynchronous continuation.
  */
-public interface CefCallback extends CefNative {
+public interface CefCallback {
   /**
    * Continue processing.
    */

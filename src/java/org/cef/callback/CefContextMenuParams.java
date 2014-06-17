@@ -8,7 +8,7 @@ package org.cef.callback;
  *  Provides information about the context menu state. The methods of this class
  * can only be accessed on browser process the UI thread.
  */
-public interface CefContextMenuParams extends CefNative {
+public interface CefContextMenuParams {
 
   /**
    * Supported context menu type flags.

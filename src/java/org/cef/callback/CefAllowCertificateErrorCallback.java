@@ -8,7 +8,7 @@ package org.cef.callback;
  * Callback interface used for asynchronous continuation of url requests when
  * invalid SSL certificates are encountered.
  */
-public interface CefAllowCertificateErrorCallback extends CefNative {
+public interface CefAllowCertificateErrorCallback {
   /**
    * Continue the url request.
    * 

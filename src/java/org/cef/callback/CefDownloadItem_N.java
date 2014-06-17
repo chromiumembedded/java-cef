@@ -6,23 +6,10 @@ package org.cef.callback;
 
 import java.util.Date;
 
-class CefDownloadItem_N implements CefDownloadItem {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefDownloadItem_N extends CefNativeAdapter implements CefDownloadItem {
 
   protected void finalize() throws Throwable {
     super.finalize();
-    System.err.println("FINALIZE: CefDownloadItem_N(" + N_CefHandle + ")");
   }
 
   CefDownloadItem_N() {

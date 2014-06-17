@@ -8,7 +8,7 @@ package org.cef.callback;
  * Callback interface used for asynchronous continuation of authentication
  * requests.
  */
-public interface CefAuthCallback extends CefNative {
+public interface CefAuthCallback {
   /**
    * Continue the authentication request.
    */

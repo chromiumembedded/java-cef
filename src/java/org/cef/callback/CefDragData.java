@@ -10,7 +10,7 @@ import java.util.Vector;
  * Class used to represent drag data. The methods of this class may be called
  * on any thread.
  */
-public interface CefDragData extends CefNative {
+public interface CefDragData {
   /**
    * Returns true if the drag data is a link.
    */

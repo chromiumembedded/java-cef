@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Callback interface used to asynchronously cancel a download.
  */
-public interface CefDownloadItemCallback extends CefNative {
+public interface CefDownloadItemCallback {
   /**
    * Call to cancel the download.
    */

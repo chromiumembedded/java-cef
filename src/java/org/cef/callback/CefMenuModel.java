@@ -13,7 +13,7 @@ import org.cef.misc.IntRef;
  * should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. The methods of
  * this class can only be accessed on the browser process the UI thread.
  */
-public interface CefMenuModel extends CefNative {
+public interface CefMenuModel {
 
   public static final class MenuId {
     public static final int MENU_ID_BACK                = 100;

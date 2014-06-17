@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Class used to represent a download item.
  */
-public interface CefDownloadItem extends CefNative {
+public interface CefDownloadItem {
   /**
    * Returns true if this object is valid. Do not call any other methods if this
    * function returns false.

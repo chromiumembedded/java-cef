@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Interface representing a query callback.
  */
-public interface CefQueryCallback extends CefNative {
+public interface CefQueryCallback {
   /**
    * Notify the associated JavaScript onSuccess callback that the query has
    * completed successfully.

@@ -4,19 +4,7 @@
 
 package org.cef.callback;
 
-class CefSchemeRegistrar_N implements CefSchemeRegistrar {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefSchemeRegistrar_N extends CefNativeAdapter implements CefSchemeRegistrar {
 
   @Override
   public boolean addCustomScheme(String schemeName,

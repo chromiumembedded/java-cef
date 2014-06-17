@@ -7,19 +7,7 @@ package org.cef.callback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
 
-class CefMenuModel_N implements CefMenuModel {
-  // Used internally to store a pointer to the CEF object.
-  private long N_CefHandle = 0;
-
-  @Override
-  public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle = nativeRef;
-  }
-
-  @Override
-  public long getNativeRef(String identifer) {
-    return N_CefHandle;
-  }
+class CefMenuModel_N extends CefNativeAdapter implements CefMenuModel {
 
   public CefMenuModel_N() {
   }

@@ -7,7 +7,7 @@ package org.cef.callback;
 /**
  * Callback interface used to asynchronously continue a download.
  */
-public interface CefBeforeDownloadCallback extends CefNative {
+public interface CefBeforeDownloadCallback {
   /**
    * Call to continue the download.
    * @param downloadPath Set it to the full file path for the download

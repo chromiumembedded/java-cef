@@ -4,9 +4,10 @@
 
 package org.cef.browser;
 
+import org.cef.callback.CefNative;
 import org.cef.handler.CefRequestContextHandler;
 
-class CefRequestContext_N extends CefRequestContext {
+class CefRequestContext_N extends CefRequestContext implements CefNative {
   // Used internally to store a pointer to the CEF object.
   private long N_CefHandle = 0;
   private static CefRequestContext_N globalInstance = null;

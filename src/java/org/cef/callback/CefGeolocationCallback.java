@@ -8,7 +8,7 @@ package org.cef.callback;
  * Callback interface used for asynchronous continuation of geolocation
  * permission requests.
  */
-public interface CefGeolocationCallback extends CefNative {
+public interface CefGeolocationCallback {
   /**
    * Call to allow or deny geolocation access.
    */
