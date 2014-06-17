@@ -11,7 +11,7 @@ import javax.media.opengl.GL2;
 
 class CefRenderer {
   private boolean transparent_;
-  private boolean initialized_ = false;
+  private GL2 initialized_context_ = null;
   private int[] texture_id_ = new int[1];
   private int view_width_ = 0;
   private int view_height_ = 0;
@@ -30,9 +30,9 @@ class CefRenderer {
 
   @SuppressWarnings("static-access")
   protected void initialize(GL2 gl2) {
-    if (initialized_)
+    if (initialized_context_ == gl2)
       return;
-    
+
     gl2.glHint(gl2.GL_POLYGON_SMOOTH_HINT, gl2.GL_NICEST);
 
     gl2.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -49,7 +49,7 @@ class CefRenderer {
     gl2.glTexParameteri(gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_MAG_FILTER, gl2.GL_NEAREST);
     gl2.glTexEnvf(gl2.GL_TEXTURE_ENV, gl2.GL_TEXTURE_ENV_MODE, gl2.GL_MODULATE);
 
-    initialized_ = true;
+    initialized_context_ = gl2;
   }
   
   protected void cleanup(GL2 gl2) {
@@ -62,8 +62,8 @@ class CefRenderer {
     if (view_width_ == 0 || view_height_ == 0)
       return;
 
-    assert(initialized_);
-    
+    assert(initialized_context_ != null);
+
     final float[] vertex_data = {
         //tu,   tv,     x,     y,    z
         0.0f, 1.0f, -1.0f, -1.0f, 0.0f,
@@ -171,8 +171,7 @@ class CefRenderer {
                          ByteBuffer buffer,
                          int width,
                          int height) {
-    if (!initialized_)
-      initialize(gl2);
+    initialize(gl2);
 
     if (transparent_) {
       // Enable alpha blending.
