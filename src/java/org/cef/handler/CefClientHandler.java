@@ -21,13 +21,17 @@ public abstract class CefClientHandler implements CefNative {
 
   @Override
   public void setNativeRef(String identifer, long nativeRef) {
-    N_CefHandle.put(identifer, nativeRef);
+    synchronized(N_CefHandle) {
+      N_CefHandle.put(identifer, nativeRef);
+    }
   }
 
   @Override
   public long getNativeRef(String identifer) {
-    if (N_CefHandle.containsKey(identifer))
-      return N_CefHandle.get(identifer);
+    synchronized(N_CefHandle) {
+      if (N_CefHandle.containsKey(identifer))
+        return N_CefHandle.get(identifer);
+    }
     return 0;
   }
 
