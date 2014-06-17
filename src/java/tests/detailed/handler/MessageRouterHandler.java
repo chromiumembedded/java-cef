@@ -22,7 +22,6 @@ public class MessageRouterHandler extends CefMessageRouterHandlerAdapter {
       return true;
     }
     // Not handled.
-    callback.failure(-1, "Request not handled");
     return false;
   }
 }
