@@ -229,8 +229,7 @@ public class MainFrame extends JFrame {
                                   downloadDialog,
                                   cookieManager_);
 
-    // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
-    menuBar.addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
+    menuBar.addBookmark("Binding Test", "client://tests/binding_test.html");
     menuBar.addBookmark("Binding Test 2", "client://tests/binding_test2.html");
     menuBar.addBookmark("Download Test", "http://cefbuilds.com");
     menuBar.addBookmark("Geolocation Test","http://slides.html5rocks.com/#geolocation");
