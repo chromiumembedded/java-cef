@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "browser_process_handler.h"
 #include "context_menu_handler.h"
 #include "dialog_handler.h"
 #include "display_handler.h"
@@ -254,65 +255,125 @@ CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
   return result;
 }
 
-CefRefPtr<MessageRouterHandler> ClientHandler::GetMessageRouterHandler() {
-  CefRefPtr<MessageRouterHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getMessageRouterHandler", "()Lorg/cef/handler/CefMessageRouterHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<MessageRouterHandler>(env, handler, "CefMessageRouterHandler");
-    if (!result.get()) {
-      result = new MessageRouterHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefMessageRouterHandler");
-    }
-  }
-  END_ENV(env)
-  return result;
-}
-
 bool ClientHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
-  if (message_router_)
-    return message_router_->OnProcessMessageReceived(
-        browser, source_process,  message);
-  return false;
+  std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
+  bool handled = false;
+  
+  AutoLock lock_scope(this);
+  for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
+    handled = (*iter)->OnProcessMessageReceived(browser, source_process, message);
+    if (handled)
+      break;
+  }
+  return handled;
+}
+
+void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
+  CefRefPtr<CefMessageRouterBrowserSide> router =
+      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, jmessageRouter, "CefMessageRouter");
+  if (!router.get())
+    return;
+
+  CefMessageRouterConfig config =
+      GetJNIMessageRouterConfigFromRouter(env, jmessageRouter);
+
+  AutoLock lock_scope(this);
+  // 1) Add CefMessageRouterBrowserSide into the list.
+  message_router_.insert(router);
+
+  // 2) Update CefApp for new render-processes.
+  BrowserProcessHandler::AddMessageRouterConfig(config);
+
+  // 3) Update running render-processes.
+  jobjectArray jbrowserArray = GetAllJNIBrowser(env, jhandler_);
+  if (!jbrowserArray)
+    return;
+
+  CefRefPtr<CefProcessMessage> message = CefProcessMessage::Create("AddMessageRouter");
+  CefRefPtr<CefListValue> args = message->GetArgumentList();
+  args->SetString(0, config.js_query_function);
+  args->SetString(1, config.js_cancel_function);
+
+  jint length = env->GetArrayLength(jbrowserArray);
+  for (int i=0; i<length; ++i) {
+    jobject jbrowser = env->GetObjectArrayElement(jbrowserArray, i);
+    CefRefPtr<CefBrowser> browser =
+        GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
+    if (!browser.get())
+      continue;
+    browser->SendProcessMessage(PID_RENDERER, message);
+  }
+}
+
+void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
+  CefRefPtr<CefMessageRouterBrowserSide> router =
+      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, jmessageRouter, "CefMessageRouter");
+  if (!router.get())
+    return;
+
+  CefMessageRouterConfig config =
+      GetJNIMessageRouterConfigFromRouter(env, jmessageRouter);
+
+  AutoLock lock_scope(this);
+  // 1) Remove CefMessageRouterBrowserSide from the list.
+  message_router_.erase(router);
+
+  // 2) Update CefApp.
+  BrowserProcessHandler::RemoveMessageRouterConfig(config);
+
+  // 3) Update running render-processes.
+  jobjectArray jbrowserArray = GetAllJNIBrowser(env, jhandler_);
+  if (!jbrowserArray)
+    return;
+
+  CefRefPtr<CefProcessMessage> message = CefProcessMessage::Create("RemoveMessageRouter");
+  CefRefPtr<CefListValue> args = message->GetArgumentList();
+  args->SetString(0, config.js_query_function);
+  args->SetString(1, config.js_cancel_function);
+
+  jint length = env->GetArrayLength(jbrowserArray);
+  for (int i=0; i<length; ++i) {
+    jobject jbrowser = env->GetObjectArrayElement(jbrowserArray, i);
+    CefRefPtr<CefBrowser> browser =
+        GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
+    if (!browser.get())
+      continue;
+    browser->SendProcessMessage(PID_RENDERER, message);
+  }
 }
 
 void ClientHandler::OnAfterCreated() {
-  REQUIRE_UI_THREAD();
-
-  AutoLock lock_scope(this);
-  if (!message_router_) {
-    CefRefPtr<MessageRouterHandler> handler;
-    handler = GetMessageRouterHandler();
-    if (handler.get()) {
-      // Create the browser-side router for query handling.
-      CefMessageRouterConfig config;
-      message_router_ = CefMessageRouterBrowserSide::Create(config);
-      message_router_->AddHandler(handler.get(), false);
-    }
-  }
 }
 
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
   AutoLock lock_scope(this);
-  if (message_router_)
-    message_router_->OnBeforeClose(browser);
+  std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
+  for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
+    (*iter)->OnBeforeClose(browser);
+  }
 }
 
 void ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame) {
-  if (message_router_)
-    message_router_->OnBeforeBrowse(browser, frame);
+                                   
+  AutoLock lock_scope(this);
+  std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
+  for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
+    (*iter)->OnBeforeBrowse(browser, frame);
+  }
 }
 
 void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) {
-  if (message_router_)
-    message_router_->OnRenderProcessTerminated(browser);
+  AutoLock lock_scope(this);
+  std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
+  for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
+    (*iter)->OnRenderProcessTerminated(browser);
+  }
 }
 
 jobject ClientHandler::getBrowser(CefRefPtr<CefBrowser> browser) {

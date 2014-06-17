@@ -6,6 +6,7 @@
 #define CEF_TESTS_CEFCLIENT_CLIENT_HANDLER_H_
 #pragma once
 
+#include <set>
 #include <jni.h>
 #include "include/cef_client.h"
 #include "message_router_handler.h"
@@ -31,12 +32,14 @@ class ClientHandler : public CefClient {
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
 
-  CefRefPtr<MessageRouterHandler> GetMessageRouterHandler();
-
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
+
+  // Methods to deal with message router bindings
+  void AddMessageRouter(JNIEnv* env, jobject jmessageRouter);
+  void RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter);
 
   // Methods to set and remove a browser ref.
   void OnAfterCreated();
@@ -53,7 +56,7 @@ class ClientHandler : public CefClient {
   // The child browser window.
   std::map<int,jobject> browserMap_;
 
-  CefRefPtr<CefMessageRouterBrowserSide> message_router_;
+  std::set<CefRefPtr<CefMessageRouterBrowserSide> > message_router_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ClientHandler);

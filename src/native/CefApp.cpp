@@ -9,6 +9,7 @@
 #include "include/cef_app.h"
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
+#include "browser_process_handler.h"
 #include "client_handler.h"
 #include "render_handler.h"
 #include "scheme_handler_factory.h"
@@ -25,8 +26,7 @@
 
 namespace {
 
-class ClientApp : public CefApp,
-                  public CefBrowserProcessHandler {
+class ClientApp : public CefApp {
  public:
   explicit ClientApp(const std::string& module_dir,
                      const jobject app_handler)
@@ -34,6 +34,7 @@ class ClientApp : public CefApp,
     JNIEnv *env = GetJNIEnv();
     if (env)
       app_handler_ = env->NewGlobalRef(app_handler);
+    process_handler_ = new BrowserProcessHandler(app_handler_);
   }
 
   virtual ~ClientApp() {
@@ -101,25 +102,13 @@ class ClientApp : public CefApp,
   }
 
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE {
-    return this;
-  }
-
-  // CefBrowserProcessHandler
-  virtual void OnContextInitialized() OVERRIDE {
-    if (!app_handler_)
-      return;
-
-    BEGIN_ENV(env)
-    JNI_CALL_VOID_METHOD(env,
-                         app_handler_,
-                         "onContextInitialized",
-                         "()V");
-    END_ENV(env)
+    return process_handler_.get();
   }
 
  private:
   std::string module_dir_;
   jobject app_handler_;
+  CefRefPtr<BrowserProcessHandler> process_handler_;
 
   IMPLEMENT_REFCOUNTING(ClientApp);
 };

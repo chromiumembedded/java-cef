@@ -5,13 +5,14 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefNative;
 import org.cef.callback.CefQueryCallback;
 
 /**
  * Implement this interface to handle queries. All methods will be executed on
  * the browser process UI thread.
  */
-public interface CefMessageRouterHandler {
+public interface CefMessageRouterHandler extends CefNative {
 
   /**
    * Called when the browser receives a JavaScript query.

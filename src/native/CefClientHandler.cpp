@@ -13,6 +13,15 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler
   SetCefForJNIObject(env, clientHandler, client.get(), "CefClientHandler");
 }
 
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1addMessageRouter
+  (JNIEnv *env, jobject clientHandler, jobject jmessageRouter) {
+  CefRefPtr<ClientHandler> client =
+      GetCefFromJNIObject<ClientHandler>(env, clientHandler, "CefClientHandler");
+  if (!client.get())
+    return;
+  client->AddMessageRouter(env, jmessageRouter);
+}
+
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeContextMenuHandler
   (JNIEnv *env, jobject clientHandler, jobject contextMenuHandler) {
   SetCefForJNIObject<CefContextMenuHandler>(env, contextMenuHandler, NULL, "CefContextMenuHandler");
@@ -68,9 +77,13 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLoadHandle
   SetCefForJNIObject<CefLoadHandler>(env, loadHandler, NULL, "CefLoadHandler");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouterHandler
-  (JNIEnv *env, jobject clientHandler, jobject msgRouterHandler) {
-  SetCefForJNIObject<MessageRouterHandler>(env, msgRouterHandler, NULL, "CefMessageRouterHandler");
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouter
+  (JNIEnv *env, jobject clientHandler, jobject jmessageRouter) {
+  CefRefPtr<ClientHandler> client =
+      GetCefFromJNIObject<ClientHandler>(env, clientHandler, "CefClientHandler");
+  if (!client.get())
+    return;
+  client->RemoveMessageRouter(env, jmessageRouter);
 }
 
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRenderHandler

@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefQueryCallback;
 
 /**
@@ -12,7 +13,8 @@ import org.cef.callback.CefQueryCallback;
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
-public abstract class CefMessageRouterHandlerAdapter implements CefMessageRouterHandler {
+public abstract class CefMessageRouterHandlerAdapter extends CefNativeAdapter
+    implements CefMessageRouterHandler {
 
   @Override
   public boolean onQuery(CefBrowser browser, 

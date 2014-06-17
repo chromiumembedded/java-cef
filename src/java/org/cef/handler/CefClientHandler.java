@@ -5,8 +5,10 @@
 package org.cef.handler;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefMessageRouter;
 import org.cef.callback.CefNative;
 
 /**
@@ -15,6 +17,7 @@ import org.cef.callback.CefNative;
 public abstract class CefClientHandler implements CefNative {
   // Used internally to store a pointer to the CEF object.
   private HashMap<String,Long> N_CefHandle = new HashMap<String, Long>();
+  private Vector<CefMessageRouter> msgRouters = new Vector<>();
 
   @Override
   public void setNativeRef(String identifer, long nativeRef) {
@@ -36,15 +39,17 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
-  @Override
-  protected void finalize() throws Throwable {
+  protected void dispose() {
     try {
       // Call native DTOR if handler will be destroyed
+      for (int i=0; i < msgRouters.size(); i++) {
+        msgRouters.get(i).dispose();
+      }
+      msgRouters.clear();
+
       N_CefClientHandler_DTOR();
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
-    } finally {
-      super.finalize();
     }
   }
 
@@ -54,6 +59,12 @@ public abstract class CefClientHandler implements CefNative {
    * @return The found browser or null if none is found.
    */
   abstract protected CefBrowser getBrowser(int identifier);
+
+  /**
+   * Returns a list of all browser instances.
+   * @return an array of browser Instances.
+   */
+  abstract protected Object[] getAllBrowser();
 
   /**
    * Return the handler for context menus. If no handler is provided the
@@ -131,13 +142,6 @@ public abstract class CefClientHandler implements CefNative {
   abstract protected CefLoadHandler getLoadHandler();
 
   /**
-   * Return the handler for message router events.
-   * This method is a callback method and is called by
-   * the native code.
-   */
-  abstract protected CefMessageRouterHandler getMessageRouterHandler();
-
-  /**
    * Return the handler for off-screen rendering events.
    * This method is a callback method and is called by
    * the native code.
@@ -150,6 +154,15 @@ public abstract class CefClientHandler implements CefNative {
    * the native code.
    */
   abstract protected CefRequestHandler getRequestHandler();
+
+  protected synchronized void addMessageRouter(CefMessageRouter h) {
+    try {
+      msgRouters.add(h);
+      N_addMessageRouter(h);
+    } catch (UnsatisfiedLinkError err) {
+      err.printStackTrace();
+    }
+  }
 
   protected void removeContextMenuHandler(CefContextMenuHandler h) {
     try {
@@ -239,9 +252,10 @@ public abstract class CefClientHandler implements CefNative {
     }
   }
 
-  protected void removeMessageRouterHandler(CefMessageRouterHandler h) {
+  protected synchronized void removeMessageRouter(CefMessageRouter h) {
     try {
-      N_removeMessageRouterHandler(h);
+      msgRouters.remove(h);
+      N_removeMessageRouter(h);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -264,6 +278,7 @@ public abstract class CefClientHandler implements CefNative {
   }
 
   private final native void N_CefClientHandler_CTOR();
+  private final native void N_addMessageRouter(CefMessageRouter h);
   private final native void N_removeContextMenuHandler(CefContextMenuHandler h);
   private final native void N_removeDialogHandler(CefDialogHandler h);
   private final native void N_removeDisplayHandler(CefDisplayHandler h);
@@ -275,7 +290,7 @@ public abstract class CefClientHandler implements CefNative {
   private final native void N_removeKeyboardHandler(CefKeyboardHandler h);
   private final native void N_removeLifeSpanHandler(CefLifeSpanHandler h);
   private final native void N_removeLoadHandler(CefLoadHandler h);
-  private final native void N_removeMessageRouterHandler(CefMessageRouterHandler h);
+  private final native void N_removeMessageRouter(CefMessageRouter h);
   private final native void N_removeRenderHandler(CefRenderHandler h);
   private final native void N_removeRequestHandler(CefRequestHandler h);
   private final native void N_CefClientHandler_DTOR();

@@ -9,6 +9,7 @@
 #include <vector>
 #include "include/cef_base.h"
 #include "include/cef_browser.h"
+#include "include/wrapper/cef_message_router.h"
 #include "util.h"
 
 // Set the global JVM reference.
@@ -84,6 +85,11 @@ CefString GetJNIString(JNIEnv* env, jstring jstr);
 void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
                        std::vector<CefString>& vals);
 
+CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env,
+                                                 jobject jConfig);
+CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
+                                                           jobject jRouter);
+
 // Create a new JNI error code.
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
 
@@ -150,6 +156,7 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y);
 
 // Get java browser counterpart
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
+jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler);
 
 jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname);
 

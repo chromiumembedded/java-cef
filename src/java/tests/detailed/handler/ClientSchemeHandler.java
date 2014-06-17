@@ -61,22 +61,19 @@ public class ClientSchemeHandler extends CefResourceHandlerAdapter {
       handled = true;
       // Set the resulting mime type
       mime_type_ = "text/html";
-    } else if (url.indexOf("logo.png") != -1) {
-      // Load the response image
-      InputStream inImage = getClass().getResourceAsStream("logo.png");
-      if (inImage != null) {
-        try {
-          ByteArrayOutputStream outFile = new ByteArrayOutputStream();
-          int readByte = -1;
-          while ((readByte = inImage.read()) >= 0)
-            outFile.write(readByte);
-          data_ = outFile.toByteArray();
-          handled = true;
-          // Set the resulting mime type
-          mime_type_ = "image/png";
-        } catch (IOException e) {
-          // nothing to do. "handled is already set to false
-        }
+    } else if (url.endsWith(".png")) {
+      handled = loadContent(url.substring(url.lastIndexOf('/')+1));
+      mime_type_ = "image/png";
+    } else if (url.endsWith(".html")) {
+      handled = loadContent(url.substring(url.lastIndexOf('/')+1));
+      mime_type_ = "text/html";
+      if (!handled) {
+        String html = "<html><head><title>Error 404</title></head>";
+               html+= "<body><h1>Error 404</h1>";
+               html+= "File  " + url.substring(url.lastIndexOf('/')+1) + " ";
+               html+= "does not exist</body></html>";
+        data_ = html.getBytes();
+        handled = true;
       }
     }
 
@@ -121,5 +118,20 @@ public class ClientSchemeHandler extends CefResourceHandlerAdapter {
     }
 
     return has_data;
+  }
+
+  private boolean loadContent(String resName) {
+    InputStream inStream = getClass().getResourceAsStream(resName);
+    if (inStream != null) {
+      try {
+        ByteArrayOutputStream outFile = new ByteArrayOutputStream();
+        int readByte = -1;
+        while ((readByte = inStream.read()) >= 0)
+          outFile.write(readByte);
+        data_ = outFile.toByteArray();
+        return true;
+      } catch (IOException e) { }
+    }
+    return false;
   }
 }

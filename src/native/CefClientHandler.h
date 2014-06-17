@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_addMessageRouter
+ * Signature: (Lorg/cef/browser/CefMessageRouter;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1addMessageRouter
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeContextMenuHandler
  * Signature: (Lorg/cef/handler/CefContextMenuHandler;)V
  */
@@ -105,10 +113,10 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeLoadHandle
 
 /*
  * Class:     org_cef_handler_CefClientHandler
- * Method:    N_removeMessageRouterHandler
- * Signature: (Lorg/cef/handler/CefMessageRouterHandler;)V
+ * Method:    N_removeMessageRouter
+ * Signature: (Lorg/cef/browser/CefMessageRouter;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouterHandler
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeMessageRouter
   (JNIEnv *, jobject, jobject);
 
 /*

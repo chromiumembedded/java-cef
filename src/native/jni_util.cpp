@@ -264,6 +264,34 @@ void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
   }
 }
 
+CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig) {
+  CefMessageRouterConfig config;
+
+  if (jConfig == NULL)
+    return config;
+  jclass cls =
+      env->FindClass("org/cef/browser/CefMessageRouter$CefMessageRouterConfig");
+  if (cls == NULL)
+    return config;
+
+  GetJNIFieldString(env, cls, jConfig, "jsQueryFunction",
+      &config.js_query_function);
+  GetJNIFieldString(env, cls, jConfig, "jsCancelFunction",
+      &config.js_cancel_function);
+  return config;
+}
+
+CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env, jobject jRouter) {
+  jobject jrouterConfig = NULL;
+  JNI_CALL_METHOD(env,
+                  jRouter,
+                  "getMessageRouterConfig",
+                  "()Lorg/cef/browser/CefMessageRouter$CefMessageRouterConfig;",
+                  Object,
+                  jrouterConfig);
+  return GetJNIMessageRouterConfig(env, jrouterConfig);
+}
+
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
   jobject jerrorCode = NULL;
   switch (errorCode) {
@@ -576,6 +604,18 @@ jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
     return NULL;
   CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
   return client->getBrowser(browser);
+}
+
+jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler) {
+    jobject jbrowsers = NULL;
+  JNI_CALL_METHOD(env, jclientHandler,
+                  "getAllBrowser",
+                  "()[Ljava/lang/Object;",
+                  Object,
+                  jbrowsers);
+  if(!jbrowsers)
+    return NULL;
+  return (jobjectArray)jbrowsers;
 }
 
 jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname) {

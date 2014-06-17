@@ -207,7 +207,7 @@ public class CefApp extends CefAppHandlerAdapter {
 
         // (3) Shutdown sequence. Close all clients first.
         for (CefClient c : clients_) {
-          c.destroyAllBrowser();
+          c.dispose();
         }
         clients_.clear();
 

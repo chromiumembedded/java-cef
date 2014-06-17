@@ -19,6 +19,7 @@ import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
@@ -33,6 +34,7 @@ import tests.detailed.handler.GeolocationHandler;
 import tests.detailed.handler.JSDialogHandler;
 import tests.detailed.handler.KeyboardHandler;
 import tests.detailed.handler.MessageRouterHandler;
+import tests.detailed.handler.MessageRouterHandlerEx;
 import tests.detailed.handler.RequestHandler;
 import tests.detailed.ui.ControlPanel;
 import tests.detailed.ui.MenuBar;
@@ -126,8 +128,17 @@ public class MainFrame extends JFrame {
     client_.addGeolocationHandler(new GeolocationHandler(this));
     client_.addJSDialogHandler(new JSDialogHandler());
     client_.addKeyboardHandler(new KeyboardHandler());
-    client_.addMessageRouterHandler(new MessageRouterHandler());
     client_.addRequestHandler(new RequestHandler(this));
+
+    //    Beside the normal handler instances, we're registering a MessageRouter
+    //    as well. That gives us the opportunity to reply to JavaScript method
+    //    calls (JavaScript binding). We're using the default configuration, so
+    //    that the JavaScript binding methods "cefQuery" and "cefQueryCancel"
+    //    are used.
+    CefMessageRouter msgRouter = CefMessageRouter.create();
+    msgRouter.addHandler(new MessageRouterHandler(), true);
+    msgRouter.addHandler(new MessageRouterHandlerEx(client_), false);
+    client_.addMessageRouter(msgRouter);
 
     // 2.1) We're overriding CefDisplayHandler as nested anonymous class
     //      to update our address-field, the title of the panel as well
@@ -221,6 +232,7 @@ public class MainFrame extends JFrame {
 
     // Binding Test resource is cefclient/res/binding.html from the CEF binary distribution.
     menuBar.addBookmark("Binding Test", "http://www.magpcss.org/pub/jcef_binding_1750.html");
+    menuBar.addBookmark("Binding Test 2", "client://tests/binding_test2.html");
     menuBar.addBookmark("Download Test", "http://cefbuilds.com");
     menuBar.addBookmark("Geolocation Test","http://slides.html5rocks.com/#geolocation");
     menuBar.addBookmark("Login Test (username:pumpkin, password:pie)","http://www.colostate.edu/~ric/protect/your.html");

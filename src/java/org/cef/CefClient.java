@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
+import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
@@ -29,7 +30,6 @@ import org.cef.callback.CefFileDialogCallback;
 import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
-import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefQuotaCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
@@ -43,7 +43,6 @@ import org.cef.handler.CefJSDialogHandler;
 import org.cef.handler.CefKeyboardHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
-import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefRequestHandler;
 import org.cef.handler.CefResourceHandler;
@@ -66,7 +65,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefKeyboardHandler,
                                                            CefLifeSpanHandler,
                                                            CefLoadHandler,
-                                                           CefMessageRouterHandler,
                                                            CefRenderHandler,
                                                            CefRequestHandler {
   private HashMap<Integer,CefBrowser> browser_ = new HashMap<Integer,CefBrowser>();
@@ -81,7 +79,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefKeyboardHandler keyboardHandler_ = null;
   private CefLifeSpanHandler lifeSpanHandler_ = null;
   private CefLoadHandler loadHandler_ = null;
-  private CefMessageRouterHandler msgRouterHandler_ = null;
   private CefRequestHandler requestHandler_ = null;
 
   /**
@@ -95,7 +92,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  protected void finalize() throws Throwable {
+  public void dispose() {
     destroyAllBrowser();
     removeContextMenuHandler(this);
     removeDialogHandler(this);
@@ -108,10 +105,9 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     removeKeyboardHandler(this);
     removeLifeSpanHandler(this);
     removeLoadHandler(this);
-    removeMessageRouterHandler(this);
     removeRenderHandler(this);
     removeRequestHandler(this);
-    super.finalize();
+    super.dispose();
   }
 
 
@@ -152,6 +148,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   @Override
   protected CefBrowser getBrowser(int identifier) {
     return browser_.get(new Integer(identifier));
+  }
+
+  @Override
+  protected Object[] getAllBrowser() {
+    return browser_.values().toArray();
   }
 
   @Override
@@ -206,11 +207,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   protected CefLoadHandler getLoadHandler() {
-    return this;
-  }
-
-  @Override
-  protected CefMessageRouterHandler getMessageRouterHandler() {
     return this;
   }
 
@@ -671,35 +667,16 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
 
 
-  // CefMessageRouterHandler
+  // CefMessageRouter
 
-  public CefClient addMessageRouterHandler(CefMessageRouterHandler handler) {
-    if (msgRouterHandler_ == null)
-      msgRouterHandler_ = handler;
-    return this;
-  }
-
-  public void removeMessageRouterHandler() {
-    msgRouterHandler_ = null;
+  @Override
+  public synchronized void addMessageRouter(CefMessageRouter messageRouter) {
+    super.addMessageRouter(messageRouter);
   }
 
   @Override
-  public boolean onQuery(CefBrowser browser,
-                         long query_id,
-                         String request,
-                         boolean persistent,
-                         CefQueryCallback callback) {
-    boolean alreadyHandled = false;
-    if (msgRouterHandler_ != null && browser != null)
-      alreadyHandled = msgRouterHandler_.onQuery(browser, query_id, request, persistent, callback);
-    return alreadyHandled;
-  }
-
-  @Override
-  public void onQueryCanceled(CefBrowser browser,
-                              long query_id) {
-    if (msgRouterHandler_ != null && browser != null)
-      msgRouterHandler_.onQueryCanceled(browser, query_id);
+  public synchronized void removeMessageRouter(CefMessageRouter messageRouter) {
+    super.removeMessageRouter(messageRouter);
   }
 
 
