@@ -48,6 +48,7 @@ public class MenuBar extends JMenuBar {
     @Override
     public void visit(String string) {
       fileWriter_.write(string);
+      fileWriter_.close();
     }
   }
 
