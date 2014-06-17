@@ -225,6 +225,8 @@
           ],
           'sources': [
             'native/render_handler_gtk.cpp',
+            'native/signal_restore_posix.cpp',
+            'native/signal_restore_posix.h',
           ],
           'include_dirs': [
             '<(jdk_directory)/include',
@@ -284,6 +286,8 @@
           'sources': [
             'native/render_handler_mac.mm',
             'native/jni_util_mac.mm',
+            'native/signal_restore_posix.cpp',
+            'native/signal_restore_posix.h',
             'native/util_mac.h',
             'native/util_mac.mm',
           ],

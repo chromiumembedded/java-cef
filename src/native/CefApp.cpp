@@ -24,6 +24,10 @@
 #include "util_mac.h"
 #endif
 
+#if defined(OS_POSIX)
+#include "signal_restore_posix.h"
+#endif
+
 namespace {
 
 class ClientApp : public CefApp {
@@ -156,13 +160,26 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
 #endif
 
   CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));
-#if defined(OS_MACOSX)
-  return util_mac::CefInitializeOnMainThread(main_args, settings,
-                                              client_app.get()) ?
-      JNI_TRUE : JNI_FALSE;
+  bool res = false;
+
+#if defined(OS_POSIX)
+  // CefInitialize will reset signal handlers. Backup/restore the original
+  // signal handlers to avoid crashes in the JVM (see issue #41).
+  BackupSignalHandlers();
 #endif
-  return CefInitialize(main_args, settings, client_app.get(), NULL) ?
-      JNI_TRUE : JNI_FALSE;
+
+#if defined(OS_MACOSX)
+  res = util_mac::CefInitializeOnMainThread(main_args, settings,
+                                             client_app.get());
+#else
+  res = CefInitialize(main_args, settings, client_app.get(), NULL);
+#endif
+
+#if defined(OS_POSIX)
+  RestoreSignalHandlers();
+#endif
+
+  return res ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
