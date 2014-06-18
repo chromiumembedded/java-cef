@@ -191,7 +191,7 @@ public class MainFrame extends JFrame {
           errorMsg_ += "</head><body>";
           errorMsg_ += "<h1>" + errorCode + "</h1>";
           errorMsg_ += "<h3>Failed to load " + failedUrl + "</h3>";
-          errorMsg_ += "<p>" + errorText + "</p>";
+          errorMsg_ += "<p>" + (errorText == null ? "" : errorText) + "</p>";
           errorMsg_ += "</body></html>";
           browser.stopLoad();
         }
