@@ -19,8 +19,9 @@ USAGE
 -----
 
 1. Install a 64-bit version of the Oracle Java 7 runtime.
-2. Execute the compile.sh script to compile the MainFrame sample application.
-3. Execute the run.sh script to run the MainFrame sample application.
+2. Execute the run.sh script to run the MainFrame sample application.
+3. Optionally recompile the sample application and update jcef-tests.jar
+   by running the compile.sh script.
 
 Please visit the JCEF Website for additional usage information.
 

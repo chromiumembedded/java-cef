@@ -20,8 +20,9 @@ USAGE
 
 1. Install a 64-bit version of the Java 7 runtime.
 2. Add the Java bin folder to your system PATH.
-3. Execute the compile.bat script to compile the MainFrame sample application.
-4. Execute the run.bat script to run the MainFrame sample application.
+3. Execute the run.bat script to run the MainFrame sample application.
+4. Optionally recompile the sample application and update jcef-tests.jar
+   by running the compile.bat script.
 
 Please visit the JCEF Website for additional usage information.
 
