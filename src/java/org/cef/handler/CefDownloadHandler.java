@@ -10,8 +10,8 @@ import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
 
 /**
- * Class used to handle file downloads. The methods of this class will called
- * on the browser process UI thread.
+ * Implement this interface to handle file downloads. The methods of this class
+ * will called on the browser process UI thread.
  */
 public interface CefDownloadHandler {
   /**

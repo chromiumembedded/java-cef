@@ -8,7 +8,7 @@ import org.cef.callback.CefWebPluginInfoVisitor;
 import org.cef.callback.CefWebPluginUnstableCallback;
 
 /**
- *
+ * Class used to manage web plugins.
  */
 public abstract class CefWebPluginManager {
 
@@ -26,7 +26,7 @@ public abstract class CefWebPluginManager {
   /**
    * Visit web plugin information. Can be called on any thread in the browser
    * process.
-   * @param visitor
+   * @param visitor Called with plugin information when available.
    */
   public abstract void visitPlugins(CefWebPluginInfoVisitor visitor);
 

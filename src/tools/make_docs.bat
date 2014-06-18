@@ -10,7 +10,7 @@ cd ..\java
 set OUT_PATH="..\out\docs"
 
 if not exist %OUT_PATH% mkdir %OUT_PATH%
-javadoc -windowtitle "CEF3 Java API Docs" -footer "<center><a href="http://code.google.com/p/javachromiumembedded" target="_top">Chromium Embedded Framework (CEF)</a> Copyright &copy 2013 Marshall A. Greenblatt</center>" -nodeprecated -d %OUT_PATH% -link http://docs.oracle.com/javase/7/docs/api/ org.cef
+javadoc -windowtitle "CEF3 Java API Docs" -footer "<center><a href="http://code.google.com/p/javachromiumembedded" target="_top">Chromium Embedded Framework (CEF)</a> Copyright &copy 2013 Marshall A. Greenblatt</center>" -nodeprecated -d %OUT_PATH% -link http://docs.oracle.com/javase/7/docs/api/ -subpackages org.cef
 
 :end
 endlocal & set RC=%ERRORLEVEL%

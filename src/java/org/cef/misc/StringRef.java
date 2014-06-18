@@ -4,6 +4,9 @@
 
 package org.cef.misc;
 
+/**
+ * Helper class for passing String values by reference.
+ */
 public class StringRef {
   private String value_;
 

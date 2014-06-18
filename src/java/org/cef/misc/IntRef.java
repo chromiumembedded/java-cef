@@ -4,6 +4,9 @@
 
 package org.cef.misc;
 
+/**
+ * Helper class for passing int values by reference.
+ */
 public class IntRef {
   private int value_;
 

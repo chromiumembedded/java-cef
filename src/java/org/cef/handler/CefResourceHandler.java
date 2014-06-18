@@ -13,7 +13,7 @@ import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
 
 /**
- * Class used to implement a custom request handler interface. The methods of
+ * Implement this interface to handle custom resource requests. The methods of
  * this class will always be called on the IO thread.
  */
 public interface CefResourceHandler extends CefNative {

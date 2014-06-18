@@ -4,6 +4,9 @@
 
 package org.cef.misc;
 
+/**
+ * Helper class for passing boolean values by reference.
+ */
 public class BoolRef {
   private boolean value_;
 
