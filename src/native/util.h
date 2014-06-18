@@ -46,4 +46,9 @@
 #define REQUIRE_IO_THREAD()   ASSERT(CefCurrentlyOn(TID_IO));
 #define REQUIRE_FILE_THREAD() ASSERT(CefCurrentlyOn(TID_FILE));
 
+// Used to silence warnings about unused variables.
+#if !defined(UNUSED)
+#define UNUSED(x) ((void)(x))
+#endif
+
 #endif  // CEF_TESTS_CEFCLIENT_UTIL_H_

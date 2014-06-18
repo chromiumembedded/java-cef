@@ -5,6 +5,7 @@
 #include "CefCommandLine_N.h"
 #include "include/cef_command_line.h"
 #include "jni_util.h"
+#include "util.h"
 
 JNIEXPORT void JNICALL Java_org_cef_callback_CefCommandLine_1N_N_1reset
   (JNIEnv *env, jobject obj) {
@@ -77,6 +78,7 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefCommandLine_1N_N_1getSwitches
                       returnIgn,
                       jkey,
                       jvalue);
+      UNUSED(returnIgn);
     }
     return hashMap;
 }
@@ -120,6 +122,7 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefCommandLine_1N_N_1getArgument
       jstring argument = NewJNIString(env, *iter);
       jboolean succ = JNI_FALSE;
       JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/object;)Z", Boolean, succ, argument);
+      UNUSED(succ);
     }
     return vector;
 }

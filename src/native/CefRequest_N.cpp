@@ -5,6 +5,7 @@
 #include "CefRequest_N.h"
 #include "include/cef_request.h"
 #include "jni_util.h"
+#include "util.h"
 
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1CefRequest_1CTOR
   (JNIEnv *env, jobject obj) {
@@ -101,6 +102,7 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1GetHeaderMap
                     returnIgn,
                     jkey,
                     jvalue);
+    UNUSED(returnIgn);
   }
 }
 

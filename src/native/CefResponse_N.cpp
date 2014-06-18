@@ -98,6 +98,7 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefResponse_1N_N_1GetHeaderMap
                     returnIgn,
                     jkey,
                     jvalue);
+    UNUSED(returnIgn);
   }
 }
 

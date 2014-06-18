@@ -101,7 +101,7 @@ JNIEXPORT jint JNICALL Java_org_cef_network_CefPostDataElement_1N_N_1GetBytes
   jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
   if (!jbyte)
     return 0;
-  memset(jbyte, NULL, jsize);
+  memset(jbyte, 0, jsize);
 
   size_t readLen = dataElement->GetBytes(jsize, jbyte);
   env->ReleaseByteArrayElements(jbytes, jbyte, 0);

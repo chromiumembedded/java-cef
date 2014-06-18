@@ -80,11 +80,11 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
                                             CefRefPtr<CefRequest> request) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
-    return false;
+    return NULL;
 
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
-    return false;
+    return NULL;
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jobject jhandler = NULL;
