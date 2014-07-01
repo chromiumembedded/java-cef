@@ -3,7 +3,7 @@
 // can be found in the LICENSE file.
 
 #ifndef CEF_TESTS_CEFCLIENT_DIALOG_HANDLER_H_
-#define CEF_TESTS_CEFCLIENT_Dialog_HANDLER_H_
+#define CEF_TESTS_CEFCLIENT_DIALOG_HANDLER_H_
 #pragma once
 
 #include <jni.h>
@@ -30,4 +30,4 @@ class DialogHandler : public CefDialogHandler {
   IMPLEMENT_REFCOUNTING(DialogHandler);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_Dialog_HANDLER_H_
+#endif  // CEF_TESTS_CEFCLIENT_DIALOG_HANDLER_H_
