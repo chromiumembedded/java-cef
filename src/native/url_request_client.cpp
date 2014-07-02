@@ -100,12 +100,12 @@ bool URLRequestClient::GetAuthCredentials(bool isProxy,
   jboolean jresult = JNI_FALSE;
   BEGIN_ENV(env)
 
-  jobject jcallback = NewJNIObject(env, "org/cef/callbacks/CefAuthCallback_N");
+  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefAuthCallback_N");
   SetCefForJNIObject<CefAuthCallback>(env, jcallback, callback, "CefAuthCallback");
 
   JNI_CALL_METHOD(env, jURLRequestClient_,
                   "getAuthCredentials",
-                  "(ZLjava/lang/String;ILjava/lang/String;Ljava/lang/String;Lorg/cef/callbacks/CefAuthCallback;)Z",
+                  "(ZLjava/lang/String;ILjava/lang/String;Ljava/lang/String;Lorg/cef/callback/CefAuthCallback;)Z",
                   Boolean,
                   jresult,
                   (isProxy ? JNI_TRUE : JNI_FALSE),

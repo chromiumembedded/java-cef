@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     org_cef_network_CefURLRequest_N
  * Method:    N_CefURLRequest_CTOR
- * Signature: (Lorg/cef/network/CefRequest;Lorg/cef/callbacks/CefURLRequestClient;)V
+ * Signature: (Lorg/cef/network/CefRequest;Lorg/cef/callback/CefURLRequestClient;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1CTOR
   (JNIEnv *, jobject, jobject, jobject);
