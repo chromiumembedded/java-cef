@@ -35,6 +35,8 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
 
 void CefQuitMessageLoopOnMainThread();
 
+void SetVisibility(CefWindowHandle handle, bool isVisible);
+
 }  // namespace util_mac
 
 #endif  // CEF_TESTS_CEFCLIENT_UTIL_MAC_H_

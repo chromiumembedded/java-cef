@@ -196,4 +196,14 @@ void CefQuitMessageLoopOnMainThread() {
                                        withObject:nil
                                     waitUntilDone:YES];
 }
+
+void SetVisibility(CefWindowHandle handle, bool isVisible) {
+  bool isHidden = [handle isHidden];
+  if (isHidden == isVisible) {
+    [handle setHidden:!isVisible];
+    [handle needsDisplay];
+    [[handle superview] display];
+  }
+}
+
 }  // namespace util_mac

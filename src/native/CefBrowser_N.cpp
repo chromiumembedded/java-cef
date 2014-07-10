@@ -383,6 +383,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility
   (JNIEnv *env, jobject obj, jboolean visible) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+
+#if defined(OS_MACOSX)
+  if (!browser->GetHost()->IsWindowRenderingDisabled()) {
+    util_mac::SetVisibility(browser->GetHost()->GetWindowHandle(), visible != JNI_FALSE);
+  }
+#endif
   browser->GetHost()->SetWindowVisibility(visible != JNI_FALSE);
 }
 

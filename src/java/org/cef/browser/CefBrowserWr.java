@@ -11,6 +11,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
@@ -113,6 +115,14 @@ class CefBrowserWr extends CefBrowser_N {
       @Override
       public void focusGained(FocusEvent e) {
         setFocus(true);
+      }
+    });
+    canvas_.addHierarchyListener(new HierarchyListener() {
+      @Override
+      public void hierarchyChanged(HierarchyEvent e) {
+        if( (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 ) {
+          setWindowVisibility(e.getChanged().isVisible());
+        }
       }
     });
   }
