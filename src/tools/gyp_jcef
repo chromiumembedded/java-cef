@@ -9,6 +9,7 @@
 # is invoked by Chromium beyond what can be done in the gclient hooks.
 
 from file_util import *
+from gclient_util import *
 import glob
 import os
 import shlex
@@ -131,6 +132,11 @@ if __name__ == '__main__':
   syntax_check = os.environ.get('CHROMIUM_GYP_SYNTAX_CHECK')
   if syntax_check and int(syntax_check):
     args.append('--check')
+
+  print "\nGenerating JCEF version header file..."
+  gyper = [ 'python', 'tools/make_version_header.py',
+            '--header', 'native/jcef_version.h' ]
+  RunAction(jcef_dir, gyper)
 
   print 'Updating projects from gyp files...'
   sys.stdout.flush()

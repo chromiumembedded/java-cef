@@ -9,11 +9,13 @@
 #include "include/cef_app.h"
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
+#include "include/cef_version.h"
 #include "browser_process_handler.h"
 #include "client_handler.h"
+#include "jcef_version.h"
+#include "jni_util.h"
 #include "render_handler.h"
 #include "scheme_handler_factory.h"
-#include "jni_util.h"
 #include "util.h"
 
 #if defined(OS_LINUX)
@@ -194,6 +196,21 @@ JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
   (JNIEnv *env, jobject) {
   CefDoMessageLoopWork();
+}
+
+JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1GetVersion
+  (JNIEnv *env, jobject obj) {
+  return NewJNIObject(env,
+                      "org/cef/CefApp$CefVersion",
+                      "(Lorg/cef/CefApp;IIIIIII)V",
+                      obj,
+                      JCEF_REVISION,
+                      cef_version_info(0),  // CEF_VERSION_MAJOR
+                      cef_version_info(1),  // CEF_REVISION
+                      cef_version_info(2),  // CHROME_VERSION_MAJOR
+                      cef_version_info(3),  // CHROME_VERSION_MINOR
+                      cef_version_info(4),  // CHROME_VERSION_BUILD
+                      cef_version_info(5)); // CHROME_VERSION_PATCH
 }
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory

@@ -118,6 +118,7 @@
         'native/focus_handler.h',
         'native/geolocation_handler.cpp',
         'native/geolocation_handler.h',
+        'native/jcef_version.h',
         'native/jni_util.h',
         'native/jni_util.cpp',
         'native/jsdialog_handler.cpp',

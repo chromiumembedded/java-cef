@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.cef.CefApp;
+import org.cef.CefApp.CefVersion;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
@@ -101,6 +102,8 @@ public class MainFrame extends JFrame {
     //    chromium or CEF related switches/attributes in
     //    the native world.
     CefApp myApp = CefApp.getInstance(args);
+    CefVersion version = myApp.getVersion();
+    System.out.println("Using:\n" + version);
 
     //    We're registering our own AppHandler because we want to
     //    add an own schemes (search:// and client://) and its corresponding

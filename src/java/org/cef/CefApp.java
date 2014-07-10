@@ -21,6 +21,59 @@ import org.cef.handler.CefAppHandlerAdapter;
  * Exposes static methods for managing the global CEF context.
  */
 public class CefApp extends CefAppHandlerAdapter {
+
+  public final class CefVersion {
+    public final int JCEF_REVISION;
+
+    public final int CEF_VERSION_MAJOR;
+    public final int CEF_REVISION;
+
+    public final int CHROME_VERSION_MAJOR;
+    public final int CHROME_VERSION_MINOR;
+    public final int CHROME_VERSION_BUILD;
+    public final int CHROME_VERSION_PATCH;
+
+    private CefVersion(int jcefRev, int cefMajor, int cefRev,
+                       int chrMajor, int chrMin, int chrBuild, int chrPatch) {
+      JCEF_REVISION = jcefRev;
+
+      CEF_VERSION_MAJOR = cefMajor;
+      CEF_REVISION = cefRev;
+
+      CHROME_VERSION_MAJOR = chrMajor;
+      CHROME_VERSION_MINOR = chrMin;
+      CHROME_VERSION_BUILD = chrBuild;
+      CHROME_VERSION_PATCH = chrPatch;
+    }
+
+    public String getJcefVersion() {
+      return CEF_VERSION_MAJOR
+          + "." + CHROME_VERSION_BUILD
+          + "." + CEF_REVISION
+          + "." + JCEF_REVISION;
+    }
+
+    public String getCefVersion() {
+      return CEF_VERSION_MAJOR
+          + "." + CHROME_VERSION_BUILD
+          + "." + CEF_REVISION;
+    }
+
+    public String getChromeVersion() {
+      return CHROME_VERSION_MAJOR
+          + "." + CHROME_VERSION_MINOR
+          + "." + CHROME_VERSION_BUILD
+          + "." + CHROME_VERSION_PATCH;
+    }
+
+    @Override
+    public String toString() {
+      return "JCEF Version = " + getJcefVersion() + "\n"
+          + "CEF Version = " + getCefVersion() + "\n"
+          + "Chromium Version = " + getChromeVersion();
+    }
+  }
+
   /**
    * According the singleton pattern, this attribute keeps
    * one single object of this class.
@@ -75,6 +128,15 @@ public class CefApp extends CefAppHandlerAdapter {
       self = new CefApp(args);
     }
     return self;
+  }
+
+  public final CefVersion getVersion() {
+    try {
+      return N_GetVersion();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return null;
   }
 
   /**
@@ -305,6 +367,7 @@ public class CefApp extends CefAppHandlerAdapter {
   private final native boolean N_Initialize(String pathToJavaDLL, CefAppHandler appHandler);
   private final native void N_Shutdown();
   private final native void N_DoMessageLoopWork();
+  private final native CefVersion N_GetVersion();
   private final native boolean N_RegisterSchemeHandlerFactory(String schemeName,
                                                               String domainName,
                                                               CefSchemeHandlerFactory factory);

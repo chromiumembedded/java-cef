@@ -1,33 +1,3 @@
-Java Chromium Embedded Framework (JCEF) Binary Distribution for Linux 32-bit
--------------------------------------------------------------------------------
-
-This distribution contains all components necessary to build and distribute a
-Java application using JCEF on the Linux platform. Please see the LICENSING
-section of this document for licensing terms and conditions.
-
-
-CONTENTS
---------
-
-bin         Contains Java archives, native library files and the MainFrame
-            sample application.
-
-docs        Contains documentation for the org.cef package.
-
-
-USAGE
------
-
-1. Install a 32-bit version of the Oracle Java 7 runtime.
-2. Execute the run.sh script to run the MainFrame sample application.
-3. Optionally recompile the sample application and update jcef-tests.jar
-   by running the compile.sh script.
-
-Please visit the JCEF Website for additional usage information.
-
-http://code.google.com/p/javachromiumembedded
-
-
 REDISTRIBUTION
 --------------
 
@@ -41,9 +11,9 @@ Required components:
 * Java archives
     jcef.jar
     gluegen-rt.jar
-    gluegen-rt-natives-linux-i586.jar
+    gluegen-rt-natives-linux-amd64.jar
     jogl-all.jar
-    jogl-all-natives-linux-i586.jar
+    jogl-all-natives-linux-amd64.jar
 
 * CEF JNI library
     libjcef.so
@@ -76,13 +46,3 @@ Optional components:
 * FFmpeg audio and video support
     libffmpegsumo.so
   Note: Without this component HTML5 audio and video will not function.
-
-
-LICENSING
----------
-
-The JCEF project is BSD licensed. Please read the LICENSE.txt files included with
-this binary distribution for licensing terms and conditions. Other software
-included in this distribution is provided under other licenses. Please visit
-"about:credits" in a CEF-based application for complete Chromium and third-party
-licensing information.

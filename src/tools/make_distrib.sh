@@ -8,6 +8,7 @@ if [ -z "$1" ]; then
 else
   cd ..
 
+  export DISTRIB_TARGET="$1"
   export DISTRIB_PATH="./binary_distrib/$1"
   export DISTRIB_BIN_PATH="$DISTRIB_PATH/bin"
   export DISTRIB_DOCS_PATH="$DISTRIB_PATH/docs"
@@ -16,6 +17,7 @@ else
   export SOURCE_PATH="./java"
   export JOGAMP_PATH="./third_party/jogamp"
   export TOOLS_DISTRIB_PATH="./tools/distrib/$1"
+  export EXCLUDE_FILE="./tools/distrib/EXCLUDE_FILES.txt"
 
   if [ ! -d "$DISTRIB_BIN_PATH" ]; then
     mkdir -p "$DISTRIB_BIN_PATH"
@@ -29,10 +31,13 @@ else
   # Copy documentation to the docs directory.
   cp -rf $OUT_DOCS_PATH $DISTRIB_DOCS_PATH
 
+  # Create README.txt
+  python tools/make_readme.py --output-dir $DISTRIB_PATH/ --target $DISTRIB_TARGET
+
   # Copy miscellaneous files to the root directory.
   cp -f ./LICENSE.txt $DISTRIB_PATH
   cp -f $JOGAMP_PATH/*.LICENSE.txt $DISTRIB_PATH
-  cp -f $TOOLS_DISTRIB_PATH/* $DISTRIB_PATH
+  rsync -a --exclude-from $EXCLUDE_FILE $TOOLS_DISTRIB_PATH/ $DISTRIB_PATH/
 
   if [ $1 == "macosx64" ]; then
     export OUT_BINARY_PATH="./xcodebuild/Release"

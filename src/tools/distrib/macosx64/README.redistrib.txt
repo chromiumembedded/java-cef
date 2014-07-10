@@ -1,34 +1,3 @@
-Java Chromium Embedded Framework (JCEF) Binary Distribution for Mac OS X 64-bit
--------------------------------------------------------------------------------
-
-This distribution contains all components necessary to build and distribute a
-Java application using JCEF on the Mac OS X platform. Please see the LICENSING
-section of this document for licensing terms and conditions.
-
-
-CONTENTS
---------
-
-bin         Contains the jcef_app whose contents include Java archives and
-            native library files.
-
-docs        Contains documentation for the org.cef package.
-
-tests       Contains the MainFrame sample application.
-
-USAGE
------
-
-1. Install a 64-bit version of the Oracle Java 7 runtime.
-2. Launch jcef_app to run the MainFrame sample application.
-3. Optionally recompile the sample application and update jcef-tests.jar
-   in the jcef_app bundle by running the compile.sh script.
-
-Please visit the JCEF Website for additional usage information.
-
-http://code.google.com/p/javachromiumembedded
-
-
 REDISTRIBUTION
 --------------
 
@@ -127,13 +96,3 @@ Optional components:
 * FFmpeg audio and video support
     Chromium Embedded Framework.framework/Libraries/ffmpegsumo.so
   Note: Without this component HTML5 audio and video will not function.
-
-
-LICENSING
----------
-
-The JCEF project is BSD licensed. Please read the LICENSE.txt files included with
-this binary distribution for licensing terms and conditions. Other software
-included in this distribution is provided under other licenses. Please visit
-"about:credits" in a CEF-based application for complete Chromium and third-party
-licensing information.

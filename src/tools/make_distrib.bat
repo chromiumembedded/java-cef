@@ -12,7 +12,7 @@ echo ERROR: Please specify a target platform: win32 or win64
 set ERRORLEVEL=1
 goto end
 )
-
+set DISTRIB_TARGET="%1"
 set DISTRIB_PATH=".\binary_distrib\%1"
 set DISTRIB_BIN_PATH="%DISTRIB_PATH%\bin"
 set DISTRIB_DOCS_PATH="%DISTRIB_PATH%\docs"
@@ -65,10 +65,14 @@ xcopy /sfy %OUT_PATH%\Release\*.pak %DISTRIB_LIB_PATH%
 :: Copy documentation to the docs directory.
 xcopy /sfy %OUT_DOCS_PATH%\* %DISTRIB_DOCS_PATH%\
 
+:: Create README.txt
+call python.bat tools\make_readme.py --output-dir %DISTRIB_PATH%\ --target %DISTRIB_TARGET%
+
 :: Copy miscellaneous files to the root directory.
 copy .\LICENSE.txt %DISTRIB_PATH%
 xcopy /sfy %JOGAMP_PATH%\*.LICENSE.txt %DISTRIB_PATH%
-xcopy /sfy %TOOLS_DISTRIB_PATH%\* %DISTRIB_PATH%
+:: Cannot use a variable substitution for /exclude because otherwise xcopy will fail.
+xcopy /sfy %TOOLS_DISTRIB_PATH%\* %DISTRIB_PATH% /exclude:.\tools\distrib\EXCLUDE_FILES.txt
 
 :end
 endlocal & set RC=%ERRORLEVEL%
