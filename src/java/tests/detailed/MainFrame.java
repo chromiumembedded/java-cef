@@ -72,8 +72,8 @@ public class MainFrame extends JFrame {
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        frame.dispose();
         CefApp.getInstance().dispose();
+        frame.dispose();
 
         new Timer(3000, new ActionListener() {
           @Override
