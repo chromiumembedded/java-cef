@@ -134,7 +134,7 @@ std::string GetHelperPath(const std::string& module_dir) {
 
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
-  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler) {
+  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler, jboolean osrEnabled) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -155,6 +155,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
   CefString(&settings.browser_subprocess_path) = GetHelperPath(module_dir);
 
   settings.no_sandbox = true;
+  settings.windowless_rendering_enabled = (osrEnabled != JNI_FALSE);
 
 #if defined(OS_LINUX)
   CefString(&settings.resources_dir_path) = module_dir;

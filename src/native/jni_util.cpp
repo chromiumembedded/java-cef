@@ -569,7 +569,7 @@ jobjectArray NewJNIRectArray(JNIEnv* env,
 }
 
 bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y) {
-  jclass cls = env->FindClass("java/awt/Rectangle");
+  jclass cls = env->FindClass("java/awt/Point");
   if (!cls)
     return false;
 

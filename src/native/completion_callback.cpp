@@ -2,21 +2,21 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "completion_handler.h"
+#include "completion_callback.h"
 
 #include "jni_util.h"
 #include "util.h"
 
-CompletionHandler::CompletionHandler(JNIEnv* env, jobject jhandler) {
+CompletionCallback::CompletionCallback(JNIEnv* env, jobject jhandler) {
   jhandler_ = env->NewGlobalRef(jhandler);
 }
 
-CompletionHandler::~CompletionHandler() {
+CompletionCallback::~CompletionCallback() {
   JNIEnv* env = GetJNIEnv();
   env->DeleteGlobalRef(jhandler_);
 }
 
-void CompletionHandler::OnComplete() {
+void CompletionCallback::OnComplete() {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;

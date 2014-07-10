@@ -59,6 +59,7 @@ copy %OUT_BINARY_PATH%\ffmpegsumo.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\icudt.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\jcef.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\jcef_helper.exe %DISTRIB_LIB_PATH%
+copy %OUT_BINARY_PATH%\icudtl.dat %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\libcef.dll %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_PATH%\Release\*.pak %DISTRIB_LIB_PATH%
 

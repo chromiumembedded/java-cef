@@ -86,6 +86,7 @@ public class CefApp extends CefAppHandlerAdapter {
   private final Condition cefShutdown = lock.newCondition();
   private final Condition cefShutdownFinished = lock.newCondition();
   private boolean isInitialized_ = false;
+  private final boolean osrSupportEnabled_;
 
   /**
    * To get an instance of this class, use the method
@@ -96,10 +97,10 @@ public class CefApp extends CefAppHandlerAdapter {
    * 
    * @throws UnsatisfiedLinkError
    */
-  private CefApp(String [] args) throws UnsatisfiedLinkError {
+  private CefApp(String [] args, boolean enableOsr) throws UnsatisfiedLinkError {
     super(args);
+    osrSupportEnabled_ = enableOsr;
     if (OS.isWindows()) {
-      System.loadLibrary("icudt");
       System.loadLibrary("libcef");
     } else if (OS.isLinux()) {
       System.loadLibrary("cef");
@@ -120,12 +121,21 @@ public class CefApp extends CefAppHandlerAdapter {
    * @throws UnsatisfiedLinkError
    */
   public static synchronized CefApp getInstance() throws UnsatisfiedLinkError {
-     return getInstance(null);
+     return getInstance(null, false);
   }
 
   public static synchronized CefApp getInstance(String [] args) throws UnsatisfiedLinkError {
+    return getInstance(args, false);
+  }
+
+  public static synchronized CefApp getInstance(boolean enableOsr) throws UnsatisfiedLinkError {
+    return getInstance(null, enableOsr);
+  }
+
+  public static synchronized CefApp getInstance(String [] args, boolean enableOsr)
+                                                    throws UnsatisfiedLinkError {
     if (self == null) {
-      self = new CefApp(args);
+      self = new CefApp(args, enableOsr);
     }
     return self;
   }
@@ -300,7 +310,8 @@ public class CefApp extends CefAppHandlerAdapter {
           String library_path = getJcefLibPath();
           System.out.println("initialize on " + Thread.currentThread() +
                              " with library path " + library_path);
-          isInitialized_ = N_Initialize(library_path, appHandler_);
+          isInitialized_ =
+              N_Initialize(library_path, appHandler_, osrSupportEnabled_);
         }
       });
     } catch (Exception e) {
@@ -364,7 +375,9 @@ public class CefApp extends CefAppHandlerAdapter {
     return library_path;
   }
 
-  private final native boolean N_Initialize(String pathToJavaDLL, CefAppHandler appHandler);
+  private final native boolean N_Initialize(String pathToJavaDLL,
+                                            CefAppHandler appHandler,
+                                            boolean enableOsr);
   private final native void N_Shutdown();
   private final native void N_DoMessageLoopWork();
   private final native CefVersion N_GetVersion();

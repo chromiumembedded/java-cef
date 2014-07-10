@@ -162,8 +162,8 @@ jboolean create(JNIEnv* env,
   } else
 #endif
   {
-    windowInfo.SetAsOffScreen((CefWindowHandle)windowHandle);
-    windowInfo.SetTransparentPainting(transparent);
+    windowInfo.SetAsWindowless((CefWindowHandle)windowHandle,
+                               (transparent != JNI_FALSE));
   }
   CefBrowserSettings settings;
   CefRefPtr<CefBrowser> browserObj;
@@ -360,13 +360,6 @@ JNIEXPORT jstring JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetURL
   return NewJNIString(env, browser->GetMainFrame()->GetURL());
 }
 
-JNIEXPORT
-void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ParentWindowWillClose
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->ParentWindowWillClose();
-}
-
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
@@ -385,6 +378,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
   } else {
     browser->GetHost()->SetFocus(enable != JNI_FALSE);
   }
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility
+  (JNIEnv *env, jobject obj, jboolean visible) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->SetWindowVisibility(visible != JNI_FALSE);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel
@@ -771,4 +770,74 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent
     deltaY = delta;
 
   browser->GetHost()->SendMouseWheelEvent(cef_event, deltaX, deltaY);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
+  (JNIEnv *env, jobject obj, jobject jdragData, jobject pos, jint  jmodifiers,
+   jint allowedOps) {
+  CefRefPtr<CefDragData> drag_data =
+      GetCefFromJNIObject<CefDragData>(env, jdragData, "CefDragData");
+  if (!drag_data.get())
+    return;
+  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  if (!cls)
+    return;
+
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDragEnter(drag_data, cef_event, 
+      (CefBrowserHost::DragOperationsMask)allowedOps);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver
+  (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers, jint allowedOps) {
+  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  if (!cls)
+    return;
+    
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDragOver(cef_event,
+      (CefBrowserHost::DragOperationsMask)allowedOps);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave
+  (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDragLeave();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop
+  (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers) {
+  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  if (!cls)
+    return;
+    
+  CefMouseEvent cef_event;
+  GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
+  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragTargetDrop(cef_event);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceEndedAt
+  (JNIEnv *env, jobject obj, jobject pos, jint operation) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  int x, y;
+  GetJNIPoint(env, pos, &x, &y);
+  browser->GetHost()->DragSourceEndedAt(x, y,
+      (CefBrowserHost::DragOperationsMask)operation);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDragEnded
+  (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->DragSourceSystemDragEnded();
 }

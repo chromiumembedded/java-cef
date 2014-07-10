@@ -19,6 +19,8 @@ jcef_app.app/
         Resources/
           cef.pak, devtools_resources.pak <= non-localized resources and strings
           en.lproj/, ... <= locale-specific resources and strings
+          icudtl.dat <= unicode support
+          Info.plist
       libplugin_carbon_interpose.dylib <= plugin support library
       jcef Helper.app/
         Contents/
@@ -75,6 +77,9 @@ Required components:
 
 * CEF JNI library
     libjcef.dylib
+
+* Unicode support
+    icudtl.dat
 
 Optional components:
 

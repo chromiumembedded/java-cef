@@ -101,7 +101,7 @@ public class MainFrame extends JFrame {
     //    application arguments to it, if you want to handle any
     //    chromium or CEF related switches/attributes in
     //    the native world.
-    CefApp myApp = CefApp.getInstance(args);
+    CefApp myApp = CefApp.getInstance(args, osrEnabled);
     CefVersion version = myApp.getVersion();
     System.out.println("Using:\n" + version);
 

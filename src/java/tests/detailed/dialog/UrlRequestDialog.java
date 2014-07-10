@@ -176,11 +176,8 @@ public class UrlRequestDialog extends JDialog {
     addRequestFlag(flagsPanel,
         "Allow cached credentials",
         CefUrlRequestFlags.UR_FLAG_ALLOW_CACHED_CREDENTIALS,
-        "If set user name, password, and cookies may be sent with the request", false);
-    addRequestFlag(flagsPanel,
-        "Allow cookies",
-        CefUrlRequestFlags.UR_FLAG_ALLOW_COOKIES,
-        "If set cookies may be sent with the request and saved from the response", false);
+        "If set user name, password, and cookies may be sent with the request, " +
+        "and cookies may be saved from the response.", false);
     addRequestFlag(flagsPanel, "Report Upload Progress",
         CefUrlRequestFlags.UR_FLAG_REPORT_UPLOAD_PROGRESS, 
         "If set upload progress events will be generated when a request has a body", false);

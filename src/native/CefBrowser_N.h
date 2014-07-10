@@ -185,14 +185,6 @@ JNIEXPORT jstring JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetURL
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
- * Method:    N_ParentWindowWillClose
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ParentWindowWillClose
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_Close
  * Signature: ()V
  */
@@ -205,6 +197,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close
  * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_SetWindowVisibility
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility
   (JNIEnv *, jobject, jboolean);
 
 /*
@@ -310,6 +310,54 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragTargetDragEnter
+ * Signature: (Lorg/cef/callback/CefDragData;Ljava/awt/Point;II)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
+  (JNIEnv *, jobject, jobject, jobject, jint, jint);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragTargetDragOver
+ * Signature: (Ljava/awt/Point;II)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver
+  (JNIEnv *, jobject, jobject, jint, jint);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragTargetDragLeave
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragTargetDrop
+ * Signature: (Ljava/awt/Point;I)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop
+  (JNIEnv *, jobject, jobject, jint);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragSourceEndedAt
+ * Signature: (Ljava/awt/Point;I)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceEndedAt
+  (JNIEnv *, jobject, jobject, jint);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_DragSourceSystemDragEnded
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDragEnded
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

@@ -179,6 +179,13 @@ public interface CefBrowser {
   public void setFocus(boolean enable);
 
   /**
+   * Set whether the window containing the browser is visible
+   * (minimized/unminimized, app hidden/unhidden, etc). Only used on Mac OS X.
+   * @param visible
+   */
+  public void setWindowVisibility(boolean visible);
+
+  /**
    * Get the current zoom level. The default zoom level is 0.0.
    * @return The current zoom level.
    */

@@ -769,6 +769,32 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
       realHandler.onCursorChange(browser, cursorType);
   }
 
+  @Override
+  public boolean startDragging(CefBrowser browser,
+                               CefDragData dragData,
+                               int mask,
+                               int x,
+                               int y) {
+    if (browser == null)
+      return false;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      return realHandler.startDragging(browser, dragData, mask, x, y);
+    return false;
+  }
+
+  @Override
+  public void updateDragCursor(CefBrowser browser,
+                               int operation) {
+    if (browser == null)
+      return;
+
+    CefRenderHandler realHandler = browser.getRenderHandler();
+    if (realHandler != null)
+      realHandler.updateDragCursor(browser, operation);
+  }
+
 
   // CefRequestHandler
 

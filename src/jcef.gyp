@@ -100,8 +100,8 @@
         'native/browser_process_handler.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
-        'native/completion_handler.cpp',
-        'native/completion_handler.h',
+        'native/completion_callback.cpp',
+        'native/completion_callback.h',
         'native/context_menu_handler.cpp',
         'native/context_menu_handler.h',
         'native/cookie_visitor.cpp',
@@ -152,6 +152,8 @@
         'native/web_plugin_unstable_callback.h',
         'native/web_plugin_visitor.cpp',
         'native/web_plugin_visitor.h',
+        'native/write_handler.cpp',
+        'native/write_handler.h',
       ],
       'xcode_settings': {
         # Default path that will be changed by install_name_tool in dependent targets.
@@ -245,6 +247,7 @@
                 '-rf',
                 '<(cef_directory)/Resources/cef.pak',
                 '<(cef_directory)/Resources/devtools_resources.pak',
+                '<(cef_directory)/Resources/icudtl.dat',
                 '<(cef_directory)/Resources/locales',
                 '<(PRODUCT_DIR)',
               ],

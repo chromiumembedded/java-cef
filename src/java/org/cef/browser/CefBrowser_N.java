@@ -8,9 +8,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.Canvas;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Vector;
 
+import org.cef.callback.CefDragData;
 import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
@@ -283,6 +285,15 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   }
 
   @Override
+  public void setWindowVisibility(boolean visible) {
+    try {
+      N_SetWindowVisibility(visible);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override
   public double getZoomLevel() {
     try {
       return N_GetZoomLevel();
@@ -363,17 +374,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   }
 
   /**
-   * Notify CEF that the parent window will close.
-   */
-  protected final void parentWindowWillClose() {
-    try {
-      N_ParentWindowWillClose();
-    } catch(UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  /**
   * Notify that the browser was resized.
   * @param width The new width of the browser
   * @param height The new height of the browser
@@ -434,6 +434,104 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
   }
 
+
+  /**
+   * Call this method when the user drags the mouse into the web view (before
+   * calling DragTargetDragOver/DragTargetLeave/DragTargetDrop).
+   * |drag_data| should not contain file contents as this type of data is not
+   * allowed to be dragged into the web view. File contents can be removed using
+   * CefDragData::ResetFileContents (for example, if |drag_data| comes from
+   * CefRenderHandler::StartDragging).
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragTargetDragEnter(CefDragData dragData,
+                                           Point pos,
+                                           int modifiers,
+                                           int allowedOps) {
+    try {
+      N_DragTargetDragEnter(dragData, pos, modifiers, allowedOps);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+   * Call this method each time the mouse is moved across the web view during
+   * a drag operation (after calling DragTargetDragEnter and before calling
+   * DragTargetDragLeave/DragTargetDrop).
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragTargetDragOver(Point pos, int modifiers,
+                                          int allowedOps) {
+    try {
+      N_DragTargetDragOver(pos, modifiers, allowedOps);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+   * Call this method when the user drags the mouse out of the web view (after
+   * calling DragTargetDragEnter).
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragTargetDragLeave() {
+    try {
+      N_DragTargetDragLeave();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+   * Call this method when the user completes the drag operation by dropping
+   * the object onto the web view (after calling DragTargetDragEnter).
+   * The object being dropped is |drag_data|, given as an argument to
+   * the previous DragTargetDragEnter call.
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragTargetDrop(Point pos, int modifiers) {
+    try {
+      N_DragTargetDrop(pos, modifiers);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+   * Call this method when the drag operation started by a
+   * CefRenderHandler.startDragging call has ended either in a drop or
+   * by being cancelled. |x| and |y| are mouse coordinates relative to the
+   * upper-left corner of the view. If the web view is both the drag source
+   * and the drag target then all DragTarget* methods should be called before
+   * DragSource* methods.
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragSourceEndedAt(Point pos, int operation) {
+    try {
+      N_DragSourceEndedAt(pos, operation);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  /**
+   * Call this method when the drag operation started by a
+   * CefRenderHandler.startDragging call has completed. This method may be
+   * called immediately without first calling DragSourceEndedAt to cancel a
+   * drag operation. If the web view is both the drag source and the drag
+   * target then all DragTarget* methods should be called before DragSource*
+   * methods.
+   * This method is only used when window rendering is disabled.
+   */
+  protected final void dragSourceSystemDragEnded() {
+    try {
+      N_DragSourceSystemDragEnded();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
   private final native boolean N_CreateBrowser(CefClientHandler clientHandler,
                                                long windowHandle,
                                                String url,
@@ -465,9 +563,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private final native void N_LoadString(String val, String url);
   private final native void N_ExecuteJavaScript(String code, String url, int line);
   private final native String N_GetURL();
-  private final native void N_ParentWindowWillClose();
   private final native void N_Close();
   private final native void N_SetFocus(boolean enable);
+  private final native void N_SetWindowVisibility(boolean visible);
   private final native double N_GetZoomLevel();
   private final native void N_SetZoomLevel(double zoomLevel);
   private final native void N_RunFileDialog(FileDialogMode mode, String title, String defaultFileName, Vector<String> acceptTypes, CefRunFileDialogCallback callback);
@@ -481,4 +579,15 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private final native void N_SendKeyEvent(KeyEvent e);
   private final native void N_SendMouseEvent(MouseEvent e);
   private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
+  private final native void N_DragTargetDragEnter(CefDragData dragData,
+                                                  Point pos,
+                                                  int modifiers,
+                                                  int allowed_ops);
+  private final native void N_DragTargetDragOver(Point pos,
+                                                 int modifiers,
+                                                 int allowed_ops);
+  private final native void N_DragTargetDragLeave();
+  private final native void N_DragTargetDrop(Point pos, int modifiers);
+  private final native void N_DragSourceEndedAt(Point pos, int operation);
+  private final native void N_DragSourceSystemDragEnded();
 }

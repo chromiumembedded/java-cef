@@ -18,7 +18,7 @@ class DragHandler : public CefDragHandler {
   // CefDragHandler methods
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefDragData> dragData,
-                           DragOperationsMask mask) OVERRIDE;
+                           CefDragHandler::DragOperationsMask mask) OVERRIDE;
 
  protected:
   jobject jhandler_;

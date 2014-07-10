@@ -26,6 +26,7 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.SwingUtilities;
 
+import org.cef.callback.CefDragData;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefRenderHandler;
 
@@ -273,5 +274,20 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   @Override
   public void onCursorChange(CefBrowser browser, int cursorType) {
     canvas_.setCursor(new Cursor(cursorType));
+  }
+
+  @Override
+  public boolean startDragging(CefBrowser browser,
+                               CefDragData dragData,
+                               int mask,
+                               int x,
+                               int y) {
+    // TODO(JCEF) Prepared for DnD support using OSR mode.
+    return false;
+  }
+
+  @Override
+  public void updateDragCursor(CefBrowser browser, int operation) {
+    // TODO(JCEF) Prepared for DnD support using OSR mode.
   }
 }

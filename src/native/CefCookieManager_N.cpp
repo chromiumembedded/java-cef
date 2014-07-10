@@ -7,7 +7,7 @@
 #include "include/cef_task.h"
 #include "include/cef_runnable.h"
 
-#include "completion_handler.h"
+#include "completion_callback.h"
 #include "cookie_visitor.h"
 #include "jni_util.h"
 
@@ -135,8 +135,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_network_CefCookieManager_1N_N_1FlushStor
       GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
   if (!manager.get())
     return JNI_FALSE;
-  CefRefPtr<CefCompletionHandler> handler = new CompletionHandler(env, jhandler);
-  bool result = manager->FlushStore(handler);
+  CefRefPtr<CefCompletionCallback> callback = new CompletionCallback(env, jhandler);
+  bool result = manager->FlushStore(callback);
   return result ? JNI_TRUE : JNI_FALSE;
 }
 

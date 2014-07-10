@@ -1,10 +1,62 @@
 package org.cef.callback;
 
+import java.io.OutputStream;
 import java.util.Vector;
 
-class CefDragData_N extends CefNativeAdapter implements CefDragData {
+class CefDragData_N extends CefDragData implements CefNative {
+  // Used internally to store a pointer to the CEF object.
+  private long N_CefHandle = 0;
+
+  @Override
+  public void setNativeRef(String identifer, long nativeRef) {
+    N_CefHandle = nativeRef;
+  }
+
+  @Override
+  public long getNativeRef(String identifer) {
+    return N_CefHandle;
+  }
 
   CefDragData_N() {
+    super();
+  }
+
+  public static CefDragData createNative() {
+    try {
+      return CefDragData_N.N_Create();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  public CefDragData clone() {
+    try {
+      return N_Clone();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  public void dispose() {
+    try {
+      N_Dispose();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  @Override 
+  public boolean isReadOnly() {
+    try {
+      return N_IsReadOnly();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+      return true;
+    }
   }
 
   @Override
@@ -98,6 +150,16 @@ class CefDragData_N extends CefNativeAdapter implements CefDragData {
   }
 
   @Override
+  public int getFileContents(OutputStream writer) {
+    try {
+      return N_GetFileContents(writer);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return 0;
+  }
+
+  @Override
   public String getFileName() {
     try {
       return N_GetFileName();
@@ -117,6 +179,74 @@ class CefDragData_N extends CefNativeAdapter implements CefDragData {
     return false;
   }
 
+  public void setLinkURL(String url) {
+    try {
+      N_SetLinkURL(url);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void setLinkTitle(String title) {
+    try {
+      N_SetLinkTitle(title);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void setLinkMetadata(String data) {
+    try {
+      N_SetLinkMetadata(data);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void setFragmentText(String text) {
+    try {
+      N_SetFragmentText(text);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void setFragmentHtml(String html) {
+    try {
+      N_SetFragmentHtml(html);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void setFragmentBaseURL(String baseUrl) {
+    try {
+      N_SetFragmentBaseURL(baseUrl);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void resetFileContents() {
+    try {
+      N_ResetFileContents();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  public void addFile(String path, String displayName) {
+    try {
+      N_AddFile(path, displayName);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
+  private final native static CefDragData_N N_Create();
+  private final native CefDragData_N N_Clone();
+  private final native void N_Dispose();
+  private final native boolean N_IsReadOnly();
   private final native boolean N_IsLink();
   private final native boolean N_IsFragment();
   private final native boolean N_IsFile();
@@ -126,8 +256,17 @@ class CefDragData_N extends CefNativeAdapter implements CefDragData {
   private final native String N_GetFragmentText();
   private final native String N_GetFragmentHtml();
   private final native String N_GetFragmentBaseURL();
+  private final native int N_GetFileContents(OutputStream writer);
   private final native String N_GetFileName();
   private final native boolean N_GetFileNames(Vector<String> names);
+  private final native void N_SetLinkURL(String url);
+  private final native void N_SetLinkTitle(String title);
+  private final native void N_SetLinkMetadata(String data);
+  private final native void N_SetFragmentText(String text);
+  private final native void N_SetFragmentHtml(String html);
+  private final native void N_SetFragmentBaseURL(String baseUrl);
+  private final native void N_ResetFileContents();
+  private final native void N_AddFile(String path, String displayName);
 
   @Override
   public String toString() {

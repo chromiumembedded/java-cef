@@ -101,6 +101,53 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
 }
 
 
+bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefDragData> drag_data,
+                                  DragOperationsMask allowed_ops,
+                                  int x, int y) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jdragdata = NewJNIObject(env, "org/cef/callback/CefDragData_N");
+  if (!jdragdata)
+    return false;
+
+  SetCefForJNIObject(env, jdragdata, drag_data.get(), "CefDragData");
+
+  jboolean jresult = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "startDragging",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDragData;III)Z",
+                  Boolean,
+                  jresult,
+                  GetJNIBrowser(browser),
+                  jdragdata,
+                  (jint)allowed_ops,
+                  (jint)x,
+                  (jint)y);
+
+  bool result = (jresult != JNI_FALSE);
+  if (!result) {
+    // if result == false the native reference must be deleted
+    SetCefForJNIObject<CefDragData>(env, jdragdata, NULL, "CefDragData");
+  }
+  return result;
+}
+
+void RenderHandler::UpdateDragCursor(CefRefPtr<CefBrowser> browser,
+                                     DragOperation operation) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "updateDragCursor",
+                       "(Lorg/cef/browser/CefBrowser;I)V",
+                       GetJNIBrowser(browser),
+                       (jint)operation);
+}
+
 bool RenderHandler::GetViewRect(jobject browser, CefRect& rect) {
   JNIEnv* env = GetJNIEnv();
   if (!env)

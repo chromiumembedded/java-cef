@@ -168,15 +168,10 @@ public abstract class CefRequest {
     public static final int UR_FLAG_SKIP_CACHE = 1 << 0;
 
     /**
-     * If set user name, password, and cookies may be sent with the request.
+     * If set user name, password, and cookies may be sent with the request, and
+     * cookies may be saved from the response.
      */
     public static final int UR_FLAG_ALLOW_CACHED_CREDENTIALS  = 1 << 1;
-
-    /**
-     * If set cookies may be sent with the request and saved from the response.
-     * UR_FLAG_ALLOW_CACHED_CREDENTIALS must also be set.
-     */
-    public static final int UR_FLAG_ALLOW_COOKIES = 1 << 2;
 
     /**
      * If set upload progress events will be generated when a request has a body.

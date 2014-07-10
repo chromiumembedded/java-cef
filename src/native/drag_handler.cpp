@@ -19,7 +19,7 @@ DragHandler::~DragHandler() {
 
 bool DragHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> dragData,
-                             DragOperationsMask mask) {
+                             CefDragHandler::DragOperationsMask mask) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;

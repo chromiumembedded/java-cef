@@ -195,6 +195,16 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
   } \
 }
 
+#define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...) { \
+  if (env) {\
+    jclass cls = env->GetObjectClass(obj); \
+    jmethodID methodId = env->GetMethodID(cls, method, sig); \
+    if (methodId != NULL) { \
+      env->CallVoidMethod(obj, methodId, ##__VA_ARGS__); \
+    } \
+  } \
+}
+
 #define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...) { \
   if (env) {\
     jclass cls = env->GetObjectClass(obj); \

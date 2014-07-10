@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.nio.ByteBuffer;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefDragData;
 
 /**
  * An abstract adapter class for receiving render events. 
@@ -50,5 +51,18 @@ public abstract class CefRenderHandlerAdapter implements CefRenderHandler {
                       ByteBuffer buffer, 
                       int width, 
                       int height) {
+  }
+
+  @Override
+  public boolean startDragging(CefBrowser browser,
+                               CefDragData dragData,
+                               int mask,
+                               int x,
+                               int y) {
+    return false;
+  }
+
+  @Override
+  public void updateDragCursor(CefBrowser browser, int operation) {
   }
 }

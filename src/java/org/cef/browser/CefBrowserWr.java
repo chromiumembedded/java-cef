@@ -100,7 +100,6 @@ class CefBrowserWr extends CefBrowser_N {
 
       @Override
       public void removeNotify() {
-        parentWindowWillClose();
         super.removeNotify();
       }
     };

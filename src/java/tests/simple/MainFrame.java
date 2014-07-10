@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
     //     required native libraries, initializes CEF accordingly, starts a
     //     background task to handle CEF's message loop and takes care of
     //     shutting down CEF after disposing it.
-    cefApp_ = CefApp.getInstance();
+    cefApp_ = CefApp.getInstance(useOSR);
 
     // (2) JCEF can handle one to many browser instances simultaneous. These
     //     browser instances are logically grouped together by an instance of
