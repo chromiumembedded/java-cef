@@ -244,6 +244,10 @@ public class CefApp extends CefAppHandlerAdapter {
       if (!isAlive() && super.getState() == State.NEW) {
         lock.lock();
         try {
+          // Avoid a deadlock if called on the dispatcher thread.
+          if (SwingUtilities.isEventDispatchThread()) {
+            initialize();
+          }
           super.start();
           // start thread and wait until CEF is up and running
           cefInitialized.awaitUninterruptibly();
@@ -259,7 +263,9 @@ public class CefApp extends CefAppHandlerAdapter {
       lock.lock();
       try {
         // (1) Initialize native system.
-        initialize();
+        if (!isInitialized_) {
+          initialize();
+        }
         cefInitialized.signal();
 
         // (2) Handle message loop.
@@ -304,7 +310,7 @@ public class CefApp extends CefAppHandlerAdapter {
    */
   private final void initialize() {
     try {
-      SwingUtilities.invokeAndWait(new Runnable() {
+      Runnable r = new Runnable() {
         @Override
         public void run() {
           String library_path = getJcefLibPath();
@@ -313,7 +319,11 @@ public class CefApp extends CefAppHandlerAdapter {
           isInitialized_ =
               N_Initialize(library_path, appHandler_, osrSupportEnabled_);
         }
-      });
+      };
+      if (SwingUtilities.isEventDispatchThread())
+        r.run();
+      else
+        SwingUtilities.invokeAndWait(r);
     } catch (Exception e) {
       e.printStackTrace();
     }
