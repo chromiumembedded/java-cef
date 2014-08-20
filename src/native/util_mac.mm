@@ -144,6 +144,126 @@ NSCondition *g_lock_initialize = NULL;
 
 @end  // implementation CefHandler
 
+// Instead of adding CefBrowser as child of the windows main view, a content
+// view (CefBrowserContentView) is set between the main view and the
+// CefBrowser. Why?
+//
+// The CefBrowserContentView defines the viewable part of the browser view.
+// In most cases the content view has the same size as the browser view,
+// but for example if you add CefBrowser to a JScrollPane, you only want to
+// see the portion of the browser window you're scrolled to. In this case 
+// the sizes of the content view and the browser view differ.
+// 
+// With other words the CefBrowserContentView clips the CefBrowser to its
+// displayable content.
+//
+// +- - - - - - - - - - - - - - - - - - - - -+
+// |/   / CefBrowser/   /   /   /   /   /   /|
+//    +-------------------------+  /   /   / <--- invisible part of CefBrowser
+// |  | CefBrowserContentView   | /   /   /  |
+//   /|                         |/   /   /
+// |/ |                         |   /   /   /|
+//    |                       <------------------ visible part of CefBrowser
+// |  |                         | /   /   /  |
+//   /|                         |/   /   /
+// |/ |                         |   /   /   /|
+//    |                         |  /   /   /
+// |  +-------------------------+ /   /   /  |
+//   /   /   /   /   /   /   /   /   /   /
+// |/   /   /   /   /   /   /   /   /   /   /|
+//     /   /   /   /   /   /   /   /   /   / 
+// |  /   /   /   /   /   /   /   /   /   /  |
+// +- - - - - - - - - - - - - - - - - - - - -+
+@interface CefBrowserContentView : NSView {
+  CefRefPtr<CefBrowser> cefBrowser;
+}
+
+@property(readonly) BOOL isLiveResizing;
+
+-(void) addCefBrowser:(CefRefPtr<CefBrowser>)browser;
+-(void) removeCefBrowser;
+-(void) updateView:(NSDictionary*)dict;
+@end  // interface CefBrowserContentView
+
+@implementation CefBrowserContentView
+
+@synthesize isLiveResizing;
+
+-(id)initWithFrame:(NSRect)frameRect {
+  self = [super initWithFrame:frameRect];
+  cefBrowser = NULL;
+  return self;
+}
+
+-(void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  cefBrowser = NULL;
+  [super dealloc];
+}
+
+-(void) setFrame:(NSRect)frameRect {
+  // Instead of using the passed frame, get the visible rect from java because
+  // the passed frame rect doesn't contain the clipped view part. Otherwise
+  // we'll overlay some parts of the Java UI.
+  if (cefBrowser.get()) {
+    CefRefPtr<CefRenderHandler> renderer =
+        cefBrowser->GetHost()->GetClient()->GetRenderHandler();
+
+    CefRect rect;
+    renderer->GetViewRect(cefBrowser, rect);
+    util_mac::TranslateRect(self, rect);
+    frameRect = (NSRect){{rect.x, rect.y}, {rect.width, rect.height}};
+  }
+  [super setFrame:frameRect];
+}
+
+-(void) addCefBrowser:(CefRefPtr<CefBrowser>)browser {
+  cefBrowser = browser;
+  // Register for the start and end events of "liveResize" to avoid
+  // Java paint updates while someone is resizing the main window (e.g. by
+  // pulling with the mouse cursor) 
+  [[NSNotificationCenter defaultCenter] addObserver:self
+      selector:@selector(windowWillStartLiveResize:)
+      name:NSWindowWillStartLiveResizeNotification
+      object:[self window]];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+      selector:@selector(windowDidEndLiveResize:)
+      name:NSWindowDidEndLiveResizeNotification
+      object:[self window]];
+}
+
+-(void) removeCefBrowser {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  cefBrowser = NULL;
+  [self removeFromSuperview];
+}
+
+- (void)windowWillStartLiveResize:(NSNotification *)notification {
+  isLiveResizing = YES;
+}
+
+- (void)windowDidEndLiveResize:(NSNotification *)notification {
+  isLiveResizing = NO;
+  [self setFrame: [self frame]];
+}
+
+-(void) updateView:(NSDictionary*)dict {
+  NSRect contentRect = NSRectFromString([dict valueForKey:@"content"]);
+  NSRect browserRect = NSRectFromString([dict valueForKey:@"browser"]);
+
+  NSArray* childs = [self subviews];
+  for (NSView* child in childs) {
+    [child setFrame:browserRect];
+    [child setNeedsDisplay:YES];
+  }
+  [super setFrame:contentRect];
+  [self setNeedsDisplay:YES];
+}
+
+@end  // implementation CefBrowserContentView
+
+
 namespace util_mac {
 
 std::string GetAbsPath(const std::string& path) {
@@ -161,14 +281,32 @@ bool IsNSView(void* ptr) {
   return result;
 }
 
-CefWindowHandle GetParentView(CefWindowHandle childView) {
-  NSWindow* window = (NSWindow*)childView;
-  return (CefWindowHandle)[window contentView];
+CefWindowHandle CreateBrowserContentView(CefWindowHandle cefWindow,
+    CefRect& orig) {
+  NSWindow* window = (NSWindow*)cefWindow;
+  NSView* mainView = (CefWindowHandle)[window contentView];
+  TranslateRect(mainView, orig);
+  NSRect frame = {{orig.x,orig.y},{orig.width,orig.height}};
+
+  CefBrowserContentView* contentView =
+      [[CefBrowserContentView alloc] initWithFrame:frame];
+
+  [mainView addSubview:contentView];
+  [contentView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  [contentView setNeedsDisplay:YES];
+  [contentView release];
+
+  // Override origin bevore "orig" is returned because the new origin is
+  // relative to the created CefBrowserContentView object 
+  orig.x = 0;
+  orig.y = 0;
+  return contentView;
 }
 
 // translate java's window origin to Obj-C's window origin
 void TranslateRect(CefWindowHandle view, CefRect& orig) {
-  orig.y = [view bounds].size.height - orig.height - orig.y;
+  NSRect bounds = [[[view window] contentView] bounds];
+  orig.y = bounds.size.height - orig.height - orig.y;
 }
 
 bool CefInitializeOnMainThread(const CefMainArgs& args,
@@ -206,4 +344,45 @@ void SetVisibility(CefWindowHandle handle, bool isVisible) {
   }
 }
 
+void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return;
+  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+  CefBrowserContentView *browserImpl =
+      (CefBrowserContentView*)[handle superview];
+  [browserImpl addCefBrowser:browser];
+}
+
+void UpdateView(CefWindowHandle handle, CefRect contentRect,
+    CefRect browserRect) {
+  util_mac::TranslateRect(handle, contentRect);
+  CefBrowserContentView *browser = (CefBrowserContentView*)[handle superview];
+  browserRect.y = contentRect.height - browserRect.height - browserRect.y;
+
+  // Only update the view if nobody is currently resizing the main window.
+  // Otherwise the CefBrowser part may start flickering because there's a
+  // significant delay between the native window resize event and the java
+  // resize event
+  if (![browser isLiveResizing]) {
+    NSString *contentStr = [[NSString alloc] initWithFormat:@"{{%d,%d},{%d,%d}",
+        contentRect.x, contentRect.y, contentRect.width, contentRect.height];
+    NSString *browserStr = [[NSString alloc] initWithFormat:@"{{%d,%d},{%d,%d}",
+        browserRect.x, browserRect.y, browserRect.width, browserRect.height];
+    NSDictionary* dict =
+        [[NSDictionary alloc] initWithObjectsAndKeys:contentStr,@"content",
+                                                     browserStr,@"browser",
+                                                     nil];
+    [browser performSelectorOnMainThread:@selector(updateView:) withObject:dict
+        waitUntilDone:NO];
+  }
+}
+
+void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return;
+  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+  CefBrowserContentView *browserView =
+      (CefBrowserContentView*)[handle superview];
+  [browserView removeCefBrowser];
+}
 }  // namespace util_mac

@@ -26,8 +26,10 @@ std::string GetAbsPath(const std::string& path);
 // Returns true if |ptr| is an NSView instance.
 bool IsNSView(void* ptr);
 
-CefWindowHandle GetParentView(CefWindowHandle childView);
-void TranslateRect(CefWindowHandle view, CefRect& orig);
+CefWindowHandle CreateBrowserContentView(CefWindowHandle childView,
+                                         CefRect &orig);
+void TranslateRect(CefWindowHandle view,
+                   CefRect& orig);
 
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
@@ -35,8 +37,16 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
 
 void CefQuitMessageLoopOnMainThread();
 
-void SetVisibility(CefWindowHandle handle, bool isVisible);
+void SetVisibility(CefWindowHandle handle,
+                   bool isVisible);
 
+void AddCefBrowser(CefRefPtr<CefBrowser> browser);
+
+void UpdateView(CefWindowHandle handle,
+                CefRect contentRect,
+                CefRect browserRect);
+
+void RemoveCefBrowser(CefRefPtr<CefBrowser> browser);
 }  // namespace util_mac
 
 #endif  // CEF_TESTS_CEFCLIENT_UTIL_MAC_H_

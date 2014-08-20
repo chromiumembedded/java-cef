@@ -42,10 +42,7 @@ void DetachFromThread(bool *mustDetach);
     DetachFromThread(&__shouldDetach); \
   } \
 
-# if defined(OS_MACOSX)
-// Required for onscreen rendering ability on Mac OS X.
-void AddLayerToComponent(jobject parent, JNIEnv *env, CefWindowHandle child);
-#elif defined(OS_WIN)
+# if defined(OS_WIN)
 HWND GetHwndOfCanvas(jobject canvas, JNIEnv *env);
 #endif
 
@@ -182,7 +179,7 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 
 // Helper macros to call a method on the java side
 #define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...) { \
-  if (env) { \
+  if (env && obj) { \
     jclass cls = env->GetObjectClass(obj); \
     jmethodID methodId = env->GetMethodID(cls, method, sig); \
     if (methodId != NULL) { \
@@ -196,7 +193,7 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 }
 
 #define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...) { \
-  if (env) {\
+  if (env && obj) {\
     jclass cls = env->GetObjectClass(obj); \
     jmethodID methodId = env->GetMethodID(cls, method, sig); \
     if (methodId != NULL) { \
@@ -206,7 +203,7 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 }
 
 #define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...) { \
-  if (env) {\
+  if (env && obj) {\
     jclass cls = env->GetObjectClass(obj); \
     jmethodID methodId = env->GetMethodID(cls, method, sig); \
     if (methodId != NULL) { \

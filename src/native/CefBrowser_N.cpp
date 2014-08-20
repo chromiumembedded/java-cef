@@ -154,10 +154,10 @@ jboolean create(JNIEnv* env,
     RECT winRect = {0,0, rect.width, rect.height};
     windowInfo.SetAsChild(parent,winRect);
 #elif defined(OS_MACOSX)
-    CefWindowHandle parentView =
-        util_mac::GetParentView((CefWindowHandle)windowHandle);
-    util_mac::TranslateRect(parentView, rect);
-    windowInfo.SetAsChild(parentView, rect.x, rect.y, rect.width, rect.height);
+    CefWindowHandle browserContentView =
+        util_mac::CreateBrowserContentView((CefWindowHandle)windowHandle, rect);
+    windowInfo.SetAsChild(browserContentView, rect.x, rect.y, rect.width,
+        rect.height);
 #endif
   } else
 #endif
@@ -846,4 +846,20 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDra
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragSourceSystemDragEnded();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI
+  (JNIEnv *env, jobject obj, jobject jcontentRect, jobject jbrowserRect) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  CefRect contentRect = GetJNIRect(env, jcontentRect);
+#if defined(OS_MACOSX)
+  CefRect browserRect = GetJNIRect(env, jbrowserRect);
+  util_mac::UpdateView(browser->GetHost()->GetWindowHandle(), contentRect,
+      browserRect);
+#elif defined(OS_WIN)
+  HRGN contentRgn = CreateRectRgn(contentRect.x, contentRect.y,
+      contentRect.x + contentRect.width, contentRect.y + contentRect.height);
+  HWND hwnd = browser->GetHost()->GetWindowHandle();
+  SetWindowRgn(GetParent(hwnd), contentRgn, TRUE);
+#endif
 }

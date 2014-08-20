@@ -4,7 +4,6 @@
 
 package org.cef.browser.mac;
 
-import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.peer.ComponentPeer;
 import sun.lwawt.LWComponentPeer;
@@ -15,9 +14,8 @@ import org.cef.browser.CefBrowserWindow;
 
 public class CefBrowserWindowMac implements CefBrowserWindow {
   @Override
-  public long getWindowHandleOfCanvas(Canvas canvas) {
+  public long getWindowHandle(Component comp) {
     long result = 0;
-    Component comp = canvas;
     while (comp != null) {
       if (comp.isLightweight()) {
         comp = comp.getParent();

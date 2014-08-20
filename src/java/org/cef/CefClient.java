@@ -9,7 +9,6 @@ import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -690,22 +689,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     CefRenderHandler realHandler = browser.getRenderHandler();
     if (realHandler != null)
       return realHandler.getViewRect(browser);
-    
-    Rectangle tmp = browser.getUIComponent().getBounds();
-    if (OS.isMacintosh()) {
-      Container parent = browser.getUIComponent().getParent();
-      while (parent != null) {
-        Container next = parent.getParent();
-        if (next != null && next instanceof Window)
-          break;
-
-        Rectangle parentRect = parent.getBounds();
-        tmp.x += parentRect.x;
-        tmp.y += parentRect.y;
-        parent = next;
-      }
-    }
-    return tmp;
+    return new Rectangle(0,0,0,0);
   }
 
   @Override
@@ -716,9 +700,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     CefRenderHandler realHandler = browser.getRenderHandler();
     if (realHandler != null)
       return realHandler.getScreenPoint(browser,viewPoint);
-    Point screenPoint = browser.getUIComponent().getLocationOnScreen();
-    screenPoint.translate(viewPoint.x, viewPoint.y);
-    return screenPoint;
+    return new Point(0,0);
   }
 
   @Override

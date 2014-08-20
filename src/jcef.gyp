@@ -289,7 +289,6 @@
           'product_name': 'jcef',
           'sources': [
             'native/render_handler_mac.mm',
-            'native/jni_util_mac.mm',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
             'native/util_mac.h',

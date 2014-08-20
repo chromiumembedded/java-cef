@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_CreateBrowser
- * Signature: (Lorg/cef/handler/CefClientHandler;JLjava/lang/String;ZLjava/awt/Canvas;Lorg/cef/browser/CefRequestContext;)Z
+ * Signature: (Lorg/cef/handler/CefClientHandler;JLjava/lang/String;ZLjava/awt/Component;Lorg/cef/browser/CefRequestContext;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
   (JNIEnv *, jobject, jobject, jlong, jstring, jboolean, jobject, jobject);
@@ -18,7 +18,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_CreateDevTools
- * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefClientHandler;JZLjava/awt/Canvas;)Z
+ * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefClientHandler;JZLjava/awt/Component;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
   (JNIEnv *, jobject, jobject, jobject, jlong, jboolean, jobject);
@@ -358,6 +358,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceEndedAt
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDragEnded
   (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_UpdateUI
+ * Signature: (Ljava/awt/Rectangle;Ljava/awt/Rectangle;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI
+  (JNIEnv *, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }
