@@ -15,9 +15,11 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import org.cef.CefApp;
+import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.handler.CefAppHandlerAdapter;
 
 /**
  * This is a simple example application using JCEF.
@@ -55,6 +57,14 @@ public class MainFrame extends JFrame {
     //     required native libraries, initializes CEF accordingly, starts a
     //     background task to handle CEF's message loop and takes care of
     //     shutting down CEF after disposing it.
+    CefApp.addAppHandler(new CefAppHandlerAdapter(null) {
+      @Override
+      public void stateHasChanged(org.cef.CefApp.CefAppState state) {
+        // Shutdown the app if the native CEF part is terminated
+        if (state == CefAppState.TERMINATED)
+          System.exit(0);
+      }
+    });
     cefApp_ = CefApp.getInstance(useOSR);
 
     // (2) JCEF can handle one to many browser instances simultaneous. These
@@ -117,7 +127,7 @@ public class MainFrame extends JFrame {
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        cefApp_.dispose();
+        CefApp.getInstance().dispose();
         dispose();
       }
     });

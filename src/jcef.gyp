@@ -98,6 +98,8 @@
         'native/CefWebPluginManager_N.h',
         'native/browser_process_handler.cpp',
         'native/browser_process_handler.h',
+        'native/client_app.cpp',
+        'native/client_app.h',
         'native/client_handler.cpp',
         'native/client_handler.h',
         'native/completion_callback.cpp',

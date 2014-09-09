@@ -75,18 +75,62 @@ public class CefApp extends CefAppHandlerAdapter {
   }
 
   /**
+   * The CefAppState gives you a hint if the CefApp is already usable or not usable
+   * any more. See values for details.
+   */
+  public enum CefAppState {
+    /**
+     * No CefApp instance was created yet. Call getInstance() to create a new
+     * one.
+     */
+    NONE,
+
+    /**
+     * CefApp is new created but not initialized yet. No CefClient and no
+     * CefBrowser was created until now.
+     */
+    NEW,
+
+    /**
+     * CefApp is in its initializing process. Please wait until initializing is
+     * finished.
+     */
+    INITIALIZING,
+
+    /**
+     * CefApp is up and running. At least one CefClient was created and the
+     * message loop is running. You can use all classes and methods of JCEF now.
+     */
+    INITIALIZED,
+
+    /**
+     * CefApp is in its shutdown process. All CefClients and CefBrowser 
+     * instances will be disposed. No new CefClient or CefBrowser is allowed to
+     * be created. The message loop will be performed until all CefClients and
+     * all CefBrowsers are disposed completely.
+     */
+    SHUTTING_DOWN,
+
+    /**
+     * CefApp is terminated and can't be used any more. You can shutdown the
+     * application safely now.
+     */
+    TERMINATED
+  }
+
+  /**
    * According the singleton pattern, this attribute keeps
    * one single object of this class.
    */
   private static CefApp self = null;
   private static CefAppHandler appHandler_ = null;
+  private static CefAppState state_ = CefAppState.NONE;
   private HashSet<CefClient> clients_ = new HashSet<CefClient>();
   private final Lock lock = new ReentrantLock();
   private final Condition cefInitialized = lock.newCondition();
   private final Condition cefShutdown = lock.newCondition();
-  private final Condition cefShutdownFinished = lock.newCondition();
-  private boolean isInitialized_ = false;
   private final boolean osrSupportEnabled_;
+  private boolean executeDefaultShutdown_ = false;
 
   /**
    * To get an instance of this class, use the method
@@ -109,9 +153,57 @@ public class CefApp extends CefAppHandlerAdapter {
     if (appHandler_ == null) {
       appHandler_ = this;
     }
+
+    // On Mac we're registering a shutdown hook to shutdown the native CEF
+    // part. This is useful if it is missed to call CefApp.disopse() before
+    // System.exit(0). Unfortunately this approach works only for Mac because
+    // on Windows this will cause a "performed on wrong thread" exception in
+    // the native CEF part. And calling SwingUtilities.invokeAndWait doesn't
+    // work because the dispatcher thread starts this shutdown hook (thread) and
+    // calls "join" on it. Therefore invokeAndWait will end up in a deadlock.
+    if (OS.isMacintosh()) {
+      Runtime.getRuntime().addShutdownHook(new Thread("JCEF Shutdown Hook") {
+        @Override
+        public void run() {
+          try {
+            if (executeDefaultShutdown_) {
+              return;
+            }
+
+            for (CefClient c : clients_) {
+              c.dispose();
+            }
+
+            Thread.sleep(150);
+            lock.lock();
+            cefShutdown.signal();
+            lock.unlock();
+            N_Shutdown();
+
+            // Avoid a deadlock. Give the native code at least 150 milliseconds
+            // to terminate.
+            Thread.sleep(150);
+          } catch (Exception e) { }
+        }
+      });
+    }
   }
 
-  public static void addAppHandler(CefAppHandler appHandler) {
+  /**
+   * Assign an AppHandler to CefApp. The AppHandler can be used to evaluate
+   * application arguments, to register your own schemes and to hook into the
+   * shutdown sequence. See CefAppHandler for more details.
+   *
+   * This method must be called before CefApp is initialized. CefApp will be
+   * initialized automatically if you call createClient() the first time.
+   * @param appHandler An instance of CefAppHandler.
+   *
+   * @throws IllegalStateException in case of CefApp is already initialized
+   */
+  public static void addAppHandler(CefAppHandler appHandler)
+      throws IllegalStateException {
+    if (getState().compareTo(CefAppState.NEW) > 0)
+      throw new IllegalStateException("Must be called before CefApp is initialized");
     appHandler_ = appHandler;
   }
 
@@ -135,7 +227,10 @@ public class CefApp extends CefAppHandlerAdapter {
   public static synchronized CefApp getInstance(String [] args, boolean enableOsr)
                                                     throws UnsatisfiedLinkError {
     if (self == null) {
+      if (getState() == CefAppState.TERMINATED)
+        throw new IllegalStateException("CefApp was terminated");
       self = new CefApp(args, enableOsr);
+      setState(CefAppState.NEW);
     }
     return self;
   }
@@ -150,40 +245,61 @@ public class CefApp extends CefAppHandlerAdapter {
   }
 
   /**
+   * Returns the current state of CefApp.
+   * @return current state.
+   */
+  public final static CefAppState getState() {
+    synchronized (state_) {
+      return state_;
+    }
+  }
+
+  private static final void setState(final CefAppState state) {
+    synchronized (state_) {
+      state_ = state;
+    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (appHandler_ != null)
+          appHandler_.stateHasChanged(state);
+      }
+    });
+  }
+
+  /**
    * To shutdown the system, it's important to call the dispose
    * method. Calling this method closes all client instances with
    * and all browser instances each client owns. After that the
    * message loop is terminated and CEF is shutdown.
    */
   public synchronized final void dispose() {
-    Thread t = new Thread() {
-      @Override
-      public void run() {
-        lock.lock();
-        try {
-          // Initiate shutdown sequence and wait for its
-          // finalization.
-          cefShutdown.signal();
-          cefShutdownFinished.awaitUninterruptibly();
-        } catch (Throwable err) {
-          err.printStackTrace();
-        } finally {
-          System.out.println("shutdown complete");
-          self = null;
-          lock.unlock();
-        }
-      }
-    };
+    switch (getState()) {
+      case NEW:
+        // Nothing to do inspite of invalidating the state
+        setState(CefAppState.TERMINATED);
+        break;
 
-    // If dispose() is called on the dispatcher thread,
-    // the shutdown sequence MUST be performed within a
-    // dedicated thread. Otherwise we'll run in a deadlock.
-    // In all other cases, it's enough to call the run() method
-    // within the same process as dispose() is called.
-    if (SwingUtilities.isEventDispatchThread())
-      t.start();
-    else
-      t.run();
+      case INITIALIZING:
+      case INITIALIZED:
+        // (3) Shutdown sequence. Close all clients and continue.
+        setState(CefAppState.SHUTTING_DOWN);
+        if (clients_.isEmpty()) {
+          shutdown();
+        } else {
+          for (CefClient c : clients_) {
+            c.dispose();
+          }
+        }
+        break;
+
+      case NONE:
+      case SHUTTING_DOWN:
+      case TERMINATED:
+        // Ignore shutdown, CefApp is already terminated, in shutdown progress
+        // or was never created (shouldn't be possible)
+        break;
+    }
   }
 
   /**
@@ -192,13 +308,23 @@ public class CefApp extends CefAppHandlerAdapter {
    * instances
    * @return a new client instance
    */
-  public CefClient createClient() {
-    if (!isInitialized_) {
-      context.start();
+  public synchronized CefClient createClient() {
+    switch (getState()) {
+      case NEW:
+        setState(CefAppState.INITIALIZING);
+        context.start();
+        // FALL THRU
+
+      case INITIALIZING:
+      case INITIALIZED:
+        CefClient client = new CefClient();
+        clients_.add(client);
+        return client;
+
+      default:
+        throw new IllegalStateException("Can't crate client in state " + state_);
     }
-    CefClient client = new CefClient();
-    clients_.add(client);
-    return client;
+
   }
 
   /**
@@ -238,7 +364,7 @@ public class CefApp extends CefAppHandlerAdapter {
     return false;
   }
 
-  private final Thread context = new Thread() {
+  private final Thread context = new Thread("JCEF-MessageQueue") {
     @Override
     public void start() {
       if (!isAlive() && super.getState() == State.NEW) {
@@ -263,7 +389,7 @@ public class CefApp extends CefAppHandlerAdapter {
       lock.lock();
       try {
         // (1) Initialize native system.
-        if (!isInitialized_) {
+        if (CefApp.getState().compareTo(CefAppState.INITIALIZED) < 0) {
           initialize();
         }
         cefInitialized.signal();
@@ -282,20 +408,6 @@ public class CefApp extends CefAppHandlerAdapter {
             }
           }
         }
-
-        // (3) Shutdown sequence. Close all clients first.
-        for (CefClient c : clients_) {
-          c.dispose();
-        }
-        clients_.clear();
-
-        // (4) Perform one last message loop (tidy up).
-        doMessageLoopWork();
-
-        // (5) Shutdown native system.
-        shutdown();
-        cefShutdownFinished.signal();
-
       } catch (Throwable e) {
         e.printStackTrace();
       } finally {
@@ -303,6 +415,39 @@ public class CefApp extends CefAppHandlerAdapter {
       }
     }
   };
+
+  /**
+   * This method is called by a CefClient if it was disposed. This causes
+   * CefApp to clean up its list of available client instances. If all clients
+   * are disposed, CefApp will be shutdown.
+   * @param client the disposed client.
+   */
+  final protected void clientWasDisposed(CefClient client) {
+    clients_.remove(client);
+    if (clients_.isEmpty() && getState().compareTo(CefAppState.SHUTTING_DOWN) >= 0) {
+      // Shutdown native system. This will shutdown the message loop as well
+      shutdown();
+    }
+  }
+
+  /**
+   * This method is invoked by the native code (currently on Mac only) in case
+   * of a termination event (e.g. someone pressed CMD+Q). The native
+   * termination process is interrupted until CefApp calls continueTerminate().
+   */
+  final protected void handleBeforeTerminate() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        CefAppHandler handler =
+            (CefAppHandler) ((appHandler_ == null) ? this : appHandler_);
+        if (!handler.onBeforeTerminate()) {
+          executeDefaultShutdown_ = true;
+          dispose();
+        }
+      }
+    });
+  }
 
   /**
    * Initialize the context.
@@ -316,8 +461,8 @@ public class CefApp extends CefAppHandlerAdapter {
           String library_path = getJcefLibPath();
           System.out.println("initialize on " + Thread.currentThread() +
                              " with library path " + library_path);
-          isInitialized_ =
-              N_Initialize(library_path, appHandler_, osrSupportEnabled_);
+          if (N_Initialize(library_path, appHandler_, osrSupportEnabled_))
+            setState(CefAppState.INITIALIZED);
         }
       };
       if (SwingUtilities.isEventDispatchThread())
@@ -334,16 +479,51 @@ public class CefApp extends CefAppHandlerAdapter {
    */
   private final void shutdown() {
     try {
-      SwingUtilities.invokeAndWait(new Runnable() {
+      SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
           System.out.println("  shutdown on " + Thread.currentThread());
+
+          // Shutdown message loop
+          try {
+            lock.lock();
+            cefShutdown.signal();
+          } finally {
+            lock.unlock();
+          }
+
+          // Wait for termination of message loop
+          try {
+            context.join();
+          } catch (InterruptedException e) { }
+
+          // Perform one last message loop iteration. This is necessary for
+          // proper cleanup on (at least) Windows 8.1.
+          N_DoMessageLoopWork();
+
+          // Shutdown native CEF
           N_Shutdown();
+          System.out.println("shutdown complete");
+
+          if (executeDefaultShutdown_) {
+            continueTerminate();
+          }
+          setState(CefAppState.TERMINATED);
+          CefApp.self = null;
         }
       });
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private final void continueTerminate() {
+    new Thread("JCEF Terminate") {
+      @Override
+      public void run() {
+        N_ContinueDefaultTerminate();
+      }
+    }.start();
   }
 
   /**
@@ -354,7 +534,8 @@ public class CefApp extends CefAppHandlerAdapter {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          N_DoMessageLoopWork();
+          if (getState() != CefAppState.TERMINATED)
+            N_DoMessageLoopWork();
         }
       });
     } catch (Exception err) {
@@ -395,4 +576,5 @@ public class CefApp extends CefAppHandlerAdapter {
                                                               String domainName,
                                                               CefSchemeHandlerFactory factory);
   private final native boolean N_ClearSchemeHandlerFactories();
+  private final native void N_ContinueDefaultTerminate();
 }

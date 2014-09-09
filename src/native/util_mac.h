@@ -7,6 +7,7 @@
 
 #include <string>
 #include <jni.h>
+#include "client_app.h"
 #include "include/cef_base.h"
 #include "include/cef_app.h"
 
@@ -33,12 +34,13 @@ void TranslateRect(CefWindowHandle view,
 
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
-                               CefRefPtr<CefApp> application);
+                               CefRefPtr<ClientApp> application);
 
 void CefQuitMessageLoopOnMainThread();
 
 void SetVisibility(CefWindowHandle handle,
                    bool isVisible);
+void ContinueDefaultTerminate();
 
 void AddCefBrowser(CefRefPtr<CefBrowser> browser);
 

@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.CefApp.CefAppState;
 import org.cef.callback.CefCommandLine;
 import org.cef.callback.CefSchemeRegistrar;
 
@@ -58,6 +59,16 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
         }
       }
     }
+  }
+
+  @Override
+  public void stateHasChanged(CefAppState state) {
+    // The default implementation does nothing
+  }
+
+  @Override
+  public boolean onBeforeTerminate() {
+    return false;
   }
 
   @Override

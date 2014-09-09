@@ -5,6 +5,7 @@
 package tests.detailed.handler;
 
 import org.cef.CefApp;
+import org.cef.CefApp.CefAppState;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.callback.CefSchemeRegistrar;
@@ -68,4 +69,11 @@ public class AppHandler extends CefAppHandlerAdapter {
       return null;
     }
   } 
+
+  @Override
+  public void stateHasChanged(CefAppState state) {
+    System.out.println("CefApp: "+state);
+    if (state == CefAppState.TERMINATED)
+      System.exit(0);
+  }
 }

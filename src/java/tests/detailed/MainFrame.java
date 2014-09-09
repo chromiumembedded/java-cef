@@ -5,15 +5,12 @@
 package tests.detailed;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import org.cef.CefApp;
 import org.cef.CefApp.CefVersion;
@@ -74,13 +71,6 @@ public class MainFrame extends JFrame {
       public void windowClosing(WindowEvent e) {
         CefApp.getInstance().dispose();
         frame.dispose();
-
-        new Timer(3000, new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            System.exit(0);
-          }
-        }).start();
       }
     });
 

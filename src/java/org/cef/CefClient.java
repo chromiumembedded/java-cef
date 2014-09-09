@@ -79,6 +79,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefLifeSpanHandler lifeSpanHandler_ = null;
   private CefLoadHandler loadHandler_ = null;
   private CefRequestHandler requestHandler_ = null;
+  private boolean wasDisposed = false;
 
   /**
    * The CTOR is only accessible within this package.
@@ -92,21 +93,13 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   public void dispose() {
-    destroyAllBrowser();
-    removeContextMenuHandler(this);
-    removeDialogHandler(this);
-    removeDisplayHandler(this);
-    removeDownloadHandler(this);
-    removeDragHandler(this);
-    removeFocusHandler(this);
-    removeGeolocationHandler(this);
-    removeJSDialogHandler(this);
-    removeKeyboardHandler(this);
-    removeLifeSpanHandler(this);
-    removeLoadHandler(this);
-    removeRenderHandler(this);
-    removeRequestHandler(this);
-    super.dispose();
+    wasDisposed = true;
+    synchronized (browser_) {
+      Collection<CefBrowser> browserList = browser_.values();
+      for (CefBrowser browser : browserList) {
+        browser.close();
+      }
+    }
   }
 
 
@@ -122,6 +115,8 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                   boolean isOffscreenRendered,
                                   boolean isTransparent,
                                   CefRequestContext context) {
+    if (wasDisposed)
+      throw new IllegalStateException("Can't create browser. CefClient is disposed");
     return CefBrowserFactory.create(this,
                                     url,
                                     isOffscreenRendered,
@@ -129,29 +124,18 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                     context);
   }
 
-  public void destroyBrowser(CefBrowser browser) {
-    Integer browserId = new Integer(browser.getIdentifier());
-    if (browser_.remove(browserId) != null) {
-      browser.close();
-    }
-  }
-
-  public void destroyAllBrowser() {
-    Collection<CefBrowser> browserList = browser_.values();
-    for (CefBrowser browser : browserList) {
-      browser.close();
-    }
-    browser_.clear();
-  }
-
   @Override
   protected CefBrowser getBrowser(int identifier) {
-    return browser_.get(new Integer(identifier));
+    synchronized (browser_) {
+      return browser_.get(new Integer(identifier));
+    }
   }
 
   @Override
   protected Object[] getAllBrowser() {
-    return browser_.values().toArray();
+    synchronized (browser_) {
+      return browser_.values().toArray();
+    }
   }
 
   @Override
@@ -579,6 +563,8 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public boolean onBeforePopup(CefBrowser browser,
                                String target_url,
                                String target_frame_name) {
+    if (wasDisposed)
+      return true;
     if (lifeSpanHandler_ != null && browser != null)
       return lifeSpanHandler_.onBeforePopup(browser,
                                             target_url,
@@ -593,7 +579,9 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
     // keep browser reference
     Integer identifier = browser.getIdentifier();
-    browser_.put(identifier, browser);
+    synchronized (browser_) {
+      browser_.put(identifier, browser);
+    }
     if (lifeSpanHandler_ != null)
       lifeSpanHandler_.onAfterCreated(browser);
   }
@@ -614,8 +602,36 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   public void onBeforeClose(CefBrowser browser) {
-    if (lifeSpanHandler_ != null && browser != null)
+    if (browser == null)
+      return;
+
+    if (lifeSpanHandler_ != null)
       lifeSpanHandler_.onBeforeClose(browser);
+
+    // remove browser reference
+    int identifier = browser.getIdentifier();
+
+    synchronized (browser_) {
+      browser_.remove(identifier);
+      if (browser_.isEmpty() && wasDisposed) {
+        removeContextMenuHandler(this);
+        removeDialogHandler(this);
+        removeDisplayHandler(this);
+        removeDownloadHandler(this);
+        removeDragHandler(this);
+        removeFocusHandler(this);
+        removeGeolocationHandler(this);
+        removeJSDialogHandler(this);
+        removeKeyboardHandler(this);
+        removeLifeSpanHandler(this);
+        removeLoadHandler(this);
+        removeRenderHandler(this);
+        removeRequestHandler(this);
+        super.dispose();
+
+        CefApp.getInstance().clientWasDisposed(this);
+      }
+    }
   }
 
 

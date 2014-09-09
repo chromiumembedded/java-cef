@@ -11,15 +11,19 @@
 #include "include/cef_application_mac.h"
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
+#include "client_app.h"
 #include "client_handler.h"
 #include "render_handler.h"
 #include "jni_util.h"
 
 namespace {
 
+static CefRefPtr<ClientApp> g_client_app_ = NULL;
 BOOL g_handling_send_event = false;
 bool g_init_result = false;
 NSCondition *g_lock_initialize = NULL;
+BOOL g_continue_terminate = false;
+id g_last_sender = nil;
 
 }  // namespace
 
@@ -31,6 +35,7 @@ NSCondition *g_lock_initialize = NULL;
 - (BOOL)isHandlingSendEvent;
 - (void)setHandlingSendEvent:(BOOL)handlingSendEvent;
 - (void)_swizzled_sendEvent:(NSEvent*)event;
+- (void)_swizzled_terminate:(id)sender;
 
 @end
 
@@ -43,6 +48,11 @@ NSCondition *g_lock_initialize = NULL;
   Method swizzled =
       class_getInstanceMethod(self, @selector(_swizzled_sendEvent));
   method_exchangeImplementations(original, swizzled);
+
+  Method originalTerm = class_getInstanceMethod(self, @selector(terminate:));
+  Method swizzledTerm =
+      class_getInstanceMethod(self, @selector(_swizzled_terminate:));
+  method_exchangeImplementations(originalTerm, swizzledTerm);
 }
 
 - (BOOL)isHandlingSendEvent {
@@ -59,6 +69,17 @@ NSCondition *g_lock_initialize = NULL;
   [self _swizzled_sendEvent:event];
 }
 
+- (void)_swizzled_terminate:(id)sender {
+  bool continueTerminate = true;
+  if (g_client_app_.get() && !g_continue_terminate) {
+    g_last_sender = sender;
+    continueTerminate = !g_client_app_->HandleTerminate();
+  }
+  if (continueTerminate) {
+    [self _swizzled_terminate:sender];
+  }
+}
+
 @end
 
 // This is only a small stub class to transport data between
@@ -67,16 +88,16 @@ NSCondition *g_lock_initialize = NULL;
 @interface SystemStub : NSObject {
   CefMainArgs args_;
   CefSettings settings_;
-  CefRefPtr<CefApp> application_;
+  CefRefPtr<ClientApp> application_;
   bool result_;
 }
 
 - (id) initWithValues:(const CefMainArgs&)args
              settings:(const CefSettings&) settings
-          application:(CefRefPtr<CefApp>) application;
+          application:(CefRefPtr<ClientApp>) application;
 - (const CefMainArgs&) args;
 - (const CefSettings&) settings;
-- (CefRefPtr<CefApp>) application;
+- (CefRefPtr<ClientApp>) application;
 - (void) setResult:(bool)result;
 - (bool) result;
 
@@ -86,7 +107,7 @@ NSCondition *g_lock_initialize = NULL;
 
 - (id) initWithValues:(const CefMainArgs&) pArgs
              settings:(const CefSettings&) pSettings
-          application:(CefRefPtr<CefApp>)  pApplication {
+          application:(CefRefPtr<ClientApp>)  pApplication {
 
   if (self = [super init]) {
     args_ = pArgs;
@@ -102,7 +123,7 @@ NSCondition *g_lock_initialize = NULL;
 - (const CefSettings&) settings {
   return settings_;
 }
-- (CefRefPtr<CefApp>) application {
+- (CefRefPtr<ClientApp>) application {
   return application_;
 }
 - (void) setResult:(bool)result {
@@ -127,15 +148,21 @@ NSCondition *g_lock_initialize = NULL;
 + (void) initialize:(SystemStub*)stub {
   // Initialize CEF
   [g_lock_initialize lock];
-  CefRefPtr<CefApp> app = [stub application];
-  g_init_result = CefInitialize([stub args], [stub settings], app, NULL);
+  g_client_app_ = [stub application];
+  g_init_result =
+      CefInitialize([stub args], [stub settings], g_client_app_.get(), NULL);
   [g_lock_initialize signal];
   [g_lock_initialize unlock];
 
   // Run the application message loop.
   CefRunMessageLoop();
+  g_client_app_ = NULL;
+
   // Shut down CEF.
+  [g_lock_initialize lock];
   CefShutdown();
+  [g_lock_initialize signal];
+  [g_lock_initialize unlock];
 }
 
 + (void) quitMessageLoop {
@@ -311,7 +338,7 @@ void TranslateRect(CefWindowHandle view, CefRect& orig) {
 
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
-                               CefRefPtr<CefApp> application) {
+                               CefRefPtr<ClientApp> application) {
   SystemStub* stub = [[SystemStub alloc] initWithValues:args
                                                settings:settings
                                             application:application];
@@ -330,9 +357,17 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
 }
 
 void CefQuitMessageLoopOnMainThread() {
+  if (g_client_app_ == NULL)
+    return;
+
+  g_lock_initialize = [[NSCondition alloc] init];
+  [g_lock_initialize lock];
   [[CefHandler class] performSelectorOnMainThread:@selector(quitMessageLoop)
                                        withObject:nil
-                                    waitUntilDone:YES];
+                                    waitUntilDone:NO];
+  [g_lock_initialize wait];
+  [g_lock_initialize unlock];
+  [g_lock_initialize release];
 }
 
 void SetVisibility(CefWindowHandle handle, bool isVisible) {
@@ -385,4 +420,11 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
       (CefBrowserContentView*)[handle superview];
   [browserView removeCefBrowser];
 }
+
+void ContinueDefaultTerminate() {
+  g_continue_terminate = TRUE;
+  [[NSApplication sharedApplication] performSelectorOnMainThread:
+      @selector(terminate:) withObject:g_last_sender waitUntilDone:NO];
+}
+
 }  // namespace util_mac

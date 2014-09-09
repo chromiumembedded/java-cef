@@ -364,10 +364,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->CloseBrowser(true);
-  // Clear the browser pointer member of the Java object. This call will
-  // release the extra reference to the object added in
-  // CefApp::CreateBrowser.
-  SetCefForJNIObject<CefBrowser>(env, obj, NULL, "CefBrowser");
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
