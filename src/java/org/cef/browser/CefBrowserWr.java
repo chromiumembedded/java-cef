@@ -23,6 +23,7 @@ import java.awt.event.HierarchyListener;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
@@ -151,6 +152,8 @@ class CefBrowserWr extends CefBrowser_N {
 
       @Override
       public void focusGained(FocusEvent e) {
+        // Dismiss any Java menus that are currently displayed.
+        MenuSelectionManager.defaultManager().clearSelectedPath();
         setFocus(true);
       }
     });
