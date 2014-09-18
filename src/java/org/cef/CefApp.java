@@ -145,6 +145,7 @@ public class CefApp extends CefAppHandlerAdapter {
     super(args);
     osrSupportEnabled_ = enableOsr;
     if (OS.isWindows()) {
+      System.loadLibrary("jawt");
       System.loadLibrary("libcef");
     } else if (OS.isLinux()) {
       System.loadLibrary("cef");
