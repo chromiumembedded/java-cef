@@ -47,13 +47,16 @@ class CefBrowserWr extends CefBrowser_N {
   private CefRequestContext context_;
   private CefBrowserWr parent_ = null;
   private CefBrowserWr devTools_ = null;
+  private boolean isDisposed = false;
   private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          doUpdate();
+          createUIIfRequired();
+          if (OS.isMacintosh())
+            doUpdate();
         }
       });
     }
@@ -126,9 +129,7 @@ class CefBrowserWr extends CefBrowser_N {
         // paint is called. This prevents the us of sending the UI update too
         // often.
         doUpdate();
-        createUIIfRequired();
-        if (OS.isMacintosh())
-          delayedUpdate_.restart();
+        delayedUpdate_.restart();
       }
     };
     // On windows we have to use a Canvas because its a heavyweight component
@@ -185,6 +186,7 @@ class CefBrowserWr extends CefBrowser_N {
 
   @Override
   public synchronized void close() {
+    isDisposed = true;
     if (context_ != null)
       context_.dispose();
     if (parent_ != null) {
@@ -222,6 +224,9 @@ class CefBrowserWr extends CefBrowser_N {
   }
 
   private void doUpdate() {
+    if (isDisposed)
+      return;
+
     Rectangle clipping = ((JPanel)component_).getVisibleRect();
 
     if (OS.isMacintosh()) {
@@ -255,7 +260,7 @@ class CefBrowserWr extends CefBrowser_N {
   }
 
   private void createUIIfRequired() {
-    if (getNativeRef("CefBrowser") == 0 ) {
+    if (getNativeRef("CefBrowser") == 0 && !isDisposed) {
       if (parent_ != null) {
         createDevTools(parent_,
                        clientHandler_,
