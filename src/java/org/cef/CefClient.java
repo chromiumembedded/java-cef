@@ -7,8 +7,11 @@ package org.cef;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,6 +83,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   private CefLoadHandler loadHandler_ = null;
   private CefRequestHandler requestHandler_ = null;
   private boolean wasDisposed = false;
+  private volatile CefBrowser focusedBrowser_ = null;
 
   /**
    * The CTOR is only accessible within this package.
@@ -89,6 +93,34 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
    */
   CefClient() throws UnsatisfiedLinkError {
     super();
+
+    KeyboardFocusManager km = 
+        KeyboardFocusManager.getCurrentKeyboardFocusManager();
+    km.addPropertyChangeListener(new PropertyChangeListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent evt) {
+        if (focusedBrowser_ != null) {
+          Component browserUI = focusedBrowser_.getUIComponent();
+          Object oldUI = evt.getOldValue();
+          if (isPartOf(oldUI, browserUI)) {
+            focusedBrowser_.setFocus(false);
+            focusedBrowser_ = null;
+          }
+        }
+      }
+    });
+  }
+  
+  private boolean isPartOf(Object obj, Component browserUI) {
+    if  (obj == browserUI)
+      return true;
+    if (obj instanceof Container) {
+      Component childs[] = ((Container)obj).getComponents();
+      for (Component child : childs) {
+        return isPartOf(child, browserUI);
+      }
+    }
+    return false;
   }
 
   @Override
@@ -404,6 +436,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
         }
       }
     }
+    focusedBrowser_ = null;
     if (focusHandler_ != null)
       focusHandler_.onTakeFocus(browser, next);
   }
@@ -426,6 +459,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     if (browser == null)
       return;
 
+    focusedBrowser_ = browser;
     browser.setFocus(true);
     if (focusHandler_ != null)
       focusHandler_.onGotFocus(browser);
