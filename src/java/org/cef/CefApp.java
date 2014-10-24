@@ -396,7 +396,7 @@ public class CefApp extends CefAppHandlerAdapter {
         cefInitialized.signal();
 
         // (2) Handle message loop.
-        if (OS.isMacintosh()) {
+        if (OS.isMacintosh() || OS.isWindows()) {
           cefShutdown.awaitUninterruptibly();
         } else {
           boolean doLoop = true;
@@ -497,10 +497,6 @@ public class CefApp extends CefAppHandlerAdapter {
           try {
             context.join();
           } catch (InterruptedException e) { }
-
-          // Perform one last message loop iteration. This is necessary for
-          // proper cleanup on (at least) Windows 8.1.
-          N_DoMessageLoopWork();
 
           // Shutdown native CEF
           N_Shutdown();

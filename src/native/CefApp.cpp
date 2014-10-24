@@ -70,6 +70,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
   settings.no_sandbox = true;
   settings.windowless_rendering_enabled = (osrEnabled != JNI_FALSE);
 
+#if defined(OS_WIN)
+  settings.multi_threaded_message_loop = true;
+#endif
+
 #if defined(OS_LINUX)
   CefString(&settings.resources_dir_path) = module_dir;
   CefString(&settings.locales_dir_path) = module_dir + "/locales";

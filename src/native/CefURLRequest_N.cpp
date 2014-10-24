@@ -4,6 +4,7 @@
 
 
 #include "CefURLRequest_N.h"
+#include "critical_wait.h"
 #include "include/cef_task.h"
 #include "include/cef_runnable.h"
 #include "include/cef_request.h"
@@ -11,59 +12,14 @@
 #include "url_request_client.h"
 #include "jni_util.h"
 
-#if defined(OS_WIN)
-#define WAIT_COND HANDLE
-#define INIT_WAIT(cond) cond = CreateEvent(NULL, FALSE, FALSE, NULL);
-#define WAIT(section, cond) { \
-  section->Unlock(); \
-  WaitForSingleObject(cond, INFINITE); \
-  section->Lock(); \
-}
-#define WAKE_UP(cond) SetEvent(cond);
-#define RELEASE_WAIT(cond) CloseHandle(cond);
-
-#else // OS_MACOSX and OS_LINUX
-
-#include <pthread.h>
-#define WAIT_COND pthread_cond_t
-#define INIT_WAIT(cond) pthread_cond_init(&cond, NULL);
-#define WAIT(section, cond) pthread_cond_wait(&cond, &section->lock_);
-#define WAKE_UP(cond) pthread_cond_signal(&cond);
-#define RELEASE_WAIT(cond) pthread_cond_destroy(&cond);
-
-#endif // OS_WIN
-
 namespace {
-class CriticalWait {
- public:
-  CriticalWait(CefCriticalSection* section) : section_(section) {
-    INIT_WAIT(cond_);
-  }
-
-  virtual ~CriticalWait() {
-    RELEASE_WAIT(cond_);
-  }
-
-  void wait() {
-    WAIT(section_, cond_);
-  }
-
-  void wakeUp() {
-    WAKE_UP(cond_);
-  }
-
-  CefCriticalSection *section_;
-  WAIT_COND cond_;
-};
-
 class URLRequest : public CefTask {
  public:
 
   explicit URLRequest(CefThreadId threadId,
                       CefRefPtr<CefRequest> request,
                       CefRefPtr<URLRequestClient> client)
-      : threadId_(threadId), request_(request), client_(client),
-        waitCond_(&critsec_) {
+      : threadId_(threadId), request_(request), client_(client) {
   }
 
   virtual ~URLRequest() {
@@ -126,20 +82,19 @@ class URLRequest : public CefTask {
   CefRefPtr<CefResponse> response_;
 
   void Dispatch(URLRequestMode mode) {
-    Lock();
     mode_ = mode;
     if (CefCurrentlyOn(threadId_)) {
-      Unlock();
       Execute();
     } else {
+      waitCond_.Lock();
       CefPostTask(threadId_, this);
-      waitCond_.wait();
-      Unlock();
+      waitCond_.Wait();
+      waitCond_.Unlock();
     }
   }
 
   virtual void Execute() {
-    Lock();
+    waitCond_.Lock();
     switch (mode_) {
       case REQ_CREATE:
         urlRequest_ =  CefURLRequest::Create(request_, client_.get());
@@ -157,11 +112,10 @@ class URLRequest : public CefTask {
         urlRequest_->Cancel();
         break;
     }
-    waitCond_.wakeUp();
-    Unlock();
+    waitCond_.WakeUp();
+    waitCond_.Unlock();
   }
 
-  IMPLEMENT_LOCKING(URLRequest);
   IMPLEMENT_REFCOUNTING(URLRequest);
 };
 

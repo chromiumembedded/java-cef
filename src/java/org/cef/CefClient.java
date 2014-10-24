@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
 import org.cef.browser.CefMessageRouter;
@@ -442,15 +444,25 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  public boolean onSetFocus(CefBrowser browser, FocusSource source) {
+  public boolean onSetFocus(final CefBrowser browser, FocusSource source) {
     if (browser == null)
       return false;
 
     boolean alreadyHandled = false;
     if (focusHandler_ != null)
       alreadyHandled = focusHandler_.onSetFocus(browser, source);
-    if (!alreadyHandled)
-      browser.getUIComponent().requestFocus();
+    if (!alreadyHandled) {
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          browser.getUIComponent().requestFocus();
+        }
+      };
+      if (SwingUtilities.isEventDispatchThread())
+        r.run();
+      else
+        SwingUtilities.invokeLater(r);
+    }
     return alreadyHandled;
   }
 

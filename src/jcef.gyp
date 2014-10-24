@@ -108,6 +108,7 @@
         'native/context_menu_handler.h',
         'native/cookie_visitor.cpp',
         'native/cookie_visitor.h',
+        'native/critical_wait.h',
         'native/dialog_handler.cpp',
         'native/dialog_handler.h',
         'native/display_handler.cpp',
@@ -168,6 +169,7 @@
       'conditions': [
         ['OS=="win"', {
           'sources': [
+            'native/critical_wait_win.cpp',
             'native/render_handler_win.cpp',
             'native/jni_util_win.cpp',
             'native/jcef_dll.rc',
@@ -229,6 +231,7 @@
             '<(cef_directory)/cefclient.gyp:gtk',
           ],
           'sources': [
+            'native/critical_wait_posix.cpp',
             'native/render_handler_gtk.cpp',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
@@ -290,6 +293,7 @@
         ['OS=="mac"', {
           'product_name': 'jcef',
           'sources': [
+            'native/critical_wait_posix.cpp',
             'native/render_handler_mac.mm',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
