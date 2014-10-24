@@ -416,9 +416,16 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
   CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
-  CefBrowserContentView *browserView =
-      (CefBrowserContentView*)[handle superview];
-  [browserView removeCefBrowser];
+
+  // There are some cases where the superview of CefBrowser isn't
+  // a CefBrowserContentView. For example if another CefBrowser window was
+  // created by calling "window.open()" in JavaScript.
+  NSView* superView = [handle superview];
+  if ([superView isKindOfClass:[CefBrowserContentView class]]) {
+    CefBrowserContentView *browserView =
+        (CefBrowserContentView*)[handle superview];
+    [browserView removeCefBrowser];
+  }
 }
 
 void ContinueDefaultTerminate() {
