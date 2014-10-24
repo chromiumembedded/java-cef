@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
+import org.cef.CefSettings;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
 import org.cef.handler.CefAppHandlerAdapter;
@@ -65,7 +66,9 @@ public class MainFrame extends JFrame {
           System.exit(0);
       }
     });
-    cefApp_ = CefApp.getInstance(useOSR);
+    CefSettings settings = new CefSettings();
+    settings.windowless_rendering_enabled = useOSR;
+    cefApp_ = CefApp.getInstance(settings);
 
     // (2) JCEF can handle one to many browser instances simultaneous. These
     //     browser instances are logically grouped together by an instance of

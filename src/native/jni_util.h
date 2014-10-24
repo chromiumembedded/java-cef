@@ -115,6 +115,10 @@ bool GetJNIFieldDate(JNIEnv* env, jclass cls, jobject obj,
 bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
                         const char* field_name, int* value);
 
+bool GetJNIFieldObject(JNIEnv* env, jclass cls, jobject obj,
+                    const char* field_name, jobject* value,
+                    const char* object_type);
+
 // Retrieve the int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
                     const char* field_name, int* value);
@@ -150,6 +154,8 @@ bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y);
 
 // Create a new java.awt.Point.
 jobject NewJNIPoint(JNIEnv* env, int x, int y);
+
+CefSettings GetJNISettings(JNIEnv* env, jobject obj);
 
 // Get java browser counterpart
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);

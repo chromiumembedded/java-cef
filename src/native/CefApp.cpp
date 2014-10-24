@@ -31,23 +31,9 @@
 #include "signal_restore_posix.h"
 #endif
 
-namespace {
-std::string GetHelperPath(const std::string& module_dir) {
-#if defined(OS_MACOSX)
-  return util_mac::GetAbsPath(
-      module_dir + "/../Frameworks/jcef Helper.app/Contents/MacOS/jcef Helper");
-#elif defined(OS_WIN)
-  return module_dir + "\\jcef_helper.exe";
-#elif defined(OS_LINUX)
-  return module_dir + "/jcef_helper";
-#endif
-}
-
-}  // namespace
-
-
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
-  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler, jboolean osrEnabled) {
+  (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler,
+    jobject jsettings) {
   JavaVM* jvm;
   jint rs = env->GetJavaVM(&jvm);
   if (rs != JNI_OK) {
@@ -64,19 +50,17 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
 
   const std::string& module_dir = GetJNIString(env, argPathToJavaDLL);
 
-  CefSettings settings;
-  CefString(&settings.browser_subprocess_path) = GetHelperPath(module_dir);
+  CefSettings settings = GetJNISettings(env, jsettings);  
 
+  // Sandbox is not supported because:
+  // - Use of a separate sub-process executable on Windows.
+  // - Use of a temporary file to communicate custom schemes to the
+  //   renderer process.
   settings.no_sandbox = true;
-  settings.windowless_rendering_enabled = (osrEnabled != JNI_FALSE);
 
 #if defined(OS_WIN)
+  // Required to fix issues with drag&drop on Windows.
   settings.multi_threaded_message_loop = true;
-#endif
-
-#if defined(OS_LINUX)
-  CefString(&settings.resources_dir_path) = module_dir;
-  CefString(&settings.locales_dir_path) = module_dir + "/locales";
 #endif
 
   CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));

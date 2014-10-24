@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import org.cef.CefApp;
 import org.cef.CefApp.CefVersion;
 import org.cef.CefClient;
+import org.cef.CefSettings;
+import org.cef.CefSettings.ColorType;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefMessageRouter;
@@ -91,7 +93,11 @@ public class MainFrame extends JFrame {
     //    application arguments to it, if you want to handle any
     //    chromium or CEF related switches/attributes in
     //    the native world.
-    CefApp myApp = CefApp.getInstance(args, osrEnabled);
+    CefSettings settings = new CefSettings();
+    settings.windowless_rendering_enabled = osrEnabled;
+    // try to load URL "about:blank" to see the background color
+    settings.background_color = settings.new ColorType(100, 255, 242, 211);
+    CefApp myApp = CefApp.getInstance(args, settings);
     CefVersion version = myApp.getVersion();
     System.out.println("Using:\n" + version);
 

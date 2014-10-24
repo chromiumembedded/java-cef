@@ -6,6 +6,8 @@ package org.cef;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -129,7 +131,7 @@ public class CefApp extends CefAppHandlerAdapter {
   private final Lock lock = new ReentrantLock();
   private final Condition cefInitialized = lock.newCondition();
   private final Condition cefShutdown = lock.newCondition();
-  private final boolean osrSupportEnabled_;
+  private CefSettings settings_ = null;
   private boolean executeDefaultShutdown_ = false;
 
   /**
@@ -141,9 +143,11 @@ public class CefApp extends CefAppHandlerAdapter {
    * 
    * @throws UnsatisfiedLinkError
    */
-  private CefApp(String [] args, boolean enableOsr) throws UnsatisfiedLinkError {
+  private CefApp(String [] args, CefSettings settings)
+      throws UnsatisfiedLinkError {
     super(args);
-    osrSupportEnabled_ = enableOsr;
+    if (settings != null)
+      settings_ = settings.clone();
     if (OS.isWindows()) {
       System.loadLibrary("jawt");
       System.loadLibrary("libcef");
@@ -214,26 +218,41 @@ public class CefApp extends CefAppHandlerAdapter {
    * @throws UnsatisfiedLinkError
    */
   public static synchronized CefApp getInstance() throws UnsatisfiedLinkError {
-     return getInstance(null, false);
+     return getInstance(null, null);
   }
 
-  public static synchronized CefApp getInstance(String [] args) throws UnsatisfiedLinkError {
-    return getInstance(args, false);
+  public static synchronized CefApp getInstance(String [] args)
+      throws UnsatisfiedLinkError {
+    return getInstance(args, null);
   }
 
-  public static synchronized CefApp getInstance(boolean enableOsr) throws UnsatisfiedLinkError {
-    return getInstance(null, enableOsr);
+  public static synchronized CefApp getInstance(CefSettings settings)
+      throws UnsatisfiedLinkError {
+    return getInstance(null, settings);
   }
 
-  public static synchronized CefApp getInstance(String [] args, boolean enableOsr)
-                                                    throws UnsatisfiedLinkError {
+  public static synchronized CefApp getInstance(String [] args,
+      CefSettings settings) throws UnsatisfiedLinkError {
+    if (settings != null) {
+      if (getState() != CefAppState.NONE && getState() != CefAppState.NEW)
+        throw new IllegalStateException("Settings can only be passed to CEF" +
+            " before createClient is called the first time.");
+    }
     if (self == null) {
       if (getState() == CefAppState.TERMINATED)
         throw new IllegalStateException("CefApp was terminated");
-      self = new CefApp(args, enableOsr);
+      self = new CefApp(args, settings);
       setState(CefAppState.NEW);
     }
     return self;
+  }
+
+  public final void setSettings(CefSettings settings)
+      throws IllegalStateException {
+    if (getState() != CefAppState.NONE && getState() != CefAppState.NEW)
+      throw new IllegalStateException("Settings can only be passed to CEF" +
+          " before createClient is called the first time.");
+    settings_ = settings.clone();
   }
 
   public final CefVersion getVersion() {
@@ -462,7 +481,33 @@ public class CefApp extends CefAppHandlerAdapter {
           String library_path = getJcefLibPath();
           System.out.println("initialize on " + Thread.currentThread() +
                              " with library path " + library_path);
-          if (N_Initialize(library_path, appHandler_, osrSupportEnabled_))
+
+          CefSettings settings = settings_ != null ? settings_ :
+              new CefSettings();
+
+          // Avoid to override user values by testing on NULL
+          if (OS.isMacintosh()) {
+            if (settings.browser_subprocess_path == null) {
+              Path path = Paths.get(library_path,
+                  "../Frameworks/jcef Helper.app/Contents/MacOS/jcef Helper");
+              settings.browser_subprocess_path =
+                  path.normalize().toAbsolutePath().toString();
+            }
+          } else if (OS.isWindows()) {
+            if (settings.browser_subprocess_path == null) {
+              settings.browser_subprocess_path = library_path +
+                  "\\jcef_helper.exe";
+            }
+          } else if (OS.isLinux()) {
+            if (settings.browser_subprocess_path == null)
+              settings.browser_subprocess_path = library_path + "/jcef_helper";
+            if (settings.resources_dir_path == null)
+              settings.resources_dir_path = library_path;
+            if (settings.locales_dir_path == null)
+              settings.locales_dir_path = library_path + "/locales";
+          }
+
+          if (N_Initialize(library_path, appHandler_, settings))
             setState(CefAppState.INITIALIZED);
         }
       };
@@ -564,14 +609,12 @@ public class CefApp extends CefAppHandlerAdapter {
   }
 
   private final native boolean N_Initialize(String pathToJavaDLL,
-                                            CefAppHandler appHandler,
-                                            boolean enableOsr);
+      CefAppHandler appHandler, CefSettings settings);
   private final native void N_Shutdown();
   private final native void N_DoMessageLoopWork();
   private final native CefVersion N_GetVersion();
   private final native boolean N_RegisterSchemeHandlerFactory(String schemeName,
-                                                              String domainName,
-                                                              CefSchemeHandlerFactory factory);
+      String domainName, CefSchemeHandlerFactory factory);
   private final native boolean N_ClearSchemeHandlerFactories();
   private final native void N_ContinueDefaultTerminate();
 }
