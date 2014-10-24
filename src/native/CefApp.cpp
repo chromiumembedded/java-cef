@@ -104,6 +104,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
 
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
   (JNIEnv *env, jobject) {
+  ClientApp::eraseTempFiles();
 #if defined(OS_MACOSX)
   util_mac::CefQuitMessageLoopOnMainThread();
 #else

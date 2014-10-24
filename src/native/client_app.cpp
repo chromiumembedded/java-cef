@@ -9,6 +9,15 @@
 #include "util_mac.h"
 #endif
 
+namespace {
+
+std::set<std::string>& GetTempFilesSet() {
+  static std::set<std::string> tempFiles;
+  return tempFiles;
+}
+
+}  // namespace
+
 ClientApp::ClientApp(const std::string& module_dir, const jobject app_handler)
     : module_dir_(module_dir), app_handler_(NULL) {
   JNIEnv *env = GetJNIEnv();
@@ -105,4 +114,17 @@ void ClientApp::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar)
 
 CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
   return process_handler_.get();
+}
+
+void ClientApp::registerTempFile(const std::string& tmpFile) {
+  GetTempFilesSet().insert(tmpFile);
+}
+
+void ClientApp::eraseTempFiles() {
+  std::set<std::string>& tempFiles =  GetTempFilesSet();
+  std::set<std::string>::iterator iter;
+  for (iter = tempFiles.begin(); iter != tempFiles.end(); ++iter) {
+    remove((*iter).c_str());
+  }
+  tempFiles.clear();
 }

@@ -30,6 +30,9 @@ class ClientApp : public CefApp {
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
       OVERRIDE;
 
+  // Used to manage the lifespan of temporary files.
+  static void registerTempFile(const std::string& tmpFile);
+  static void eraseTempFiles();
  protected:
   std::string module_dir_;
   jobject app_handler_;

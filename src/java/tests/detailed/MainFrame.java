@@ -231,6 +231,7 @@ public class MainFrame extends JFrame {
     menuBar.addBookmark("Resource-Handler Test", "http://www.foo.bar/");
     menuBar.addBookmark("Scheme-Handler Test 1: (scheme \"client\")", "client://tests/handler.html");
     menuBar.addBookmark("Scheme-Handler Test 2: (scheme \"search\")", "search://do a barrel roll/");
+    menuBar.addBookmark("Test local Storage", "client://tests/localstorage.html");
     menuBar.addBookmarkSeparator();
     menuBar.addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
     menuBar.addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");

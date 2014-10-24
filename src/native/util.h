@@ -51,4 +51,19 @@
 #define UNUSED(x) ((void)(x))
 #endif
 
+namespace util {
+
+// Get the process-id of the current process.
+int GetPid();
+
+// Get the process-id of the parent process (that process that launched the
+// current process).
+int GetParentPid();
+
+// Returns the absolute path for a temporary file whose name is unique to the
+// process. |identifer| is attached to the filename.
+std::string GetTempFileName(const std::string& identifer, bool useParentId);
+
+}  // namespace util
+
 #endif  // CEF_TESTS_CEFCLIENT_UTIL_H_

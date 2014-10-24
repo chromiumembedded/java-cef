@@ -173,6 +173,7 @@
             'native/render_handler_win.cpp',
             'native/jni_util_win.cpp',
             'native/jcef_dll.rc',
+            'native/util_win.cpp',
           ],
           'include_dirs': [
             '<(jdk_directory)\include',
@@ -235,6 +236,7 @@
             'native/render_handler_gtk.cpp',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
+            'native/util_posix.cpp',
           ],
           'include_dirs': [
             '<(jdk_directory)/include',
@@ -299,6 +301,7 @@
             'native/signal_restore_posix.h',
             'native/util_mac.h',
             'native/util_mac.mm',
+            'native/util_posix.cpp',
           ],
           'include_dirs': [
             '<(jdk_directory)/include',
@@ -342,6 +345,7 @@
       ],
       'sources': [
         'native/jcef_helper.cpp',
+        'native/util.h',
       ],
       'mac_bundle': 1,
       'mac_bundle_resources!': [
@@ -357,6 +361,7 @@
         ['OS=="win"', {
           'sources': [
             'native/jcef_helper.rc',
+            'native/util_win.cpp',
           ],
           'variables': {
             'win_exe_compatibility_manifest': '<(cef_directory)/cefclient/compatibility.manifest',
@@ -380,6 +385,9 @@
           },
         }],
         ['OS=="linux"', {
+          'sources': [
+            'native/util_posix.cpp',
+          ],
           'dependencies': [
             '<(cef_directory)/cefclient.gyp:gtk',
           ],
@@ -396,6 +404,9 @@
         }],
         ['OS=="mac"', {
           'product_name': 'jcef Helper',
+          'sources': [
+            'native/util_posix.cpp',
+          ],
           'variables': {
             'enable_wexit_time_destructors': 1,
           },

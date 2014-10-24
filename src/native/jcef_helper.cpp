@@ -2,8 +2,11 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#include <fstream>
+
 #include "include/cef_app.h"
 #include "include/wrapper/cef_message_router.h"
+#include "util.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -25,6 +28,31 @@ class CefHelperApp : public CefApp,
                      public CefRenderProcessHandler {
 public:
   CefHelperApp() {}
+
+  virtual void OnRegisterCustomSchemes(
+      CefRefPtr<CefSchemeRegistrar> registrar) OVERRIDE {
+    std::fstream fStream;
+    std::string fName = util::GetTempFileName("scheme", true);
+    char schemeName[512] = "";
+    char cIsStandard, cIsLocal, cIsDisplayIsolated;
+    bool isStandard, isLocal, isDisplayIsolated;
+
+    fStream.open(fName.c_str(), std::fstream::in);
+    while (fStream.is_open() && !fStream.eof()) {
+      fStream.getline(schemeName, 512, ',');
+      if (strlen(schemeName) == 0)
+        break;
+
+      fStream.get(cIsStandard).get(cIsLocal).get(cIsDisplayIsolated);
+      isStandard = (cIsStandard == '1');
+      isLocal = (cIsLocal == '1');
+      isDisplayIsolated = (cIsDisplayIsolated == '1');
+
+      registrar->AddCustomScheme(schemeName, isStandard, isLocal,
+          isDisplayIsolated);
+    }
+    fStream.close();
+  }
 
   virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() OVERRIDE {
     return this;
