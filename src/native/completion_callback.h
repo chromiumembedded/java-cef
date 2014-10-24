@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_COMPLETION_CALLBACK_H_
-#define CEF_TESTS_CEFCLIENT_COMPLETION_CALLBACK_H_
+#ifndef JCEF_NATIVE_COMPLETION_CALLBACK_H_
+#define JCEF_NATIVE_COMPLETION_CALLBACK_H_
 #pragma once
 
 #include <jni.h>
@@ -25,4 +25,4 @@ class CompletionCallback : public CefCompletionCallback {
   IMPLEMENT_REFCOUNTING(CompletionCallback);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_COMPLETION_CALLBACK_H_
+#endif  // JCEF_NATIVE_COMPLETION_CALLBACK_H_

@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_CRITICAL_WAIT_H_
-#define CEF_TESTS_CEFCLIENT_CRITICAL_WAIT_H_
+#ifndef JCEF_NATIVE_CRITICAL_WAIT_H_
+#define JCEF_NATIVE_CRITICAL_WAIT_H_
 #pragma once
 
 #include "include/cef_runnable.h"
@@ -31,4 +31,4 @@ class CriticalWait {
   IMPLEMENT_LOCKING(CriticalWait);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_CRITICAL_WAIT_H_
+#endif  // JCEF_NATIVE_CRITICAL_WAIT_H_

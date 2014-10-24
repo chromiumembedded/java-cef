@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_JSDIALOG_HANDLER_H_
-#define CEF_TESTS_CEFCLIENT_JSDIALOG_HANDLER_H_
+#ifndef JCEF_NATIVE_JSDIALOG_HANDLER_H_
+#define JCEF_NATIVE_JSDIALOG_HANDLER_H_
 #pragma once
 
 #include <jni.h>
@@ -42,4 +42,4 @@ class JSDialogHandler : public CefJSDialogHandler {
   IMPLEMENT_LOCKING(JSDialogHandler);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_JSDIALOG_HANDLER_H_
+#endif  // JCEF_NATIVE_JSDIALOG_HANDLER_H_

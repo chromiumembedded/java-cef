@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_SCHEME_HANDLER_FACTORY_H_
-#define CEF_TESTS_CEFCLIENT_SCHEME_HANDLER_FACTORY_H_
+#ifndef JCEF_NATIVE_SCHEME_HANDLER_FACTORY_H_
+#define JCEF_NATIVE_SCHEME_HANDLER_FACTORY_H_
 #pragma once
 
 #include <jni.h>
@@ -29,4 +29,4 @@ class SchemeHandlerFactory : public CefSchemeHandlerFactory {
   IMPLEMENT_REFCOUNTING(SchemeHandlerFactory);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_SCHEME_HANDLER_FACTORY_H_
+#endif  // JCEF_NATIVE_SCHEME_HANDLER_FACTORY_H_

@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_CLIENT_APP_H_
-#define CEF_TESTS_CEFCLIENT_CLIENT_APP_H_
+#ifndef JCEF_NATIVE_CLIENT_APP_H_
+#define JCEF_NATIVE_CLIENT_APP_H_
 #pragma once
 
 #include <jni.h>
@@ -42,4 +42,4 @@ class ClientApp : public CefApp {
   IMPLEMENT_REFCOUNTING(ClientApp);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_CLIENT_APP_H_
+#endif  // JCEF_NATIVE_CLIENT_APP_H_

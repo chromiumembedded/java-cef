@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_JNI_UTIL_H_
-#define CEF_TESTS_CEFCLIENT_JNI_UTIL_H_
+#ifndef JCEF_NATIVE_JNI_UTIL_H_
+#define JCEF_NATIVE_JNI_UTIL_H_
 
 #include <jni.h>
 #include <vector>
@@ -265,4 +265,4 @@ T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
   return NULL;
 }
 
-#endif // CEF_TESTS_CEFCLIENT_JNI_UTIL_H_
+#endif // JCEF_NATIVE_JNI_UTIL_H_

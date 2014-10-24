@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_RUN_FILE_DIALOG_CALLBACK_H_
-#define CEF_TESTS_CEFCLIENT_RUN_FILE_DIALOG_CALLBACK_H_
+#ifndef JCEF_NATIVE_RUN_FILE_DIALOG_CALLBACK_H_
+#define JCEF_NATIVE_RUN_FILE_DIALOG_CALLBACK_H_
 #pragma once
 
 #include <jni.h>
@@ -27,4 +27,4 @@ class RunFileDialogCallback : public CefRunFileDialogCallback {
   IMPLEMENT_REFCOUNTING(RunFileDialogCallback);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_RUN_FILE_DIALOG_CALLBACK_H_
+#endif  // JCEF_NATIVE_RUN_FILE_DIALOG_CALLBACK_H_

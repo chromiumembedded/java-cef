@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
-#define CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
+#ifndef JCEF_NATIVE_LIFE_SPAN_HANDLER_H_
+#define JCEF_NATIVE_LIFE_SPAN_HANDLER_H_
 #pragma once
 
 #include <list>
@@ -43,4 +43,4 @@ class LifeSpanHandler : public CefLifeSpanHandler {
   IMPLEMENT_LOCKING(LifeSpanHandler);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_LIFE_SPAN_HANDLER_H_
+#endif  // JCEF_NATIVE_LIFE_SPAN_HANDLER_H_

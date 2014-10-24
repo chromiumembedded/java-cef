@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_UTIL_MAC_H_
-#define CEF_TESTS_CEFCLIENT_UTIL_MAC_H_
+#ifndef JCEF_NATIVE_UTIL_MAC_H_
+#define JCEF_NATIVE_UTIL_MAC_H_
 
 #include <string>
 #include <jni.h>
@@ -51,4 +51,4 @@ void UpdateView(CefWindowHandle handle,
 void RemoveCefBrowser(CefRefPtr<CefBrowser> browser);
 }  // namespace util_mac
 
-#endif  // CEF_TESTS_CEFCLIENT_UTIL_MAC_H_
+#endif  // JCEF_NATIVE_UTIL_MAC_H_

@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_DISPLAY_HANDLER_H_
-#define CEF_TESTS_CEFCLIENT_DISPLAY_HANDLER_H_
+#ifndef JCEF_NATIVE_DISPLAY_HANDLER_H_
+#define JCEF_NATIVE_DISPLAY_HANDLER_H_
 #pragma once
 
 #include <jni.h>
@@ -38,4 +38,4 @@ class DisplayHandler : public CefDisplayHandler {
   IMPLEMENT_LOCKING(DisplayHandler);
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_DISPLAY_HANDLER_H_
+#endif  // JCEF_NATIVE_DISPLAY_HANDLER_H_
