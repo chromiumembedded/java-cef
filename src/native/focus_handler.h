@@ -25,8 +25,6 @@ class FocusHandler : public CefFocusHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(FocusHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(FocusHandler);
 };
 
 #endif  // JCEF_NATIVE_FOCUS_HANDLER_H_

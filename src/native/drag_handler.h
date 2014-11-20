@@ -25,8 +25,6 @@ class DragHandler : public CefDragHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DragHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(DragHandler);
 };
 
 #endif  // JCEF_NATIVE_DRAG_HANDLER_H_

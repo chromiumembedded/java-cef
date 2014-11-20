@@ -34,8 +34,6 @@ class DisplayHandler : public CefDisplayHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DisplayHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(DisplayHandler);
 };
 
 #endif  // JCEF_NATIVE_DISPLAY_HANDLER_H_

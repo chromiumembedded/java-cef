@@ -15,16 +15,20 @@ import org.cef.callback.CefGeolocationCallback;
 public interface CefGeolocationHandler {
   /**
    * Called when a page requests permission to access geolocation information.
+   * Return true and call CefGeolocationCallback.Continue() either in this
+   * method or at a later time to continue or cancel the request.
+   * Return false to cancel the request immediately.
    * @param browser The corresponding browser.
    * @param requesting_url is the URL requesting permission.
    * @param request_id is the unique ID for the permission request.
-   * @param callback Call CefGeolocationCallback.Continue to allow or deny the 
+   * @param callback Call CefGeolocationCallback.Continue to allow or deny the
    * permission request.
    */
-  public void onRequestGeolocationPermission(CefBrowser browser,
-                                             String requesting_url,
-                                             int request_id,
-                                             CefGeolocationCallback callback);
+  public boolean onRequestGeolocationPermission(
+      CefBrowser browser,
+      String requesting_url,
+      int request_id,
+      CefGeolocationCallback callback);
 
   /**
    * Called when a geolocation access request is canceled.

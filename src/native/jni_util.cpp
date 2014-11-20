@@ -521,6 +521,54 @@ bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
+CefPageRange GetJNIPageRange(JNIEnv* env, jobject obj) {
+  CefPageRange range;
+
+  jclass cls = env->FindClass("org/cef/misc/CefPageRange");
+  if (!cls)
+    return range;
+
+  int from, to;
+  if (GetJNIFieldInt(env, cls, obj, "from", &from) &&
+      GetJNIFieldInt(env, cls, obj, "to", &to)) {
+    range.Set(from, to);
+  }
+  return range;
+}
+
+jobject NewJNIPageRange(JNIEnv* env, const CefPageRange& range) {
+  jclass cls = env->FindClass("org/cef/misc/CefPageRange");
+  if (!cls)
+    return NULL;
+
+  jobject obj = NewJNIObject(env, cls);
+  if (!obj)
+    return NULL;
+
+  if (SetJNIFieldInt(env, cls, obj, "from", range.from) &&
+      SetJNIFieldInt(env, cls, obj, "to", range.to)) {
+    return obj;
+  }
+
+  env->DeleteLocalRef(obj);
+  return NULL;
+}
+
+CefSize GetJNISize(JNIEnv* env, jobject obj) {
+  CefSize size;
+
+  jclass cls = env->FindClass("java/awt/Dimension");
+  if (!cls)
+    return size;
+
+  int width, height;
+  if (GetJNIFieldInt(env, cls, obj, "width", &width) &&
+      GetJNIFieldInt(env, cls, obj, "height", &height)) {
+    size.Set(width, height);
+  }
+  return size;
+}
+
 CefRect GetJNIRect(JNIEnv* env, jobject obj) {
   CefRect rect;
 

@@ -4,6 +4,8 @@
 
 package org.cef.callback;
 
+import java.util.Vector;
+
 /**
  *  Provides information about the context menu state. The methods of this class
  * can only be accessed on browser process the UI thread.
@@ -145,6 +147,24 @@ public interface CefContextMenuParams {
   String getSelectionText();
 
   /**
+   * Returns the text of the misspelled word, if any, that the context menu was
+   * invoked on.
+   */
+  String getMisspelledWord();
+
+  /**
+   * Returns the hash of the misspelled word, if any, that the context menu was
+   * invoked on.
+   */
+  int getMisspellingHash();
+
+  /**
+   * Returns true if suggestions exist, false otherwise. Fills in |suggestions|
+   * from the spell check service for the misspelled word if there is one.
+   */
+  boolean getDictionarySuggestions(Vector<String> suggestions);
+
+  /**
    * Returns true if the context menu was invoked on an editable node.
    */
   
@@ -152,10 +172,10 @@ public interface CefContextMenuParams {
 
   /**
    * Returns true if the context menu was invoked on an editable node where
-   * speech-input is enabled.
+   * spell-check is enabled.
    */
   
-  boolean isSpeechInputEnabled();
+  boolean isSpellCheckEnabled();
 
   /**
    * Returns flags representing the actions supported by the editable node, if

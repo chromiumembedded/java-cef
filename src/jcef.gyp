@@ -78,6 +78,12 @@
         'native/CefPostData_N.h',
         'native/CefPostDataElement_N.cpp',
         'native/CefPostDataElement_N.h',
+        'native/CefPrintDialogCallback_N.cpp',
+        'native/CefPrintDialogCallback_N.h',
+        'native/CefPrintJobCallback_N.cpp',
+        'native/CefPrintJobCallback_N.h',
+        'native/CefPrintSettings_N.cpp',
+        'native/CefPrintSettings_N.h',
         'native/CefQueryCallback_N.cpp',
         'native/CefQueryCallback_N.h',
         'native/CefQuotaCallback_N.cpp',
@@ -134,6 +140,8 @@
         'native/load_handler.h',
         'native/message_router_handler.cpp',
         'native/message_router_handler.h',
+        'native/print_handler.cpp',
+        'native/print_handler.h',
         'native/render_handler.cpp',
         'native/render_handler.h',
         'native/request_context_handler.cpp',
@@ -253,6 +261,8 @@
                 'cp',
                 '-rf',
                 '<(cef_directory)/Resources/cef.pak',
+                '<(cef_directory)/Resources/cef_100_percent.pak',
+                '<(cef_directory)/Resources/cef_200_percent.pak',
                 '<(cef_directory)/Resources/devtools_resources.pak',
                 '<(cef_directory)/Resources/icudtl.dat',
                 '<(cef_directory)/Resources/locales',
@@ -268,8 +278,10 @@
               'action': [
                 'cp',
                 '-rf',
+                '<(cef_directory)/$(BUILDTYPE)/chrome-sandbox',
                 '<(cef_directory)/$(BUILDTYPE)/libcef.so',
                 '<(cef_directory)/$(BUILDTYPE)/libffmpegsumo.so',
+                '<(cef_directory)/$(BUILDTYPE)/libpdf.so',
                 '<(PRODUCT_DIR)',
               ],
             },
@@ -471,7 +483,6 @@
               'destination': '<(PRODUCT_DIR)/<(jcef_launch_name).app/Contents/Frameworks',
               'files': [
                 '<(PRODUCT_DIR)/jcef Helper.app',
-                '<(cef_directory)/Release/libplugin_carbon_interpose.dylib',
               ],
             },
             {
@@ -542,7 +553,6 @@
               'destination': '<(PRODUCT_DIR)/<(jcef_simple_launch_name).app/Contents/Frameworks',
               'files': [
                 '<(PRODUCT_DIR)/jcef Helper.app',
-                '<(cef_directory)/Release/libplugin_carbon_interpose.dylib',
               ],
             },
             {

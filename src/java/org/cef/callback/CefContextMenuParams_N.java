@@ -4,6 +4,8 @@
 
 package org.cef.callback;
 
+import java.util.Vector;
+
 class CefContextMenuParams_N extends CefNativeAdapter implements
     CefContextMenuParams {
 
@@ -141,6 +143,36 @@ class CefContextMenuParams_N extends CefNativeAdapter implements
   }
 
   @Override
+  public String getMisspelledWord() {
+    try {
+      return N_GetMisspelledWord();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
+  public int getMisspellingHash() {
+    try {
+      return N_GetMisspellingHash();
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return 0;
+  }
+
+  @Override
+  public boolean getDictionarySuggestions(Vector<String> suggestions) {
+    try {
+      return N_GetDictionarySuggestions(suggestions);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+    return false;
+  }
+
+  @Override
   public boolean isEditable() {
     try {
       return N_IsEditable();
@@ -151,9 +183,9 @@ class CefContextMenuParams_N extends CefNativeAdapter implements
   }
 
   @Override
-  public boolean isSpeechInputEnabled() {
+  public boolean isSpellCheckEnabled() {
     try {
-      return N_IsSpeechInputEnabled();
+      return N_IsSpellCheckEnabled();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -183,7 +215,11 @@ class CefContextMenuParams_N extends CefNativeAdapter implements
   private final native MediaType N_GetMediaType();
   private final native int N_GetMediaStateFlags();
   private final native String N_GetSelectionText();
+  private final native String N_GetMisspelledWord();
+  private final native int N_GetMisspellingHash();
+  private final native boolean N_GetDictionarySuggestions(
+      Vector<String> suggestions);
   private final native boolean N_IsEditable();
-  private final native boolean N_IsSpeechInputEnabled();
+  private final native boolean N_IsSpellCheckEnabled();
   private final native int N_GetEditStateFlags();
 }

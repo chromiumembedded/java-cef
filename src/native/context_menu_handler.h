@@ -34,8 +34,6 @@ class ContextMenuHandler : public CefContextMenuHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ContextMenuHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(ContextMenuHandler);
 };
 
 #endif  // JCEF_NATIVE_CONTEXT_MENU_HANDLER_H_

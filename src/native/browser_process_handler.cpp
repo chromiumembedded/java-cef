@@ -6,22 +6,22 @@
 #include "client_handler.h"
 
 #include "jni_util.h"
+#include "print_handler.h"
 #include "util.h"
 
 #include "include/cef_base.h"
 
 // instantiate static values
 std::set<CefMessageRouterConfig, cmpCfg> BrowserProcessHandler::router_cfg_;
-CefCriticalSection BrowserProcessHandler::router_cfg_lock_;
+base::Lock BrowserProcessHandler::router_cfg_lock_;
 
 BrowserProcessHandler::BrowserProcessHandler(jobject app_handler) {
   app_handler_ = app_handler;
 }
 
 BrowserProcessHandler::~BrowserProcessHandler() {
-  router_cfg_lock_.Lock();
+  base::AutoLock lock_scope(router_cfg_lock_);
   router_cfg_.clear();
-  router_cfg_lock_.Unlock();
 }
 
 void BrowserProcessHandler::OnContextInitialized() {
@@ -39,7 +39,7 @@ void BrowserProcessHandler::OnRenderProcessThreadCreated(
   static std::set<CefMessageRouterConfig, cmpCfg>::iterator iter;
 
   // Delegate creation of the renderer-side router for query handling.
-  router_cfg_lock_.Lock();
+  base::AutoLock lock_scope(router_cfg_lock_);
   for (iter = router_cfg_.begin(); iter != router_cfg_.end(); ++iter) {
     CefRefPtr<CefDictionaryValue> dict = CefDictionaryValue::Create();
     dict->SetString("js_query_function", iter->js_query_function);
@@ -47,19 +47,35 @@ void BrowserProcessHandler::OnRenderProcessThreadCreated(
     extra_info->SetDictionary(idx, dict);
     idx++;
   }
-  router_cfg_lock_.Unlock();
+}
+
+CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
+  CefRefPtr<CefPrintHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, app_handler_, "getPrintHandler",
+      "()Lorg/cef/handler/CefPrintHandler;", Object, handler);
+
+  if (handler != NULL) {
+    result = GetCefFromJNIObject<CefPrintHandler>(env, handler,
+        "CefPrintHandler");
+    if (!result.get()) {
+      result = new PrintHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "CefPrintHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
 }
 
 void BrowserProcessHandler::AddMessageRouterConfig(
     const CefMessageRouterConfig& cfg) {
-  router_cfg_lock_.Lock();
+  base::AutoLock lock_scope(router_cfg_lock_);
   router_cfg_.insert(cfg);
-  router_cfg_lock_.Unlock();
 }
 
 void BrowserProcessHandler::RemoveMessageRouterConfig(
     const CefMessageRouterConfig& cfg) {
-  router_cfg_lock_.Lock();
+  base::AutoLock lock_scope(router_cfg_lock_);
   router_cfg_.erase(cfg);
-  router_cfg_lock_.Unlock();
 }

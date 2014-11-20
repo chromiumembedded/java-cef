@@ -60,4 +60,12 @@ public interface CefAppHandler {
     * has been initialized.
     */
    public void onContextInitialized();
+
+   /**
+    * Return the handler for printing on Linux. If a print handler is not
+    * provided then printing will not be supported on the Linux platform.
+    *
+    * @return a reference to a print handler implementation
+    */
+   public CefPrintHandler getPrintHandler();
 }

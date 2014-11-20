@@ -5,6 +5,7 @@
 package org.cef.browser;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.util.Vector;
 
 import org.cef.callback.CefRunFileDialogCallback;
@@ -258,4 +259,20 @@ public interface CefBrowser {
    * embedded within your UI. Only one instance per browser is available.
    */
   public CefBrowser getDevTools();
+
+  /**
+   * Get an instance of the dev tools to be displayed in its own window or to be
+   * embedded within your UI. Only one instance per browser is available.
+   * 
+   * @param inspectAt a position in the UI which should be inspected.
+   */
+  public CefBrowser getDevTools(Point inspectAt);
+
+  /**
+   * If a misspelled word is currently selected in an editable node calling
+   * this method will replace it with the specified |word|.
+   *
+   * @param word replace selected word with this word.
+   */
+  public void replaceMisspelling(String word);
 }

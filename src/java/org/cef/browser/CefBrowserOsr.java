@@ -39,26 +39,28 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   private CefRenderer renderer_;
   private GLCanvas canvas_;
   private long window_handle_ = 0;
-  private Rectangle browser_rect_ = new Rectangle(0, 0, 0, 0);
+  private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1);  // Work around CEF issue #1437.
   private CefClientHandler clientHandler_;
   private String url_;
   private boolean isTransparent_;
   private CefRequestContext context_;
   private CefBrowserOsr parent_ = null;
+  private Point inspectAt_ = null;
   private CefBrowserOsr devTools_ = null;;
 
   CefBrowserOsr(CefClientHandler clientHandler,
                 String url,
                 boolean transparent,
                 CefRequestContext context) {
-    this(clientHandler, url, transparent, context, null);
+    this(clientHandler, url, transparent, context, null, null);
   }
 
   private CefBrowserOsr(CefClientHandler clientHandler,
                         String url,
                         boolean transparent,
                         CefRequestContext context,
-                        CefBrowserOsr parent) {
+                        CefBrowserOsr parent,
+                        Point inspectAt) {
     super();
     isTransparent_ = transparent;
     renderer_ = new CefRenderer(transparent);
@@ -66,6 +68,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     url_ = url;
     context_ = context;
     parent_ = parent;
+    inspectAt_ = inspectAt;
     createGLCanvas();
   }
 
@@ -93,12 +96,18 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
   @Override
   public synchronized CefBrowser getDevTools() {
+    return getDevTools(null);
+  }
+
+  @Override
+  public synchronized CefBrowser getDevTools(Point inspectAt) {
     if (devTools_ == null) {
       devTools_ = new CefBrowserOsr(clientHandler_,
                                     url_,
                                     isTransparent_,
                                     context_,
-                                    this);
+                                    this,
+                                    inspectAt);
     }
     return devTools_;
   }
@@ -128,7 +137,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                          clientHandler_,
                          getWindowHandle(),
                          isTransparent_,
-                         null);
+                         null,
+                         inspectAt_);
         } else {
           createBrowser(clientHandler_,
                         getWindowHandle(),
@@ -243,9 +253,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   @Override
   public void onPopupShow(CefBrowser browser, boolean show) {
     if (!show) {
-      Rectangle old_rect = renderer_.getPopupRect();
       renderer_.clearPopupRects();
-      invalidate(old_rect);
+      invalidate();
      }
   }
 

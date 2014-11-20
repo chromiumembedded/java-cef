@@ -18,10 +18,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_CreateDevTools
- * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefClientHandler;JZLjava/awt/Component;)Z
+ * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefClientHandler;JZLjava/awt/Component;Ljava/awt/Point;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
-  (JNIEnv *, jobject, jobject, jobject, jlong, jboolean, jobject);
+  (JNIEnv *, jobject, jobject, jobject, jlong, jboolean, jobject, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
@@ -273,6 +273,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CloseDevTools
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_ReplaceMisspelling
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ReplaceMisspelling
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_WasResized
  * Signature: (II)V
  */
@@ -282,10 +290,10 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1WasResized
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_Invalidate
- * Signature: (Ljava/awt/Rectangle;)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Invalidate
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N

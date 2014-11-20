@@ -80,4 +80,10 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
   public void onContextInitialized() {
     // The default implementation does nothing
   }
+
+  @Override
+  public CefPrintHandler getPrintHandler() {
+    // The default implementation does nothing
+    return null;
+  }
 }

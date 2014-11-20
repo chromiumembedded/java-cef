@@ -9,6 +9,7 @@
 #include <set>
 #include <jni.h>
 #include "include/cef_browser_process_handler.h"
+#include "include/base/cef_lock.h"
 #include "include/wrapper/cef_message_router.h"
 
 // comparator to check if configuration values are the same
@@ -32,12 +33,14 @@ class BrowserProcessHandler : public CefBrowserProcessHandler {
   virtual void OnRenderProcessThreadCreated(
       CefRefPtr<CefListValue> extra_info) OVERRIDE;
 
+  virtual CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
+
   static void AddMessageRouterConfig(const CefMessageRouterConfig& cfg);  
   static void RemoveMessageRouterConfig(const CefMessageRouterConfig& cfg);
  protected:
   jobject app_handler_;
   static std::set<CefMessageRouterConfig, cmpCfg> router_cfg_;
-  static CefCriticalSection router_cfg_lock_;
+  static base::Lock router_cfg_lock_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(BrowserProcessHandler);

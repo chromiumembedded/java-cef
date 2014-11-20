@@ -130,7 +130,8 @@ jboolean create(JNIEnv* env,
                 jstring url,
                 jboolean transparent,
                 jobject canvas,
-                jobject jcontext) {
+                jobject jcontext,
+                jobject jinspectAt) {
   CefRefPtr<ClientHandler> clientHandler =
       GetCefFromJNIObject<ClientHandler>(env, jclientHandler, "CefClientHandler");
   if (!clientHandler.get())
@@ -181,9 +182,16 @@ jboolean create(JNIEnv* env,
 
   // If parentBrowser is set, we want to show the DEV-Tools for that browser
   if (parentBrowser.get() != NULL) {
+    CefPoint inspectAt;
+    if (jinspectAt != NULL) {
+      int x, y;
+      GetJNIPoint(env, jinspectAt, &x, &y);
+      inspectAt.Set(x, y);
+    }
     parentBrowser->GetHost()->ShowDevTools(windowInfo,
                                            clientHandler.get(),
-                                           settings);
+                                           settings,
+                                           inspectAt);
     return JNI_TRUE;
   }
 
@@ -225,15 +233,15 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
   jstring url, jboolean transparent, jobject canvas, jobject jcontext) {
 
   return create(env, jbrowser, NULL, jclientHandler, windowHandle, url,
-      transparent, canvas, jcontext);
+      transparent, canvas, jcontext, NULL);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
   (JNIEnv *env, jobject jbrowser, jobject jparent, jobject jclientHandler,
-   jlong windowHandle, jboolean transparent, jobject canvas) {
+   jlong windowHandle, jboolean transparent, jobject canvas, jobject inspect) {
 
   return create(env, jbrowser, jparent, jclientHandler, windowHandle, NULL,
-      transparent, canvas, NULL);
+      transparent, canvas, NULL, inspect);
 }
 
 JNIEXPORT jlong JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle
@@ -516,6 +524,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CloseDevTools
   browser->GetHost()->CloseDevTools();
 }
 
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ReplaceMisspelling
+  (JNIEnv *env, jobject obj, jstring jword) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  browser->GetHost()->ReplaceMisspelling(GetJNIString(env, jword));
+}
+
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1WasResized
   (JNIEnv *env, jobject obj, jint width, jint height) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
@@ -536,10 +550,9 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1WasResized
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Invalidate
-  (JNIEnv *env, jobject obj, jobject rect) {
+  (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  CefRect dirtyRect = GetJNIRect(env, rect);
-  browser->GetHost()->Invalidate(dirtyRect, PET_VIEW);
+  browser->GetHost()->Invalidate(PET_VIEW);
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent

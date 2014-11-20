@@ -9,6 +9,7 @@
 #include <set>
 #include <jni.h>
 #include "include/cef_client.h"
+#include "include/base/cef_lock.h"
 #include "message_router_handler.h"
 
 // ClientHandler implementation.
@@ -58,10 +59,10 @@ class ClientHandler : public CefClient {
 
   std::set<CefRefPtr<CefMessageRouterBrowserSide> > message_router_;
 
+  base::Lock lock_;
+
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ClientHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(ClientHandler);
 };
 
 #endif  // JCEF_NATIVE_CLIENT_HANDLER_H_

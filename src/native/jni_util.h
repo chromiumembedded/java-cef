@@ -139,6 +139,15 @@ bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
 bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
                       const char* method_name, char* value);
 
+// Retrieve the CefPageRange equivalent of a org.cef.misc.CefPageRange
+CefPageRange GetJNIPageRange(JNIEnv* env, jobject obj);
+
+// Create a new org.cef.misc.CefPageRange
+jobject NewJNIPageRange(JNIEnv* env, const CefPageRange& range);
+
+// Rertieve the CefSize equivalent of a java.awt.Dimension.
+CefSize GetJNISize(JNIEnv* env, jobject obj);
+
 // Retrieve the CefRect equivalent of a java.awt.Rectangle.
 CefRect GetJNIRect(JNIEnv* env, jobject obj);
 

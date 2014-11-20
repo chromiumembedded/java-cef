@@ -40,6 +40,8 @@ Optional components:
 
 * Other resources
     cef.pak
+    cef_100_percent.pak
+    cef_200_percent.pak
     devtools_resources.pak
   Note: Contains WebKit image and inspector resources. Pack file loading can be
   disabled completely using CefSettings.pack_loading_disabled. The resources
@@ -48,3 +50,7 @@ Optional components:
 * FFmpeg audio and video support
     ffmpegsumo.dll
   Note: Without this component HTML5 audio and video will not function.
+
+* PDF support
+    pdf.dll
+  Note: Without this component printing will not function.

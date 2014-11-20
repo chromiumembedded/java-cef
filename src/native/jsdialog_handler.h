@@ -38,8 +38,6 @@ class JSDialogHandler : public CefJSDialogHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(JSDialogHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(JSDialogHandler);
 };
 
 #endif  // JCEF_NATIVE_JSDIALOG_HANDLER_H_

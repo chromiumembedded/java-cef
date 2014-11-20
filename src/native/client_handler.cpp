@@ -262,7 +262,7 @@ bool ClientHandler::OnProcessMessageReceived(
   std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
   bool handled = false;
   
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
     handled = (*iter)->OnProcessMessageReceived(browser, source_process, message);
     if (handled)
@@ -280,7 +280,7 @@ void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   CefMessageRouterConfig config =
       GetJNIMessageRouterConfigFromRouter(env, jmessageRouter);
 
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   // 1) Add CefMessageRouterBrowserSide into the list.
   message_router_.insert(router);
 
@@ -317,7 +317,7 @@ void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   CefMessageRouterConfig config =
       GetJNIMessageRouterConfigFromRouter(env, jmessageRouter);
 
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   // 1) Remove CefMessageRouterBrowserSide from the list.
   message_router_.erase(router);
 
@@ -351,7 +351,7 @@ void ClientHandler::OnAfterCreated() {
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
   for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
     (*iter)->OnBeforeClose(browser);
@@ -361,7 +361,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 void ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame) {
                                    
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
   for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
     (*iter)->OnBeforeBrowse(browser, frame);
@@ -369,7 +369,7 @@ void ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
 }
 
 void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) {
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   std::set<CefRefPtr<CefMessageRouterBrowserSide> >::iterator iter;
   for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
     (*iter)->OnRenderProcessTerminated(browser);

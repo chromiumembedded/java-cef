@@ -56,8 +56,6 @@ class RenderHandler : public CefRenderHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RenderHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(RenderHandler);
 };
 
 #endif  // JCEF_NATIVE_RENDER_HANDLER_H_

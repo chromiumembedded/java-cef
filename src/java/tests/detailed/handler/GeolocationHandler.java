@@ -20,7 +20,7 @@ public class GeolocationHandler extends CefGeolocationHandlerAdapter {
   }
 
   @Override
-  public void onRequestGeolocationPermission(CefBrowser browser,
+  public boolean onRequestGeolocationPermission(CefBrowser browser,
                                              String requesting_url,
                                              int request_id,
                                              CefGeolocationCallback callback) {
@@ -39,5 +39,6 @@ public class GeolocationHandler extends CefGeolocationHandlerAdapter {
         cb.Continue(dialogResult == JOptionPane.YES_OPTION);
       }
     });
+    return true;
   }
 }

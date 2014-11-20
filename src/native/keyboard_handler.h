@@ -30,8 +30,6 @@ class KeyboardHandler : public CefKeyboardHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(KeyboardHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(KeyboardHandler);
 };
 
 #endif  // JCEF_NATIVE_KEYBOARD_HANDLER_H_

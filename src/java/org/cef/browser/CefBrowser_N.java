@@ -59,14 +59,16 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                       CefClientHandler clientHandler,
                                       long windowHandle,
                                       boolean transparent,
-                                      Component canvas) {
+                                      Component canvas,
+                                      Point inspectAt) {
     if (getNativeRef("CefBrowser") == 0 && !isPending_) {
       try {
         isPending_ = N_CreateDevTools(parent,
                                       clientHandler,
                                       windowHandle,
                                       transparent,
-                                      canvas);
+                                      canvas,
+                                      inspectAt);
       } catch (UnsatisfiedLinkError err) {
         err.printStackTrace();
       }
@@ -373,6 +375,15 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
   }
 
+  @Override
+  public void replaceMisspelling(String word) {
+    try {
+      N_ReplaceMisspelling(word);
+    } catch (UnsatisfiedLinkError ule) {
+      ule.printStackTrace();
+    }
+  }
+
   /**
   * Notify that the browser was resized.
   * @param width The new width of the browser
@@ -387,12 +398,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   }
 
   /**
-  * Invalidate the specified rectangle.
-  * @param rect The rectangle to invalidate.
+  * Invalidate the UI.
   */
-  protected final void invalidate(Rectangle rect) {
+  protected final void invalidate() {
     try {
-      N_Invalidate(rect);
+      N_Invalidate();
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -550,7 +560,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                                 CefClientHandler clientHandler,
                                                 long windowHandle,
                                                 boolean transparent,
-                                                Component canvas);
+                                                Component canvas,
+                                                Point inspectAt);
   private final native long N_GetWindowHandle(long surfaceHandle);
   private final native boolean N_CanGoBack();
   private final native void N_GoBack();
@@ -592,8 +603,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                                    boolean findNext);
   private final native void N_StopFinding(boolean clearSelection);
   private final native void N_CloseDevTools();
+  private final native void N_ReplaceMisspelling(String word);
   private final native void N_WasResized(int width, int height);
-  private final native void N_Invalidate(Rectangle rect);
+  private final native void N_Invalidate();
   private final native void N_SendKeyEvent(KeyEvent e);
   private final native void N_SendMouseEvent(MouseEvent e);
   private final native void N_SendMouseWheelEvent(MouseWheelEvent e);

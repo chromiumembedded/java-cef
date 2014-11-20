@@ -16,7 +16,7 @@ class GeolocationHandler : public CefGeolocationHandler {
   virtual ~GeolocationHandler();
 
   // CefGeolocationHandler methods
-  virtual void OnRequestGeolocationPermission(
+  virtual bool OnRequestGeolocationPermission(
       CefRefPtr<CefBrowser> browser,
       const CefString& requesting_url,
       int request_id,
@@ -32,8 +32,6 @@ class GeolocationHandler : public CefGeolocationHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(GeolocationHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(GeolocationHandler);
 };
 
 #endif  // JCEF_NATIVE_GEOLOCATION_HANDLER_H_

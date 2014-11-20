@@ -30,8 +30,6 @@ class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler, CefBas
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(MessageRouterHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(MessageRouterHandler);
 };
 
 #endif  // JCEF_NATIVE_MESSAGE_ROUTER_HANDLER_H_

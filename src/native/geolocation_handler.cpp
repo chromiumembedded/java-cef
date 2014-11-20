@@ -17,25 +17,37 @@ GeolocationHandler::~GeolocationHandler() {
   env->DeleteGlobalRef(jhandler_);
 }
 
-void GeolocationHandler::OnRequestGeolocationPermission(
+bool GeolocationHandler::OnRequestGeolocationPermission(
       CefRefPtr<CefBrowser> browser,
       const CefString& requesting_url,
       int request_id,
       CefRefPtr<CefGeolocationCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
-    return;
-  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefGeolocationCallback_N");
+    return false;
+  jobject jcallback =
+      NewJNIObject(env, "org/cef/callback/CefGeolocationCallback_N");
+
   if (!jcallback)
-    return;
+    return false;
   SetCefForJNIObject(env, jcallback, callback.get(), "CefGeolocationCallback");
-  JNI_CALL_VOID_METHOD(env, jhandler_,
-                       "onRequestGeolocationPermission",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;ILorg/cef/callback/CefGeolocationCallback;)V",
-                       GetJNIBrowser(browser),
-                       NewJNIString(env, requesting_url),
-                       request_id,
-                       jcallback);
+  jboolean jresult = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                  "onRequestGeolocationPermission",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
+                  "ILorg/cef/callback/CefGeolocationCallback;)Z",
+                  Boolean,
+                  jresult,
+                  GetJNIBrowser(browser),
+                  NewJNIString(env, requesting_url),
+                  request_id,
+                  jcallback);
+
+  if (jresult == JNI_FALSE) {
+    SetCefForJNIObject<CefGeolocationCallback>(env, jcallback, NULL,
+        "CefGeolocationCallback");
+  }
+  return (jresult != JNI_FALSE);
 }
 
 void GeolocationHandler::OnCancelGeolocationPermission(

@@ -47,6 +47,7 @@ class CefBrowserWr extends CefBrowser_N {
   private String url_;
   private CefRequestContext context_;
   private CefBrowserWr parent_ = null;
+  private Point inspectAt_ = null;
   private CefBrowserWr devTools_ = null;
   private boolean isDisposed = false;
   private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
@@ -74,19 +75,21 @@ class CefBrowserWr extends CefBrowser_N {
   CefBrowserWr(CefClientHandler clientHandler,
                String url,
                CefRequestContext context) {
-    this(clientHandler, url, context, null);
+    this(clientHandler, url, context, null, null);
   }
 
   @SuppressWarnings("serial")
   private CefBrowserWr(CefClientHandler clientHandler,
                        String url,
                        CefRequestContext context,
-                       CefBrowserWr parent) {
+                       CefBrowserWr parent,
+                       Point inspectAt) {
     super();
     clientHandler_ = clientHandler;
     url_ = url;
     context_ = context;
     parent_ = parent;
+    inspectAt_ = inspectAt;
     delayedUpdate_.setRepeats(false);
 
     // Disabling lightweight of popup menu is required because
@@ -202,8 +205,17 @@ class CefBrowserWr extends CefBrowser_N {
 
   @Override
   public synchronized CefBrowser getDevTools() {
+    return getDevTools(null);
+  }
+
+  @Override
+  public synchronized CefBrowser getDevTools(Point inspectAt) {
     if (devTools_ == null)
-      devTools_ = new CefBrowserWr(clientHandler_, url_, context_, this);
+      devTools_ = new CefBrowserWr(clientHandler_,
+                                   url_,
+                                   context_,
+                                   this,
+                                   inspectAt);
     return devTools_;
   }
 
@@ -269,7 +281,8 @@ class CefBrowserWr extends CefBrowser_N {
                        clientHandler_,
                        getWindowHandle(),
                        false,
-                       OS.isWindows() ? canvas_ : component_);
+                       OS.isWindows() ? canvas_ : component_,
+                       inspectAt_);
       } else {
         createBrowser(clientHandler_,
                       getWindowHandle(),

@@ -22,7 +22,7 @@ WriteHandler::~WriteHandler() {
 }
 
 size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
-  AutoLock lock_scope(this);
+  base::AutoLock lock_scope(lock_);
   size_t rv = n;
   BEGIN_ENV(env)
   jbyteArray jbyteArray = env->NewByteArray((jsize)(size*n));

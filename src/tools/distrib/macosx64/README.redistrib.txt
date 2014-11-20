@@ -15,13 +15,17 @@ jcef_app.app/
       Chromium Embedded Framework.framework/
         Libraries/
           ffmpegsumo.so <= HTML5 audio/video support library
+          PDF.plugin <= Pepper plugin for PDF support
           libcef.dylib <= CEF core library
         Resources/
-          cef.pak, devtools_resources.pak <= non-localized resources and strings
-          en.lproj/, ... <= locale-specific resources and strings
+          cef.pak <= non-localized resources and strings
+          cef_100_percent.pak <====^
+          cef_200_percent.pak <====^
+          devtools_resources.pak <=^
+          crash_inspector, crash_report_sender <= breakpad support
           icudtl.dat <= unicode support
+          en.lproj/, ... <= locale-specific resources and strings
           Info.plist
-      libplugin_carbon_interpose.dylib <= plugin support library
       jcef Helper.app/
         Contents/
           Info.plist
@@ -68,9 +72,6 @@ Required components:
 * CEF core library
     Chromium Embedded Framework.framework/Libraries/libcef.dylib
 
-* Plugin support library
-    libplugin_carbon_interpose.dylib
-
 * Cursor resources
     Chromium Embedded Framework.framework/Resources/*.png
     Chromium Embedded Framework.framework/Resources/*.tiff
@@ -93,6 +94,8 @@ Optional components:
 
 * Other resources
     Chromium Embedded Framework.framework/Resources/cef.pak
+    Chromium Embedded Framework.framework/Resources/cef_100_percent.pak
+    Chromium Embedded Framework.framework/Resources/cef_200_percent.pak
     Chromium Embedded Framework.framework/Resources/devtools_resources.pak
   Note: Contains WebKit image and inspector resources. Pack file loading can be
   disabled completely using CefSettings.pack_loading_disabled. The resources
@@ -101,3 +104,12 @@ Optional components:
 * FFmpeg audio and video support
     Chromium Embedded Framework.framework/Libraries/ffmpegsumo.so
   Note: Without this component HTML5 audio and video will not function.
+
+* PDF support
+    Chromium Embedded Framework.framework/Libraries/PDF.plugin
+
+* Breakpad support
+    Chromium Embedded Framework.framework/Resources/crash_inspector
+    Chromium Embedded Framework.framework/Resources/crash_report_sender
+    Chromium Embedded Framework.framework/Resources/Info.plist
+  Note: Without these components breakpad support will not function.

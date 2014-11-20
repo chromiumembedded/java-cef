@@ -34,6 +34,8 @@ public abstract class CefRequest {
     RT_PREFETCH,      //!< Explicitly requested prefetch.
     RT_FAVICON,       //!< Favicon.
     RT_XHR,           //!< XMLHttpRequest.
+    RT_PING,          //!< A request for a <ping>
+    RT_SERVICE_WORKER //!< Main resource of a service worker.
   }
 
   /**
@@ -177,11 +179,6 @@ public abstract class CefRequest {
      * If set upload progress events will be generated when a request has a body.
      */
     public static final int UR_FLAG_REPORT_UPLOAD_PROGRESS = 1 << 3;
-
-    /**
-     * If set load timing info will be collected for the request.
-     */
-    public static final int UR_FLAG_REPORT_LOAD_TIMING = 1 << 4;
 
     /**
      * If set the headers sent and received for the request will be recorded.

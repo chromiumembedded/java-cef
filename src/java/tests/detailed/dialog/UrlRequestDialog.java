@@ -181,9 +181,6 @@ public class UrlRequestDialog extends JDialog {
     addRequestFlag(flagsPanel, "Report Upload Progress",
         CefUrlRequestFlags.UR_FLAG_REPORT_UPLOAD_PROGRESS, 
         "If set upload progress events will be generated when a request has a body", false);
-    addRequestFlag(flagsPanel, "Report load timing",
-        CefUrlRequestFlags.UR_FLAG_REPORT_LOAD_TIMING,
-        "If set load timing info will be collected for the request", false);
     addRequestFlag(flagsPanel, "Report RawHeaders",
         CefUrlRequestFlags.UR_FLAG_REPORT_RAW_HEADERS,
         "If set the headers sent and received for the request will be recorded", false);

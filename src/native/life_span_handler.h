@@ -39,8 +39,6 @@ class LifeSpanHandler : public CefLifeSpanHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(LifeSpanHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(LifeSpanHandler);
 };
 
 #endif  // JCEF_NATIVE_LIFE_SPAN_HANDLER_H_

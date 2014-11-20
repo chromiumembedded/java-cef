@@ -74,8 +74,6 @@ class RequestHandler : public CefRequestHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RequestHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(RequestHandler);
 };
 
 #endif  // JCEF_NATIVE_REQUEST_HANDLER_H_

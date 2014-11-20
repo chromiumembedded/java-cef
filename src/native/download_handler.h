@@ -32,8 +32,6 @@ class DownloadHandler : public CefDownloadHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DownloadHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(DownloadHandler);
 };
 
 #endif  // JCEF_NATIVE_DOWNLOAD_HANDLER_H_

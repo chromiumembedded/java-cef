@@ -113,6 +113,30 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSe
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
+ * Method:    N_GetMisspelledWord
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspelledWord
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_callback_CefContextMenuParams_N
+ * Method:    N_GetMisspellingHash
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspellingHash
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_callback_CefContextMenuParams_N
+ * Method:    N_GetDictionarySuggestions
+ * Signature: (Ljava/util/Vector;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetDictionarySuggestions
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_IsEditable
  * Signature: ()Z
  */
@@ -121,10 +145,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsEd
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
- * Method:    N_IsSpeechInputEnabled
+ * Method:    N_IsSpellCheckEnabled
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsSpeechInputEnabled
+JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsSpellCheckEnabled
   (JNIEnv *, jobject);
 
 /*

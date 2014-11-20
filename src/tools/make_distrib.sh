@@ -84,11 +84,13 @@ else
       mkdir -p "$DISTRIB_LIB_PATH"
     fi
 
+    cp -f $OUT_BINARY_PATH/chrome-sandbox $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libffmpegsumo.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libjcef.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/jcef_helper $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/icudtl.dat $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libcef.so $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/libpdf.so $DISTRIB_LIB_PATH
     cp -f $OUT_PATH/Release/*.pak $DISTRIB_LIB_PATH
     cp -rf $OUT_PATH/Release/locales/ $DISTRIB_LIB_PATH
   fi

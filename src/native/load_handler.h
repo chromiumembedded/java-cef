@@ -38,8 +38,6 @@ class LoadHandler : public CefLoadHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(LoadHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(LoadHandler);
 };
 
 #endif  // JCEF_NATIVE_LOAD_HANDLER_H_

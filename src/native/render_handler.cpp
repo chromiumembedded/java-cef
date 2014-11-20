@@ -27,10 +27,10 @@ bool RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
 }
 
 bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
-                            int viewX,
-                            int viewY,
-                            int& screenX,
-                            int& screenY) {
+                                   int viewX,
+                                   int viewY,
+                                   int& screenX,
+                                   int& screenY) {
   return GetScreenPoint(GetJNIBrowser(browser), viewX, viewY, screenX, screenY);
 }
 
@@ -88,7 +88,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 }
 
 void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
-                            CefCursorHandle cursor) {
+                                   CefCursorHandle cursor) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
   	return;

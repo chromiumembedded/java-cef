@@ -137,6 +137,48 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSe
   return NewJNIString(env, menuParams->GetSelectionText());
 }
 
+JNIEXPORT jstring JNICALL
+  Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspelledWord
+    (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefContextMenuParams> menuParams =
+      GetCefFromJNIObject<CefContextMenuParams>(env, obj,
+          "CefContextMenuParams");
+  if (!menuParams.get())
+    return NULL;
+  return NewJNIString(env, menuParams->GetMisspelledWord());
+}
+
+JNIEXPORT jint JNICALL
+  Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspellingHash
+    (JNIEnv *env, jobject obj) {
+  CefRefPtr<CefContextMenuParams> menuParams =
+      GetCefFromJNIObject<CefContextMenuParams>(env, obj,
+          "CefContextMenuParams");
+  if (!menuParams.get())
+    return 0;
+  return (jint)menuParams->GetMisspellingHash();
+}
+
+JNIEXPORT jboolean JNICALL
+  Java_org_cef_callback_CefContextMenuParams_1N_N_1GetDictionarySuggestions
+    (JNIEnv *env, jobject obj, jobject jsuggestions) {
+  CefRefPtr<CefContextMenuParams> menuParams =
+      GetCefFromJNIObject<CefContextMenuParams>(env, obj,
+          "CefContextMenuParams");
+  if (!menuParams.get())
+    return false;
+
+  std::vector<CefString> suggestions;
+  bool result = menuParams->GetDictionarySuggestions(suggestions);
+  if (!result)
+    return JNI_FALSE;
+
+  for (std::vector<CefString>::size_type i=0; i<suggestions.size(); ++i) {
+    AddJNIStringToVector(env, jsuggestions, suggestions.at(i));
+  }
+  return JNI_TRUE;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsEditable
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefContextMenuParams> menuParams =
@@ -146,13 +188,15 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsEd
   return menuParams->IsEditable() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1IsSpeechInputEnabled
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+  Java_org_cef_callback_CefContextMenuParams_1N_N_1IsSpellCheckEnabled
+    (JNIEnv *env, jobject obj) {
   CefRefPtr<CefContextMenuParams> menuParams =
-      GetCefFromJNIObject<CefContextMenuParams>(env, obj, "CefContextMenuParams");
+      GetCefFromJNIObject<CefContextMenuParams>(env, obj,
+          "CefContextMenuParams");
   if (!menuParams.get())
     return JNI_FALSE;
-  return menuParams->IsSpeechInputEnabled() ? JNI_TRUE : JNI_FALSE;
+  return menuParams->IsSpellCheckEnabled() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jint JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetEditStateFlags

@@ -34,8 +34,6 @@ class ResourceHandler : public CefResourceHandler {
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ResourceHandler);
-  // Include the default locking implementation.
-  IMPLEMENT_LOCKING(ResourceHandler);
 };
 
 #endif  // JCEF_NATIVE_RESOURCE_HANDLER_H_

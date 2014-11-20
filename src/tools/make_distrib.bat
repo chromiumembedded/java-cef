@@ -61,6 +61,8 @@ copy %OUT_BINARY_PATH%\jcef.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\jcef_helper.exe %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\icudtl.dat %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\libcef.dll %DISTRIB_LIB_PATH%
+copy %OUT_BINARY_PATH%\pdf.dll %DISTRIB_LIB_PATH%
+if exist %OUT_BINARY_PATH%\wow_helper.exe copy %OUT_BINARY_PATH%\wow_helper.exe %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_PATH%\Release\*.pak %DISTRIB_LIB_PATH%
 
 :: Copy documentation to the docs directory.

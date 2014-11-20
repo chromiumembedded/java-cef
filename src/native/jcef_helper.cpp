@@ -59,7 +59,6 @@ public:
   }
 
   virtual void OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) OVERRIDE {
-    AutoLock lock_scope(this);
     for (size_t idx=0; idx < extra_info->GetSize(); idx++) {
       CefRefPtr<CefDictionaryValue> dict = extra_info->GetDictionary((int)idx);
       // Create the renderer-side router for query handling.
@@ -76,7 +75,6 @@ public:
   virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefV8Context> context) OVERRIDE {
-    AutoLock lock_scope(this);
     std::map<CefMessageRouterConfig,
              CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
@@ -88,7 +86,6 @@ public:
   virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefFrame> frame,
                                  CefRefPtr<CefV8Context> context) OVERRIDE {
-    AutoLock lock_scope(this);
     std::map<CefMessageRouterConfig,
              CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
@@ -101,8 +98,6 @@ public:
       CefRefPtr<CefBrowser> browser,
       CefProcessId source_process,
       CefRefPtr<CefProcessMessage> message) OVERRIDE {
-    AutoLock lock_scope(this);
-
     if (message->GetName() == "AddMessageRouter") {
       CefRefPtr<CefListValue> args = message->GetArgumentList();
       CefMessageRouterConfig config;
@@ -148,7 +143,6 @@ public:
            cmpCfg> message_router_;
 
   IMPLEMENT_REFCOUNTING(CefHelperApp);
-  IMPLEMENT_LOCKING(CefHelperApp);
 };
 
 }  // namespace
