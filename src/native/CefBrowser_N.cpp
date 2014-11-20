@@ -211,10 +211,10 @@ jboolean create(JNIEnv* env,
 void getZoomLevel(CefRefPtr<CefBrowserHost> host,
     CriticalWait* waitCond, double* result) {
   if (waitCond && result) {
-    waitCond->Lock();
+    waitCond->lock()->Lock();
     *result = host->GetZoomLevel();
     waitCond->WakeUp();
-    waitCond->Unlock();
+    waitCond->lock()->Unlock();
   }
 }
 
@@ -246,7 +246,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
 
 JNIEXPORT jlong JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle
   (JNIEnv *env, jobject obj, jlong displayHandle) {
-  CefWindowHandle windowHandle = NULL;
+  CefWindowHandle windowHandle = kNullWindowHandle;
 #if defined(OS_WIN)
   windowHandle = ::WindowFromDC((HDC)displayHandle);
 #elif defined(OS_LINUX)
@@ -441,12 +441,13 @@ JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel
   if (CefCurrentlyOn(TID_UI))
     result = host->GetZoomLevel();
   else {
-    CriticalWait waitCond;
-    waitCond.Lock();
+    CriticalLock lock;
+    CriticalWait waitCond(&lock);
+    lock.Lock();
     CefPostTask(TID_UI, NewCefRunnableFunction(getZoomLevel, host, &waitCond,
         &result));
     waitCond.Wait(1000);
-    waitCond.Unlock();
+    lock.Unlock();
   }
   return result;
 }

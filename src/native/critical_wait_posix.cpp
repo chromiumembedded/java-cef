@@ -6,7 +6,29 @@
 
 #include <sys/time.h>
 
-CriticalWait::CriticalWait() {
+// CriticalLock
+
+CriticalLock::CriticalLock() {
+  pthread_mutex_init(&lock_, NULL);
+}
+
+CriticalLock::~CriticalLock() {
+  pthread_mutex_destroy(&lock_);
+}
+
+void CriticalLock::Lock() {
+  pthread_mutex_lock(&lock_);
+}
+
+void CriticalLock::Unlock() {
+  pthread_mutex_unlock(&lock_);
+}
+
+
+// CriticalWait
+
+CriticalWait::CriticalWait(CriticalLock* lock)
+    : lock_(lock) {
   pthread_cond_init(&cond_, NULL);
 }
 
@@ -15,7 +37,7 @@ CriticalWait::~CriticalWait() {
 }
 
 void CriticalWait::Wait() {
-  pthread_cond_wait(&cond_, &critsec_.lock_);
+  pthread_cond_wait(&cond_, &lock_->lock_);
 }
 
 bool CriticalWait::Wait(unsigned int maxWaitMs) {
@@ -28,10 +50,11 @@ bool CriticalWait::Wait(unsigned int maxWaitMs) {
   ts.tv_sec = tv.tv_sec + sec;
   ts.tv_nsec = nsec;
 
-  int res = pthread_cond_timedwait(&cond_, &critsec_.lock_, &ts);
+  int res = pthread_cond_timedwait(&cond_, &lock_->lock_, &ts);
   return res == 0;
 }
 
 void CriticalWait::WakeUp() {
   pthread_cond_signal(&cond_);
 }
+

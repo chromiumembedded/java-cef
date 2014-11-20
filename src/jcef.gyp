@@ -241,7 +241,7 @@
           ],
           'sources': [
             'native/critical_wait_posix.cpp',
-            'native/render_handler_gtk.cpp',
+            'native/render_handler_linux.cpp',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
             'native/util_posix.cpp',

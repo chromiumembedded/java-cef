@@ -19,7 +19,10 @@ class URLRequest : public CefTask {
   explicit URLRequest(CefThreadId threadId,
                       CefRefPtr<CefRequest> request,
                       CefRefPtr<URLRequestClient> client)
-      : threadId_(threadId), request_(request), client_(client) {
+      : threadId_(threadId),
+        request_(request),
+        client_(client),
+        waitCond_(&lock_) {
   }
 
   virtual ~URLRequest() {
@@ -72,6 +75,7 @@ class URLRequest : public CefTask {
   CefRefPtr<URLRequestClient> client_;
 
   // sync method calls
+  CriticalLock lock_;
   CriticalWait waitCond_;
   URLRequestMode mode_;
 
@@ -86,15 +90,15 @@ class URLRequest : public CefTask {
     if (CefCurrentlyOn(threadId_)) {
       Execute();
     } else {
-      waitCond_.Lock();
+      lock_.Lock();
       CefPostTask(threadId_, this);
       waitCond_.Wait();
-      waitCond_.Unlock();
+      lock_.Unlock();
     }
   }
 
   virtual void Execute() {
-    waitCond_.Lock();
+    lock_.Lock();
     switch (mode_) {
       case REQ_CREATE:
         urlRequest_ =  CefURLRequest::Create(request_, client_.get());
@@ -113,7 +117,7 @@ class URLRequest : public CefTask {
         break;
     }
     waitCond_.WakeUp();
-    waitCond_.Unlock();
+    lock_.Unlock();
   }
 
   IMPLEMENT_REFCOUNTING(URLRequest);

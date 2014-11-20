@@ -4,7 +4,29 @@
 
 #include "critical_wait.h"
 
-CriticalWait::CriticalWait() {
+// CriticalLock
+
+CriticalLock::CriticalLock() {
+  lock_ = CreateMutex(NULL, FALSE, NULL);
+}
+
+CriticalLock::~CriticalLock() {
+  CloseHandle(lock_);
+}
+
+void CriticalLock::Lock() {
+  WaitForSingleObject(lock_, INFINITE);
+}
+
+void CriticalLock::Unlock() {
+  ReleaseMutex(lock_);
+}
+
+
+// CriticalWait
+
+CriticalWait::CriticalWait(CriticalLock* lock)
+    : lock_(lock) {
   cond_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
@@ -13,18 +35,19 @@ CriticalWait::~CriticalWait() {
 }
 
 void CriticalWait::Wait() {
-  Unlock();
+  lock_->Unlock();
   WaitForSingleObject(cond_, INFINITE);
-  Lock();
+  lock_->Lock();
 }
 
 bool CriticalWait::Wait(unsigned int maxWaitMs) {
-  Unlock();
+  lock_->Unlock();
   DWORD result = WaitForSingleObject(cond_, (DWORD)maxWaitMs);
-  Lock();
+  lock_->Lock();
   return result != WAIT_FAILED;
 }
 
 void CriticalWait::WakeUp() {
   SetEvent(cond_);
 }
+

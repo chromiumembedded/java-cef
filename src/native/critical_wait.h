@@ -10,25 +10,42 @@
 #include "include/cef_task.h"
 
 #if defined(OS_WIN)
-#define WAIT_COND HANDLE
+#include <windows.h>
+#define WAIT_MUTEX HANDLE
+#define WAIT_COND  HANDLE
 #else
 #include <pthread.h>
-#define WAIT_COND pthread_cond_t
+#define WAIT_MUTEX pthread_mutex_t
+#define WAIT_COND  pthread_cond_t
 #endif
+
+class CriticalLock {
+ public:
+  CriticalLock();
+  ~CriticalLock();
+
+  void Lock();
+  void Unlock();
+
+ private:
+  friend class CriticalWait;
+  WAIT_MUTEX lock_;
+};
 
 class CriticalWait {
  public:
-  CriticalWait();
-  virtual ~CriticalWait();
+  explicit CriticalWait(CriticalLock* lock);
+  ~CriticalWait();
 
   void Wait();
   bool Wait(unsigned int maxWaitMs);
   void WakeUp();
 
+  CriticalLock* lock() { return lock_; }
+
  private:
   WAIT_COND cond_;
-
-  IMPLEMENT_LOCKING(CriticalWait);
+  CriticalLock* lock_;
 };
 
 #endif  // JCEF_NATIVE_CRITICAL_WAIT_H_

@@ -6,6 +6,8 @@
 if [ -z "$1" ]; then
   echo "ERROR: Please specify a build target: Debug or Release"
 else
-  cd ..; make -j8 jcef BUILDTYPE=$1; cd tools
+  cd ..
+  make -j8 jcef BUILDTYPE=$1
+  cd tools
 fi
 

@@ -30,39 +30,7 @@ int RenderHandler::NativeGetCursorId(CefCursorHandle cursor) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, W_RESIZE_CURSOR, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, WAIT_CURSOR, 0);
 
-  const GdkCursorType cursor_type = gdk_cursor_get_cursor_type(cursor);
-  switch (cursor_type) {
-    case GDK_CROSSHAIR:
-      return JNI_STATIC(CROSSHAIR_CURSOR);
-    case GDK_RIGHT_SIDE:
-      return JNI_STATIC(E_RESIZE_CURSOR);
-    case GDK_HAND1:
-    case GDK_HAND2:
-      return JNI_STATIC(HAND_CURSOR);
-    case GDK_FLEUR:
-      return JNI_STATIC(MOVE_CURSOR);
-    case GDK_TOP_SIDE:
-      return JNI_STATIC(N_RESIZE_CURSOR);
-    case GDK_TOP_RIGHT_CORNER:
-      return JNI_STATIC(NE_RESIZE_CURSOR);
-    case GDK_TOP_LEFT_CORNER:
-      return JNI_STATIC(NW_RESIZE_CURSOR);
-    case GDK_BOTTOM_SIDE:
-      return JNI_STATIC(S_RESIZE_CURSOR);
-    case GDK_BOTTOM_RIGHT_CORNER:
-      return JNI_STATIC(SE_RESIZE_CURSOR);
-    case GDK_BOTTOM_LEFT_CORNER:
-      return JNI_STATIC(SW_RESIZE_CURSOR);
-    case GDK_XTERM:
-      return JNI_STATIC(TEXT_CURSOR);
-    case GDK_LEFT_SIDE:
-      return JNI_STATIC(W_RESIZE_CURSOR);
-    case GDK_WATCH:
-      return JNI_STATIC(WAIT_CURSOR);
-    default:
-      break;
-  }
-
+  // TODO(JCEF): Return correct cursor once CEF issue #1443 is fixed.
   return JNI_STATIC(DEFAULT_CURSOR);
 }
 
