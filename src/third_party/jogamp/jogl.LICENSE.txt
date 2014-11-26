@@ -1,5 +1,14 @@
-The JOGL source code is mostly licensed under the New BSD 2-clause license,
+The JOGL source code is mostly licensed under the 'New BSD 2-Clause License',
 however it contains other licensed material as well.
+
+Other licensed material is compatible with the 'New BSD 2-Clause License',
+if not stated otherwise.
+
+'New BSD 2-Clause License' incompatible materials are optional, they are:
+
+    A.7) The JOGL source tree _may_ contain code from Oculus VR, Inc.
+         which is covered by it's own permissive Oculus VR Rift SDK Software License.
+         (Optional, see A.7 below for details)
 
 Below you find a detailed list of licenses used in this project.
 
@@ -246,7 +255,7 @@ A.3) The JOGL source tree contains code from David Schweinsberg
 
    Typecast is a font development environment for OpenType font technology.
 
-   <http://typecast.dev.java.net/>
+   <https://java.net/projects/typecast>
 
    Author: David Schweinsberg
 
@@ -362,4 +371,60 @@ A.6) The JOGL source tree contains code from Hernan J. Gonzalez and Shawn Hartso
    Or within this repository: doc/licenses/Apache.LICENSE-2.0
     src/jogl/classes/jogamp/opengl/util/pngj/**
 
+
+A.7) The JOGL source tree _may_ contain code from Oculus VR, Inc.
+     which is covered by it's own permissive Oculus VR Rift SDK Software License.
+
+    This code _can_ be included to produce a binding 
+    and hence support for the Oculus VR Rift.
+
+    The code is included _and_ it's build artifacts will be released,
+    if the git sub-module oculusvr-sdk is included in the jogl source repository
+    as true for current official JogAmp builds and releases!
+
+    If using JogAmp JOGL builds with oculusvr-sdk support, 
+    but the user prefers to _not_ use it for license or other reasons,
+    the user can simply remove the artifacts 'jar/atomics/oculusvr*jar'.
+    No other produced artifact is affected.
+
+    While the Oculus VR Rift SDK Software License is permissive,
+    it's differences to the New BSD license shall be mentioned, see below!
+
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    Copyright © 2014 Oculus VR, Inc. All rights reserved.
+
+    Oculus VR, Inc. Software Development Kit License Agreement
+    
+    Human-Readable Summary:
+
+     - You are Free to:
+
+        - Use, modify, and distribute the Oculus VR Rift SDK in source and binary
+          form with your applications/software.
+
+     - With the Following Restrictions:
+
+        - You can only distribute or re-distribute the source code to LibOVR in
+          whole, not in part.
+
+        - Modifications to the Oculus VR Rift SDK in source or binary form must
+          be shared with Oculus VR.
+
+        - If your applications cause health and safety issues, you may lose your
+          right to use the Oculus VR Rift SDK, including LibOVR.
+
+        - The Oculus VR Rift SDK may not be used to interface with unapproved commercial
+          virtual reality mobile or non-mobile products or hardware.
+
+     - This human-readable Summary is not a license. It is simply a convenient
+       reference for understanding the full Oculus VR Rift SDK License Agreement.
+       The Summary is written as a user-friendly interface to the full Oculus VR Rift
+       SDK License below. This Summary itself has no legal value, and its contents do
+       not appear in the actual license.
+
+       Full-length Legal Copy may be found at:
+         http://www.oculusvr.com/licenses/LICENSE-3.1
+         http://jogamp.org/git/?p=oculusvr-sdk.git;a=blob;f=LICENSE.txt;hb=HEAD
+         Or within this repository: oculusvr-sdk/LICENSE.txt
 
