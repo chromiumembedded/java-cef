@@ -89,7 +89,7 @@ def write_svn_header(header):
                   '#ifndef JCEF_INCLUDE_JCEF_VERSION_H_\n'+\
                   '#define JCEF_INCLUDE_JCEF_VERSION_H_\n\n'+\
                   '#define JCEF_REVISION ' + revision + '\n'+\
-                  '#define COPYRIGHT_YEAR ' + year + '\n\n'+\
+                  '#define JCEF_COPYRIGHT_YEAR ' + year + '\n\n'+\
                   '#define DO_MAKE_STRING(p) #p\n'+\
                   '#define MAKE_STRING(p) DO_MAKE_STRING(p)\n\n'+\
                   '#endif  // JCEF_INCLUDE_JCEF_VERSION_H_\n'

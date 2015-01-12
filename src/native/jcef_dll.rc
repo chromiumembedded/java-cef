@@ -78,7 +78,7 @@ BEGIN
             VALUE "FileDescription", "Java Chromium Embedded Framework (JCEF) Dynamic Link Library"
             VALUE "FileVersion", MAKE_STRING(CEF_VERSION_MAJOR) "." MAKE_STRING(CHROME_VERSION_BUILD) "." MAKE_STRING(CEF_REVISION) "." MAKE_STRING(JCEF_REVISION)
             VALUE "InternalName", "jcef"
-            VALUE "LegalCopyright", "Copyright (C) " MAKE_STRING(COPYRIGHT_YEAR) " The Chromium Embedded Framework Authors"
+            VALUE "LegalCopyright", "Copyright (C) " MAKE_STRING(JCEF_COPYRIGHT_YEAR) " The Chromium Embedded Framework Authors"
             VALUE "OriginalFilename", "jcef.dll"
             VALUE "ProductName", "Java Chromium Embedded Framework (JCEF) Dynamic Link Library"
             VALUE "ProductVersion", MAKE_STRING(CEF_VERSION_MAJOR) "." MAKE_STRING(CHROME_VERSION_BUILD) "." MAKE_STRING(CEF_REVISION) "." MAKE_STRING(JCEF_REVISION)
