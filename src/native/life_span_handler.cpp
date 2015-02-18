@@ -7,9 +7,6 @@
 
 #include "jni_util.h"
 #include "util.h"
-#if defined(OS_MACOSX)
-#include "util_mac.h"
-#endif
 
 LifeSpanHandler::LifeSpanHandler(JNIEnv* env, jobject handler) {
   jhandler_ = env->NewGlobalRef(handler);
@@ -53,9 +50,7 @@ void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   if (!env || jbrowsers_.empty())
     return;
 
-#if defined(OS_MACOSX)
-  util_mac::AddCefBrowser(browser);
-#endif
+  util::AddCefBrowser(browser);
 
   jobject jbrowser = jbrowsers_.front();
   jbrowsers_.pop_front();
@@ -98,9 +93,8 @@ bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
                   jreturn,
                   GetJNIBrowser(browser));
 
-#if defined(OS_MACOSX)
-  util_mac::RemoveCefBrowser(browser);
-#endif
+  util::RemoveCefBrowser(browser);
+
   return (jreturn != JNI_FALSE);
 }
 

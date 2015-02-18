@@ -6,6 +6,7 @@
 #define JCEF_NATIVE_UTIL_H_
 #pragma once
 
+#include "include/cef_browser.h"
 #include "include/cef_task.h"
 
 #if defined(OS_WIN)
@@ -63,6 +64,14 @@ int GetParentPid();
 // Returns the absolute path for a temporary file whose name is unique to the
 // process. |identifer| is attached to the filename.
 std::string GetTempFileName(const std::string& identifer, bool useParentId);
+
+// Called by LifeSpanHandler::OnAfterCreated() to do some platform dependent
+// tasks for the browser reference like registering mouse events.
+void AddCefBrowser(CefRefPtr<CefBrowser> browser);
+
+// Called by LifeSpanHandler::DoClose() to do some platform dependent cleanup
+// tasks for the browser reference.
+void RemoveCefBrowser(CefRefPtr<CefBrowser> browser);
 
 }  // namespace util
 

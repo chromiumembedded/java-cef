@@ -17,7 +17,9 @@ import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
+import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
+import org.cef.handler.CefWindowHandler;
 import org.cef.network.CefRequest;
 
 /**
@@ -28,6 +30,16 @@ import org.cef.network.CefRequest;
  */
 abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
   private boolean isPending_ = false;
+
+  @Override
+  public CefRenderHandler getRenderHandler() {
+    return null;
+  }
+
+  @Override
+  public CefWindowHandler getWindowHandler() {
+    return null;
+  }
 
   /**
    * Create a new browser.

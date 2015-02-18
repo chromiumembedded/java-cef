@@ -271,6 +271,23 @@ bool ClientHandler::OnProcessMessageReceived(
   return handled;
 }
 
+CefRefPtr<WindowHandler> ClientHandler::GetWindowHandler() {
+  CefRefPtr<WindowHandler> result = NULL;
+  BEGIN_ENV(env)
+  jobject handler = NULL;
+  JNI_CALL_METHOD(env, jhandler_, "getWindowHandler",
+      "()Lorg/cef/handler/CefWindowHandler;", Object, handler);
+  if (handler) {
+    result = GetCefFromJNIObject<WindowHandler>(env, handler, "WindowHandler");
+    if (!result.get()) {
+      result = new WindowHandler(env, handler);
+      SetCefForJNIObject(env, handler, result.get(), "WindowHandler");
+    }
+  }
+  END_ENV(env)
+  return result;
+}
+
 void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   CefRefPtr<CefMessageRouterBrowserSide> router =
       GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, jmessageRouter, "CefMessageRouter");

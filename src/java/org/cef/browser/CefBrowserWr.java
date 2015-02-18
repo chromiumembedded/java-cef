@@ -10,8 +10,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -30,8 +35,8 @@ import javax.swing.ToolTipManager;
 
 import org.cef.OS;
 import org.cef.handler.CefClientHandler;
-import org.cef.handler.CefRenderHandler;
-import org.cef.handler.CefRenderHandlerAdapter;
+import org.cef.handler.CefWindowHandler;
+import org.cef.handler.CefWindowHandlerAdapter;
 
 /**
  * This class represents a windowed rendered browser.
@@ -63,11 +68,81 @@ class CefBrowserWr extends CefBrowser_N {
       });
     }
   });
-  private CefRenderHandlerAdapter render_handler_ = new CefRenderHandlerAdapter() {
+  private CefWindowHandlerAdapter win_handler_ = new CefWindowHandlerAdapter() {
+    private Point lastPos = new Point(-1,-1);
+    private long[] nextClick = new long[MouseInfo.getNumberOfButtons()];
+    private int [] clickCnt = new int[MouseInfo.getNumberOfButtons()];
+
     @Override
-    public Rectangle getViewRect(CefBrowser browser) {
+    public Rectangle getRect(CefBrowser browser) {
       synchronized (content_rect_) {
         return content_rect_;
+      }
+    }
+
+    @Override
+    public void onMouseEvent(CefBrowser browser, int event, int screenX,
+        int screenY, int modifier, int button) {
+
+      Point pt = new Point(screenX, screenY);
+      if (event == MouseEvent.MOUSE_MOVED) {
+        // Remove mouse-moved events if the position of the cursor hasn't
+        // changed.
+        if (pt.equals(lastPos))
+          return;
+        lastPos = pt;
+
+        // Change mouse-moved event to mouse-dragged event if the left mouse
+        // button is pressed.
+        if ((modifier & MouseEvent.BUTTON1_DOWN_MASK) != 0)
+          event = MouseEvent.MOUSE_DRAGGED;
+      }
+      // Send mouse event to the root UI component instead to the browser UI.
+      // Otherwise no mouse-entered and no mouse-exited events would be fired.
+      Component parent = SwingUtilities.getRoot(component_);
+      SwingUtilities.convertPointFromScreen(pt, parent);
+
+      int clickCnt = 0;
+      long now = new Date().getTime();
+      if (event == MouseEvent.MOUSE_WHEEL) {
+        int scrollType =  MouseWheelEvent.WHEEL_UNIT_SCROLL;
+        int rotation = button > 0 ? 1 : -1;
+        component_.dispatchEvent(new MouseWheelEvent(parent, event, now,
+            modifier, pt.x, pt.y, 0, false, scrollType, 3, rotation));
+      } else {
+        clickCnt = getClickCount(event, button);
+        component_.dispatchEvent(new MouseEvent(parent, event, now, 
+            modifier, pt.x, pt.y, screenX, screenY, clickCnt, false, button));
+      }
+
+      // Always fire a mouse-clicked event after a mouse-released event.
+      if (event == MouseEvent.MOUSE_RELEASED) {
+       component_.dispatchEvent(new MouseEvent(parent,
+            MouseEvent.MOUSE_CLICKED, now, modifier, pt.x, pt.y, screenX,
+            screenY, clickCnt, false, button));
+      }
+    }
+
+    public int getClickCount(int event, int button) {
+      // avoid exceptions by using modulo
+      int idx = button % nextClick.length;
+
+      switch (event) {
+        case MouseEvent.MOUSE_PRESSED:
+          long currTime = new Date().getTime();
+          if (currTime > nextClick[idx]) {
+            nextClick[idx] = currTime +
+                (Integer)Toolkit.getDefaultToolkit().
+                getDesktopProperty("awt.multiClickInterval");
+            clickCnt[idx] = 1;
+          } else {
+            clickCnt[idx]++;
+          }
+          // FALL THRU
+        case MouseEvent.MOUSE_RELEASED:
+          return clickCnt[idx];
+        default:
+          return 0;
       }
     }
   };
@@ -186,8 +261,8 @@ class CefBrowserWr extends CefBrowser_N {
   }
 
   @Override
-  public CefRenderHandler getRenderHandler() {
-    return render_handler_;
+  public CefWindowHandler getWindowHandler() {
+    return win_handler_;
   }
 
   @Override

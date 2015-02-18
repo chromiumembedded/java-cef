@@ -42,13 +42,10 @@ void SetVisibility(CefWindowHandle handle,
                    bool isVisible);
 void ContinueDefaultTerminate();
 
-void AddCefBrowser(CefRefPtr<CefBrowser> browser);
-
 void UpdateView(CefWindowHandle handle,
                 CefRect contentRect,
                 CefRect browserRect);
 
-void RemoveCefBrowser(CefRefPtr<CefBrowser> browser);
 }  // namespace util_mac
 
 #endif  // JCEF_NATIVE_UTIL_MAC_H_

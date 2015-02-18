@@ -8,9 +8,11 @@
 
 #include <set>
 #include <jni.h>
+#include "include/cef_base.h"
 #include "include/cef_client.h"
 #include "include/base/cef_lock.h"
 #include "message_router_handler.h"
+#include "window_handler.h"
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient {
@@ -37,6 +39,9 @@ class ClientHandler : public CefClient {
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         OVERRIDE;
+
+  // Additional handler for windowed rendering mode
+  CefRefPtr<WindowHandler> GetWindowHandler();
 
   // Methods to deal with message router bindings
   void AddMessageRouter(JNIEnv* env, jobject jmessageRouter);

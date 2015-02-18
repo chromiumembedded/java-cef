@@ -12,6 +12,7 @@ import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
+import org.cef.handler.CefWindowHandler;
 import org.cef.network.CefRequest;
 
 /**
@@ -30,6 +31,12 @@ public interface CefBrowser {
    * @return An instance of CefRenderHandler or null.
    */
   public CefRenderHandler getRenderHandler();
+
+  /**
+   * Get an implementation of CefWindowHandler if any.
+   * @return An instance of CefWindowHandler or null.
+   */
+  public CefWindowHandler getWindowHandler();
 
   //
   // The following methods are forwarded to CefBrowser.

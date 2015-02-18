@@ -4,14 +4,30 @@
 
 #include "util.h"
 
+#include <iostream>
+#include <map>
 #include <sstream>
 #include <tchar.h>
 #include <tlhelp32.h>
 #include <windows.h>
 
+#ifdef USING_JAVA
+#include "client_handler.h"
+#include "jni_util.h"
+#endif
+
 #include "include/cef_path_util.h"
 
+#define XBUTTON1_HI (XBUTTON1 << 16)
+
 namespace util {
+
+static std::map<CefWindowHandle, CefRefPtr<CefBrowser> > g_browsers_;
+static HANDLE g_browsers_lock_ = CreateMutex(NULL, FALSE, NULL);
+static HHOOK g_mouse_monitor_ = NULL;
+static HHOOK g_proc_monitor_ = NULL;
+static int g_mouse_monitor_refs_ = 0;
+static BOOLEAN g_once_ = TRUE;
 
 int GetPid() {
   return (int)GetCurrentProcessId();
@@ -56,6 +72,193 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
   tmpName << "jcef-p" << (useParentId ? util::GetParentPid() : util::GetPid());
   tmpName << (identifer.empty() ? "" : "_") << identifer.c_str() << ".tmp";
   return tmpName.str();
+}
+
+#ifdef USING_JAVA
+static int getMouseEvent(const char* evtName) {
+  int value = 0;
+  BEGIN_ENV(env)
+  jclass jcls = env->FindClass("java/awt/event/MouseEvent");
+  GetJNIFieldStaticInt(env, jcls, evtName, &value);
+  END_ENV(env)
+  return value;
+}
+
+static int getModifiers(BOOLEAN forceShift) {
+  int alt = 0;
+  int ctrl = 0;
+  int shift = 0;
+  int button1 = 0;
+  int button2 = 0;
+  int button3 = 0;
+  BEGIN_ENV(env)
+  jclass jcls = env->FindClass("java/awt/event/InputEvent");
+  if ((GetKeyState(VK_MENU) & 0x8000) != 0)
+    GetJNIFieldStaticInt(env, jcls, "ALT_DOWN_MASK", &alt);
+  if ((GetKeyState(VK_CONTROL) & 0x8000)  != 0)
+    GetJNIFieldStaticInt(env, jcls, "CTRL_DOWN_MASK", &ctrl);
+  if (forceShift || (GetKeyState(VK_SHIFT) & 0x8000)  != 0)
+    GetJNIFieldStaticInt(env, jcls, "SHIFT_DOWN_MASK", &shift);
+  if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0)
+    GetJNIFieldStaticInt(env, jcls, "BUTTON1_DOWN_MASK", &button1);
+  if ((GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0)
+    GetJNIFieldStaticInt(env, jcls, "BUTTON2_DOWN_MASK", &button2);
+  if ((GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0)
+    GetJNIFieldStaticInt(env, jcls, "BUTTON3_DOWN_MASK", &button3);
+  END_ENV(env)
+  return (alt | ctrl | shift | button1 | button2 | button3);
+}
+
+static int getMouseButton(WPARAM wParam) {
+  int mouseButton = 0;
+  BEGIN_ENV(env)
+  jclass jcls = env->FindClass("java/awt/event/MouseEvent");
+  switch (wParam) {
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+      GetJNIFieldStaticInt(env, jcls, "BUTTON1", &mouseButton);
+      break;
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MBUTTONDBLCLK:
+      GetJNIFieldStaticInt(env, jcls, "BUTTON2", &mouseButton);
+      break;
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+      GetJNIFieldStaticInt(env, jcls, "BUTTON3", &mouseButton);
+      break;
+    default:
+      GetJNIFieldStaticInt(env, jcls, "NOBUTTON", &mouseButton);
+      break;
+  }
+  END_ENV(env)
+  return mouseButton;
+}
+#endif
+
+LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+#ifdef USING_JAVA
+  if (nCode != HC_ACTION || lParam == NULL)
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+
+  MOUSEHOOKSTRUCT* pStruct = (MOUSEHOOKSTRUCT*)lParam;
+
+  // Get corresponding CefWindowHandle of Java-Canvas
+  CefWindowHandle browser = pStruct->hwnd;
+  CefRefPtr<CefBrowser> cefBrowser;
+  std::map<CefWindowHandle, CefRefPtr<CefBrowser> >::iterator it;
+  WaitForSingleObject(g_browsers_lock_, INFINITE);
+  while (browser != NULL) {
+    it = g_browsers_.find(browser);
+    if (it != g_browsers_.end()) {
+      cefBrowser = it->second;
+      break;
+    }
+    browser = GetParent(browser);
+  }
+  ReleaseMutex(g_browsers_lock_);
+
+  if (!browser)
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+
+  int mouseButton = getMouseButton(wParam);
+  // Horizonal wheel event is the same as vertical wheel event
+  // with pressed shift button.
+  int modifiers = getModifiers(wParam == WM_MOUSEHWHEEL);
+  int mouseEvent = 0;
+
+  switch(wParam) {
+    case WM_MOUSEMOVE:
+      mouseEvent = getMouseEvent("MOUSE_MOVED");
+      break;
+
+    // Handle a double click like a single click.
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+      // FALL THRU
+
+    // Handle button down and up events.
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+      mouseEvent = getMouseEvent("MOUSE_PRESSED");
+      break;
+
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+      mouseEvent = getMouseEvent("MOUSE_RELEASED");
+      break;
+
+    // Handle horizontal mouse wheel event.
+    // The vertical mouse wheel is already recognized in Java.
+    //case WM_MOUSEWHEEL:
+    case WM_MOUSEHWHEEL:
+      mouseEvent = getMouseEvent("MOUSE_WHEEL");
+      mouseButton = GET_WHEEL_DELTA_WPARAM(
+          ((MOUSEHOOKSTRUCTEX*)pStruct)->mouseData);
+      break;
+    default:
+      break;
+  }
+
+  if (mouseEvent != 0) {
+    // Forward params to the CefWindowHandle of Java-Canvas
+    CefRefPtr<ClientHandler> client =
+        (ClientHandler*)cefBrowser->GetHost()->GetClient().get();
+    CefRefPtr<WindowHandler> handler = client->GetWindowHandler();
+    handler->OnMouseEvent(cefBrowser, mouseEvent, pStruct->pt.x, pStruct->pt.y,
+        modifiers, mouseButton);
+
+  }
+#endif
+  return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return;
+  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
+  if (!browserHandle)
+    return;
+
+  WaitForSingleObject(g_browsers_lock_, INFINITE);
+  CefWindowHandle handle = GetParent(browserHandle);
+  std::pair<CefWindowHandle,CefRefPtr<CefBrowser> > pair =
+      std::make_pair(handle, browser);
+  g_browsers_.insert(pair);
+  ReleaseMutex(g_browsers_lock_);
+
+  if (g_mouse_monitor_ == NULL) {
+    DWORD threadId = GetWindowThreadProcessId(browserHandle, NULL);
+    g_mouse_monitor_ =
+        SetWindowsHookEx(WH_MOUSE, util::MouseProc, NULL, threadId);
+    g_mouse_monitor_refs_ = 1;
+  } else {
+    g_mouse_monitor_refs_++;
+  }
+}
+
+void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return;
+  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
+  if (!browserHandle)
+    return;
+  WaitForSingleObject(g_browsers_lock_, INFINITE);
+  g_browsers_.erase(GetParent(browserHandle));
+  ReleaseMutex(g_browsers_lock_);
+
+  if (g_mouse_monitor_ == NULL)
+    return;
+  g_mouse_monitor_refs_--;
+  if (g_mouse_monitor_refs_ <= 0) {
+    UnhookWindowsHookEx(g_mouse_monitor_);
+    g_mouse_monitor_ = NULL;
+  }
 }
 
 }  // namespace util

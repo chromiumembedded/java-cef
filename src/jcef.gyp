@@ -28,6 +28,7 @@
       'msvs_guid': '6CA3406B-DAE0-4D3B-AEDC-F5A113702C07',
       'defines': [
         'USING_CEF_SHARED',
+        'USING_JAVA',
       ],
       'include_dirs': [
         '.',
@@ -163,6 +164,8 @@
         'native/web_plugin_unstable_callback.h',
         'native/web_plugin_visitor.cpp',
         'native/web_plugin_visitor.h',
+        'native/window_handler.cpp',
+        'native/window_handler.h',
         'native/write_handler.cpp',
         'native/write_handler.h',
       ],
@@ -244,6 +247,7 @@
             'native/render_handler_linux.cpp',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
+            'native/util_linux.cpp',
             'native/util_posix.cpp',
           ],
           'include_dirs': [
@@ -398,6 +402,7 @@
         }],
         ['OS=="linux"', {
           'sources': [
+            'native/util_linux.cpp',
             'native/util_posix.cpp',
           ],
           'dependencies': [

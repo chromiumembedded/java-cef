@@ -2,6 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#import "util.h"
 #import "util_mac.h"
 #import <Cocoa/Cocoa.h>
 #import <Foundation/NSLock.h>
@@ -13,11 +14,16 @@
 #include "include/cef_path_util.h"
 #include "client_app.h"
 #include "client_handler.h"
+#include "critical_wait.h"
 #include "render_handler.h"
 #include "jni_util.h"
+#include "window_handler.h"
 
 namespace {
 
+static std::set<CefWindowHandle> g_browsers_;
+static CriticalLock g_browsers_lock_;
+id g_mouse_monitor_ = nil;
 static CefRefPtr<ClientApp> g_client_app_ = NULL;
 BOOL g_handling_send_event = false;
 bool g_init_result = false;
@@ -53,6 +59,74 @@ id g_last_sender = nil;
   Method swizzledTerm =
       class_getInstanceMethod(self, @selector(_swizzled_terminate:));
   method_exchangeImplementations(originalTerm, swizzledTerm);
+
+  g_mouse_monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:
+      (NSLeftMouseDownMask | NSLeftMouseUpMask | NSLeftMouseDraggedMask |
+      NSRightMouseDownMask | NSRightMouseUpMask | NSRightMouseDraggedMask |
+      NSOtherMouseDownMask | NSOtherMouseUpMask | NSOtherMouseDraggedMask |
+      NSScrollWheelMask | NSMouseMovedMask | NSMouseEnteredMask |
+      NSMouseExitedMask) handler:^(NSEvent *evt) {
+
+    // Get corresponding CefWindowHandle of Java-Canvas
+    CefWindowHandle browser = NULL;
+    NSPoint absPos = [evt locationInWindow];
+    NSWindow* evtWin = [evt window];
+    g_browsers_lock_.Lock();
+    std::set<CefWindowHandle> browsers = g_browsers_;
+    g_browsers_lock_.Unlock();
+
+    std::set<CefWindowHandle>::iterator it;
+    for (it = browsers.begin(); it != browsers.end(); ++it) {
+      NSPoint relPos = [*it convertPoint:absPos fromView:nil];
+      if (evtWin == [*it window] && [*it mouse:relPos inRect:[*it frame]]) {
+          browser = *it;
+        break;
+      }
+    }
+
+    if (!browser)
+      return evt;
+
+    // Forward mouse event to browsers parent (JCEF UI)
+    switch([evt type]) {
+      case NSLeftMouseDown:
+      case NSOtherMouseDown:
+      case NSRightMouseDown:
+        [[browser superview] mouseDown:evt];
+        return evt;
+
+      case NSLeftMouseUp:
+      case NSOtherMouseUp:
+      case NSRightMouseUp:
+        [[browser superview] mouseUp:evt];
+        return evt;
+
+      case NSLeftMouseDragged:
+      case NSOtherMouseDragged:
+      case NSRightMouseDragged:
+        [[browser superview] mouseDragged:evt];
+        return evt;
+
+      case NSMouseMoved:
+        [[browser superview] mouseMoved:evt];
+        return evt;
+
+      case NSMouseEntered:
+        [[browser superview] mouseEntered:evt];
+        return evt;
+
+      case NSMouseExited:
+        [[browser superview] mouseExited:evt];
+        return evt;
+
+      case NSScrollWheel:
+        [[browser superview] scrollWheel:evt];
+        return evt;
+
+      default:
+        return evt;
+    }
+  }];
 }
 
 - (BOOL)isHandlingSendEvent {
@@ -76,6 +150,7 @@ id g_last_sender = nil;
     continueTerminate = !g_client_app_->HandleTerminate();
   }
   if (continueTerminate) {
+    [NSEvent removeMonitor:g_mouse_monitor_];
     [self _swizzled_terminate:sender];
   }
 }
@@ -233,13 +308,16 @@ id g_last_sender = nil;
   // the passed frame rect doesn't contain the clipped view part. Otherwise
   // we'll overlay some parts of the Java UI.
   if (cefBrowser.get()) {
-    CefRefPtr<CefRenderHandler> renderer =
-        cefBrowser->GetHost()->GetClient()->GetRenderHandler();
+    CefRefPtr<ClientHandler> clientHandler =
+        (ClientHandler*)(cefBrowser->GetHost()->GetClient().get());
 
-    CefRect rect;
-    renderer->GetViewRect(cefBrowser, rect);
-    util_mac::TranslateRect(self, rect);
-    frameRect = (NSRect){{rect.x, rect.y}, {rect.width, rect.height}};
+    CefRefPtr<WindowHandler> windowHandler = clientHandler->GetWindowHandler();
+    if (windowHandler.get() != NULL) {
+      CefRect rect;
+      windowHandler->GetRect(cefBrowser, rect);
+      util_mac::TranslateRect(self, rect);
+      frameRect = (NSRect){{rect.x, rect.y}, {rect.width, rect.height}};
+    }
   }
   [super setFrame:frameRect];
 }
@@ -379,15 +457,6 @@ void SetVisibility(CefWindowHandle handle, bool isVisible) {
   }
 }
 
-void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
-  if (!browser.get())
-    return;
-  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
-  CefBrowserContentView *browserImpl =
-      (CefBrowserContentView*)[handle superview];
-  [browserImpl addCefBrowser:browser];
-}
-
 void UpdateView(CefWindowHandle handle, CefRect contentRect,
     CefRect browserRect) {
   util_mac::TranslateRect(handle, contentRect);
@@ -412,10 +481,36 @@ void UpdateView(CefWindowHandle handle, CefRect contentRect,
   }
 }
 
+void ContinueDefaultTerminate() {
+  g_continue_terminate = TRUE;
+  [[NSApplication sharedApplication] performSelectorOnMainThread:
+      @selector(terminate:) withObject:g_last_sender waitUntilDone:NO];
+}
+
+}  // namespace util_mac
+
+
+namespace util {
+
+void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser.get())
+    return;
+  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+  g_browsers_lock_.Lock();
+  g_browsers_.insert(handle);
+  g_browsers_lock_.Unlock();
+  CefBrowserContentView *browserImpl =
+      (CefBrowserContentView*)[handle superview];
+  [browserImpl addCefBrowser:browser];
+}
+
 void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
   CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+  g_browsers_lock_.Lock();
+  g_browsers_.erase(handle);
+  g_browsers_lock_.Unlock();
 
   // There are some cases where the superview of CefBrowser isn't
   // a CefBrowserContentView. For example if another CefBrowser window was
@@ -428,10 +523,4 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ContinueDefaultTerminate() {
-  g_continue_terminate = TRUE;
-  [[NSApplication sharedApplication] performSelectorOnMainThread:
-      @selector(terminate:) withObject:g_last_sender waitUntilDone:NO];
-}
-
-}  // namespace util_mac
+}  // namespace util

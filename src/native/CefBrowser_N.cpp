@@ -13,6 +13,7 @@
 #include "life_span_handler.h"
 #include "string_visitor.h"
 #include "run_file_dialog_callback.h"
+#include "window_handler.h"
 
 #if defined(OS_LINUX)
 #include <gdk/gdkkeysyms.h>
@@ -146,10 +147,10 @@ jboolean create(JNIEnv* env,
 #if defined(OS_WIN) || defined(OS_MACOSX)
   if (canvas != NULL) {
     CefRect rect;
-    CefRefPtr<RenderHandler> renderHandler =
-        (RenderHandler*)clientHandler->GetRenderHandler().get();
-    if (renderHandler.get()) {
-      renderHandler->GetViewRect(jbrowser, rect);
+    CefRefPtr<WindowHandler> windowHandler =
+        (WindowHandler*)clientHandler->GetWindowHandler().get();
+    if (windowHandler.get()) {
+      windowHandler->GetRect(jbrowser, rect);
     }
 #if defined(OS_WIN)
     HWND parent = GetHwndOfCanvas(canvas, env);

@@ -93,7 +93,12 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRenderHand
 
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRequestHandler
   (JNIEnv *env, jobject clientHandler, jobject requestHandler) {
-  SetCefForJNIObject<CefRenderHandler>(env, requestHandler, NULL, "CefRequestHandler");
+  SetCefForJNIObject<CefRequestHandler>(env, requestHandler, NULL, "CefRequestHandler");
+}
+
+JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeWindowHandler
+  (JNIEnv *env, jobject clientHandler, jobject windowHandler) {
+  SetCefForJNIObject<WindowHandler>(env, windowHandler, NULL, "WindowHandler");
 }
 
 JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1CefClientHandler_1DTOR

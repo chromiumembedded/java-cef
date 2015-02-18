@@ -50,6 +50,7 @@ import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefRequestHandler;
 import org.cef.handler.CefResourceHandler;
+import org.cef.handler.CefWindowHandler;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -70,7 +71,8 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                                            CefLifeSpanHandler,
                                                            CefLoadHandler,
                                                            CefRenderHandler,
-                                                           CefRequestHandler {
+                                                           CefRequestHandler,
+                                                           CefWindowHandler {
   private HashMap<Integer,CefBrowser> browser_ = new HashMap<Integer,CefBrowser>();
   private CefContextMenuHandler contextMenuHandler_ = null;
   private CefDialogHandler dialogHandler_ = null;
@@ -237,6 +239,10 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     return this;
   }
 
+  @Override
+  protected CefWindowHandler getWindowHandler() {
+    return this;
+  }
 
   // CefContextMenuHandler
 
@@ -678,6 +684,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
         removeLoadHandler(this);
         removeRenderHandler(this);
         removeRequestHandler(this);
+        removeWindowHandler(this);
         super.dispose();
 
         CefApp.getInstance().clientWasDisposed(this);
@@ -951,5 +958,31 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
                                         TerminationStatus status) {
     if (requestHandler_ != null)
       requestHandler_.onRenderProcessTerminated(browser, status);
+  }
+
+
+  // CefWindowHandler
+
+  @Override
+  public Rectangle getRect(CefBrowser browser) {
+    if (browser == null)
+      return new Rectangle(0,0,0,0);
+
+    CefWindowHandler realHandler = browser.getWindowHandler();
+    if (realHandler != null)
+      return realHandler.getRect(browser);
+    return new Rectangle(0,0,0,0);
+  }
+
+  @Override
+  public void onMouseEvent(CefBrowser browser, int event, int screenX,
+      int screenY, int modifier, int button) {
+    if (browser == null)
+      return;
+
+    CefWindowHandler realHandler = browser.getWindowHandler();
+    if (realHandler != null)
+      realHandler.onMouseEvent(browser, event, screenX, screenY, modifier,
+          button);
   }
 }
