@@ -107,9 +107,9 @@ JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1GetVersion
                       "org/cef/CefApp$CefVersion",
                       "(Lorg/cef/CefApp;IIIIIII)V",
                       obj,
-                      JCEF_REVISION,
+                      JCEF_COMMIT_NUMBER,
                       cef_version_info(0),  // CEF_VERSION_MAJOR
-                      cef_version_info(1),  // CEF_REVISION
+                      cef_version_info(1),  // CEF_COMMIT_NUMBER
                       cef_version_info(2),  // CHROME_VERSION_MAJOR
                       cef_version_info(3),  // CHROME_VERSION_MINOR
                       cef_version_info(4),  // CHROME_VERSION_BUILD

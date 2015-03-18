@@ -5,14 +5,20 @@
 from date_util import *
 from file_util import *
 from optparse import OptionParser
-import svn_util as svn
 import git_util as git
+import re
 import sys
 
 # cannot be loaded as a module
 if __name__ != "__main__":
     sys.stderr.write('This file cannot be loaded as a module!')
     sys.exit()
+
+# script directory
+script_dir = os.path.dirname(__file__)
+
+# JCEF root directory
+jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir, os.pardir))
 
 
 # parse command-line options
@@ -42,14 +48,22 @@ def write_svn_header(header):
     else:
         oldcontents = ''
 
+    if not git.is_checkout(jcef_dir):
+      raise Exception('Not a valid checkout')
+
+    commit_number = git.get_commit_number(jcef_dir)
+    commit_hash = git.get_hash(jcef_dir)
+
     year = get_year()
 
-    if svn.is_checkout('.') or svn.is_checkout('..'):
-      revision = svn.get_revision()
-    elif git.is_checkout('.') or git.is_checkout('..'):
-      revision = git.get_svn_revision()
-    else:
-      raise Exception('Not a valid checkout')
+    # Extract the platform component from GYP_DEFINES.
+    platform = re.search(r"jcef_platform=['\"]{0,1}([A-Za-z0-9]{1,})", os.environ['GYP_DEFINES']).group(1)
+
+    # Read and parse the CEF version file.
+    args = {}
+    read_readme_file(os.path.join(jcef_dir, 'src/third_party/cef/'+platform+'/README.txt'), args)
+
+    version = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'], commit_number, commit_hash[:7])
 
     newcontents = '// Copyright (c) '+year+' The Chromium Embedded Framework Authors. All rights\n'+\
                   '// reserved. Use of this source code is governed by a BSD-style license that\n'+\
@@ -88,7 +102,9 @@ def write_svn_header(header):
                   '//\n\n'+\
                   '#ifndef JCEF_INCLUDE_JCEF_VERSION_H_\n'+\
                   '#define JCEF_INCLUDE_JCEF_VERSION_H_\n\n'+\
-                  '#define JCEF_REVISION ' + revision + '\n'+\
+                  '#define JCEF_VERSION "' + version + '"\n'+\
+                  '#define JCEF_COMMIT_NUMBER ' + commit_number + '\n'+\
+                  '#define JCEF_COMMIT_HASH "' + commit_hash + '"\n'+\
                   '#define JCEF_COPYRIGHT_YEAR ' + year + '\n\n'+\
                   '#define DO_MAKE_STRING(p) #p\n'+\
                   '#define MAKE_STRING(p) DO_MAKE_STRING(p)\n\n'+\

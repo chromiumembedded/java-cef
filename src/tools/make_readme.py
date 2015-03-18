@@ -10,7 +10,6 @@ import os
 import re
 import shlex
 import subprocess
-import svn_util as svn
 import git_util as git
 import sys
 import zipfile
@@ -43,7 +42,7 @@ def create_readme():
   # format the file
   data = header_data + '\n\n' + mode_data + '\n\n' + redistrib_data + '\n\n' + footer_data
   data = data.replace('$JCEF_URL$', jcef_url)
-  data = data.replace('$JCEF_REV$', jcef_rev)
+  data = data.replace('$JCEF_REV$', jcef_commit_hash)
   data = data.replace('$JCEF_VER$', jcef_ver)
   data = data.replace('$CEF_URL$', cef_url)
   data = data.replace('$CEF_VER$', cef_ver)
@@ -105,30 +104,24 @@ if (platform != 'linux32' and platform != 'linux64' and
 # script directory
 script_dir = os.path.dirname(__file__)
 
-# CEF root directory
-jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
+# JCEF root directory
+jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir, os.pardir))
 
-# src directory
-src_dir = os.path.abspath(os.path.join(jcef_dir, os.pardir))
+# Read and parse the CEF version file.
+args = {}
+read_readme_file(os.path.join(jcef_dir, 'src/third_party/cef/'+platform+'/README.txt'), args)
 
 # retrieve url and revision information for CEF
-if svn.is_checkout(jcef_dir) or svn.is_checkout(src_dir):
-  jcef_info = svn.get_svn_info(jcef_dir)
-  jcef_url = jcef_info['url']
-  jcef_rev = jcef_info['revision']
-elif git.is_checkout(jcef_dir) or git.is_checkout(src_dir):
-  jcef_url = git.get_url(jcef_dir)
-  jcef_rev = git.get_svn_revision(jcef_dir)
-else:
+if not git.is_checkout(jcef_dir):
   raise Exception('Not a valid checkout: %s' % (cef_dir))
+
+jcef_commit_number = git.get_commit_number(jcef_dir)
+jcef_commit_hash = git.get_hash(jcef_dir)
+jcef_url = git.get_url(jcef_dir)
+jcef_ver = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'], jcef_commit_number, jcef_commit_hash[:7])
 
 date = get_date()
 
-# Read and parse the version file (key=value pairs, one per line)
-args = {}
-read_readme_file(os.path.join(jcef_dir, 'third_party/cef/'+platform+'/README.txt'), args)
-
-jcef_ver = args['CEF_VER']+'.'+jcef_rev
 cef_ver = args['CEF_VER']
 cef_url = args['CEF_URL']
 chromium_ver = args['CHROMIUM_VER']

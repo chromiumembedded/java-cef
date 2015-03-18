@@ -141,6 +141,7 @@ def read_readme_file(file, args):
             args['CEF_VER'] = parts[1].strip()
             verparts = args['CEF_VER'].split('.')
             if len(verparts) >= 2:
+                args['CEF_MAJOR'] = verparts[0]
                 args['CEF_BUILD'] = verparts[1]
         elif parts[0].startswith('CEF URL'):
             args['CEF_URL'] = parts[1].strip()

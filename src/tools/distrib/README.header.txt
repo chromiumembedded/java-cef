@@ -4,7 +4,8 @@ Java Chromium Embedded Framework (JCEF) Binary Distribution for $PLATFORM$
 Date:             $DATE$
 
 JCEF Version:     $JCEF_VER$
-JCEF URL:         $JCEF_URL$@$JCEF_REV$
+JCEF URL:         $JCEF_URL$
+                  @$JCEF_REV$
 
 CEF Version:      $CEF_VER$
 CEF URL:          $CEF_URL$

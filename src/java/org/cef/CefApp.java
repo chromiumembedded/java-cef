@@ -25,22 +25,22 @@ import org.cef.handler.CefAppHandlerAdapter;
 public class CefApp extends CefAppHandlerAdapter {
 
   public final class CefVersion {
-    public final int JCEF_REVISION;
+    public final int JCEF_COMMIT_NUMBER;
 
     public final int CEF_VERSION_MAJOR;
-    public final int CEF_REVISION;
+    public final int CEF_COMMIT_NUMBER;
 
     public final int CHROME_VERSION_MAJOR;
     public final int CHROME_VERSION_MINOR;
     public final int CHROME_VERSION_BUILD;
     public final int CHROME_VERSION_PATCH;
 
-    private CefVersion(int jcefRev, int cefMajor, int cefRev,
+    private CefVersion(int jcefCommitNo, int cefMajor, int cefCommitNo,
                        int chrMajor, int chrMin, int chrBuild, int chrPatch) {
-      JCEF_REVISION = jcefRev;
+      JCEF_COMMIT_NUMBER = jcefCommitNo;
 
       CEF_VERSION_MAJOR = cefMajor;
-      CEF_REVISION = cefRev;
+      CEF_COMMIT_NUMBER = cefCommitNo;
 
       CHROME_VERSION_MAJOR = chrMajor;
       CHROME_VERSION_MINOR = chrMin;
@@ -51,14 +51,13 @@ public class CefApp extends CefAppHandlerAdapter {
     public String getJcefVersion() {
       return CEF_VERSION_MAJOR
           + "." + CHROME_VERSION_BUILD
-          + "." + CEF_REVISION
-          + "." + JCEF_REVISION;
+          + "." + JCEF_COMMIT_NUMBER;
     }
 
     public String getCefVersion() {
       return CEF_VERSION_MAJOR
           + "." + CHROME_VERSION_BUILD
-          + "." + CEF_REVISION;
+          + "." + CEF_COMMIT_NUMBER;
     }
 
     public String getChromeVersion() {
