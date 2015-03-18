@@ -18,4 +18,4 @@ USAGE
 
 Please visit the JCEF Website for additional usage information.
 
-http://code.google.com/p/javachromiumembedded
+https://bitbucket.org/chromiumembedded/java-cef
