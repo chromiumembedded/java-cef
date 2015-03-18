@@ -36,7 +36,7 @@ JCEF is still very much a work in progress. Some ways that you can help out:
 
 \- Vote for issues in the [JCEF issue tracker](https://bitbucket.org/chromiumembedded/java-cef/issues?status=new&status=open) that are important to you. This helps with development prioritization.
 
-\- Report any bugs that you find or feature requests that are important to you. Make sure to first search for existing issues before creating new ones. Please use the [JCEF Forum](http://magpcss.org/ceforum/viewforum.php?f=17) and not the issue tracker for usage questions. EachJ CEF issue should:
+\- Report any bugs that you find or feature requests that are important to you. Make sure to first search for existing issues before creating new ones. Please use the [JCEF Forum](http://magpcss.org/ceforum/viewforum.php?f=17) and not the issue tracker for usage questions. Each JCEF issue should:
 
 * Include the JCEF revision, CEF revision or binary distribution version.
 * Include information about your OS and compiler version.
