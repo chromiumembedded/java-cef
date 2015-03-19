@@ -1,0 +1,63 @@
+*.gypcmd
+*.mk
+*.ncb
+*.opensdf
+*.props
+*.pyc
+*.rules
+*.sdf
+*.sln
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.targets
+*.user
+*.vcproj
+*.vcxproj
+*.vcxproj.filters
+*.vpj
+*.vpw
+*.vpwhistu
+*.vtg
+*.xcodeproj
+*.xcworkspace
+*_proto.xml
+*_proto_cpp.xml
+*~
+!Android.mk
+.*.sw?
+.DS_Store
+.classpath
+.cproject
+.gdb_history
+.gdbinit
+.landmines
+.metadata
+.project
+.pydevproject
+# Settings directory for eclipse
+/.settings
+.checkstyle
+cscope.*
+Session.vim
+tags
+Thumbs.db
+# JCEF generated directories
+/src/binary_distrib
+/src/out
+/src/xcodebuild
+# JCEF generated files
+/src/native/jcef_version.h
+# gclient files
+/.gclient
+/.gclient_entries
+# Third-party directories
+/src/third_party/gyp
+/src/third_party/psyco_win32
+/src/third_party/python_26
+# CEF download directories
+/src/third_party/cef/linux32/
+/src/third_party/cef/linux64/
+/src/third_party/cef/macosx64/
+/src/third_party/cef/win32/
+/src/third_party/cef/win64/
