@@ -2,24 +2,18 @@
 # to list the dependency's destination directory.
 
 vars = {
-  # Use this googlecode_url variable only if there is an internal mirror for it.
-  # If you do not know, use the full path while defining your new deps entry.
-  "googlecode_url": "http://%s.googlecode.com/svn",
-  "chromium_url": "http://src.chromium.org/svn",
+  'chromium_git': 'https://chromium.googlesource.com',
 }
 
 deps = {
   "src/third_party/gyp":
-    (Var("googlecode_url") % "gyp") + "/trunk@1769",
+    Var('chromium_git') + '/external/gyp.git' + '@' + '29e94a3285ee899d14d5e56a6001682620d3778f',
 }
 
 deps_os = {
   "win": {
-    "src/third_party/python_26":
-      Var("chromium_url") + "/trunk/tools/third_party/python_26@89111",
-
     "src/third_party/psyco_win32":
-      Var("chromium_url") + "/trunk/deps/third_party/psyco_win32@79861",
+      Var('chromium_git') + '/chromium/deps/psyco_win32.git' + '@' + 'f5af9f6910ee5a8075bbaeed0591469f1661d868',
   },
 }
 
