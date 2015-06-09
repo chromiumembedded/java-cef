@@ -240,8 +240,8 @@ public class MainFrame extends JFrame {
     menuBar.addBookmark("Spellcheck test", "client://tests/spellcheck.html");
     menuBar.addBookmark("Test local Storage", "client://tests/localstorage.html");
     menuBar.addBookmarkSeparator();
-    menuBar.addBookmark("javachromiumembedded", "https://code.google.com/p/javachromiumembedded/");
-    menuBar.addBookmark("chromiumembedded", "https://code.google.com/p/chromiumembedded/");
+    menuBar.addBookmark("javachromiumembedded", "https://bitbucket.org/chromiumembedded/java-cef");
+    menuBar.addBookmark("chromiumembedded", "https://bitbucket.org/chromiumembedded/cef");
     setJMenuBar(menuBar);
   }
 

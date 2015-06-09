@@ -4,7 +4,8 @@
 
 #include "CefMessageRouter_N.h"
 
-#include "include/cef_runnable.h"
+#include "include/base/cef_bind.h"
+#include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_message_router.h"
 
 #include "message_router_handler.h"
@@ -45,10 +46,11 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1AddHandle
   if (CefCurrentlyOn(TID_UI)) {
     result = msgRouter->AddHandler(routerHandler, (jfirst != JNI_FALSE));
   } else {
-    result = CefPostTask(TID_UI, NewCefRunnableMethod(msgRouter.get(),
-                                                      &CefMessageRouterBrowserSide::AddHandler,
-                                                      routerHandler,
-                                                      (jfirst != JNI_FALSE)));
+    result = CefPostTask(TID_UI,
+        base::Bind(base::IgnoreResult(&CefMessageRouterBrowserSide::AddHandler),
+                   msgRouter.get(),
+                   routerHandler,
+                   (jfirst != JNI_FALSE)));
   }
   return result ? JNI_TRUE : JNI_FALSE;
 }
@@ -69,9 +71,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHan
   if (CefCurrentlyOn(TID_UI)) {
     result = msgRouter->RemoveHandler(routerHandler);
   } else {
-    result = CefPostTask(TID_UI, NewCefRunnableMethod(msgRouter.get(),
-                                                      &CefMessageRouterBrowserSide::RemoveHandler,
-                                                      routerHandler));
+    result = CefPostTask(TID_UI,
+        base::Bind(base::IgnoreResult(&CefMessageRouterBrowserSide::RemoveHandler),
+                   msgRouter.get(),
+                   routerHandler));
   }
   return result ? JNI_TRUE : JNI_FALSE;
 }

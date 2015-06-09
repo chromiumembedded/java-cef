@@ -28,12 +28,12 @@ class URLRequestClient : public CefURLRequestClient {
   virtual void OnRequestComplete(CefRefPtr<CefURLRequest> request) OVERRIDE;
 
   virtual void OnUploadProgress(CefRefPtr<CefURLRequest> request,
-                                uint64 current,
-                                uint64 total) OVERRIDE;
+                                int64 current,
+                                int64 total) OVERRIDE;
 
   virtual void OnDownloadProgress(CefRefPtr<CefURLRequest> request,
-                                  uint64 current,
-                                  uint64 total) OVERRIDE;
+                                  int64 current,
+                                  int64 total) OVERRIDE;
 
   virtual void OnDownloadData(CefRefPtr<CefURLRequest> request,
                               const void* data,

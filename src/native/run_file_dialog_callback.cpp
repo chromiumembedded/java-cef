@@ -17,8 +17,8 @@ RunFileDialogCallback::~RunFileDialogCallback() {
 }
 
 void RunFileDialogCallback::OnFileDialogDismissed(
-      CefRefPtr<CefBrowserHost> browser_host,
-      const std::vector<CefString>& file_paths) {
+    int selected_accept_filter,
+    const std::vector<CefString>& file_paths) {
   if (!jcallback_)
     return;
 
@@ -27,7 +27,7 @@ void RunFileDialogCallback::OnFileDialogDismissed(
     return;
   JNI_CALL_VOID_METHOD(env, jcallback_,
                        "onFileDialogDismissed",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/util/Vector;)V",
-                       GetJNIBrowser(browser_host->GetBrowser()),
+                       "(ILjava/util/Vector;)V",
+                       selected_accept_filter,
                        NewJNIStringVector(env, file_paths));
 }

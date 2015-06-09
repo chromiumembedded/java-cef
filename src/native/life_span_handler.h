@@ -21,6 +21,8 @@ class LifeSpanHandler : public CefLifeSpanHandler {
                              CefRefPtr<CefFrame> frame,
                              const CefString& target_url,
                              const CefString& target_frame_name,
+                             WindowOpenDisposition target_disposition,
+                             bool user_gesture,
                              const CefPopupFeatures& popupFeatures,
                              CefWindowInfo& windowInfo,
                              CefRefPtr<CefClient>& client,

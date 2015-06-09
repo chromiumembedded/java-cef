@@ -67,3 +67,25 @@ JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1ContinueDefaultTerminate
 }
 #endif
 #endif
+/* Header for class org_cef_CefApp_CefAppState */
+
+#ifndef _Included_org_cef_CefApp_CefAppState
+#define _Included_org_cef_CefApp_CefAppState
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class org_cef_CefApp_CefVersion */
+
+#ifndef _Included_org_cef_CefApp_CefVersion
+#define _Included_org_cef_CefApp_CefVersion
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif

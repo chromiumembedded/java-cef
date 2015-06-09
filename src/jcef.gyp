@@ -39,8 +39,6 @@
         'jcef_helper',
       ],
       'sources': [
-        'native/CefAllowCertificateErrorCallback_N.cpp',
-        'native/CefAllowCertificateErrorCallback_N.h',
         'native/CefApp.cpp',
         'native/CefApp.h',
         'native/CefAuthCallback_N.cpp',
@@ -87,10 +85,10 @@
         'native/CefPrintSettings_N.h',
         'native/CefQueryCallback_N.cpp',
         'native/CefQueryCallback_N.h',
-        'native/CefQuotaCallback_N.cpp',
-        'native/CefQuotaCallback_N.h',
         'native/CefRequest_N.cpp',
         'native/CefRequest_N.h',
+        'native/CefRequestCallback_N.cpp',
+        'native/CefRequestCallback_N.h',
         'native/CefRequestContext_N.cpp',
         'native/CefRequestContext_N.h',
         'native/CefResponse_N.cpp',
@@ -217,6 +215,19 @@
                 '$(OutDir)',
               ],
             },
+            {
+              'action_name': 'copy_blobs',
+              'msvs_cygwin_shell': 0,
+              'inputs': [],
+              'outputs': [
+                '<(PRODUCT_DIR)/copy_blobs.stamp',
+              ],
+              'action': [
+                'xcopy /efy',
+                '<(cef_directory_win)\$(ConfigurationName)\*.bin',
+                '$(OutDir)',
+              ],
+            },
           ],
           'link_settings': {
             'libraries': [
@@ -286,6 +297,8 @@
                 '<(cef_directory)/$(BUILDTYPE)/libcef.so',
                 '<(cef_directory)/$(BUILDTYPE)/libffmpegsumo.so',
                 '<(cef_directory)/$(BUILDTYPE)/libpdf.so',
+                '<(cef_directory)/$(BUILDTYPE)/natives_blob.bin',
+                '<(cef_directory)/$(BUILDTYPE)/snapshot_blob.bin',
                 '<(PRODUCT_DIR)',
               ],
             },
@@ -365,13 +378,13 @@
       ],
       'mac_bundle': 1,
       'mac_bundle_resources!': [
-        '<(cef_directory)/cefclient/mac/helper-Info.plist',
+        '<(cef_directory)/cefclient/resources/mac/helper-Info.plist',
       ],
       'mac_bundle_resources/': [
         ['exclude', '.*'],
       ],
       'xcode_settings': {
-        'INFOPLIST_FILE': '<(cef_directory)/cefclient/mac/helper-Info.plist',
+        'INFOPLIST_FILE': '<(cef_directory)/cefclient/resources/mac/helper-Info.plist',
       },
       'conditions': [
         ['OS=="win"', {
@@ -380,7 +393,7 @@
             'native/util_win.cpp',
           ],
           'variables': {
-            'win_exe_compatibility_manifest': '<(cef_directory)/cefclient/compatibility.manifest',
+            'win_exe_compatibility_manifest': '<(cef_directory)/cefclient/resources/win/compatibility.manifest',
           },
           'link_settings': {
             'libraries': [
@@ -395,7 +408,7 @@
             },
             'VCManifestTool': {
               'AdditionalManifestFiles': [
-                '<(cef_directory)/cefclient/cefclient.exe.manifest',
+                '<(cef_directory)/cefclient/resources/win/cefclient.exe.manifest',
               ],
             },
           },

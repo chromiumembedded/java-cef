@@ -16,12 +16,14 @@ public interface CefFileDialogCallback {
    * a single value or a list of values depending on the dialog mode. An empty
    * value is treated the same as calling Cancel().
    * 
+   * @param selectedAcceptFilter 0-based index of the value selected from the
+   * accept filters array passed to CefDialogHandler::OnFileDialog.
    * @param filePaths list of selected file paths or an empty list.
    */
-  public void Continue(Vector<String> filePaths);
+  public void Continue(int selectedAcceptFilter, Vector<String> filePaths);
 
   /**
    * Cancel the file selection.
    */
-  public void cancel();
+  public void Cancel();
 }

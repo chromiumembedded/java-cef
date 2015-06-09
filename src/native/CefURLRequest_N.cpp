@@ -6,7 +6,6 @@
 #include "CefURLRequest_N.h"
 #include "critical_wait.h"
 #include "include/cef_task.h"
-#include "include/cef_runnable.h"
 #include "include/cef_request.h"
 #include "include/cef_urlrequest.h"
 #include "url_request_client.h"
@@ -101,7 +100,8 @@ class URLRequest : public CefTask {
     lock_.Lock();
     switch (mode_) {
       case REQ_CREATE:
-        urlRequest_ =  CefURLRequest::Create(request_, client_.get());
+        // TODO(JCEF): Add the ability to specify a CefRequestContext.
+        urlRequest_ =  CefURLRequest::Create(request_, client_.get(), NULL);
         break;
       case REQ_STATUS:
         status_ = urlRequest_->GetRequestStatus();

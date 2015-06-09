@@ -148,17 +148,6 @@ JNIEXPORT jstring JNICALL
   return NewJNIString(env, menuParams->GetMisspelledWord());
 }
 
-JNIEXPORT jint JNICALL
-  Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspellingHash
-    (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefContextMenuParams> menuParams =
-      GetCefFromJNIObject<CefContextMenuParams>(env, obj,
-          "CefContextMenuParams");
-  if (!menuParams.get())
-    return 0;
-  return (jint)menuParams->GetMisspellingHash();
-}
-
 JNIEXPORT jboolean JNICALL
   Java_org_cef_callback_CefContextMenuParams_1N_N_1GetDictionarySuggestions
     (JNIEnv *env, jobject obj, jobject jsuggestions) {

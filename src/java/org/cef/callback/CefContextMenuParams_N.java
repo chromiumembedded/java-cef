@@ -153,16 +153,6 @@ class CefContextMenuParams_N extends CefNativeAdapter implements
   }
 
   @Override
-  public int getMisspellingHash() {
-    try {
-      return N_GetMisspellingHash();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-    return 0;
-  }
-
-  @Override
   public boolean getDictionarySuggestions(Vector<String> suggestions) {
     try {
       return N_GetDictionarySuggestions(suggestions);
@@ -216,7 +206,6 @@ class CefContextMenuParams_N extends CefNativeAdapter implements
   private final native int N_GetMediaStateFlags();
   private final native String N_GetSelectionText();
   private final native String N_GetMisspelledWord();
-  private final native int N_GetMisspellingHash();
   private final native boolean N_GetDictionarySuggestions(
       Vector<String> suggestions);
   private final native boolean N_IsEditable();

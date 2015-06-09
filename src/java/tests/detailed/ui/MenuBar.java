@@ -99,7 +99,7 @@ public class MenuBar extends JMenuBar {
       public void actionPerformed(ActionEvent e) {
         CefRunFileDialogCallback callback = new CefRunFileDialogCallback() {
           @Override
-          public void onFileDialogDismissed(CefBrowser browser, Vector<String> filePaths) {
+          public void onFileDialogDismissed(int selectedAcceptFilter, Vector<String> filePaths) {
             if (!filePaths.isEmpty()) {
               try {
                 SaveAs saveContent = new SaveAs(filePaths.get(0));
@@ -114,6 +114,7 @@ public class MenuBar extends JMenuBar {
                                owner_.getTitle(),
                                "index.html",
                                null,
+                               0,
                                callback);
       }
     });

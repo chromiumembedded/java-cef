@@ -3,9 +3,11 @@
 // can be found in the LICENSE file.
 
 #include "focus_handler.h"
-#include "client_handler.h"
-#include "include/cef_runnable.h"
 
+#include "include/base/cef_bind.h"
+#include "include/wrapper/cef_closure_task.h"
+
+#include "client_handler.h"
 #include "jni_util.h"
 #include "util.h"
 
@@ -63,7 +65,7 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
     if (CefCurrentlyOn(TID_UI))
       FocusParent(browserHandle);
     else
-      CefPostTask(TID_UI, NewCefRunnableFunction(&FocusParent, browserHandle));
+      CefPostTask(TID_UI, base::Bind(&FocusParent, browserHandle));
   }
 #endif
   return result;

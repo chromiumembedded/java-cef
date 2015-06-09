@@ -121,14 +121,6 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMi
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
- * Method:    N_GetMisspellingHash
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspellingHash
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetDictionarySuggestions
  * Signature: (Ljava/util/Vector;)Z
  */

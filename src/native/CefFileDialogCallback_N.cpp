@@ -7,7 +7,7 @@
 #include "jni_util.h"
 
 JNIEXPORT void JNICALL Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj, jobject jFilePaths) {
+  (JNIEnv *env, jobject obj, jint selectedAcceptFilter, jobject jFilePaths) {
   CefRefPtr<CefFileDialogCallback> callback =
       GetCefFromJNIObject<CefFileDialogCallback>(env, obj, "CefFileDialogCallback");
   if (!callback.get())
@@ -15,7 +15,7 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continu
 
   std::vector<CefString> filePaths;
   GetJNIStringVector(env, jFilePaths, filePaths);
-  callback->Continue(filePaths);
+  callback->Continue(selectedAcceptFilter, filePaths);
 
   // Clear the reference added in DialogHandler::OnFileDialog.
   SetCefForJNIObject<CefFileDialogCallback>(env, obj, NULL, "CefFileDialogCallback");

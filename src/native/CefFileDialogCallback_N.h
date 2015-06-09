@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefFileDialogCallback_N
  * Method:    N_Continue
- * Signature: (Ljava/util/Vector;)V
+ * Signature: (ILjava/util/Vector;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jint, jobject);
 
 /*
  * Class:     org_cef_callback_CefFileDialogCallback_N

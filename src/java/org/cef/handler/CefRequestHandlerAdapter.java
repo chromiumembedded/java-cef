@@ -5,9 +5,8 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
-import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefQuotaCallback;
+import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
@@ -40,7 +39,7 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
 
   @Override
   public void onResourceRedirect(CefBrowser browser,
-                                 String old_url,
+                                 CefRequest request,
                                  StringRef new_url) {
   }
 
@@ -59,7 +58,7 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
   public boolean onQuotaRequest(CefBrowser browser,
                                 String origin_url,
                                 long new_size,
-                                CefQuotaCallback callback) {
+                                CefRequestCallback callback) {
     return false;
   }
 
@@ -70,9 +69,10 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
   }
 
   @Override
-  public boolean onCertificateError(ErrorCode cert_error,
+  public boolean onCertificateError(CefBrowser browser,
+                                    ErrorCode cert_error,
                                     String request_url,
-                                    CefAllowCertificateErrorCallback callback) {
+                                    CefRequestCallback callback) {
     return false;
   }
 

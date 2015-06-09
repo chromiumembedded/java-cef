@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.cef.browser.CefBrowser;
-import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
+import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefRequestHandlerAdapter;
 import org.cef.handler.CefResourceHandler;
 import org.cef.handler.CefLoadHandler.ErrorCode;
@@ -145,9 +145,10 @@ public class RequestHandler extends CefRequestHandlerAdapter {
   }
 
   @Override
-  public boolean onCertificateError(ErrorCode cert_error,
+  public boolean onCertificateError(CefBrowser browser,
+                                    ErrorCode cert_error,
                                     String request_url,
-                                    CefAllowCertificateErrorCallback callback) {
+                                    CefRequestCallback callback) {
     SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
     return true;
   }

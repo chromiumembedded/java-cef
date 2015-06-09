@@ -5,9 +5,8 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
-import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefQuotaCallback;
+import org.cef.callback.CefRequestCallback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -53,10 +52,13 @@ public interface CefRequestHandler {
    * 
    * @param browser The corresponding browser.
    * @param request The request object may be modified.
+   * @param callback The request object may be modified.
    * @return To cancel the request return true otherwise return false.
    */
   boolean onBeforeResourceLoad(CefBrowser browser,
-                               CefRequest request);
+                               CefRequest request
+                               // CefRequestCallback callback
+                               );
 
   /**
    * Called on the IO thread before a resource is loaded. To allow the resource
@@ -75,11 +77,11 @@ public interface CefRequestHandler {
    * Called on the IO thread when a resource load is redirected.
    * 
    * @param browser The corresponding browser.
-   * @param old_url Contains the old URL.
+   * @param request The request itself. Should not be modified in this callback.
    * @param new_url Contains the new URL and can be changed if desired.
    */
   void onResourceRedirect(CefBrowser browser,
-                          String old_url,
+                          CefRequest request,
                           StringRef new_url);
 
   /**
@@ -113,14 +115,14 @@ public interface CefRequestHandler {
    * @param browser The corresponding browser.
    * @param origin_url is the origin of the page making the request.
    * @param new_size is the requested quota size in bytes.
-   * @param callback call CefQuotaCallback::Continue() either in this method or
+   * @param callback call CefRequestCallback::Continue() either in this method or
    *   at a later time to grant or deny the request.
    * @return true to handle the request or false to cancel the request.
    */
   boolean onQuotaRequest(CefBrowser browser,
                          String origin_url,
                          long new_size,
-                         CefQuotaCallback callback);
+                         CefRequestCallback callback);
 
   /** 
    * Called on the UI thread to handle requests for URLs with an unknown
@@ -142,21 +144,23 @@ public interface CefRequestHandler {
    * canceled automatically. If "ignore-certificate-errors" command-line switch
    * is set all invalid certificates will be accepted without calling this method.
    *
+   * @param browser The corresponding browser.
    * @param cert_error Error code describing the error.
    * @param request_url The requesting URL.
-   * @param callback call CefAllowCertificateErrorCallback::Continue() to continue 
-   *   or cancel the request.
+   * @param callback call CefRequestCallback::Continue() to continue
+   * or cancel the request.
    * @return true to handle the request or false to reject it.
    */
-  boolean onCertificateError(CefLoadHandler.ErrorCode cert_error,
+  boolean onCertificateError(CefBrowser browser,
+                             CefLoadHandler.ErrorCode cert_error,
                              String request_url,
-                             CefAllowCertificateErrorCallback callback);
+                             CefRequestCallback callback);
 
   /**
    * Called on the browser process IO thread before a plugin is loaded.
    * @return true to block loading of the plugin.
    *
-   * @bug https://code.google.com/p/chromiumembedded/issues/detail?id=1211&q=OnBeforePluginLoad
+   * @bug https://bitbucket.org/chromiumembedded/cef/issue/1211
    */
   boolean onBeforePluginLoad(CefBrowser browser,
                              String url,

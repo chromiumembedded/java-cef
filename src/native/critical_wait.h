@@ -6,7 +6,6 @@
 #define JCEF_NATIVE_CRITICAL_WAIT_H_
 #pragma once
 
-#include "include/cef_runnable.h"
 #include "include/cef_task.h"
 
 #if defined(OS_WIN)

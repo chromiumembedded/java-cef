@@ -23,7 +23,6 @@ import org.cef.browser.CefBrowser;
 import org.cef.browser.CefBrowserFactory;
 import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
-import org.cef.callback.CefAllowCertificateErrorCallback;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefContextMenuParams;
@@ -34,7 +33,7 @@ import org.cef.callback.CefFileDialogCallback;
 import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
-import org.cef.callback.CefQuotaCallback;
+import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -297,11 +296,14 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public boolean onFileDialog(CefBrowser browser,
                               FileDialogMode mode,
                               String title,
-                              String defaultFileName,
-                              Vector<String> acceptTypes,
+                              String defaultFilePath,
+                              Vector<String> acceptFilters,
+                              int selectedAcceptFilter,
                               CefFileDialogCallback callback) {
-    if (dialogHandler_ != null && browser != null)
-      return dialogHandler_.onFileDialog(browser, mode, title, defaultFileName, acceptTypes, callback);
+    if (dialogHandler_ != null && browser != null) {
+      return dialogHandler_.onFileDialog(browser, mode, title, defaultFilePath,
+                                         acceptFilters, selectedAcceptFilter, callback);
+    }
     return false;
   }
 
@@ -890,10 +892,10 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   public void onResourceRedirect(CefBrowser browser,
-                                 String old_url,
+                                 CefRequest request,
                                  StringRef new_url) {
     if (requestHandler_ != null && browser != null)
-      requestHandler_.onResourceRedirect(browser, old_url, new_url);
+      requestHandler_.onResourceRedirect(browser, request, new_url);
   }
 
   @Override
@@ -913,7 +915,7 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   public boolean onQuotaRequest(CefBrowser browser,
                                 String origin_url,
                                 long new_size,
-                                CefQuotaCallback callback) {
+                                CefRequestCallback callback) {
     if (requestHandler_ != null && browser != null)
       return requestHandler_.onQuotaRequest(browser, origin_url, new_size, callback);
     return false;
@@ -928,11 +930,12 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  public boolean onCertificateError(ErrorCode cert_error,
+  public boolean onCertificateError(CefBrowser browser,
+                                    ErrorCode cert_error,
                                     String request_url,
-                                    CefAllowCertificateErrorCallback callback) {
+                                    CefRequestCallback callback) {
     if (requestHandler_ != null)
-      return requestHandler_.onCertificateError(cert_error, request_url, callback);
+      return requestHandler_.onCertificateError(browser, cert_error, request_url, callback);
     return false;
   }
 

@@ -89,7 +89,7 @@ public class ContextMenuHandler implements CefContextMenuHandler {
           String newWord = suggestions_.get(commandId);
           if (newWord != null) {
             System.err.println("replacing " + params.getMisspelledWord() +
-                " with " + newWord + ". Hash: " + params.getMisspellingHash());
+                " with " + newWord);
             browser.replaceMisspelling(newWord);
             return true;
           }

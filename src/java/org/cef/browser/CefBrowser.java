@@ -215,17 +215,23 @@ public interface CefBrowser {
    * @param mode represents the type of dialog to display.
    * @param title  to be used for the dialog and may be empty to show the
    * default title ("Open" or "Save" depending on the mode).
-   * @param defaultFileName the default file name to select in the dialog.
-   * @param acceptTypes is a list of valid lower-cased MIME types or file 
-   * extensions specified in an input element and is used to restrict selectable 
-   * files to such types.
+   * @param defaultFilePath is the path with optional directory and/or file name
+   * component that should be initially selected in the dialog.
+   * @param acceptFilters are used to restrict the selectable file types and may
+   * any combination of (a) valid lower-cased MIME types (e.g. "text/*" or
+   * "image/*"), (b) individual file extensions (e.g. ".txt" or ".png"), or (c)
+   * combined description and file extension delimited using "|" and ";" (e.g.
+   * "Image Types|.png;.gif;.jpg").
+   * @param selectedAcceptFilter is the 0-based index of the filter that should
+   * be selected by default.
    * @param callback will be executed after the dialog is dismissed or 
    * immediately if another dialog is already pending.
    */
   public void runFileDialog(FileDialogMode mode,
                             String title,
-                            String defaultFileName,
-                            Vector<String> acceptTypes,
+                            String defaultFilePath,
+                            Vector<String> acceptFilters,
+                            int selectedAcceptFilter,
                             CefRunFileDialogCallback callback);
 
   /**

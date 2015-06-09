@@ -49,16 +49,19 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   return (result != JNI_FALSE);
 }
 
-bool RequestHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-                                          CefRefPtr<CefFrame> frame,
-                                          CefRefPtr<CefRequest> request) {
+// TODO(JCEF): Expose the |callback| parameter.
+RequestHandler::ReturnValue RequestHandler::OnBeforeResourceLoad(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefRequestCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
-    return false;
+    return RV_CONTINUE;
 
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
-    return false;
+    return RV_CONTINUE;
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jboolean result = JNI_FALSE;
@@ -71,13 +74,13 @@ bool RequestHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                   jrequest);
 
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
-  return (result != JNI_FALSE);
+  return (result != JNI_FALSE) ? RV_CANCEL : RV_CONTINUE;
 }
 
 CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
-                                            CefRefPtr<CefBrowser> browser,
-                                            CefRefPtr<CefFrame> frame,
-                                            CefRefPtr<CefRequest> request) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return NULL;
@@ -109,17 +112,23 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
 
 void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
-                                        const CefString& old_url,
+                                        CefRefPtr<CefRequest> request,
                                         CefString& new_url) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+
+  jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
+  if (!jrequest)
+    return;
+  SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
+
   jobject jstringRef = NewJNIStringRef(env, new_url);
   JNI_CALL_VOID_METHOD(env, jhandler_,
                        "onResourceRedirect",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Lorg/cef/misc/StringRef;)V",
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;Lorg/cef/misc/StringRef;)V",
                        GetJNIBrowser(browser),
-                       NewJNIString(env, old_url),
+                       jrequest,
                        jstringRef);
   new_url = GetJNIStringRef(env, jstringRef);
 }
@@ -168,21 +177,21 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
 bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                     const CefString& origin_url,
                                     int64 new_size,
-                                    CefRefPtr<CefQuotaCallback> callback) {
+                                    CefRefPtr<CefRequestCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
 
-  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefQuotaCallback_N");
+  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefRequestCallback_N");
   if (!jcallback)
     return false;
-  SetCefForJNIObject(env, jcallback, callback.get(), "CefQuotaCallback");
+  SetCefForJNIObject(env, jcallback, callback.get(), "CefRequestCallback");
 
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onQuotaRequest",
                   "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
-                  "JLorg/cef/callback/CefQuotaCallback;)Z",
+                  "JLorg/cef/callback/CefRequestCallback;)Z",
                   Boolean,
                   result,
                   GetJNIBrowser(browser),
@@ -193,7 +202,7 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
   if (result == JNI_FALSE) {
     // If the java method returns "false", the callback won't be used and therefore
     // the reference can be removed.
-    SetCefForJNIObject<CefQuotaCallback>(env, jcallback, NULL, "CefQuotaCallback");
+    SetCefForJNIObject<CefRequestCallback>(env, jcallback, NULL, "CefRequestCallback");
   }
   return (result != JNI_FALSE);
 }
@@ -215,25 +224,29 @@ void RequestHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
   allow_os_execution = GetJNIBoolRef(env, jboolRef);
 }
                                    
-bool RequestHandler::OnCertificateError(cef_errorcode_t cert_error,
-                                        const CefString& request_url,
-                                        CefRefPtr<CefAllowCertificateErrorCallback> callback) {
+bool RequestHandler::OnCertificateError(
+    CefRefPtr<CefBrowser> browser,
+    cef_errorcode_t cert_error,
+    const CefString& request_url,
+    CefRefPtr<CefSSLInfo> ssl_info,
+    CefRefPtr<CefRequestCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
 
-  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefAllowCertificateErrorCallback_N");
+  jobject jcallback = NewJNIObject(env, "org/cef/callback/CefRequestCallback_N");
   if (!jcallback)
     return false;
-  SetCefForJNIObject(env, jcallback, callback.get(), "CefAllowCertificateErrorCallback");
+  SetCefForJNIObject(env, jcallback, callback.get(), "CefRequestCallback");
 
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onCertificateError",
-                  "(Lorg/cef/handler/CefLoadHandler$ErrorCode;Ljava/lang/String;"
-                  "Lorg/cef/callback/CefAllowCertificateErrorCallback;)Z",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefLoadHandler$ErrorCode;"
+                  "Ljava/lang/String;Lorg/cef/callback/CefRequestCallback;)Z",
                   Boolean,
                   result,
+                  GetJNIBrowser(browser),
                   NewJNIErrorCode(env, cert_error),
                   NewJNIString(env, request_url),
                   jcallback);
@@ -241,8 +254,7 @@ bool RequestHandler::OnCertificateError(cef_errorcode_t cert_error,
   if (result == JNI_FALSE) {
     // If the java method returns "false", the callback won't be used and therefore
     // the reference can be removed.
-    SetCefForJNIObject<CefAllowCertificateErrorCallback>(env, jcallback, NULL, 
-                                                         "CefAllowCertificateErrorCallback");
+    SetCefForJNIObject<CefRequestCallback>(env, jcallback, NULL, "CefRequestCallback");
   }
   return (result != JNI_FALSE);
 }

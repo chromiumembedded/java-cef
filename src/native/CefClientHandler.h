@@ -136,7 +136,7 @@ JNIEXPORT void JNICALL Java_org_cef_handler_CefClientHandler_N_1removeRequestHan
   (JNIEnv *, jobject, jobject);
 
 /*
- * Class:     org_cef_handler_CefWindowHandler
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeWindowHandler
  * Signature: (Lorg/cef/handler/CefWindowHandler;)V
  */

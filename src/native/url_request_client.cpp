@@ -50,8 +50,8 @@ void URLRequestClient::OnRequestComplete(CefRefPtr<CefURLRequest> request) {
 }
 
 void URLRequestClient::OnUploadProgress(CefRefPtr<CefURLRequest> request,
-                                        uint64 current,
-                                        uint64 total) {
+                                        int64 current,
+                                        int64 total) {
   BEGIN_ENV(env)
   JNI_CALL_VOID_METHOD(env, jURLRequestClient_,
                        "onUploadProgress",
@@ -63,8 +63,8 @@ void URLRequestClient::OnUploadProgress(CefRefPtr<CefURLRequest> request,
 }
 
 void URLRequestClient::OnDownloadProgress(CefRefPtr<CefURLRequest> request,
-                                          uint64 current,
-                                          uint64 total) {
+                                          int64 current,
+                                          int64 total) {
   BEGIN_ENV(env)
   JNI_CALL_VOID_METHOD(env, jURLRequestClient_,
                        "onDownloadProgress",

@@ -87,8 +87,11 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
   env->DeleteLocalRef(direct_buffer);
 }
 
+// TODO(JCEF): Expose all parameters.
 void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
-                                   CefCursorHandle cursor) {
+                                   CefCursorHandle cursor,
+                                   CursorType type,
+                                   const CefCursorInfo& custom_cursor_info) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
   	return;
@@ -99,7 +102,6 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
                        GetJNIBrowser(browser),
                        cursorId);
 }
-
 
 bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefDragData> drag_data,

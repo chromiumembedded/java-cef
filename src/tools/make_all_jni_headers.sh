@@ -10,7 +10,6 @@ else
   ./make_jni_header.sh $1 org.cef.browser.CefBrowser_N
   ./make_jni_header.sh $1 org.cef.browser.CefMessageRouter_N
   ./make_jni_header.sh $1 org.cef.browser.CefRequestContext_N
-  ./make_jni_header.sh $1 org.cef.callback.CefAllowCertificateErrorCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefAuthCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefBeforeDownloadCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefCommandLine_N
@@ -26,7 +25,7 @@ else
   ./make_jni_header.sh $1 org.cef.callback.CefPrintDialogCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefPrintJobCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefQueryCallback_N
-  ./make_jni_header.sh $1 org.cef.callback.CefQuotaCallback_N
+  ./make_jni_header.sh $1 org.cef.callback.CefRequestCallback_N
   ./make_jni_header.sh $1 org.cef.callback.CefSchemeRegistrar_N
   ./make_jni_header.sh $1 org.cef.handler.CefClientHandler
   ./make_jni_header.sh $1 org.cef.misc.CefPrintSettings_N

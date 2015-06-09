@@ -28,7 +28,9 @@ JNIEXPORT jobject JNICALL Java_org_cef_browser_CefRequestContext_1N_N_1CreateCon
     handler = new RequestContextHandler(env, jhandler);
   }
 
-  CefRefPtr<CefRequestContext> context = CefRequestContext::CreateContext(handler);
+  // TODO(JCEF): Expose CefRequestContextSettings.
+  CefRequestContextSettings settings;
+  CefRefPtr<CefRequestContext> context = CefRequestContext::CreateContext(settings, handler);
   if (!context.get())
     return NULL;
 

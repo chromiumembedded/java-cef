@@ -16,11 +16,12 @@ class DialogHandler : public CefDialogHandler {
   virtual ~DialogHandler();
 
   // CefDialogHandler methods
-    virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+  virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
                             FileDialogMode mode,
                             const CefString& title,
-                            const CefString& default_file_name,
-                            const std::vector<CefString>& accept_types,
+                            const CefString& default_file_path,
+                            const std::vector<CefString>& accept_filters,
+                            int selected_accept_filter,
                             CefRefPtr<CefFileDialogCallback> callback) OVERRIDE;
 
  protected:

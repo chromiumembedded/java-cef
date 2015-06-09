@@ -3,12 +3,15 @@
 // can be found in the LICENSE file.
 
 #include "CefBrowser_N.h"
-#include "critical_wait.h"
+
+#include "include/base/cef_bind.h"
 #include "include/cef_browser.h"
 #include "include/cef_task.h"
-#include "include/cef_runnable.h"
-#include "jni_util.h"
+#include "include/wrapper/cef_closure_task.h"
+
 #include "client_handler.h"
+#include "critical_wait.h"
+#include "jni_util.h"
 #include "render_handler.h"
 #include "life_span_handler.h"
 #include "string_visitor.h"
@@ -220,12 +223,16 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
 }
 
 #if defined(OS_WIN)
-void UpdateWindowRgn(HWND browserHandle, CefRect contentRect) {
+void CefUpdateWindowRgn(HWND browserHandle, CefRect contentRect) {
   HRGN contentRgn = CreateRectRgn(contentRect.x, contentRect.y,
       contentRect.x + contentRect.width, contentRect.y + contentRect.height);
   SetWindowRgn(GetParent(browserHandle), contentRgn, TRUE);
 }
-#endif
+
+void CefSetWindowPos(HWND browserHandle, int width, int height) {
+  SetWindowPos(browserHandle, NULL, 0, 0, width, height, SWP_NOZORDER | SWP_NOMOVE);
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -335,7 +342,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ViewSource
   (JNIEnv *env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   CefRefPtr<CefFrame> mainFrame = browser->GetMainFrame();
-  CefPostTask(TID_UI, NewCefRunnableMethod(mainFrame.get(), &CefFrame::ViewSource));
+  CefPostTask(TID_UI, base::Bind(&CefFrame::ViewSource, mainFrame.get()));
 }
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetSource
@@ -417,7 +424,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
     if (CefCurrentlyOn(TID_UI))
       FocusParent(browserHandle);
     else
-      CefPostTask(TID_UI, NewCefRunnableFunction(&FocusParent, browserHandle));
+      CefPostTask(TID_UI, base::Bind(&FocusParent, browserHandle));
   }
 #endif
 }
@@ -445,8 +452,7 @@ JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel
     CriticalLock lock;
     CriticalWait waitCond(&lock);
     lock.Lock();
-    CefPostTask(TID_UI, NewCefRunnableFunction(getZoomLevel, host, &waitCond,
-        &result));
+    CefPostTask(TID_UI, base::Bind(getZoomLevel, host, &waitCond, &result));
     waitCond.Wait(1000);
     lock.Unlock();
   }
@@ -461,11 +467,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetZoomLevel
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog
   (JNIEnv *env, jobject obj, jobject jmode, jstring jtitle, 
-   jstring jdefaultFileName , jobject jacceptTypes, jobject jcallback) {
+   jstring jdefaultFilePath, jobject jacceptFilters, jint selectedAcceptFilter,
+   jobject jcallback) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
 
   std::vector<CefString> accept_types;
-  GetJNIStringVector(env, jacceptTypes, accept_types);
+  GetJNIStringVector(env, jacceptFilters, accept_types);
 
   CefBrowserHost::FileDialogMode mode;
   if (IsJNIEnumValue(env, jmode, 
@@ -486,8 +493,9 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog
 
   browser->GetHost()->RunFileDialog(mode,
                                     GetJNIString(env, jtitle),
-                                    GetJNIString(env, jdefaultFileName),
+                                    GetJNIString(env, jdefaultFilePath),
                                     accept_types,
+                                    selectedAcceptFilter,
                                     new RunFileDialogCallback(env, jcallback));
 }
 
@@ -541,12 +549,12 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1WasResized
 #if defined(OS_WIN) 
   else {
     HWND handle = browser->GetHost()->GetWindowHandle();
-    if (CefCurrentlyOn(TID_UI))
-      SetWindowPos(handle, NULL, 0, 0, width, height, SWP_NOZORDER|SWP_NOMOVE);
-    else
-      CefPostTask(TID_UI, NewCefRunnableFunction(&SetWindowPos, handle,
-          (HWND)NULL, 0, 0, (int)width, (int)height,
-          (UINT)(SWP_NOZORDER | SWP_NOMOVE)));
+    if (CefCurrentlyOn(TID_UI)) {
+      CefSetWindowPos(handle, width, height);
+    } else {
+      CefPostTask(TID_UI,
+          base::Bind(&CefSetWindowPos, handle, (int)width, (int)height));
+    }
   }
 #endif
 }
@@ -923,9 +931,8 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI
 #elif defined(OS_WIN)
   HWND hwnd = browser->GetHost()->GetWindowHandle();
   if (CefCurrentlyOn(TID_UI))
-    UpdateWindowRgn(hwnd, contentRect);
+    CefUpdateWindowRgn(hwnd, contentRect);
   else
-    CefPostTask(TID_UI, NewCefRunnableFunction(&UpdateWindowRgn, hwnd,
-        contentRect));
+    CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, hwnd, contentRect));
 #endif
 }

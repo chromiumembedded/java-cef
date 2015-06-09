@@ -17,8 +17,8 @@ class RunFileDialogCallback : public CefRunFileDialogCallback {
 
   // RunFileDialogCallback methods
   virtual void OnFileDialogDismissed(
-    CefRefPtr<CefBrowserHost> browser_host,
-    const std::vector<CefString>& file_paths) OVERRIDE;
+      int selected_accept_filter,
+      const std::vector<CefString>& file_paths) OVERRIDE;
 
  protected:
   jobject jcallback_;
