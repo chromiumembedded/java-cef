@@ -18,7 +18,7 @@ if __name__ != "__main__":
 script_dir = os.path.dirname(__file__)
 
 # JCEF root directory
-jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir, os.pardir))
+jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
 
 
 # parse command-line options
@@ -61,7 +61,7 @@ def write_svn_header(header):
 
     # Read and parse the CEF version file.
     args = {}
-    read_readme_file(os.path.join(jcef_dir, 'src/third_party/cef/'+platform+'/README.txt'), args)
+    read_readme_file(os.path.join(jcef_dir, 'third_party/cef/'+platform+'/README.txt'), args)
 
     version = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'], commit_number, commit_hash[:7])
 

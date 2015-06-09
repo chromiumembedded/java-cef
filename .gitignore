@@ -43,21 +43,21 @@ Session.vim
 tags
 Thumbs.db
 # JCEF generated directories
-/src/binary_distrib
-/src/out
-/src/xcodebuild
+/binary_distrib
+/out
+/xcodebuild
 # JCEF generated files
-/src/native/jcef_version.h
+/native/jcef_version.h
 # gclient files
 /.gclient
 /.gclient_entries
 # Third-party directories
-/src/third_party/gyp
-/src/third_party/psyco_win32
-/src/third_party/python_26
+/third_party/gyp
+/third_party/psyco_win32
+/third_party/python_26
 # CEF download directories
-/src/third_party/cef/linux32/
-/src/third_party/cef/linux64/
-/src/third_party/cef/macosx64/
-/src/third_party/cef/win32/
-/src/third_party/cef/win64/
+/third_party/cef/linux32/
+/third_party/cef/linux64/
+/third_party/cef/macosx64/
+/third_party/cef/win32/
+/third_party/cef/win64/
