@@ -14,7 +14,7 @@ else
     echo "ERROR: Please specify a run type: detailed or simple"
   else
     export OUT_PATH="./out"
-    export LIB_PATH="$OUT_PATH/$2"
+    export LIB_PATH=$(readlink -f "$OUT_PATH/$2")
     export CLS_PATH="./third_party/jogamp/jar/*:$OUT_PATH/$1"
     export RUN_TYPE="$3"
 
@@ -26,7 +26,7 @@ else
     shift
     shift
 
-    java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.$RUN_TYPE.MainFrame "$@"
+    LD_PRELOAD=$LIB_PATH/libcef.so java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.$RUN_TYPE.MainFrame "$@"
   fi
 fi
 
