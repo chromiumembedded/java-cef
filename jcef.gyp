@@ -296,7 +296,6 @@
                 '<(cef_directory)/$(BUILDTYPE)/chrome-sandbox',
                 '<(cef_directory)/$(BUILDTYPE)/libcef.so',
                 '<(cef_directory)/$(BUILDTYPE)/libffmpegsumo.so',
-                '<(cef_directory)/$(BUILDTYPE)/libpdf.so',
                 '<(cef_directory)/$(BUILDTYPE)/natives_blob.bin',
                 '<(cef_directory)/$(BUILDTYPE)/snapshot_blob.bin',
                 '<(PRODUCT_DIR)',
