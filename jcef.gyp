@@ -179,7 +179,6 @@
         ['OS=="win"', {
           'sources': [
             'native/critical_wait_win.cpp',
-            'native/render_handler_win.cpp',
             'native/jni_util_win.cpp',
             'native/jcef_dll.rc',
             'native/util_win.cpp',
@@ -255,7 +254,6 @@
           ],
           'sources': [
             'native/critical_wait_posix.cpp',
-            'native/render_handler_linux.cpp',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
             'native/util_linux.cpp',
@@ -324,7 +322,6 @@
           'product_name': 'jcef',
           'sources': [
             'native/critical_wait_posix.cpp',
-            'native/render_handler_mac.mm',
             'native/signal_restore_posix.cpp',
             'native/signal_restore_posix.h',
             'native/util_mac.h',

@@ -53,8 +53,6 @@ class RenderHandler : public CefRenderHandler {
 
  protected:
   jobject jhandler_;
-  
-  int NativeGetCursorId(CefCursorHandle cursor);
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RenderHandler);

@@ -8,6 +8,66 @@
 #include "jni_util.h"
 #include "util.h"
 
+namespace {
+
+int GetCursorId(cef_cursor_type_t type) {
+  JNIEnv* env = GetJNIEnv();
+  if(!env)
+    return 0;
+
+  jclass cls = env->FindClass("java/awt/Cursor");
+  if (!cls)
+    return 0;
+
+  JNI_STATIC_DEFINE_INT_RV(env, cls, CROSSHAIR_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, DEFAULT_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, E_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, HAND_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, MOVE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, N_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, NE_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, NW_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, S_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, SE_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, SW_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, TEXT_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, W_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, WAIT_CURSOR, 0);
+
+  switch (type) {
+    case CT_CROSS:
+      return JNI_STATIC(CROSSHAIR_CURSOR);
+    case CT_HAND:
+      return JNI_STATIC(HAND_CURSOR);
+    case CT_IBEAM:
+      return JNI_STATIC(TEXT_CURSOR);
+    case CT_WAIT:
+       return JNI_STATIC(WAIT_CURSOR);
+    case CT_EASTRESIZE:
+      return JNI_STATIC(E_RESIZE_CURSOR);
+    case CT_NORTHRESIZE:
+      return JNI_STATIC(N_RESIZE_CURSOR);
+    case CT_NORTHEASTRESIZE:
+      return JNI_STATIC(NE_RESIZE_CURSOR);
+    case CT_NORTHWESTRESIZE:
+      return JNI_STATIC(NW_RESIZE_CURSOR);
+    case CT_SOUTHRESIZE:
+      return JNI_STATIC(S_RESIZE_CURSOR);
+    case CT_SOUTHEASTRESIZE:
+      return JNI_STATIC(SE_RESIZE_CURSOR);
+    case CT_SOUTHWESTRESIZE:
+      return JNI_STATIC(SW_RESIZE_CURSOR);
+    case CT_WESTRESIZE:
+      return JNI_STATIC(W_RESIZE_CURSOR);
+    case CT_MOVE:
+      return JNI_STATIC(MOVE_CURSOR);
+    default:
+      return JNI_STATIC(DEFAULT_CURSOR);
+  }
+}
+
+}  // namespace
+
 RenderHandler::RenderHandler(JNIEnv* env, jobject handler) {
   jhandler_ = env->NewGlobalRef(handler);
 }
@@ -95,7 +155,7 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
   	return;
-  const int cursorId = NativeGetCursorId(cursor);
+  const int cursorId = GetCursorId(type);
   JNI_CALL_VOID_METHOD(env, jhandler_, 
                        "onCursorChange", 
                        "(Lorg/cef/browser/CefBrowser;I)V", 
@@ -197,3 +257,4 @@ bool RenderHandler::GetScreenPoint(jobject browser,
   }
   return false;
 }
+
