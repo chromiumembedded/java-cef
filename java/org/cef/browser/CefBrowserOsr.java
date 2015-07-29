@@ -7,6 +7,8 @@ package org.cef.browser;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -24,6 +26,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.GLCapabilities;
+import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 
 import org.cef.callback.CefDragData;
@@ -234,6 +237,21 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
       @Override
       public void keyReleased(KeyEvent e) {
         sendKeyEvent(e);
+      }
+    });
+
+    canvas_.setFocusable(true);
+    canvas_.addFocusListener(new FocusListener() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        setFocus(false);
+      }
+
+      @Override
+      public void focusGained(FocusEvent e) {
+        // Dismiss any Java menus that are currently displayed.
+        MenuSelectionManager.defaultManager().clearSelectedPath();
+        setFocus(true);
       }
     });
   }
