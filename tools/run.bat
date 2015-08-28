@@ -1,4 +1,8 @@
 @echo off
+:: Copyright (c) 2013 The Chromium Embedded Framework Authors. All rights
+:: reserved. Use of this source code is governed by a BSD-style license
+:: that can be found in the LICENSE file.
+
 set RC=
 setlocal
 cd ..
@@ -21,17 +25,24 @@ set ERRORLEVEL=1
 goto end
 )
 
-set OUT_PATH=".\out\%1"
-set LIB_PATH="%OUT_PATH%\%2"
-set CLS_PATH=".\third_party\jogamp\jar\*;%OUT_PATH%"
-set RUN_TYPE="%3"
+set OUT_PATH=.\out\%~1
+set LIB_PATH=%OUT_PATH%\%~2
+set CLS_PATH=.\third_party\jogamp\jar\*;%OUT_PATH%
+set RUN_TYPE=%~3
 
 :: Remove the first three params (%1, %2 and %3) and pass the rest to java.
+set RESTVAR=
 shift
 shift
 shift
+:loop1
+if "%1"=="" goto after_loop
+set RESTVAR=%RESTVAR% %1
+shift
+goto loop1
+:after_loop
 
-java -cp %CLS_PATH% -Djava.library.path=%LIB_PATH% tests.%RUN_TYPE%.MainFrame %*
+java -cp %CLS_PATH% -Djava.library.path=%LIB_PATH% tests.%RUN_TYPE%.MainFrame %RESTVAR%
 
 :end
 endlocal & set RC=%ERRORLEVEL%
