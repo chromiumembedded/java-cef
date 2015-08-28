@@ -35,7 +35,7 @@
         '<(cef_directory)',
       ],
       'dependencies': [
-        '<(cef_directory)/cefclient.gyp:libcef_dll_wrapper',
+        '<(cef_directory)/jcef_libcef.gyp:libcef_dll_wrapper',
         'jcef_helper',
       ],
       'sources': [
@@ -250,7 +250,7 @@
         }],
         ['OS=="linux"', {
           'dependencies': [
-            '<(cef_directory)/cefclient.gyp:gtk',
+            '<(cef_directory)/jcef_libcef.gyp:gtk',
           ],
           'sources': [
             'native/critical_wait_posix.cpp',
@@ -366,7 +366,7 @@
         '<(cef_directory)',
       ],
       'dependencies': [
-        '<(cef_directory)/cefclient.gyp:libcef_dll_wrapper',
+        '<(cef_directory)/jcef_libcef.gyp:libcef_dll_wrapper',
       ],
       'sources': [
         'native/jcef_helper.cpp',
@@ -415,7 +415,7 @@
             'native/util_posix.cpp',
           ],
           'dependencies': [
-            '<(cef_directory)/cefclient.gyp:gtk',
+            '<(cef_directory)/jcef_libcef.gyp:gtk',
           ],
           'link_settings': {
             'ldflags': [

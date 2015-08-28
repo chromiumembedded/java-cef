@@ -1,0 +1,75 @@
+# Copyright (c) 2011 The Chromium Embedded Framework Authors. All rights
+# reserved. Use of this source code is governed by a BSD-style license that
+# can be found in the LICENSE file.
+
+{
+  'variables': {
+    # Don't use clang with CEF binary releases due to Chromium tree structure dependency.
+    'clang': 0,
+    'conditions': [
+      ['sysroot!=""', {
+        'pkg-config': './pkg-config-wrapper "<(sysroot)" "<(target_arch)"',
+      }, {
+        'pkg-config': 'pkg-config'
+      }],
+    ]
+  },
+  'includes': [
+    # Bring in the source file lists.
+    'cef_paths2.gypi',
+  ],
+  'targets': [
+    {
+      'target_name': 'libcef_dll_wrapper',
+      'type': 'static_library',
+      'msvs_guid': 'A9D6DC71-C0DC-4549-AEA0-3B15B44E86A9',
+      'defines': [
+        'USING_CEF_SHARED',
+      ],
+      'include_dirs': [
+        '.',
+      ],
+      'sources': [
+        '<@(includes_common)',
+        '<@(includes_capi)',
+        '<@(includes_wrapper)',
+        '<@(libcef_dll_wrapper_sources_common)',
+      ],
+      'sources/': [
+        ['exclude', '/test/'],
+      ],
+      'xcode_settings': {
+        # Target build path.
+        'SYMROOT': 'xcodebuild',
+      },
+    },
+  ],
+  'conditions': [
+    [ 'OS=="linux" or OS=="freebsd" or OS=="openbsd"', {
+      'targets': [
+        {
+          'target_name': 'gtk',
+          'type': 'none',
+          'variables': {
+            # gtk requires gmodule, but it does not list it as a dependency
+            # in some misconfigured systems.
+            'gtk_packages': 'gmodule-2.0 gtk+-2.0 gthread-2.0 gtk+-unix-print-2.0',
+          },
+          'direct_dependent_settings': {
+            'cflags': [
+              '$(shell <(pkg-config) --cflags <(gtk_packages))',
+            ],
+          },
+          'link_settings': {
+            'ldflags': [
+              '$(shell <(pkg-config) --libs-only-L --libs-only-other <(gtk_packages))',
+            ],
+            'libraries': [
+              '$(shell <(pkg-config) --libs-only-l <(gtk_packages))',
+            ],
+          },
+        },
+      ],
+    }],  # OS=="linux" or OS=="freebsd" or OS=="openbsd"
+  ],
+}

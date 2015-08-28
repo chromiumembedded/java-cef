@@ -105,15 +105,15 @@ if (platform != 'linux32' and platform != 'linux64' and
 script_dir = os.path.dirname(__file__)
 
 # JCEF root directory
-jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir, os.pardir))
+jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
 
 # Read and parse the CEF version file.
 args = {}
-read_readme_file(os.path.join(jcef_dir, 'src/third_party/cef/'+platform+'/README.txt'), args)
+read_readme_file(os.path.join(jcef_dir, 'third_party', 'cef', platform, 'README.txt'), args)
 
 # retrieve url and revision information for CEF
 if not git.is_checkout(jcef_dir):
-  raise Exception('Not a valid checkout: %s' % (cef_dir))
+  raise Exception('Not a valid checkout: %s' % (jcef_dir))
 
 jcef_commit_number = git.get_commit_number(jcef_dir)
 jcef_commit_hash = git.get_hash(jcef_dir)

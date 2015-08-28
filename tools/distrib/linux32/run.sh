@@ -3,7 +3,11 @@
 # reserved. Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 
-# Necessary for jcef_helper to find libcef.so.
-export LD_LIBRARY_PATH=./bin/lib/linux32
+# Determine the absolute path to the library directory.
+export LIB_PATH=$(readlink -f "./bin/lib/linux32")
 
-java -cp "./bin:./bin/*" -Djava.library.path=./bin/lib/linux32 tests.detailed.MainFrame
+# Necessary for jcef_helper to find libcef.so.
+export LD_LIBRARY_PATH=$LIB_PATH
+
+# Preload libcef.so to avoid crashes.
+LD_PRELOAD=$LIB_PATH/libcef.so java -cp "./bin:./bin/*" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame

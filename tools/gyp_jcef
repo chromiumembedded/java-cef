@@ -100,6 +100,24 @@ def additional_include_files(args=[]):
 
   return result
 
+def get_jcef_platform():
+  """
+  Returns the jcef_platform value set via GYP_DEFINES.
+  """
+  jcef_platform = None
+  if 'GYP_DEFINES' in os.environ.keys():
+    parts = os.environ['GYP_DEFINES'].split(' ')
+    for part in parts:
+      val = part.split('=')
+      if len(val) < 2:
+        continue
+      if val[0] == 'jcef_platform':
+        jcef_platform = val[1]
+        break
+  if jcef_platform is None:
+    raise Exception('Required jcef_platform value not set via GYP_DEFINES')
+  return jcef_platform
+
 if __name__ == '__main__':
   args = sys.argv[1:]
 
@@ -138,6 +156,15 @@ if __name__ == '__main__':
             '--header', 'native/jcef_version.h' ]
   RunAction(jcef_dir, gyper)
 
+  print "\nGenerating jcef_libcef.gypi file..."
+  jcef_platform = get_jcef_platform()
+  cef_path = os.path.join(jcef_dir, 'third_party', 'cef')
+  cef_platform_path = os.path.join(cef_path, jcef_platform)
+  source_file = os.path.join(cef_path, 'jcef_libcef.gyp.in')
+  target_file = os.path.join(cef_platform_path, 'jcef_libcef.gyp')
+  remove_file(target_file)
+  copy_file(source_file, target_file)
+
   print 'Updating projects from gyp files...'
   sys.stdout.flush()
 
@@ -171,7 +198,7 @@ if __name__ == '__main__':
       # Fix Xcode project files.
       files = [
         os.path.join(jcef_dir, 'jcef.xcodeproj/project.pbxproj'),
-        os.path.join(jcef_dir, 'third_party/cef/macosx64/cefclient.xcodeproj/project.pbxproj'),
+        os.path.join(jcef_dir, 'third_party/cef/macosx64/jcef_libcef.xcodeproj/project.pbxproj'),
       ]
       for file in files:
         data = read_file(file)
