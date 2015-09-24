@@ -19,6 +19,14 @@ set DISTRIB_DOCS_PATH="%DISTRIB_PATH%\docs"
 set DISTRIB_LIB_PATH="%DISTRIB_PATH%\bin\lib\%1"
 set OUT_PATH=".\out\%1"
 set OUT_BINARY_PATH="%OUT_PATH%\Release"
+
+:: Alternately look in the CMake output path.
+if not exist %OUT_BINARY_PATH% set OUT_BINARY_PATH=".\jcef_build\native\Release"
+if not exist %OUT_BINARY_PATH% (
+echo ERROR: Native Release build output path does not exist
+goto end
+)
+
 set OUT_DOCS_PATH=".\out\docs"
 set SOURCE_PATH=".\java"
 set JOGAMP_PATH=".\third_party\jogamp"
@@ -64,7 +72,7 @@ copy %OUT_BINARY_PATH%\libcef.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\natives_blob.bin %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\snapshot_blob.bin %DISTRIB_LIB_PATH%
 if exist %OUT_BINARY_PATH%\wow_helper.exe copy %OUT_BINARY_PATH%\wow_helper.exe %DISTRIB_LIB_PATH%
-xcopy /sfy %OUT_PATH%\Release\*.pak %DISTRIB_LIB_PATH%
+xcopy /sfy %OUT_BINARY_PATH%\*.pak %DISTRIB_LIB_PATH%
 
 :: Copy documentation to the docs directory.
 xcopy /sfy %OUT_DOCS_PATH%\* %DISTRIB_DOCS_PATH%\

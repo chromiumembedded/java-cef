@@ -41,6 +41,16 @@ else
 
   if [ $1 == "macosx64" ]; then
     export OUT_BINARY_PATH="./xcodebuild/Release"
+
+    # Alternately look in the CMake output path.
+    if [ ! -d "$OUT_BINARY_PATH" ]; then
+      export OUT_BINARY_PATH="./jcef_build/native/Release"
+    fi
+    if [ ! -d "$OUT_BINARY_PATH" ]; then
+      echo "ERROR: Native Release build output path does not exist"
+      exit 1
+    fi
+
     export DISTRIB_TESTS_PATH="$DISTRIB_PATH/tests"
 
     if [ ! -d "$DISTRIB_TESTS_PATH" ]; then
@@ -56,6 +66,15 @@ else
     export DISTRIB_LIB_PATH="$DISTRIB_PATH/bin/lib/$1"
     export JOGAMP_JAR_PATH="$JOGAMP_PATH/jar"
     export OUT_BINARY_PATH="$OUT_PATH/Release"
+
+    # Alternately look in the CMake output path.
+    if [ ! -d "$OUT_BINARY_PATH" ]; then
+      export OUT_BINARY_PATH="./jcef_build/native/Release"
+    fi
+    if [ ! -d "$OUT_BINARY_PATH" ]; then
+      echo "ERROR: Native Release build output path does not exist"
+      exit 1
+    fi
   
     # Create the JCEF JAR file.
     cd tools
@@ -85,15 +104,14 @@ else
     fi
 
     cp -f $OUT_BINARY_PATH/chrome-sandbox $DISTRIB_LIB_PATH
-    cp -f $OUT_BINARY_PATH/libffmpegsumo.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libjcef.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/jcef_helper $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/icudtl.dat $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libcef.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/natives_blob.bin $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/snapshot_blob.bin $DISTRIB_LIB_PATH
-    cp -f $OUT_PATH/Release/*.pak $DISTRIB_LIB_PATH
-    cp -rf $OUT_PATH/Release/locales/ $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/*.pak $DISTRIB_LIB_PATH
+    cp -rf $OUT_BINARY_PATH/locales/ $DISTRIB_LIB_PATH
   fi
 
   cd tools

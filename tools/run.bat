@@ -27,6 +27,14 @@ goto end
 
 set OUT_PATH=.\out\%~1
 set LIB_PATH=%OUT_PATH%\%~2
+
+:: Alternately look in the CMake output path.
+if not exist %LIB_PATH% set LIB_PATH=.\jcef_build\native\%~2
+if not exist %LIB_PATH% (
+echo ERROR: Native build output path does not exist
+goto end
+)
+
 set CLS_PATH=.\third_party\jogamp\jar\*;%OUT_PATH%
 set RUN_TYPE=%~3
 

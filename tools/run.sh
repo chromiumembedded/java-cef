@@ -15,6 +15,16 @@ else
   else
     export OUT_PATH="./out"
     export LIB_PATH=$(readlink -f "$OUT_PATH/$2")
+
+    # Alternately look in the CMake output path.
+    if [ ! -d "$LIB_PATH" ]; then
+      export LIB_PATH=$(readlink -f "./jcef_build/native/$2")
+    fi
+    if [ ! -d "$LIB_PATH" ]; then
+      echo "ERROR: Native build output path does not exist"
+      exit 1
+    fi
+
     export CLS_PATH="./third_party/jogamp/jar/*:$OUT_PATH/$1"
     export RUN_TYPE="$3"
 
