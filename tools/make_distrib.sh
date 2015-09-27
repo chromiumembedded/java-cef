@@ -8,7 +8,7 @@ if [ -z "$1" ]; then
 else
   cd ..
 
-  export DISTRIB_TARGET="$1"
+  export DISTRIB_PLATFORM="$1"
   export DISTRIB_PATH="./binary_distrib/$1"
   export DISTRIB_BIN_PATH="$DISTRIB_PATH/bin"
   export DISTRIB_DOCS_PATH="$DISTRIB_PATH/docs"
@@ -32,7 +32,7 @@ else
   cp -rf $OUT_DOCS_PATH $DISTRIB_DOCS_PATH
 
   # Create README.txt
-  python tools/make_readme.py --output-dir $DISTRIB_PATH/ --target $DISTRIB_TARGET
+  python tools/make_readme.py --output-dir $DISTRIB_PATH/ --platform $DISTRIB_PLATFORM
 
   # Copy miscellaneous files to the root directory.
   cp -f ./LICENSE.txt $DISTRIB_PATH
@@ -40,12 +40,7 @@ else
   rsync -a --exclude-from $EXCLUDE_FILE $TOOLS_DISTRIB_PATH/ $DISTRIB_PATH/
 
   if [ $1 == "macosx64" ]; then
-    export OUT_BINARY_PATH="./xcodebuild/Release"
-
-    # Alternately look in the CMake output path.
-    if [ ! -d "$OUT_BINARY_PATH" ]; then
-      export OUT_BINARY_PATH="./jcef_build/native/Release"
-    fi
+    export OUT_BINARY_PATH="./jcef_build/native/Release"
     if [ ! -d "$OUT_BINARY_PATH" ]; then
       echo "ERROR: Native Release build output path does not exist"
       exit 1

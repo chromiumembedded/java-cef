@@ -12,16 +12,14 @@ echo ERROR: Please specify a target platform: win32 or win64
 set ERRORLEVEL=1
 goto end
 )
-set DISTRIB_TARGET="%1"
+set DISTRIB_PLATFORM="%1"
 set DISTRIB_PATH=".\binary_distrib\%1"
 set DISTRIB_BIN_PATH="%DISTRIB_PATH%\bin"
 set DISTRIB_DOCS_PATH="%DISTRIB_PATH%\docs"
 set DISTRIB_LIB_PATH="%DISTRIB_PATH%\bin\lib\%1"
 set OUT_PATH=".\out\%1"
-set OUT_BINARY_PATH="%OUT_PATH%\Release"
 
-:: Alternately look in the CMake output path.
-if not exist %OUT_BINARY_PATH% set OUT_BINARY_PATH=".\jcef_build\native\Release"
+set OUT_BINARY_PATH=".\jcef_build\native\Release"
 if not exist %OUT_BINARY_PATH% (
 echo ERROR: Native Release build output path does not exist
 goto end
@@ -78,7 +76,7 @@ xcopy /sfy %OUT_BINARY_PATH%\*.pak %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_DOCS_PATH%\* %DISTRIB_DOCS_PATH%\
 
 :: Create README.txt
-call python.bat tools\make_readme.py --output-dir %DISTRIB_PATH%\ --target %DISTRIB_TARGET%
+call python.bat tools\make_readme.py --output-dir %DISTRIB_PATH%\ --platform %DISTRIB_PLATFORM%
 
 :: Copy miscellaneous files to the root directory.
 copy .\LICENSE.txt %DISTRIB_PATH%

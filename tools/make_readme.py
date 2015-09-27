@@ -4,7 +4,6 @@
 
 from date_util import *
 from file_util import *
-from gclient_util import *
 from optparse import OptionParser
 import os
 import re
@@ -80,7 +79,7 @@ This utility builds the JCEF README.txt for the distribution.
 parser = OptionParser(description=disc)
 parser.add_option('--output-dir', dest='outputdir', metavar='DIR',
                   help='output directory [required]')
-parser.add_option('--target', dest='platform', metavar='FILE',
+parser.add_option('--platform', dest='platform',
                   help='target platform for distribution [required]')
 parser.add_option('-q', '--quiet',
                   action='store_true', dest='quiet', default=False,
@@ -90,7 +89,7 @@ parser.add_option('-q', '--quiet',
 # the outputdir option is required
 if options.outputdir is None or options.platform is None:
   parser.print_help(sys.stderr)
-  sys.exit()
+  sys.exit(1)
 output_dir = options.outputdir
 
 # Test the operating system.
@@ -99,7 +98,7 @@ if (platform != 'linux32' and platform != 'linux64' and
     platform != 'macosx64' and
     platform != 'win32' and platform != 'win64'):
   print 'Unsupported target \"'+platform+'\"'
-  sys.exit()
+  sys.exit(1)
 
 # script directory
 script_dir = os.path.dirname(__file__)

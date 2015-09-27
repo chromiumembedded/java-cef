@@ -12,7 +12,7 @@ import sys
 # cannot be loaded as a module
 if __name__ != "__main__":
     sys.stderr.write('This file cannot be loaded as a module!')
-    sys.exit()
+    sys.exit(1)
 
 # script directory
 script_dir = os.path.dirname(__file__)
@@ -29,15 +29,17 @@ This utility creates the version header file.
 parser = OptionParser(description=disc)
 parser.add_option('--header', dest='header', metavar='FILE',
                   help='output version header file [required]')
+parser.add_option('--platform', dest='platform',
+                  help='target platform for distribution [required]')
 parser.add_option('-q', '--quiet',
                   action='store_true', dest='quiet', default=False,
                   help='do not output detailed status information')
 (options, args) = parser.parse_args()
 
 # the header option is required
-if options.header is None:
+if options.header is None or options.platform is None:
     parser.print_help(sys.stdout)
-    sys.exit()
+    sys.exit(1)
 
 def write_svn_header(header):
     """ Creates the header file for the current revision
@@ -56,12 +58,9 @@ def write_svn_header(header):
 
     year = get_year()
 
-    # Extract the platform component from GYP_DEFINES.
-    platform = re.search(r"jcef_platform=['\"]{0,1}([A-Za-z0-9]{1,})", os.environ['GYP_DEFINES']).group(1)
-
     # Read and parse the CEF version file.
     args = {}
-    read_readme_file(os.path.join(jcef_dir, 'third_party/cef/'+platform+'/README.txt'), args)
+    read_readme_file(os.path.join(jcef_dir, 'third_party/cef/'+options.platform+'/README.txt'), args)
 
     version = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'], commit_number, commit_hash[:7])
 

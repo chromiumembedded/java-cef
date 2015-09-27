@@ -12,13 +12,11 @@ set ERRORLEVEL=1
 goto end
 )
 
-set DISTRIB_TARGET="%1"
 set DISTRIB_PATH=".\binary_distrib\%1"
-
 if not exist %DISTRIB_PATH% mkdir %DISTRIB_PATH%
 
 :: Create README.txt
-call python.bat tools\make_readme.py --output-dir %DISTRIB_PATH%\ --target %DISTRIB_TARGET%
+call python tools\make_readme.py --output-dir %DISTRIB_PATH%\ --platform %1
 
 :end
 endlocal & set RC=%ERRORLEVEL%

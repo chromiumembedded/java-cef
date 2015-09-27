@@ -44,17 +44,10 @@ tags
 Thumbs.db
 # JCEF generated directories
 /binary_distrib
+/jcef_build
 /out
-/xcodebuild
 # JCEF generated files
 /native/jcef_version.h
-# gclient files
-/.gclient
-/.gclient_entries
-# Third-party directories
-/third_party/gyp
-/third_party/psyco_win32
-/third_party/python_26
 # CEF download directories
 /third_party/cef/linux32/
 /third_party/cef/linux64/

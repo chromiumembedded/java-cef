@@ -14,12 +14,8 @@ else
     echo "ERROR: Please specify a run type: detailed or simple"
   else
     export OUT_PATH="./out"
-    export LIB_PATH=$(readlink -f "$OUT_PATH/$2")
 
-    # Alternately look in the CMake output path.
-    if [ ! -d "$LIB_PATH" ]; then
-      export LIB_PATH=$(readlink -f "./jcef_build/native/$2")
-    fi
+    export LIB_PATH=$(readlink -f "./jcef_build/native/$2")
     if [ ! -d "$LIB_PATH" ]; then
       echo "ERROR: Native build output path does not exist"
       exit 1

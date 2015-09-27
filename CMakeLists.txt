@@ -77,7 +77,7 @@
 # To perform a Mac OS X build using a 64-bit CEF binary distribution:
 #   Using the Xcode IDE:
 #     > cmake -G "Xcode" -DPROJECT_ARCH="x86_64" ..
-#     Open build\jcef.xcodeproj in Xcode and select Product > Build.
+#     Open jcef.xcodeproj in Xcode and select Product > Build.
 #
 #   Using Unix Makefiles:
 #     > cmake -G "Unix Makefiles" -DPROJECT_ARCH="x86_64" -DCMAKE_BUILD_TYPE=Debug ..
@@ -90,7 +90,7 @@
 # To perform a Windows build using a 32-bit CEF binary distribution:
 #   Using the Visual Studio 2013 IDE:
 #     > cmake -G "Visual Studio 12" ..
-#     Open build\jcef.sln in Visual Studio and select Build > Build Solution.
+#     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
 #   Using Ninja with Visual Studio 2013 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
@@ -101,7 +101,7 @@
 # To perform a Windows build using a 64-bit CEF binary distribution:
 #   Using the Visual Studio 2013 IDE:
 #     > cmake -G "Visual Studio 12 Win64" ..
-#     Open build\jcef.sln in Visual Studio and select Build > Build Solution.
+#     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
 #   Using Ninja with Visual Studio 2013 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
@@ -166,6 +166,29 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # Allow C++ programs to use stdint.h macros specified in the C99 standard that
 # aren't in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc).
 add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS)
+
+
+#
+# Python configuration.
+#
+
+# Support specification of the Python executable path via the command-line.
+if(DEFINED ENV{PYTHON_EXECUTABLE})
+  file(TO_CMAKE_PATH "$ENV{PYTHON_EXECUTABLE}" PYTHON_EXECUTABLE)
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+  unset(PYTHON_EXECUTABLE)
+
+  # Find the python interpreter.
+  find_package(PythonInterp)
+
+  if(NOT ${PYTHONINTERP_FOUND})
+    message(FATAL_ERROR "A Python installation is required. Set the "
+                        "PYTHON_EXECUTABLE environment variable to explicitly "
+                        "specify the Python executable path.")
+  endif()
+endif()
 
 
 #
@@ -532,6 +555,22 @@ set(CMAKE_SHARED_LINKER_FLAGS         "${CEF_LINKER_FLAGS} ${CEF_SHARED_LINKER_F
 set(CMAKE_SHARED_LINKER_FLAGS_DEBUG   "${CEF_LINKER_FLAGS_DEBUG} ${CEF_SHARED_LINKER_FLAGS_DEBUG}")
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CEF_LINKER_FLAGS_RELEASE} ${CEF_SHARED_LINKER_FLAGS_RELEASE}")
 
+# Generate the JCEF version header.
+message(STATUS "Generating native/jcef_version.h file...")
+execute_process(
+  COMMAND "${PYTHON_EXECUTABLE}"
+          "tools/make_version_header.py"
+          "--header"
+          "native/jcef_version.h"
+          "--platform"
+          "${CEF_DISTRIB_TYPE}"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  RESULT_VARIABLE EXECUTE_RV
+  )
+if(NOT EXECUTE_RV STREQUAL "0")
+  message(FATAL_ERROR "Execution failed with unexpected result: ${EXECUTE_RV}")
+endif()
+
 
 #
 # Include target subdirectories.
@@ -558,6 +597,8 @@ if(OS_MACOSX)
   message(STATUS "Base SDK:                     ${CMAKE_OSX_SYSROOT}")
   message(STATUS "Target SDK:                   ${CEF_TARGET_SDK}")
 endif()
+
+message(STATUS "Python executable:            ${PYTHON_EXECUTABLE}")
 
 message(STATUS "Java directory:               ${JAVA_DIR}")
 message(STATUS "JNI libraries:                ${JNI_LIBRARIES}")
