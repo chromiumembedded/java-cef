@@ -2,9 +2,8 @@ The Java Chromium Embedded Framework (JCEF) is a simple framework for embedding 
 
 # Quick Links
 
-* Branches and Building - https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding
+* Building JCEF - https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding
 * Support Forum - http://magpcss.org/ceforum/viewforum.php?f=17
-* Downloads - http://www.magpcss.net/cef_downloads/
 * Donations - http://www.magpcss.org/ceforum/donate.php
 
 # Introduction
@@ -20,15 +19,9 @@ CEF supports a wide range of programming languages and operating systems and can
 
 This project provides a Java Wrapper for CEF (JCEF).
 
-# Binary Distributions
+# Building JCEF
 
-Binary distributions, which include all files necessary to build a JCEF-based application, are available on the [Downloads](http://www.magpcss.net/cef_downloads/) page. Binary distributions are stand-alone and do not require the download of JCEF, CEF or Chromium source code. Symbol files for debugging binary distributions of libcef can also be downloaded from the above links.
-
-Binary distributions of JCEF require a 64-bit Oracle Java 7 VM running on Windows, Linux or Mac OS X. 32-bit builds are possible for Windows and Linux as described on the [BranchesAndBuilding](https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding) Wiki page but 32-bit builds are not officially supported and no 32-bit binary distributions are provided.
-
-# Source Distributions
-
-The JCEF project is an extension of the Chromium Embedded Framework (CEF) project hosted at https://bitbucket.org/chromiumembedded/cef/. JCEF maintains a development branch that tracks the most recent CEF3 release branch. JCEF source code can be downloaded, built and packaged manually. Visit the [BranchesAndBuilding](https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding) Wiki page for more information.
+The JCEF project is an extension of the Chromium Embedded Framework (CEF) project hosted at https://bitbucket.org/chromiumembedded/cef/. JCEF maintains a development branch that tracks the most recent CEF3 release branch. JCEF source code can be downloaded, built and packaged into a binary distribution. Once you have created the binary distribution for your platform you can distribute it as a stand-alone package without further dependencies on the JCEF, CEF or Chromium source code. Visit the [BranchesAndBuilding](https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding) Wiki page for detailed instructions.
 
 # Helping Out
 
