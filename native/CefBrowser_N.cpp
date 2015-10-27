@@ -1546,7 +1546,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
       GetCefFromJNIObject<CefDragData>(env, jdragData, "CefDragData");
   if (!drag_data.get())
     return;
-  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  jclass cls = FindClass(env, "java/awt/event/MouseEvent");
   if (!cls)
     return;
 
@@ -1561,7 +1561,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver
   (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers, jint allowedOps) {
-  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  jclass cls = FindClass(env, "java/awt/event/MouseEvent");
   if (!cls)
     return;
     
@@ -1582,7 +1582,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave
 
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop
   (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers) {
-  jclass cls = env->FindClass("java/awt/event/MouseEvent");
+  jclass cls = FindClass(env, "java/awt/event/MouseEvent");
   if (!cls)
     return;
     

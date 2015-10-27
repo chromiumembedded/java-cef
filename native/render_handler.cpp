@@ -15,7 +15,7 @@ int GetCursorId(cef_cursor_type_t type) {
   if(!env)
     return 0;
 
-  jclass cls = env->FindClass("java/awt/Cursor");
+  jclass cls = FindClass(env, "java/awt/Cursor");
   if (!cls)
     return 0;
 

@@ -31,6 +31,17 @@ jint GetJNIEnv(JNIEnv **env, bool *mustDetach);
 // END_ENV(e) INSTEAD.
 void DetachFromThread(bool *mustDetach);
 
+// Sets the java class loader to use for creating java objects in native code.
+// We have to use a class loader instead of the JNIEnv::FindClass method
+// because JNIEnv::FindClass always uses the system class loader if called
+// from a non-Java thread, which will not work if the embedding Java code
+// uses a custom class loader for JCEF classes (e.g. in JavaWebStart).
+void SetJavaClassLoader(JNIEnv *env, jobject javaClassLoader);
+
+// Returns a class with the given fully qualified |class_name| (with '/' as
+// separator).
+jclass FindClass(JNIEnv* env, const char* class_name);
+
 // Helper macros to bind and release the JNI environment
 // to other threads than the JNI function was called on.
 #define BEGIN_ENV(e) \

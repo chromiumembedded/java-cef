@@ -31,17 +31,31 @@
 #include "signal_restore_posix.h"
 #endif
 
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize
+  (JNIEnv *env, jobject c) {
+  JavaVM* jvm;
+  jint rs = env->GetJavaVM(&jvm);
+  ASSERT(rs == JNI_OK);
+  if (rs != JNI_OK)
+    return JNI_FALSE;
+  SetJVM(jvm);
+
+  jobject javaClass = env->GetObjectClass(c);
+  jobject javaClassLoader = NULL;
+  JNI_CALL_METHOD(env, javaClass, "getClassLoader", "()Ljava/lang/ClassLoader;",
+                  Object, javaClassLoader);
+  env->DeleteLocalRef(javaClass);
+  ASSERT(javaClassLoader);
+  if (!javaClassLoader)
+    return JNI_FALSE;
+  SetJavaClassLoader(env, javaClassLoader);
+
+  return JNI_TRUE;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
   (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler,
     jobject jsettings) {
-  JavaVM* jvm;
-  jint rs = env->GetJavaVM(&jvm);
-  if (rs != JNI_OK) {
-    ASSERT(false);  // Not reached.
-    return false;
-  }
-  SetJVM(jvm);
-
 #if defined(OS_WIN)
   CefMainArgs main_args(::GetModuleHandle(NULL));
 #else

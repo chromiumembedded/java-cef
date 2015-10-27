@@ -73,7 +73,7 @@ void ClientApp::OnBeforeCommandLineProcessing(const CefString& process_type,
 
 bool ClientApp::HandleTerminate() {
   BEGIN_ENV(env)
-  jclass cls = env->FindClass("org/cef/CefApp");
+  jclass cls = FindClass(env, "org/cef/CefApp");
   if (!cls) {
     return false;
   }

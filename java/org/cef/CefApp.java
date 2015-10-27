@@ -158,6 +158,10 @@ public class CefApp extends CefAppHandlerAdapter {
       appHandler_ = this;
     }
 
+    // Perform native pre-initialization.
+    if (!N_PreInitialize())
+      throw new IllegalStateException("Failed to pre-initialize native code");
+
     // On Mac we're registering a shutdown hook to shutdown the native CEF
     // part. This is useful if it is missed to call CefApp.disopse() before
     // System.exit(0). Unfortunately this approach works only for Mac because
@@ -607,6 +611,7 @@ public class CefApp extends CefAppHandlerAdapter {
     return library_path;
   }
 
+  private final native boolean N_PreInitialize();
   private final native boolean N_Initialize(String pathToJavaDLL,
       CefAppHandler appHandler, CefSettings settings);
   private final native void N_Shutdown();

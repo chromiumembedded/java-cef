@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_CefApp
+ * Method:    N_PreInitialize
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_cef_CefApp
  * Method:    N_Initialize
  * Signature: (Ljava/lang/String;Lorg/cef/handler/CefAppHandler;Lorg/cef/CefSettings;)Z
  */
