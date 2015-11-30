@@ -451,9 +451,10 @@ bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
     const char* chr = NULL;
     if(jstr)
       chr = env->GetStringUTFChars(jstr, NULL);
-    if(chr)
+    if(chr) {
       *value = chr;
-    env->ReleaseStringUTFChars(jstr, chr);
+      env->ReleaseStringUTFChars(jstr, chr);
+    }
     return true;
   }
   env->ExceptionClear();
