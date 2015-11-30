@@ -154,21 +154,6 @@ public class RequestHandler extends CefRequestHandlerAdapter {
   }
 
   @Override
-  public boolean onBeforePluginLoad(CefBrowser browser,
-                                    String url,
-                                    String policyUrl,
-                                    CefWebPluginInfo info) {
-    System.out.println("Loading Plug-In");
-    System.out.println("    url: " + url);
-    System.out.println("    policyUrl: " + policyUrl);
-    System.out.println("    name: " + info.getName());
-    System.out.println("    version: " + info.getVersion());
-    System.out.println("    path: " + info.getPath());
-    System.out.println("    description: " + info.getDescription() + "\n");
-    return false;
-  }
-
-  @Override
   public void onPluginCrashed(CefBrowser browser, String pluginPath) {
     System.out.println("Plugin " + pluginPath  + "CRASHED");
   }

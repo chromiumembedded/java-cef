@@ -23,7 +23,7 @@ import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
-import org.cef.handler.CefRequestContextHandler;
+import org.cef.handler.CefRequestContextHandlerAdapter;
 import org.cef.network.CefCookieManager;
 
 import tests.detailed.dialog.DownloadDialog;
@@ -206,7 +206,8 @@ public class MainFrame extends JFrame {
     CefRequestContext requestContext = null;
     if (cookiePath != null) {
       cookieManager_ = CefCookieManager.createManager(cookiePath, false);
-      requestContext = CefRequestContext.createContext(new CefRequestContextHandler() {
+      requestContext = CefRequestContext.createContext(
+          new CefRequestContextHandlerAdapter() {
         @Override
         public CefCookieManager getCookieManager() {
           return cookieManager_;

@@ -7,7 +7,7 @@
 #pragma once
 
 #include <jni.h>
-#include "include/cef_request_context.h"
+#include "include/cef_request_context_handler.h"
 
 // RequestContextHandler implementation.
 class RequestContextHandler : public CefRequestContextHandler {
@@ -17,6 +17,12 @@ class RequestContextHandler : public CefRequestContextHandler {
 
   // RequestContextHandler methods
   CefRefPtr<CefCookieManager> GetCookieManager() OVERRIDE;
+
+  bool OnBeforePluginLoad(const CefString& mime_type,
+                          const CefString& plugin_url,
+                          const CefString& top_origin_url,
+                          CefRefPtr<CefWebPluginInfo> plugin_info,
+                          PluginPolicy* plugin_policy) OVERRIDE;
 
  protected:
   jobject jhandler_;

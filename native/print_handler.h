@@ -16,6 +16,8 @@ class PrintHandler : public CefPrintHandler {
   virtual ~PrintHandler();
 
   // CefPrintHandler methods
+  virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) OVERRIDE;
+
   virtual void OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
                                bool get_defaults) OVERRIDE;
 

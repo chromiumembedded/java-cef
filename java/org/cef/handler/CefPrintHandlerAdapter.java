@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.browser.CefBrowser;
 import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
@@ -16,6 +17,11 @@ import org.cef.misc.CefPrintSettings;
  */
 public abstract class CefPrintHandlerAdapter extends CefNativeAdapter
     implements CefPrintHandler {
+
+  @Override
+  public void onPrintStart(CefBrowser browser) {
+    // The default implementation does nothing
+  }
 
   @Override
   public void onPrintSettings(CefPrintSettings settings, boolean get_defaults) {

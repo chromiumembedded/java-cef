@@ -32,3 +32,51 @@ CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
       GetCefFromJNIObject<CefCookieManager>(env, jresult, "CefCookieManager");
   return result;
 }
+
+bool RequestContextHandler::OnBeforePluginLoad(
+    const CefString& mime_type,
+    const CefString& plugin_url,
+    const CefString& top_origin_url,
+    CefRefPtr<CefWebPluginInfo> plugin_info,
+    PluginPolicy* plugin_policy) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jinfo = NewJNIObject(env, "org/cef/network/CefWebPluginInfo_N");
+  if (!jinfo)
+    return false;
+  SetCefForJNIObject(env, jinfo, plugin_info.get(), "CefWebPluginInfo");
+
+  jboolean jresult = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_,
+                       "onBeforePluginLoad",
+                       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;"
+                       "Lorg/cef/network/CefWebPluginInfo;)Z",
+                       Boolean,
+                       jresult,
+                       NewJNIString(env, mime_type),
+                       NewJNIString(env, plugin_url),
+                       NewJNIString(env, top_origin_url),
+                       jinfo);
+
+  SetCefForJNIObject<CefWebPluginInfo>(env, jinfo, NULL, "CefWebPluginInfo");
+
+  if (jresult == JNI_FALSE) {
+    // Allow the plugin load.
+    if (*plugin_policy != PLUGIN_POLICY_ALLOW &&
+        *plugin_policy != PLUGIN_POLICY_DETECT_IMPORTANT) {
+      *plugin_policy = PLUGIN_POLICY_ALLOW;
+      return true;
+    }
+  } else {
+    // Block the plugin load.
+    if (*plugin_policy != PLUGIN_POLICY_BLOCK &&
+        *plugin_policy != PLUGIN_POLICY_DISABLE) {
+      *plugin_policy = PLUGIN_POLICY_BLOCK;
+      return true;
+    }
+  }
+
+  return false;
+}

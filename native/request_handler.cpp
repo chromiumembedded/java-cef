@@ -259,35 +259,6 @@ bool RequestHandler::OnCertificateError(
   return (result != JNI_FALSE);
 }
 
-bool RequestHandler::OnBeforePluginLoad(CefRefPtr<CefBrowser> browser,
-                                        const CefString& url,
-                                        const CefString& policy_url,
-                                        CefRefPtr<CefWebPluginInfo> info) {
-  JNIEnv* env = GetJNIEnv();
-  if (!env)
-    return false;
-
-  jobject jinfo = NewJNIObject(env, "org/cef/network/CefWebPluginInfo_N");
-  if (!jinfo)
-    return false;
-  SetCefForJNIObject(env, jinfo, info.get(), "CefWebPluginInfo");
-
-  jboolean jresult = JNI_FALSE;
-  JNI_CALL_METHOD(env, jhandler_,
-                       "onBeforePluginLoad",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
-                       "Ljava/lang/String;Lorg/cef/network/CefWebPluginInfo;)Z",
-                       Boolean,
-                       jresult,
-                       GetJNIBrowser(browser),
-                       NewJNIString(env, url),
-                       NewJNIString(env, policy_url),
-                       jinfo);
-
-  SetCefForJNIObject<CefWebPluginInfo>(env, jinfo, NULL, "CefWebPluginInfo");
-  return (jresult != JNI_FALSE);
-}
-
 void RequestHandler::OnPluginCrashed(CefRefPtr<CefBrowser> browser,
                                       const CefString& plugin_path) {
   JNIEnv* env = GetJNIEnv();

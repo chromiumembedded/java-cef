@@ -10,8 +10,6 @@ import org.cef.callback.CefRequestCallback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
-import org.cef.network.CefWebPluginInfo;
-
 /**
  * Implement this interface to handle events related to browser requests. The
  * methods of this class will be called on the thread indicated.
@@ -155,17 +153,6 @@ public interface CefRequestHandler {
                              CefLoadHandler.ErrorCode cert_error,
                              String request_url,
                              CefRequestCallback callback);
-
-  /**
-   * Called on the browser process IO thread before a plugin is loaded.
-   * @return true to block loading of the plugin.
-   *
-   * @bug https://bitbucket.org/chromiumembedded/cef/issue/1211
-   */
-  boolean onBeforePluginLoad(CefBrowser browser,
-                             String url,
-                             String policyUrl,
-                             CefWebPluginInfo info);
 
   /**
    * Called on the browser process UI thread when a plugin has crashed.

@@ -62,11 +62,6 @@ class RequestHandler : public CefRequestHandler {
       CefRefPtr<CefSSLInfo> ssl_info,
       CefRefPtr<CefRequestCallback> callback) OVERRIDE;
 
-  virtual bool OnBeforePluginLoad(CefRefPtr<CefBrowser> browser,
-                                  const CefString& url,
-                                  const CefString& policy_url,
-                                  CefRefPtr<CefWebPluginInfo> info) OVERRIDE;
-
   virtual void OnPluginCrashed(CefRefPtr<CefBrowser> browser,
                                const CefString& plugin_path) OVERRIDE;
                                   

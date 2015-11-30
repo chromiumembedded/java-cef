@@ -940,16 +940,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  public boolean onBeforePluginLoad(CefBrowser browser,
-                                    String url,
-                                    String policyUrl,
-                                    CefWebPluginInfo info) {
-    if (requestHandler_ != null)
-      return requestHandler_.onBeforePluginLoad(browser, url, policyUrl, info);
-    return false;
-  }
-
-  @Override
   public void onPluginCrashed(CefBrowser browser,
                               String pluginPath) {
     if (requestHandler_ != null)

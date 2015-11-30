@@ -16,6 +16,17 @@ PrintHandler::~PrintHandler() {
   env->DeleteGlobalRef(jhandler_);
 }
 
+void PrintHandler::OnPrintStart(CefRefPtr<CefBrowser> browser) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  JNI_CALL_VOID_METHOD(env, jhandler_,
+                       "onPrintStart",
+                       "(Lorg/cef/browser/CefBrowser;)V",
+                       GetJNIBrowser(browser));
+}
+
 void PrintHandler::OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
                                    bool get_defaults) {
   JNIEnv* env = GetJNIEnv();

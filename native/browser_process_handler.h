@@ -8,8 +8,8 @@
 
 #include <set>
 #include <jni.h>
-#include "include/cef_browser_process_handler.h"
 #include "include/base/cef_lock.h"
+#include "include/cef_browser_process_handler.h"
 #include "include/wrapper/cef_message_router.h"
 
 // comparator to check if configuration values are the same

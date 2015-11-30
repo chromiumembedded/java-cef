@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.browser.CefBrowser;
 import org.cef.callback.CefNative;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
@@ -14,6 +15,14 @@ import org.cef.misc.CefPrintSettings;
  * class will be called on the browser process UI thread.
  */
 public interface CefPrintHandler extends CefNative {
+
+  /**
+   * Called when printing has started for the specified |browser|. This method
+   * will be called before the other onPrint*() methods and irrespective of how
+   * printing was initiated (e.g. CefBrowser::print(), JavaScript window.print()
+   * or PDF extension print button).
+   */
+  void onPrintStart(CefBrowser browser);
 
   /**
    * Synchronize |settings| with client state. If |get_defaults| is true then
