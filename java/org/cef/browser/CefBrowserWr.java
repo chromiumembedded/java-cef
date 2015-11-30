@@ -81,10 +81,10 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     @Override
-    public void onMouseEvent(CefBrowser browser, int event, int screenX,
-        int screenY, int modifier, int button) {
+    public void onMouseEvent(CefBrowser browser, int event, final int screenX,
+        final int screenY, final int modifier, final int button) {
 
-      Point pt = new Point(screenX, screenY);
+      final Point pt = new Point(screenX, screenY);
       if (event == MouseEvent.MOUSE_MOVED) {
         // Remove mouse-moved events if the position of the cursor hasn't
         // changed.
@@ -97,30 +97,41 @@ class CefBrowserWr extends CefBrowser_N {
         if ((modifier & MouseEvent.BUTTON1_DOWN_MASK) != 0)
           event = MouseEvent.MOUSE_DRAGGED;
       }
-      // Send mouse event to the root UI component instead to the browser UI.
-      // Otherwise no mouse-entered and no mouse-exited events would be fired.
-      Component parent = SwingUtilities.getRoot(component_);
-      SwingUtilities.convertPointFromScreen(pt, parent);
 
-      int clickCnt = 0;
-      long now = new Date().getTime();
-      if (event == MouseEvent.MOUSE_WHEEL) {
-        int scrollType =  MouseWheelEvent.WHEEL_UNIT_SCROLL;
-        int rotation = button > 0 ? 1 : -1;
-        component_.dispatchEvent(new MouseWheelEvent(parent, event, now,
-            modifier, pt.x, pt.y, 0, false, scrollType, 3, rotation));
-      } else {
-        clickCnt = getClickCount(event, button);
-        component_.dispatchEvent(new MouseEvent(parent, event, now, 
-            modifier, pt.x, pt.y, screenX, screenY, clickCnt, false, button));
-      }
+      final int finalEvent = event;
 
-      // Always fire a mouse-clicked event after a mouse-released event.
-      if (event == MouseEvent.MOUSE_RELEASED) {
-       component_.dispatchEvent(new MouseEvent(parent,
-            MouseEvent.MOUSE_CLICKED, now, modifier, pt.x, pt.y, screenX,
-            screenY, clickCnt, false, button));
-      }
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          // Send mouse event to the root UI component instead to the browser UI.
+          // Otherwise no mouse-entered and no mouse-exited events would be fired.
+          Component parent = SwingUtilities.getRoot(component_);
+          if (parent == null) {
+            return;
+          }
+          SwingUtilities.convertPointFromScreen(pt, parent);
+
+          int clickCnt = 0;
+          long now = new Date().getTime();
+          if (finalEvent == MouseEvent.MOUSE_WHEEL) {
+            int scrollType = MouseWheelEvent.WHEEL_UNIT_SCROLL;
+            int rotation = button > 0 ? 1 : -1;
+            component_.dispatchEvent(new MouseWheelEvent(parent, finalEvent, now,
+                    modifier, pt.x, pt.y, 0, false, scrollType, 3, rotation));
+          } else {
+            clickCnt = getClickCount(finalEvent, button);
+            component_.dispatchEvent(new MouseEvent(parent, finalEvent, now,
+                    modifier, pt.x, pt.y, screenX, screenY, clickCnt, false, button));
+          }
+
+          // Always fire a mouse-clicked event after a mouse-released event.
+          if (finalEvent == MouseEvent.MOUSE_RELEASED) {
+            component_.dispatchEvent(new MouseEvent(parent,
+                    MouseEvent.MOUSE_CLICKED, now, modifier, pt.x, pt.y, screenX,
+                    screenY, clickCnt, false, button));
+          }
+        }
+      });
     }
 
     public int getClickCount(int event, int button) {

@@ -43,6 +43,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   private GLCanvas canvas_;
   private long window_handle_ = 0;
   private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1);  // Work around CEF issue #1437.
+  private Point screenPoint_ = new Point(0, 0);
   private CefClientHandler clientHandler_;
   private String url_;
   private boolean isTransparent_;
@@ -158,6 +159,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
       @Override
       public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
         browser_rect_.setBounds(x, y, width, height);
+        screenPoint_ = canvas_.getLocationOnScreen();
         wasResized(width, height);
       }
 
@@ -263,7 +265,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
   @Override
   public Point getScreenPoint(CefBrowser browser, Point viewPoint) {
-    Point screenPoint = canvas_.getLocationOnScreen();
+    Point screenPoint = new Point(screenPoint_);
     screenPoint.translate(viewPoint.x, viewPoint.y);
     return screenPoint;
   }
@@ -299,8 +301,12 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
   }
 
   @Override
-  public void onCursorChange(CefBrowser browser, int cursorType) {
-    canvas_.setCursor(new Cursor(cursorType));
+  public void onCursorChange(CefBrowser browser, final int cursorType) {
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        canvas_.setCursor(new Cursor(cursorType));
+      }
+    });
   }
 
   @Override

@@ -26,7 +26,7 @@ void SetJVM(JavaVM* jvm) {
 JNIEnv* GetJNIEnv() {
   JNIEnv *env = NULL;
   if (g_jvm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED &&
-      g_jvm->AttachCurrentThread((void**)&env, NULL) != JNI_OK) {
+      g_jvm->AttachCurrentThreadAsDaemon((void**)&env, NULL) != JNI_OK) {
     return NULL;
   }
   return env;
@@ -45,7 +45,7 @@ jint GetJNIEnv(JNIEnv **env, bool *mustDetach) {
   if (g_jvm) {
     getEnvErr = g_jvm->GetEnv((void **)env, JNI_VERSION_1_4);
     if (getEnvErr == JNI_EDETACHED) {
-      getEnvErr = g_jvm->AttachCurrentThread((void **)env, NULL);
+      getEnvErr = g_jvm->AttachCurrentThreadAsDaemon((void **)env, NULL);
       if (getEnvErr == JNI_OK) {
         *mustDetach = true;
       }

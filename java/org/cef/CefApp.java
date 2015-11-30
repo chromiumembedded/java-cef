@@ -335,6 +335,7 @@ public class CefApp extends CefAppHandlerAdapter {
     switch (getState()) {
       case NEW:
         setState(CefAppState.INITIALIZING);
+        context.setDaemon(true);
         context.start();
         // FALL THRU
 
