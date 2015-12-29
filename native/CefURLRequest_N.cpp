@@ -96,7 +96,7 @@ class URLRequest : public CefTask {
     }
   }
 
-  virtual void Execute() {
+  virtual void Execute() OVERRIDE {
     lock_.Lock();
     switch (mode_) {
       case REQ_CREATE:
