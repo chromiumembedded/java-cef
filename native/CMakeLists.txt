@@ -326,9 +326,6 @@ if(OS_MACOSX)
 
   # Fix the framework link in the JCEF library.
   FIX_MACOSX_MAIN_FRAMEWORK_LINK(${JCEF_TARGET} ${JCEF_TARGET_LIBRARY_APP_PATH})
-
-  # Make the other helper app bundles.
-  MAKE_MACOSX_HELPERS(${JCEF_TARGET} ${JCEF_APP})
 endif()
 
 
