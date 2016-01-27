@@ -90,7 +90,6 @@ class CefRenderer {
     gl2.glViewport(0, 0, view_width_, view_height_);
     gl2.glMatrixMode(gl2.GL_PROJECTION);
     gl2.glLoadIdentity();
-    gl2.glOrtho(0, 0, view_width_, view_height_, 0.1, 100.0);
 
     // Draw the background gradient.
     gl2.glPushAttrib(gl2.GL_ALL_ATTRIB_BITS);
