@@ -52,15 +52,13 @@ bool GeolocationHandler::OnRequestGeolocationPermission(
 
 void GeolocationHandler::OnCancelGeolocationPermission(
       CefRefPtr<CefBrowser> browser,
-      const CefString& requesting_url,
       int request_id) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_,
                        "onCancelGeolocationPermission",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;I)V",
+                       "(Lorg/cef/browser/CefBrowser;I)V",
                        GetJNIBrowser(browser),
-                       NewJNIString(env, requesting_url),
                        request_id);
 }

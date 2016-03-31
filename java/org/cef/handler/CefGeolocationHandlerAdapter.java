@@ -25,7 +25,6 @@ public abstract class CefGeolocationHandlerAdapter
 
   @Override
   public void onCancelGeolocationPermission(CefBrowser browser,
-                                            String requesting_url,
                                             int request_id) {
   }
 }

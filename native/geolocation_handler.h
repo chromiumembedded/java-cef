@@ -24,7 +24,6 @@ class GeolocationHandler : public CefGeolocationHandler {
 
   virtual void OnCancelGeolocationPermission(
       CefRefPtr<CefBrowser> browser,
-      const CefString& requesting_url,
       int request_id) OVERRIDE;
 
  protected:

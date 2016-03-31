@@ -68,6 +68,11 @@ void ClientApp::OnBeforeCommandLineProcessing(const CefString& process_type,
     // due Java7 is CALayer based instead of NSLayer based.
     command_line->AppendSwitch("use-core-animation");
 #endif  // defined(OS_MACOSX)
+#if defined(OS_WIN)
+    // To avoid shutdown issues extensions should not be used in combination
+    // with multi-threaded-message-loop.
+    command_line->AppendSwitch("disable-extensions");
+#endif
   }
 }
 

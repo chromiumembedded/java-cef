@@ -33,10 +33,8 @@ public interface CefGeolocationHandler {
   /**
    * Called when a geolocation access request is canceled.
    * @param browser The corresponding browser.
-   * @param requesting_url is the URL that originally requested permission.
    * @param request_id is the unique ID for the permission request.
    */
   public void onCancelGeolocationPermission(CefBrowser browser,
-                                            String requesting_url,
                                             int request_id);
 }

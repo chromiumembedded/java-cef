@@ -499,10 +499,11 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   }
 
   @Override
-  public boolean onRequestGeolocationPermission(CefBrowser browser,
-                                             String requesting_url,
-                                             int request_id,
-                                             CefGeolocationCallback callback) {
+  public boolean onRequestGeolocationPermission(
+      CefBrowser browser,
+      String requesting_url,
+      int request_id,
+      CefGeolocationCallback callback) {
     if (geolocationHandler_ != null && browser != null) {
       return geolocationHandler_.onRequestGeolocationPermission(browser,
           requesting_url, request_id, callback);
@@ -512,12 +513,9 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
 
   @Override
   public void onCancelGeolocationPermission(CefBrowser browser,
-                                            String requesting_url,
                                             int request_id) {
-    if (geolocationHandler_ != null && browser != null) {
-      geolocationHandler_.onCancelGeolocationPermission(browser, requesting_url,
-          request_id);
-    }
+    if (geolocationHandler_ != null && browser != null)
+      geolocationHandler_.onCancelGeolocationPermission(browser, request_id);
   }
 
 

@@ -206,10 +206,10 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 // Helper macros to call a method on the java side
 #define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...) { \
   if (env && obj) { \
-    jclass cls = env->GetObjectClass(obj); \
-    jmethodID methodId = env->GetMethodID(cls, method, sig); \
-    if (methodId != NULL) { \
-      storeIn = env->Call ## type ## Method(obj, methodId, ##__VA_ARGS__); \
+    jclass _cls = env->GetObjectClass(obj); \
+    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+    if (_methodId != NULL) { \
+      storeIn = env->Call ## type ## Method(obj, _methodId, ##__VA_ARGS__); \
     } \
     if (env->ExceptionOccurred()) { \
       env->ExceptionDescribe(); \
@@ -220,20 +220,20 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 
 #define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...) { \
   if (env && obj) {\
-    jclass cls = env->GetObjectClass(obj); \
-    jmethodID methodId = env->GetMethodID(cls, method, sig); \
-    if (methodId != NULL) { \
-      env->CallVoidMethod(obj, methodId, ##__VA_ARGS__); \
+    jclass _cls = env->GetObjectClass(obj); \
+    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+    if (_methodId != NULL) { \
+      env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__); \
     } \
   } \
 }
 
 #define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...) { \
   if (env && obj) {\
-    jclass cls = env->GetObjectClass(obj); \
-    jmethodID methodId = env->GetMethodID(cls, method, sig); \
-    if (methodId != NULL) { \
-      env->CallVoidMethod(obj, methodId, ##__VA_ARGS__); \
+    jclass _cls = env->GetObjectClass(obj); \
+    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+    if (_methodId != NULL) { \
+      env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__); \
     } \
     if (env->ExceptionOccurred()) { \
       env->ExceptionDescribe(); \
