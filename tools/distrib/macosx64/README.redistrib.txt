@@ -31,18 +31,6 @@ jcef_app.app/
           MacOS/
             jcef Helper <= helper executable
           Pkginfo
-      jcef Helper EH.app/
-        Contents/
-          Info.plist
-          MacOS/
-            jcef Helper EH <= helper executable
-          Pkginfo
-      jcef Helper NP.app/
-        Contents/
-          Info.plist
-          MacOS/
-            jcef Helper NP <= helper executable
-          Pkginfo
       Info.plist
     Java/
       *.jar <= Required JAR files
@@ -59,14 +47,10 @@ contains CEF binaries and resources. Binaries (libjcef.dylib, jcef Helper,
 etc) are linked to the "Chromium Embedded Framework" library using
 install_name_tool and a path relative to @executable_path.
 
-The "jcef Helper" apps are used for executing separate processes (renderer,
-plugin, etc) with different characteristics. They need to have separate app
-bundles and Info.plist files so that, among other things, they don't show dock
-icons. The "EH" helper, which is used when launching plugin processes, has the
-MH_NO_HEAP_EXECUTION bit cleared to allow an executable heap. The "NP" helper,
-which is used when launching NaCl plugin processes only, has the MH_PIE bit
-cleared to disable ASLR. This is set up as part of the build process using
-scripts from the CEF binary distribution tools/ directory.
+The "jcef Helper" app is used for executing separate processes (renderer,
+plugin, etc) with different characteristics. It needs to have a separate app
+bundle and Info.plist file so that, among other things, it doesn’t show dock
+icons.
 
 Required components:
 

@@ -24,7 +24,7 @@
   <target name="compile">
     <mkdir dir="${out.path}"/>
     <javac encoding="UTF8" nowarn="on" deprecation="off" debug="on" includeantruntime="false" destdir="${out.path}"
-           executable="${jdk7.path}/bin/javac" fork="true" memoryinitialsize="32m" memorymaximumsize="128m" includeJavaRuntime="yes">
+           executable="/usr/bin/javac" fork="true" memoryinitialsize="32m" memorymaximumsize="128m" includeJavaRuntime="yes">
       <compilerarg value="-XDignore.symbol.file"/>
       <classpath location="${jdk7.path}/jre/lib/rt.jar" />
       <classpath refid="class.path"/>

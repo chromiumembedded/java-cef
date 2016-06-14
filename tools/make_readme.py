@@ -108,7 +108,7 @@ jcef_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
 
 # Read and parse the CEF version file.
 args = {}
-read_readme_file(os.path.join(jcef_dir, 'third_party', 'cef', platform, 'README.txt'), args)
+read_readme_file(os.path.join(jcef_dir, 'jcef_build', 'README.txt'), args)
 
 # retrieve url and revision information for CEF
 if not git.is_checkout(jcef_dir):

@@ -29,15 +29,15 @@ This utility creates the version header file.
 parser = OptionParser(description=disc)
 parser.add_option('--header', dest='header', metavar='FILE',
                   help='output version header file [required]')
-parser.add_option('--platform', dest='platform',
-                  help='target platform for distribution [required]')
+parser.add_option('--cef-path', dest='cefpath',
+                  help='path to the CEF binary distribution [required]')
 parser.add_option('-q', '--quiet',
                   action='store_true', dest='quiet', default=False,
                   help='do not output detailed status information')
 (options, args) = parser.parse_args()
 
 # the header option is required
-if options.header is None or options.platform is None:
+if options.header is None or options.cefpath is None:
     parser.print_help(sys.stdout)
     sys.exit(1)
 
@@ -60,7 +60,7 @@ def write_svn_header(header):
 
     # Read and parse the CEF version file.
     args = {}
-    read_readme_file(os.path.join(jcef_dir, 'third_party/cef/'+options.platform+'/README.txt'), args)
+    read_readme_file(os.path.join(options.cefpath, 'README.txt'), args)
 
     version = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'], commit_number, commit_hash[:7])
 
