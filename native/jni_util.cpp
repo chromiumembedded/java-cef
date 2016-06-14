@@ -553,8 +553,8 @@ bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-CefPageRange GetJNIPageRange(JNIEnv* env, jobject obj) {
-  CefPageRange range;
+CefRange GetJNIPageRange(JNIEnv* env, jobject obj) {
+  CefRange range;
 
   jclass cls = FindClass(env, "org/cef/misc/CefPageRange");
   if (!cls)
@@ -568,7 +568,7 @@ CefPageRange GetJNIPageRange(JNIEnv* env, jobject obj) {
   return range;
 }
 
-jobject NewJNIPageRange(JNIEnv* env, const CefPageRange& range) {
+jobject NewJNIPageRange(JNIEnv* env, const CefRange& range) {
   jclass cls = FindClass(env, "org/cef/misc/CefPageRange");
   if (!cls)
     return NULL;

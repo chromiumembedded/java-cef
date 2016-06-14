@@ -61,7 +61,6 @@ xcopy /sfy %SOURCE_PATH%\tests\* %DISTRIB_BIN_PATH%\tests\
 
 :: Copy CEF Release files to the lib directory.
 if not exist %DISTRIB_LIB_PATH% mkdir %DISTRIB_LIB_PATH%
-copy %OUT_BINARY_PATH%\ffmpegsumo.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\icudt.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\jcef.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\jcef_helper.exe %DISTRIB_LIB_PATH%
@@ -69,7 +68,6 @@ copy %OUT_BINARY_PATH%\icudtl.dat %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\libcef.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\natives_blob.bin %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\snapshot_blob.bin %DISTRIB_LIB_PATH%
-if exist %OUT_BINARY_PATH%\wow_helper.exe copy %OUT_BINARY_PATH%\wow_helper.exe %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_BINARY_PATH%\*.pak %DISTRIB_LIB_PATH%
 
 :: Copy documentation to the docs directory.

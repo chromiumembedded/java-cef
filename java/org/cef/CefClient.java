@@ -534,7 +534,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   @Override
   public boolean onJSDialog(CefBrowser browser,
                             String origin_url,
-                            String accept_lang,
                             JSDialogType dialog_type,
                             String message_text,
                             String default_prompt_text,
@@ -543,7 +542,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     if (jsDialogHandler_ != null && browser != null)
       return jsDialogHandler_.onJSDialog(browser,
                                          origin_url,
-                                         accept_lang,
                                          dialog_type,
                                          message_text,
                                          default_prompt_text,
@@ -641,13 +639,6 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
     }
     if (lifeSpanHandler_ != null)
       lifeSpanHandler_.onAfterCreated(browser);
-  }
-
-  @Override
-  public boolean runModal(CefBrowser browser) {
-    if (lifeSpanHandler_ != null && browser != null)
-      return lifeSpanHandler_.runModal(browser);
-    return false;
   }
 
   @Override

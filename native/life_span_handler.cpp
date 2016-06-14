@@ -70,20 +70,6 @@ void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   env->DeleteGlobalRef(jbrowser);
 }
 
-bool LifeSpanHandler::RunModal(CefRefPtr<CefBrowser> browser) {
-  JNIEnv* env = GetJNIEnv();
-  if (!env)
-    return false;
-  jboolean jreturn = JNI_FALSE;
-  JNI_CALL_METHOD(env, jhandler_,
-                  "runModal",
-                  "(Lorg/cef/browser/CefBrowser;)Z",
-                  Boolean,
-                  jreturn,
-                  GetJNIBrowser(browser));
-  return (jreturn != JNI_FALSE);
-}
-
 bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   JNIEnv* env = GetJNIEnv();
   if (!env)

@@ -29,7 +29,6 @@ class LifeSpanHandler : public CefLifeSpanHandler {
                              CefBrowserSettings& settings,
                              bool* no_javascript_access) OVERRIDE;
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual bool RunModal(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 

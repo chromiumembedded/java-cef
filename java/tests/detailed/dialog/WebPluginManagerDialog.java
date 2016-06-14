@@ -94,8 +94,6 @@ public class WebPluginManagerDialog extends JDialog {
       for (int i=0; i < rowData.size(); ++i) {
         if ((Boolean)rowData.get(i)[4]) {
           String path = (String)rowData.get(i)[1];
-          manager.forcePluginShutdown(path);
-          manager.removePlugin(path);
           rowData.remove(i);
           fireTableRowsDeleted(i, i);
           i--;

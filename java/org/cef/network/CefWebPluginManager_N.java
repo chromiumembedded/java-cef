@@ -52,45 +52,9 @@ class CefWebPluginManager_N extends CefWebPluginManager implements CefNative {
   }
 
   @Override
-  public void addPlugin(String path) {
-    try {
-      N_AddPlugin(path);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  @Override
-  public void addPluginDirectory(String directory) {
-    try {
-      N_AddPluginDirectory(directory);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  @Override
-  public void removePlugin(String path) {
-    try {
-      N_RemovePlugin(path);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  @Override
   public void unregisterInternalPlugin(String path) {
     try {
       N_UnregisterInternalPlugin(path);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
-    }
-  }
-
-  @Override
-  public void forcePluginShutdown(String path) {
-    try {
-      N_ForcePluginShutdown(path);
     } catch (UnsatisfiedLinkError ule) {
       ule.printStackTrace();
     }
@@ -117,11 +81,7 @@ class CefWebPluginManager_N extends CefWebPluginManager implements CefNative {
 
   private final native void N_VisitPlugins(CefWebPluginInfoVisitor visitor);
   private final native void N_RefreshPlugins();
-  private final native void N_AddPlugin(String path);
-  private final native void N_AddPluginDirectory(String directory);
-  private final native void N_RemovePlugin(String path);
   private final native void N_UnregisterInternalPlugin(String path);
-  private final native void N_ForcePluginShutdown(String path);
   private final native void N_RegisterPluginCrash(String path);
   private final native void N_IsWebPluginUnstable(String path,
                                                   CefWebPluginUnstableCallback callback);

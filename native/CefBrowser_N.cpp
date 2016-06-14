@@ -1102,7 +1102,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility
     util_mac::SetVisibility(browser->GetHost()->GetWindowHandle(), visible != JNI_FALSE);
   }
 #endif
-  browser->GetHost()->SetWindowVisibility(visible != JNI_FALSE);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel

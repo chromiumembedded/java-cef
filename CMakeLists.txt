@@ -571,6 +571,8 @@ if(NOT EXECUTE_RV STREQUAL "0")
   message(FATAL_ERROR "Execution failed with unexpected result: ${EXECUTE_RV}")
 endif()
 
+macro(SET_LIBRARY_TARGET_PROPERTIES target)
+endmacro()
 
 #
 # Include target subdirectories.

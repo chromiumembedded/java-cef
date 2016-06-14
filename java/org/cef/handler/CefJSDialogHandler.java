@@ -37,7 +37,6 @@ public interface CefJSDialogHandler {
    * 
    * @param browser The corresponding browser.
    * @param origin_url The originating url.
-   * @param accept_lang the accepted language.
    * @param dialog_type the dialog type.
    * @param message_text the text to be displayed.
    * @param default_prompt_text value will be specified for prompt dialogs only.
@@ -48,7 +47,6 @@ public interface CefJSDialogHandler {
    */
   public boolean onJSDialog(CefBrowser browser,
                             String origin_url,
-                            String accept_lang,
                             JSDialogType dialog_type,
                             String message_text,
                             String default_prompt_text,

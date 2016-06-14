@@ -63,16 +63,6 @@ public interface CefLifeSpanHandler {
   public void onAfterCreated(CefBrowser browser);
 
   /**
-   * Called when a modal window is about to display and the modal loop should
-   * begin running. Return false to use the default modal loop implementation or
-   * true to use a custom implementation.
-   * 
-   * @param browser The browser generating the event.
-   * @return false to use the default modal loop implementation.
-   */
-  public boolean runModal(CefBrowser browser);
-
-  /**
    * Called when a browser has received a request to close.
    * 
    * If CEF created an OS window for the browser returning false will send an OS

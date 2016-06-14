@@ -23,39 +23,11 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RefreshPlu
   CefRefreshWebPlugins();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1AddPlugin
-  (JNIEnv *env, jobject, jstring jpath) {
-  if (!jpath)
-    return;
-  CefAddWebPluginPath(GetJNIString(env, jpath));
-}
-
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1AddPluginDirectory
-  (JNIEnv *env, jobject obj, jstring jdirectory) {
-  if (!jdirectory)
-    return;
-  CefAddWebPluginDirectory(GetJNIString(env, jdirectory));
-}
-
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RemovePlugin
-  (JNIEnv *env, jobject obj, jstring jpath) {
-  if (!jpath)
-    return;
-  CefRemoveWebPluginPath(GetJNIString(env, jpath));
-}
-
 JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1UnregisterInternalPlugin
   (JNIEnv *env, jobject obj, jstring jpath) {
   if (!jpath)
     return;
   CefUnregisterInternalWebPlugin(GetJNIString(env, jpath));
-}
-
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1ForcePluginShutdown
-  (JNIEnv *env, jobject obj, jstring jpath) {
-  if (!jpath)
-    return;
-  CefForceWebPluginShutdown(GetJNIString(env, jpath));
 }
 
 JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RegisterPluginCrash

@@ -25,11 +25,6 @@ public abstract class CefLifeSpanHandlerAdapter implements CefLifeSpanHandler {
   }
 
   @Override
-  public boolean runModal(CefBrowser browser) {
-    return false;
-  }
-
-  @Override
   public boolean doClose(CefBrowser browser) {
     return false;
   }

@@ -19,7 +19,6 @@ JSDialogHandler::~JSDialogHandler() {
 
 bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
                                  const CefString& origin_url,
-                                 const CefString& accept_lang,
                                  CefJSDialogHandler::JSDialogType dialog_type,
                                  const CefString& message_text,
                                  const CefString& default_prompt_text,
@@ -49,14 +48,13 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
   jboolean jresult = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                   "onJSDialog",
-                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Ljava/lang/String;"
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
                   "Lorg/cef/handler/CefJSDialogHandler$JSDialogType;Ljava/lang/String;"
                   "Ljava/lang/String;Lorg/cef/callback/CefJSDialogCallback;Lorg/cef/misc/BoolRef;)Z",
                   Boolean,
                   jresult,
                   GetJNIBrowser(browser),
                   NewJNIString(env, origin_url),
-                  NewJNIString(env, accept_lang),
                   jdialogType,
                   NewJNIString(env, message_text),
                   NewJNIString(env, default_prompt_text),
