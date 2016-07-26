@@ -25,42 +25,10 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RefreshPlu
 
 /*
  * Class:     org_cef_network_CefWebPluginManager_N
- * Method:    N_AddPlugin
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1AddPlugin
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_cef_network_CefWebPluginManager_N
- * Method:    N_AddPluginDirectory
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1AddPluginDirectory
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_cef_network_CefWebPluginManager_N
- * Method:    N_RemovePlugin
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RemovePlugin
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_cef_network_CefWebPluginManager_N
  * Method:    N_UnregisterInternalPlugin
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1UnregisterInternalPlugin
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_cef_network_CefWebPluginManager_N
- * Method:    N_ForcePluginShutdown
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1ForcePluginShutdown
   (JNIEnv *, jobject, jstring);
 
 /*
