@@ -78,9 +78,9 @@ void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
 }
 
 bool ResourceHandler::ReadResponse(void* data_out,
-                            int bytes_to_read,
-                            int& bytes_read,
-                            CefRefPtr<CefCallback> callback) {
+                                   int bytes_to_read,
+                                   int& bytes_read,
+                                   CefRefPtr<CefCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
@@ -116,6 +116,8 @@ bool ResourceHandler::ReadResponse(void* data_out,
   }
   jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
   memmove(data_out, jbyte, (bytes_read < bytes_to_read ? bytes_read : bytes_to_read));
+  env->ReleaseByteArrayElements(jbytes, jbyte, JNI_ABORT);
+  env->DeleteLocalRef(jbytes);
   return result;
 }
 
