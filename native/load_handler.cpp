@@ -33,8 +33,10 @@ void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                        (canGoForward ? JNI_TRUE : JNI_FALSE));
 }
 
+// TODO(jcef): Expose the |transition_type| argument.
 void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
-                              CefRefPtr<CefFrame> frame) {
+                              CefRefPtr<CefFrame> frame,
+                              TransitionType transition_type) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;

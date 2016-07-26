@@ -399,6 +399,12 @@ CefWindowHandle CreateBrowserContentView(CefWindowHandle cefWindow,
   [mainView addSubview:contentView];
   [contentView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
   [contentView setNeedsDisplay:YES];
+
+  // Make the content view for the window have a layer. This will make all
+  // sub-views have layers. This is necessary to ensure correct layer
+  // ordering of all child views and their layers.
+  [contentView setWantsLayer:YES];
+
   [contentView release];
 
   // Override origin bevore "orig" is returned because the new origin is
