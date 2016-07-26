@@ -197,18 +197,7 @@ endif()
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 
 # Determine the target output directory.
-if(${CMAKE_GENERATOR} STREQUAL "Ninja" OR
-   ${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
-  # By default Ninja and Make builds don't create a subdirectory named after
-  # the configuration.
-  set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-
-  # Output binaries (executables, libraries) to the correct directory.
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
-else()
-  set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>")
-endif()
+SET_CEF_TARGET_OUT_DIR()
 
 
 #
@@ -375,14 +364,7 @@ if(OS_WINDOWS)
     )
 
   # Add the custom manifest files to the DLL.
-  add_custom_command(
-    TARGET ${JCEF_TARGET}
-    POST_BUILD
-    COMMAND "mt.exe" -nologo
-            -manifest \"${CMAKE_CURRENT_SOURCE_DIR}/${JCEF_TARGET}.dll.manifest\" \"${CMAKE_CURRENT_SOURCE_DIR}/compatibility.manifest\"
-            -outputresource:"${CEF_TARGET_OUT_DIR}/${JCEF_TARGET}.dll"\;\#1
-    COMMENT "Adding manifest..." 
-    )
+  ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${JCEF_TARGET}" "dll")
 
   # Copy binary and resource files to the target output directory.
   COPY_FILES("${JCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
