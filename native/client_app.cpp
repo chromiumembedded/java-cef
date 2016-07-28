@@ -76,29 +76,6 @@ void ClientApp::OnBeforeCommandLineProcessing(const CefString& process_type,
   }
 }
 
-bool ClientApp::HandleTerminate() {
-  BEGIN_ENV(env)
-  jclass cls = FindClass(env, "org/cef/CefApp");
-  if (!cls) {
-    return false;
-  }
-
-  jmethodID methodId =
-      env->GetStaticMethodID(cls, "getInstance", "()Lorg/cef/CefApp;");
-  if (!methodId) {
-    return false;
-  }
-
-  jobject jcefApp = env->CallStaticObjectMethod(cls, methodId);
-  if (!jcefApp) {
-    return false;
-  }
-
-  JNI_CALL_VOID_METHOD(env, jcefApp, "handleBeforeTerminate", "()V");
-  END_ENV(env)
-  return true;
-}
-
 void ClientApp::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
   if (!app_handler_)
     return;
@@ -121,10 +98,37 @@ CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
   return process_handler_.get();
 }
 
+#if defined(OS_MACOSX)
+bool ClientApp::HandleTerminate() {
+  BEGIN_ENV(env)
+  jclass cls = FindClass(env, "org/cef/CefApp");
+  if (!cls) {
+    return false;
+  }
+
+  jmethodID methodId =
+      env->GetStaticMethodID(cls, "getInstance", "()Lorg/cef/CefApp;");
+  if (!methodId) {
+    return false;
+  }
+
+  jobject jcefApp = env->CallStaticObjectMethod(cls, methodId);
+  if (!jcefApp) {
+    return false;
+  }
+
+  JNI_CALL_VOID_METHOD(env, jcefApp, "handleBeforeTerminate", "()V");
+  END_ENV(env)
+  return true;
+}
+#endif  // defined(OS_MACOSX)
+
+// static
 void ClientApp::registerTempFile(const std::string& tmpFile) {
   GetTempFilesSet().insert(tmpFile);
 }
 
+// static
 void ClientApp::eraseTempFiles() {
   std::set<std::string>& tempFiles =  GetTempFilesSet();
   std::set<std::string>::iterator iter;

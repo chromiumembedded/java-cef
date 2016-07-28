@@ -21,18 +21,21 @@ class ClientApp : public CefApp {
   virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE;
 
-  // Additional method for JCEF
-  bool HandleTerminate();
-
   virtual void OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar)
       OVERRIDE;
 
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
       OVERRIDE;
 
+#if defined(OS_MACOSX)
+  // Used to continue termination handling in Java.
+  bool HandleTerminate();
+#endif
+
   // Used to manage the lifespan of temporary files.
   static void registerTempFile(const std::string& tmpFile);
   static void eraseTempFiles();
+
  protected:
   std::string module_dir_;
   jobject app_handler_;

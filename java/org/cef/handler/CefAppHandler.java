@@ -22,17 +22,18 @@ public interface CefAppHandler {
    * @param process_type type of process (empty for browser process).
    * @param command_line values of the command line.
    */
-   public void onBeforeCommandLineProcessing(String process_type, CefCommandLine command_line);
+  public void onBeforeCommandLineProcessing(String process_type, CefCommandLine command_line);
 
-   /**
-    * Provides an opportunity to hook into the native shutdown process. This
-    * method is invoked if the user tries to terminate the app by sending the
-    * corresponding key code (e.g. on Mac: CMD+Q) or something similar. If you
-    * want to proceed with the default behavior of the native system, return
-    * false. If you want to abort the terminate or if you want to implement your
-    * own shutdown sequence return true and do the cleanup on your own.
-    * @return false to proceed with the default behavior, true to abort terminate
-    */
+  /**
+   * Provides an opportunity to hook into the native shutdown process. This
+   * method is invoked if the user tries to terminate the app by sending the
+   * corresponding key code (e.g. on Mac: CMD+Q) or something similar. If you
+   * want to proceed with the default behavior of the native system, return
+   * false. If you want to abort the terminate or if you want to implement your
+   * own shutdown sequence return true and do the cleanup on your own.
+   * @return false to proceed with the default behavior, true to abort
+   * terminate.
+   */
   public boolean onBeforeTerminate();
 
   /**
@@ -47,25 +48,36 @@ public interface CefAppHandler {
   public void stateHasChanged(CefAppState state);
 
   /**
-    * Provides an opportunity to register custom schemes. Do not keep a reference
-    * to the |registrar| object. This method is called on the main thread for
-    * each process and the registered schemes should be the same across all
-    * processes.
-    */
-   public void onRegisterCustomSchemes(CefSchemeRegistrar registrar);
+   * Provides an opportunity to register custom schemes. Do not keep a reference
+   * to the |registrar| object. This method is called on the main thread for
+   * each process and the registered schemes should be the same across all
+   * processes.
+   */
+  public void onRegisterCustomSchemes(CefSchemeRegistrar registrar);
 
-   // Inherited of CefBrowserProcessHandler
-   /**
-    * Called on the browser process UI thread immediately after the CEF context
-    * has been initialized.
-    */
-   public void onContextInitialized();
+  // Inherited of CefBrowserProcessHandler
+  /**
+   * Called on the browser process UI thread immediately after the CEF context
+   * has been initialized.
+   */
+  public void onContextInitialized();
 
-   /**
-    * Return the handler for printing on Linux. If a print handler is not
-    * provided then printing will not be supported on the Linux platform.
-    *
-    * @return a reference to a print handler implementation
-    */
-   public CefPrintHandler getPrintHandler();
+  /**
+   * Return the handler for printing on Linux. If a print handler is not
+   * provided then printing will not be supported on the Linux platform.
+   *
+   * @return a reference to a print handler implementation
+   */
+  public CefPrintHandler getPrintHandler();
+
+  /**
+   * Called from any thread when work has been scheduled for the browser process
+   * main (UI) thread. This callback should schedule a
+   * CefApp.DoMessageLoopWork() call to happen on the main (UI) thread.
+   * |delay_ms| is the requested delay in milliseconds. If |delay_ms| is <= 0
+   * then the call should happen reasonably soon. If |delay_ms| is > 0 then the
+   * call should be scheduled to happen after the specified delay and any
+   * currently pending scheduled call should be cancelled.
+   */
+  public void onScheduleMessagePumpWork(long delay_ms);
 }

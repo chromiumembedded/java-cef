@@ -25,13 +25,41 @@ static std::set<CefWindowHandle> g_browsers_;
 static CriticalLock g_browsers_lock_;
 id g_mouse_monitor_ = nil;
 static CefRefPtr<ClientApp> g_client_app_ = NULL;
-BOOL g_handling_send_event = false;
-bool g_init_result = false;
-NSCondition *g_lock_initialize = NULL;
-BOOL g_continue_terminate = false;
-id g_last_sender = nil;
+bool g_handling_send_event = false;
 
 }  // namespace
+
+// Used for passing data to/from ClientHandler initialize:.
+@interface InitializeParams : NSObject {
+ @public
+  CefMainArgs args_;
+  CefSettings settings_;
+  CefRefPtr<ClientApp> application_;
+  bool result_;
+}
+@end
+@implementation InitializeParams
+@end
+
+// Used for passing data to/from ClientHandler setVisiblity:.
+@interface SetVisibilityParams : NSObject {
+ @public
+  CefWindowHandle handle_;
+  bool isVisible_;
+}
+@end
+@implementation SetVisibilityParams
+@end
+
+// Obj-C Wrapper Class to be called by "performSelectorOnMainThread".
+@interface CefHandler : NSObject { }
+
++ (void) initialize:(InitializeParams*)params;
++ (void) shutdown;
++ (void) doMessageLoopWork;
++ (void) setVisibility:(SetVisibilityParams*)params;
+
+@end  // interface CefHandler
 
 // Java provides an NSApplicationAWT implementation that we can't access or
 // override directly. Therefore add the necessary CrAppControlProtocol
@@ -143,105 +171,56 @@ id g_last_sender = nil;
   [self _swizzled_sendEvent:event];
 }
 
+// This method will be called via Cmd+Q.
 - (void)_swizzled_terminate:(id)sender {
   bool continueTerminate = true;
-  if (g_client_app_.get() && !g_continue_terminate) {
-    g_last_sender = sender;
+
+  if (g_client_app_.get()) {
+    // Call CefApp.handleBeforeTerminate() in Java. Will result in a call
+    // to CefShutdownOnMainThread() via CefApp.shutdown().
     continueTerminate = !g_client_app_->HandleTerminate();
   }
-  if (continueTerminate) {
-    [NSEvent removeMonitor:g_mouse_monitor_];
-    [self _swizzled_terminate:sender];
-  }
+
+  if (continueTerminate)
+    [[CefHandler class] shutdown];
 }
 
 @end
 
-// This is only a small stub class to transport data between
-// JNI function calls and the Obj-C implementations. The Obj-C
-// implementation is addressed by calling "performSelectorOnMainThread".
-@interface SystemStub : NSObject {
-  CefMainArgs args_;
-  CefSettings settings_;
-  CefRefPtr<ClientApp> application_;
-  bool result_;
-}
-
-- (id) initWithValues:(const CefMainArgs&)args
-             settings:(const CefSettings&) settings
-          application:(CefRefPtr<ClientApp>) application;
-- (const CefMainArgs&) args;
-- (const CefSettings&) settings;
-- (CefRefPtr<ClientApp>) application;
-- (void) setResult:(bool)result;
-- (bool) result;
-
-@end  // interface SystemStub
-
-@implementation SystemStub
-
-- (id) initWithValues:(const CefMainArgs&) pArgs
-             settings:(const CefSettings&) pSettings
-          application:(CefRefPtr<ClientApp>)  pApplication {
-
-  if (self = [super init]) {
-    args_ = pArgs;
-    settings_ = pSettings;
-    application_ = pApplication;
-    result_ = false;
-  }
-  return self;
-}
-- (const CefMainArgs&) args {
-  return args_;
-}
-- (const CefSettings&) settings {
-  return settings_;
-}
-- (CefRefPtr<ClientApp>) application {
-  return application_;
-}
-- (void) setResult:(bool)result {
-  result_ = result;
-}
-- (bool) result {
-  return result_;
-}
-
-@end  // implementation SystemStub
-
-// Obj-C Wrapper Class to be called by "performSelectorOnMainThread".
-@interface CefHandler : NSObject { }
-
-+ (void) initialize:(SystemStub*)stub;
-+ (void) quitMessageLoop;
-
-@end  // interface CefHandler
-
 @implementation CefHandler
 
-+ (void) initialize:(SystemStub*)stub {
-  // Initialize CEF
-  [g_lock_initialize lock];
-  g_client_app_ = [stub application];
-  g_init_result =
-      CefInitialize([stub args], [stub settings], g_client_app_.get(), NULL);
-  [g_lock_initialize signal];
-  [g_lock_initialize unlock];
-
-  // Run the application message loop.
-  CefRunMessageLoop();
-  g_client_app_ = NULL;
-
-  // Shut down CEF.
-  [g_lock_initialize lock];
-  CefShutdown();
-  [g_lock_initialize signal];
-  [g_lock_initialize unlock];
+// |params| will be released by the caller.
++ (void) initialize:(InitializeParams*)params {
+  g_client_app_ = params->application_;
+  params->result_ = CefInitialize(params->args_, params->settings_,
+                                  g_client_app_.get(), NULL);
 }
 
-+ (void) quitMessageLoop {
-  CefQuitMessageLoop();
++ (void) shutdown {
+  // Pump CefDoMessageLoopWork a few times before shutting down.
+  for (int i = 0; i < 10; ++i)
+    CefDoMessageLoopWork();
+
+  CefShutdown();
+  g_client_app_ = NULL;
+
+  [NSEvent removeMonitor:g_mouse_monitor_];
+}
+
++ (void) doMessageLoopWork {
+  CefDoMessageLoopWork();
+}
+
++ (void) setVisibility:(SetVisibilityParams*)params {
+  if (g_client_app_) {
+    bool isHidden = [params->handle_ isHidden];
+    if (isHidden == params->isVisible_) {
+      [params->handle_ setHidden:!params->isVisible_];
+      [params->handle_ needsDisplay];
+      [[params->handle_ superview] display];
+    }
+  }
+  [params release];
 }
 
 @end  // implementation CefHandler
@@ -423,44 +402,41 @@ void TranslateRect(CefWindowHandle view, CefRect& orig) {
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
                                CefRefPtr<ClientApp> application) {
-  SystemStub* stub = [[SystemStub alloc] initWithValues:args
-                                               settings:settings
-                                            application:application];
-  // we're not using waitUntilDone here because we want to return true
-  // or false to the caller of this method.
-  g_lock_initialize = [[NSCondition alloc] init];
-  [g_lock_initialize lock];
+  InitializeParams* params = [[InitializeParams alloc] init];
+  params->args_ = args;
+  params->settings_ = settings;
+  params->application_ = application;
+  params->result_ = false;
+
+  // Block until done.
   [[CefHandler class] performSelectorOnMainThread:@selector(initialize:)
-                                       withObject:stub
-                                    waitUntilDone:NO];
-  [g_lock_initialize wait];
-  [g_lock_initialize unlock];
-  [g_lock_initialize release];
-  [stub release];
-  return g_init_result;
+                                       withObject:params
+                                    waitUntilDone:YES];
+  int result = params->result_;
+  [params release];
+  return result;
 }
 
-void CefQuitMessageLoopOnMainThread() {
-  if (g_client_app_ == NULL)
-    return;
+void CefShutdownOnMainThread() {
+  // Block until done.
+  [[CefHandler class] performSelectorOnMainThread:@selector(shutdown)
+                                       withObject:nil
+                                    waitUntilDone:YES];
+}
 
-  g_lock_initialize = [[NSCondition alloc] init];
-  [g_lock_initialize lock];
-  [[CefHandler class] performSelectorOnMainThread:@selector(quitMessageLoop)
+void CefDoMessageLoopWorkOnMainThread() {
+  [[CefHandler class] performSelectorOnMainThread:@selector(doMessageLoopWork)
                                        withObject:nil
                                     waitUntilDone:NO];
-  [g_lock_initialize wait];
-  [g_lock_initialize unlock];
-  [g_lock_initialize release];
 }
 
 void SetVisibility(CefWindowHandle handle, bool isVisible) {
-  bool isHidden = [handle isHidden];
-  if (isHidden == isVisible) {
-    [handle setHidden:!isVisible];
-    [handle needsDisplay];
-    [[handle superview] display];
-  }
+  SetVisibilityParams* params = [[SetVisibilityParams alloc] init];
+  params->handle_ = handle;
+  params->isVisible_ = isVisible;
+  [[CefHandler class] performSelectorOnMainThread:@selector(setVisibility:)
+                                       withObject:params
+                                    waitUntilDone:NO];
 }
 
 void UpdateView(CefWindowHandle handle, CefRect contentRect,
@@ -485,12 +461,6 @@ void UpdateView(CefWindowHandle handle, CefRect contentRect,
     [browser performSelectorOnMainThread:@selector(updateView:) withObject:dict
         waitUntilDone:NO];
   }
-}
-
-void ContinueDefaultTerminate() {
-  g_continue_terminate = TRUE;
-  [[NSApplication sharedApplication] performSelectorOnMainThread:
-      @selector(terminate:) withObject:g_last_sender waitUntilDone:NO];
 }
 
 }  // namespace util_mac

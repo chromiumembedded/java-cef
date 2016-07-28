@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.callback.CefCommandLine;
 import org.cef.callback.CefSchemeRegistrar;
@@ -62,13 +63,14 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
   }
 
   @Override
-  public void stateHasChanged(CefAppState state) {
+  public boolean onBeforeTerminate() {
     // The default implementation does nothing
+    return false;
   }
 
   @Override
-  public boolean onBeforeTerminate() {
-    return false;
+  public void stateHasChanged(CefAppState state) {
+    // The default implementation does nothing
   }
 
   @Override
@@ -85,5 +87,10 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
   public CefPrintHandler getPrintHandler() {
     // The default implementation does nothing
     return null;
+  }
+
+  @Override
+  public void onScheduleMessagePumpWork(long delay_ms) {
+    CefApp.getInstance().doMessageLoopWork(delay_ms);
   }
 }

@@ -36,11 +36,12 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
                                CefRefPtr<ClientApp> application);
 
-void CefQuitMessageLoopOnMainThread();
+void CefShutdownOnMainThread();
+
+void CefDoMessageLoopWorkOnMainThread();
 
 void SetVisibility(CefWindowHandle handle,
                    bool isVisible);
-void ContinueDefaultTerminate();
 
 void UpdateView(CefWindowHandle handle,
                 CefRect contentRect,

@@ -7,115 +7,35 @@
 #include <string>
 
 #include "include/cef_app.h"
-#include "include/cef_browser.h"
-#include "include/cef_path_util.h"
 #include "include/cef_version.h"
-#include "browser_process_handler.h"
-#include "client_app.h"
-#include "client_handler.h"
+#include "context.h"
 #include "jcef_version.h"
 #include "jni_util.h"
-#include "render_handler.h"
 #include "scheme_handler_factory.h"
 #include "util.h"
 
-#if defined(OS_LINUX)
-#include <gdk/gdkx.h>
-#endif
-
-#if defined(OS_MACOSX)
-#include "util_mac.h"
-#endif
-
-#if defined(OS_POSIX)
-#include "signal_restore_posix.h"
-#endif
-
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize
   (JNIEnv *env, jobject c) {
-  JavaVM* jvm;
-  jint rs = env->GetJavaVM(&jvm);
-  ASSERT(rs == JNI_OK);
-  if (rs != JNI_OK)
-    return JNI_FALSE;
-  SetJVM(jvm);
-
-  jobject javaClass = env->GetObjectClass(c);
-  jobject javaClassLoader = NULL;
-  JNI_CALL_METHOD(env, javaClass, "getClassLoader", "()Ljava/lang/ClassLoader;",
-                  Object, javaClassLoader);
-  env->DeleteLocalRef(javaClass);
-  ASSERT(javaClassLoader);
-  if (!javaClassLoader)
-    return JNI_FALSE;
-  SetJavaClassLoader(env, javaClassLoader);
-
-  return JNI_TRUE;
+  Context::Create();
+  return Context::GetInstance()->PreInitialize(env, c) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
   (JNIEnv *env, jobject c, jstring argPathToJavaDLL, jobject appHandler,
     jobject jsettings) {
-#if defined(OS_WIN)
-  CefMainArgs main_args(::GetModuleHandle(NULL));
-#else
-  CefMainArgs main_args(0, NULL);
-#endif
-
-  const std::string& module_dir = GetJNIString(env, argPathToJavaDLL);
-
-  CefSettings settings = GetJNISettings(env, jsettings);  
-
-  // Sandbox is not supported because:
-  // - Use of a separate sub-process executable on Windows.
-  // - Use of a temporary file to communicate custom schemes to the
-  //   renderer process.
-  settings.no_sandbox = true;
-
-#if defined(OS_WIN)
-  // Required to fix issues with drag&drop on Windows.
-  settings.multi_threaded_message_loop = true;
-#endif
-
-  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));
-  bool res = false;
-
-#if defined(OS_POSIX)
-  // CefInitialize will reset signal handlers. Backup/restore the original
-  // signal handlers to avoid crashes in the JVM (see issue #41).
-  BackupSignalHandlers();
-#endif
-
-#if defined(OS_MACOSX)
-  res = util_mac::CefInitializeOnMainThread(main_args, settings,
-                                             client_app.get());
-#else
-  res = CefInitialize(main_args, settings, client_app.get(), NULL);
-#endif
-
-#if defined(OS_POSIX)
-  RestoreSignalHandlers();
-#endif
-
-  return res ? JNI_TRUE : JNI_FALSE;
+  return Context::GetInstance()->Initialize(
+      env, c, argPathToJavaDLL, appHandler, jsettings) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
   (JNIEnv *env, jobject) {
-  // Clear scheme handler factories on shutdown to avoid refcount DCHECK.
-  CefClearSchemeHandlerFactories();
-
-  ClientApp::eraseTempFiles();
-#if defined(OS_MACOSX)
-  util_mac::CefQuitMessageLoopOnMainThread();
-#else
-  CefShutdown();
-#endif
+  Context::GetInstance()->Shutdown();
+  Context::Destroy();
 }
 
 JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
   (JNIEnv *env, jobject) {
-  CefDoMessageLoopWork();
+  Context::GetInstance()->DoMessageLoopWork();
 }
 
 JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1GetVersion
@@ -151,11 +71,4 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories
   (JNIEnv *, jobject) {
   return CefClearSchemeHandlerFactories() ? JNI_TRUE : JNI_FALSE;
-}
-
-JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1ContinueDefaultTerminate
-  (JNIEnv *, jobject) {
-#if defined(OS_MACOSX)
-  util_mac::ContinueDefaultTerminate();
-#endif
 }

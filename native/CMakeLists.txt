@@ -78,6 +78,8 @@ set(JCEF_SRCS
   client_handler.h
   completion_callback.cpp
   completion_callback.h
+  context.cpp
+  context.h
   context_menu_handler.cpp
   context_menu_handler.h
   cookie_visitor.cpp

@@ -68,6 +68,15 @@ CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
   return result;
 }
 
+void BrowserProcessHandler::OnScheduleMessagePumpWork(int64 delay_ms) {
+  if (!app_handler_)
+    return;
+
+  BEGIN_ENV(env)
+  JNI_CALL_VOID_METHOD(env, app_handler_, "onScheduleMessagePumpWork", "(J)V", delay_ms);
+  END_ENV(env)
+}
+
 void BrowserProcessHandler::AddMessageRouterConfig(
     const CefMessageRouterConfig& cfg) {
   base::AutoLock lock_scope(router_cfg_lock_);
