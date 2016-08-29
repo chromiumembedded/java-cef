@@ -192,7 +192,7 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1SetFirstPartyForCoo
   CefRefPtr<CefRequest> request = GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
   if (!request)
     return;
-    request->SetFirstPartyForCookies(GetJNIString(env, jcookie));
+  request->SetFirstPartyForCookies(GetJNIString(env, jcookie));
 }
 
 JNIEXPORT jobject JNICALL Java_org_cef_network_CefRequest_1N_N_1GetResourceType
