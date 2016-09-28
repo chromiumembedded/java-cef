@@ -283,8 +283,8 @@ if(OS_MACOSX)
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/jcef-Info.plist
     )
 
-  # Fix the framework link in the helper executable.
-  FIX_MACOSX_HELPER_FRAMEWORK_LINK(${JCEF_HELPER_TARGET} ${JCEF_HELPER_APP})
+  # Fix the framework rpath in the helper executable.
+  FIX_MACOSX_HELPER_FRAMEWORK_RPATH(${JCEF_HELPER_TARGET})
 
   # JCEF library target.
   add_library(${JCEF_TARGET} SHARED ${JCEF_RESOURCES_SRCS} ${JCEF_SRCS})
@@ -330,14 +330,8 @@ if(OS_MACOSX)
     VERBATIM
     )
 
-  # Fix the framework link in the JCEF library.
-  add_custom_command(TARGET ${JCEF_TARGET}
-    POST_BUILD
-    COMMAND install_name_tool -change "@executable_path/Chromium Embedded Framework"
-            "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework"
-            "${JCEF_TARGET_LIBRARY_APP_PATH}"
-    VERBATIM
-    )
+  # Fix the framework rpath in the JCEF library.
+  FIX_MACOSX_MAIN_FRAMEWORK_RPATH(${JCEF_TARGET})
 endif()
 
 
