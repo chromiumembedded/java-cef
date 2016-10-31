@@ -113,6 +113,7 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
 void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefRefPtr<CefRequest> request,
+                                        CefRefPtr<CefResponse> response,
                                         CefString& new_url) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
@@ -123,12 +124,18 @@ void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
     return;
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
+  jobject jresponse = NewJNIObject(env, "org/cef/network/CefResponse_N");
+  if (!jresponse)
+    return;
+  SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
+
   jobject jstringRef = NewJNIStringRef(env, new_url);
   JNI_CALL_VOID_METHOD(env, jhandler_,
                        "onResourceRedirect",
-                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;Lorg/cef/misc/StringRef;)V",
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;Lorg/cef/network/CefResponse;Lorg/cef/misc/StringRef;)V",
                        GetJNIBrowser(browser),
                        jrequest,
+                       jresponse,
                        jstringRef);
   new_url = GetJNIStringRef(env, jstringRef);
 }

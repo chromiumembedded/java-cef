@@ -11,6 +11,7 @@ import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefResponse;
 
 /**
  * An abstract adapter class for receiving browser request events.
@@ -39,6 +40,7 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
   @Override
   public void onResourceRedirect(CefBrowser browser,
                                  CefRequest request,
+                                 CefResponse response,
                                  StringRef new_url) {
   }
 

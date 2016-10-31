@@ -10,6 +10,8 @@ import org.cef.callback.CefRequestCallback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefResponse;
+
 /**
  * Implement this interface to handle events related to browser requests. The
  * methods of this class will be called on the thread indicated.
@@ -76,10 +78,13 @@ public interface CefRequestHandler {
    * 
    * @param browser The corresponding browser.
    * @param request The request itself. Should not be modified in this callback.
+   * @param response The response that resulted in the redirect. Should not be
+   *   modified in this callback.
    * @param new_url Contains the new URL and can be changed if desired.
    */
   void onResourceRedirect(CefBrowser browser,
                           CefRequest request,
+                          CefResponse response,
                           StringRef new_url);
 
   /**

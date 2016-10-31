@@ -35,6 +35,7 @@ class RequestHandler : public CefRequestHandler {
   virtual void OnResourceRedirect(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   CefRefPtr<CefRequest> request,
+                                  CefRefPtr<CefResponse> response,
                                   CefString& new_url) OVERRIDE;
 
   virtual bool GetAuthCredentials(CefRefPtr<CefBrowser> browser,

@@ -53,6 +53,7 @@ import org.cef.handler.CefWindowHandler;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefResponse;
 import org.cef.network.CefWebPluginInfo;
 
 /**
@@ -882,9 +883,10 @@ public class CefClient extends CefClientHandler implements CefContextMenuHandler
   @Override
   public void onResourceRedirect(CefBrowser browser,
                                  CefRequest request,
+                                 CefResponse response,
                                  StringRef new_url) {
     if (requestHandler_ != null && browser != null)
-      requestHandler_.onResourceRedirect(browser, request, new_url);
+      requestHandler_.onResourceRedirect(browser, request, response, new_url);
   }
 
   @Override
