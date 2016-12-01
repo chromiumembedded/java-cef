@@ -150,6 +150,7 @@ public class CefApp extends CefAppHandlerAdapter {
       settings_ = settings.clone();
     if (OS.isWindows()) {
       System.loadLibrary("jawt");
+      System.loadLibrary("chrome_elf");
       System.loadLibrary("libcef");
     } else if (OS.isLinux()) {
       System.loadLibrary("cef");
