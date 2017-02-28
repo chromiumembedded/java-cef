@@ -36,6 +36,7 @@ CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
 bool RequestContextHandler::OnBeforePluginLoad(
     const CefString& mime_type,
     const CefString& plugin_url,
+    bool is_main_frame,
     const CefString& top_origin_url,
     CefRefPtr<CefWebPluginInfo> plugin_info,
     PluginPolicy* plugin_policy) {
@@ -51,12 +52,12 @@ bool RequestContextHandler::OnBeforePluginLoad(
   jboolean jresult = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_,
                        "onBeforePluginLoad",
-                       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;"
-                       "Lorg/cef/network/CefWebPluginInfo;)Z",
+                       "Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lorg/cef/network/CefWebPluginInfo;)Z",
                        Boolean,
                        jresult,
                        NewJNIString(env, mime_type),
                        NewJNIString(env, plugin_url),
+                       is_main_frame ? JNI_TRUE : JNI_FALSE,
                        NewJNIString(env, top_origin_url),
                        jinfo);
 

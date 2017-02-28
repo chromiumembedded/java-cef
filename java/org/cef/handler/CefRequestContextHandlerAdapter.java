@@ -23,6 +23,7 @@ public abstract class CefRequestContextHandlerAdapter
   @Override
   public boolean onBeforePluginLoad(String mime_type,
                                     String plugin_url,
+                                    boolean is_main_frame,
                                     String top_origin_url,
                                     CefWebPluginInfo plugin_info) {
     return false;
