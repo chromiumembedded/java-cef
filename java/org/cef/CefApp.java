@@ -503,7 +503,7 @@ public class CefApp extends CefAppHandlerAdapter {
    * Perform a single message loop iteration. Used on all platforms except
    * Windows with windowed rendering.
    */
-  public final void doMessageLoopWork(long delay_ms) {
+  public final void doMessageLoopWork(final long delay_ms) {
     // Execute on the AWT event dispatching thread.
     SwingUtilities.invokeLater(new Runnable() {
       @Override
