@@ -30,12 +30,12 @@ public:
   CefHelperApp() {}
 
   virtual void OnRegisterCustomSchemes(
-      CefRefPtr<CefSchemeRegistrar> registrar) OVERRIDE {
+      CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE {
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
     char schemeName[512] = "";
-    char cIsStandard, cIsLocal, cIsDisplayIsolated;
-    bool isStandard, isLocal, isDisplayIsolated;
+    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled;
+    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled;
 
     fStream.open(fName.c_str(), std::fstream::in);
     while (fStream.is_open() && !fStream.eof()) {
@@ -43,13 +43,16 @@ public:
       if (strlen(schemeName) == 0)
         break;
 
-      fStream.get(cIsStandard).get(cIsLocal).get(cIsDisplayIsolated);
+      fStream.get(cIsStandard).get(cIsLocal).get(cIsDisplayIsolated).
+          get(cIsSecure).get(cIsCorsEnabled);
       isStandard = (cIsStandard == '1');
       isLocal = (cIsLocal == '1');
       isDisplayIsolated = (cIsDisplayIsolated == '1');
+      isSecure = (cIsSecure == '1');
+      isCorsEnabled = (cIsCorsEnabled == '1');
 
       registrar->AddCustomScheme(schemeName, isStandard, isLocal,
-          isDisplayIsolated);
+          isDisplayIsolated, isSecure, isCorsEnabled);
     }
     fStream.close();
   }

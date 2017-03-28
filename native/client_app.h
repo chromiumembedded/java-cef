@@ -21,7 +21,7 @@ class ClientApp : public CefApp {
   virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE;
 
-  virtual void OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar)
+  virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
       OVERRIDE;
 
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()

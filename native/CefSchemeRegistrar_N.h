@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefSchemeRegistrar_N
  * Method:    N_AddCustomScheme
- * Signature: (Ljava/lang/String;ZZZ)Z
+ * Signature: (Ljava/lang/String;ZZZZZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCustomScheme
-  (JNIEnv *, jobject, jstring, jboolean, jboolean, jboolean);
+  (JNIEnv *, jobject, jstring, jboolean, jboolean, jboolean, jboolean, jboolean);
 
 #ifdef __cplusplus
 }

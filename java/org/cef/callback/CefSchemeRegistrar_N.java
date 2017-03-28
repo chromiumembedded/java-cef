@@ -10,9 +10,12 @@ class CefSchemeRegistrar_N extends CefNativeAdapter implements CefSchemeRegistra
   public boolean addCustomScheme(String schemeName,
                                  boolean isStandard,
                                  boolean isLocal,
-                                 boolean isDisplayIsolated) {
+                                 boolean isDisplayIsolated,
+                                 boolean isSecure,
+                                 boolean isCorsEnabled) {
     try {
-      return N_AddCustomScheme(schemeName, isStandard, isLocal, isDisplayIsolated);
+      return N_AddCustomScheme(schemeName, isStandard, isLocal,
+                               isDisplayIsolated, isSecure, isCorsEnabled);
     } catch (UnsatisfiedLinkError err) {
       err.printStackTrace();
     }
@@ -22,5 +25,7 @@ class CefSchemeRegistrar_N extends CefNativeAdapter implements CefSchemeRegistra
   private final native boolean N_AddCustomScheme(String schemeName,
                                                  boolean isStandard,
                                                  boolean isLocal,
-                                                 boolean isDisplayIsolated);
+                                                 boolean isDisplayIsolated,
+                                                 boolean isSecure,
+                                                 boolean isCorsEnabled);
 }

@@ -12,7 +12,7 @@
 #include "util.h"
 
 // WindowHandler implementation.
-class WindowHandler : public CefBase {
+class WindowHandler : public CefBaseRefCounted {
  public:
   WindowHandler(JNIEnv* env, jobject handler);
   virtual ~WindowHandler();

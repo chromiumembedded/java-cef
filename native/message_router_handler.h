@@ -10,7 +10,8 @@
 #include "include/wrapper/cef_message_router.h"
 
 // MessageRouterHandler implementation.
-class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler, CefBase {
+class MessageRouterHandler :
+    public CefMessageRouterBrowserSide::Handler, public CefBaseRefCounted {
  public:
   MessageRouterHandler(JNIEnv* env, jobject handler);
   virtual ~MessageRouterHandler();

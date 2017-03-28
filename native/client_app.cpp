@@ -76,14 +76,14 @@ void ClientApp::OnBeforeCommandLineProcessing(const CefString& process_type,
   }
 }
 
-void ClientApp::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
+void ClientApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {
   if (!app_handler_)
     return;
 
   BEGIN_ENV(env)
   jobject jregistrar = NewJNIObject(env, "org/cef/callback/CefSchemeRegistrar_N");
   if (jregistrar != NULL) {
-    SetCefForJNIObject(env, jregistrar, registrar.get(), "CefSchemeRegistrar");
+    SetCefForJNIObject(env, jregistrar, registrar, "CefSchemeRegistrar");
     JNI_CALL_VOID_METHOD(env,
                          app_handler_,
                          "onRegisterCustomSchemes",

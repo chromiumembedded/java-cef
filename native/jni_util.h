@@ -247,6 +247,20 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
   if (!browser.get()) \
     return __VA_ARGS__;
 
+// Type specialization helpers for SetCefForJNIObject.
+struct SetCefForJNIObjectHelper {
+  static inline void AddRef(CefBaseScoped* obj) {}
+  static inline void Release(CefBaseScoped* obj) {}
+  static inline void AddRef(CefBaseRefCounted* obj) { obj->AddRef(); }
+  static inline void Release(CefBaseRefCounted* obj) { obj->Release(); }
+
+  // For ref-counted implementations that don't derive from CefBaseRefCounted.
+  template<class T>
+  static inline void AddRef(base::RefCountedThreadSafe<T>* obj) { obj->AddRef(); }
+  template<class T>
+  static inline void Release(base::RefCountedThreadSafe<T>* obj) { obj->Release(); }
+};
+
 // Set the CEF base object for an existing JNI object. A reference will be
 // added to the base object. If a previous base object existed a reference
 // will be removed from that object.
@@ -261,13 +275,13 @@ bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName) 
   T* oldbase = reinterpret_cast<T*>(previousValue);
   if(oldbase) {
     // Remove a reference from the previous base object.
-    oldbase->Release();
+    SetCefForJNIObjectHelper::Release(oldbase);
   }
 
   JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V", identifer, (jlong)base);
   if(base) {
     // Add a reference to the new base object.
-    base->AddRef();
+    SetCefForJNIObjectHelper::AddRef(base);
   }
   return true;
 }
