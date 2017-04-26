@@ -14,7 +14,7 @@
 JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCustomScheme
   (JNIEnv *env, jobject obj, jstring jSchemeName, jboolean jIsStandard, 
    jboolean jIsLocal, jboolean jIsDisplayIsolated, jboolean jIsSecure,
-   jboolean jIsCorsEnabled) {
+   jboolean jIsCorsEnabled, jboolean jIsCspBypassing) {
 
   CefRawPtr<CefSchemeRegistrar> registrar =
       GetCefFromJNIObject<CefSchemeRegistrar>(env, obj, "CefSchemeRegistrar");
@@ -26,7 +26,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCus
                                            jIsLocal != JNI_FALSE,
                                            jIsDisplayIsolated != JNI_FALSE,
                                            jIsSecure != JNI_FALSE,
-                                           jIsCorsEnabled != JNI_FALSE);
+                                           jIsCorsEnabled != JNI_FALSE,
+                                           jIsCspBypassing != JNI_FALSE);
   if (!result)
     return JNI_FALSE;
 
@@ -44,7 +45,7 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCus
     fStream << schemeName.ToString().c_str() << "," <<
         (jIsStandard != JNI_FALSE) << (jIsLocal != JNI_FALSE) <<
         (jIsDisplayIsolated != JNI_FALSE) << (jIsSecure != JNI_FALSE) <<
-        (jIsCorsEnabled != JNI_FALSE);
+        (jIsCorsEnabled != JNI_FALSE) << (jIsCspBypassing != JNI_FALSE);
     fStream.close();
 
     // 2) Register file to be deleted in CefShutdown()

@@ -359,8 +359,9 @@ if(OS_WINDOWS)
     COMPILE_FLAGS -DUSING_JAVA
     )
 
-  # Add the custom manifest files to the DLL.
+  # Add the custom manifest files to the DLL and helper EXE.
   ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${JCEF_TARGET}" "dll")
+  ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${JCEF_HELPER_TARGET}" "exe")
 
   # Copy binary and resource files to the target output directory.
   COPY_FILES("${JCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")

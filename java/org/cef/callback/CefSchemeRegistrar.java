@@ -60,6 +60,10 @@ public interface CefSchemeRegistrar {
    * If |isCorsEnabled| is true the scheme that can be sent CORS requests.
    * This value should be true in most cases where |isStandard| is true.
    *
+   * If |isCspBypassing| is true the scheme can bypass Content-Security-Policy
+   * (CSP) checks. This value should be false in most cases where |isStandard|
+   * is true.
+   *
    * This function may be called on any thread. It should only be called once
    * per unique |schemeName| value. If |schemeName| is already registered or
    * if an error occurs this method will return false.
@@ -69,5 +73,6 @@ public interface CefSchemeRegistrar {
                                  boolean isLocal,
                                  boolean isDisplayIsolated,
                                  boolean isSecure,
-                                 boolean isCorsEnabled);
+                                 boolean isCorsEnabled,
+                                 boolean isCspBypassing);
 }

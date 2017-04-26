@@ -34,8 +34,8 @@ public:
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
     char schemeName[512] = "";
-    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled;
-    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled;
+    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled, cIsCspBypassing;
+    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled, isCspBypassing;
 
     fStream.open(fName.c_str(), std::fstream::in);
     while (fStream.is_open() && !fStream.eof()) {
@@ -44,15 +44,16 @@ public:
         break;
 
       fStream.get(cIsStandard).get(cIsLocal).get(cIsDisplayIsolated).
-          get(cIsSecure).get(cIsCorsEnabled);
+          get(cIsSecure).get(cIsCorsEnabled).get(cIsCspBypassing);
       isStandard = (cIsStandard == '1');
       isLocal = (cIsLocal == '1');
       isDisplayIsolated = (cIsDisplayIsolated == '1');
       isSecure = (cIsSecure == '1');
       isCorsEnabled = (cIsCorsEnabled == '1');
+      isCspBypassing = (cIsCspBypassing == '1');
 
       registrar->AddCustomScheme(schemeName, isStandard, isLocal,
-          isDisplayIsolated, isSecure, isCorsEnabled);
+          isDisplayIsolated, isSecure, isCorsEnabled, isCspBypassing);
     }
     fStream.close();
   }

@@ -26,10 +26,14 @@ public class AppHandler extends CefAppHandlerAdapter {
   //     calling CefSchemeRegistrar.addCustomScheme.
   @Override
   public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
-    if (registrar.addCustomScheme(SearchSchemeHandler.scheme, true, false, false, false, true))
+    if (registrar.addCustomScheme(SearchSchemeHandler.scheme,
+                                  true, false, false, false, true, false)) {
       System.out.println("Added scheme " + SearchSchemeHandler.scheme + "://");
-    if (registrar.addCustomScheme(ClientSchemeHandler.scheme, true, false, false, false, true))
+    }
+    if (registrar.addCustomScheme(ClientSchemeHandler.scheme,
+                                  true, false, false, false, true, false)) {
       System.out.println("Added scheme " + ClientSchemeHandler.scheme + "://");
+    }
   }
 
   // (2) At the next step we have to register a SchemeHandlerFactory which is
