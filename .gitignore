@@ -50,3 +50,8 @@ Thumbs.db
 /native/jcef_version.h
 # CEF downloads
 /third_party/cef/cef_binary_*
+# clang-format downloads
+/tools/buildtools/external_bin
+/tools/buildtools/linux64/clang-format
+/tools/buildtools/mac/clang-format
+/tools/buildtools/win/clang-format.exe

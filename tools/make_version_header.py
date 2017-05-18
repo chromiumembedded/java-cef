@@ -4,9 +4,10 @@
 
 from date_util import *
 from file_util import *
-from optparse import OptionParser
 import git_util as git
+from optparse import OptionParser
 import re
+from readme_util import read_readme_file
 import sys
 
 # cannot be loaded as a module

@@ -237,6 +237,34 @@ endif()
 # make_readme.py script.
 file(COPY "${CEF_ROOT}/README.txt" DESTINATION "${CMAKE_BINARY_DIR}")
 
+# Download clang-format from Google Storage.
+if(OS_WINDOWS)
+  set(GS_PLATFORM "win32")
+  set(GS_HASHPATH "win/clang-format.exe.sha1")
+elseif(OS_MACOSX)
+  set(GS_PLATFORM "darwin")
+  set(GS_HASHPATH "mac/clang-format.sha1")
+elseif(OS_LINUX)
+  set(GS_PLATFORM "linux*")
+  set(GS_HASHPATH "linux64/clang-format.sha1")
+endif()
+
+message(STATUS "Downloading clang-format from Google Storage...")
+execute_process(
+  COMMAND "${PYTHON_EXECUTABLE}"
+          "tools/buildtools/download_from_google_storage.py"
+          "--no_resume"
+          "--platform=${GS_PLATFORM}"
+          "--no_auth"
+          "--bucket" "chromium-clang-format"
+          "-s" "tools/buildtools/${GS_HASHPATH}"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  RESULT_VARIABLE EXECUTE_RV
+  )
+if(NOT EXECUTE_RV STREQUAL "0")
+  message(FATAL_ERROR "Execution failed with unexpected result: ${EXECUTE_RV}")
+endif()
+
 
 #
 # Include target subdirectories.

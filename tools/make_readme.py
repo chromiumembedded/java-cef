@@ -7,6 +7,7 @@ from file_util import *
 from optparse import OptionParser
 import os
 import re
+from readme_util import read_readme_file
 import shlex
 import subprocess
 import git_util as git
