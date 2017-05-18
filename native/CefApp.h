@@ -12,56 +12,60 @@ extern "C" {
  * Method:    N_PreInitialize
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize(JNIEnv*,
+                                                                jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_Initialize
- * Signature: (Ljava/lang/String;Lorg/cef/handler/CefAppHandler;Lorg/cef/CefSettings;)Z
+ * Signature:
+ * (Ljava/lang/String;Lorg/cef/handler/CefAppHandler;Lorg/cef/CefSettings;)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize
-  (JNIEnv *, jobject, jstring, jobject, jobject);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_CefApp_N_1Initialize(JNIEnv*, jobject, jstring, jobject, jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_Shutdown
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_DoMessageLoopWork
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1DoMessageLoopWork(JNIEnv*,
+                                                                jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_GetVersion
  * Signature: ()Lorg/cef/CefApp/CefVersion;
  */
-JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1GetVersion
-  (JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_CefApp_N_1GetVersion(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_RegisterSchemeHandlerFactory
- * Signature: (Ljava/lang/String;Ljava/lang/String;Lorg/cef/callback/CefSchemeHandlerFactory;)Z
+ * Signature:
+ * (Ljava/lang/String;Ljava/lang/String;Lorg/cef/callback/CefSchemeHandlerFactory;)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory
-  (JNIEnv *, jobject, jstring, jstring, jobject);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory(JNIEnv*,
+                                                    jobject,
+                                                    jstring,
+                                                    jstring,
+                                                    jobject);
 
 /*
  * Class:     org_cef_CefApp
  * Method:    N_ClearSchemeHandlerFactories
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories(JNIEnv*, jobject);
 
 #ifdef __cplusplus
 }

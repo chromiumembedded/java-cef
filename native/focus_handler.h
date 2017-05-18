@@ -17,7 +17,8 @@ class FocusHandler : public CefFocusHandler {
 
   // CefFocusHandler methods
   virtual void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) OVERRIDE;
-  virtual bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) OVERRIDE;
+  virtual bool OnSetFocus(CefRefPtr<CefBrowser> browser,
+                          FocusSource source) OVERRIDE;
   virtual void OnGotFocus(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
  protected:

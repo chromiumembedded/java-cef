@@ -27,15 +27,10 @@ bool CookieVisitor::Visit(const CefCookie& cookie,
   jobject jdeleteCookie = NewJNIBoolRef(env, deleteCookie);
   jboolean jresult = JNI_FALSE;
 
-  JNI_CALL_METHOD(env, jvisitor_,
-                  "visit",
+  JNI_CALL_METHOD(env, jvisitor_, "visit",
                   "(Lorg/cef/network/CefCookie;IILorg/cef/misc/BoolRef;)Z",
-                  Boolean,
-                  jresult,
-                  NewJNICookie(env, cookie),
-                  (jint)count,
-                  (jint)total,
-                  jdeleteCookie);
+                  Boolean, jresult, NewJNICookie(env, cookie), (jint)count,
+                  (jint)total, jdeleteCookie);
 
   deleteCookie = GetJNIBoolRef(env, jdeleteCookie);
   return (jresult != JNI_FALSE);

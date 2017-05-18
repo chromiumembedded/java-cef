@@ -12,40 +12,51 @@ extern "C" {
  * Method:    N_VisitPlugins
  * Signature: (Lorg/cef/callback/CefWebPluginInfoVisitor;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1VisitPlugins
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefWebPluginManager_1N_N_1VisitPlugins(JNIEnv*,
+                                                            jobject,
+                                                            jobject);
 
 /*
  * Class:     org_cef_network_CefWebPluginManager_N
  * Method:    N_RefreshPlugins
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RefreshPlugins
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefWebPluginManager_1N_N_1RefreshPlugins(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_network_CefWebPluginManager_N
  * Method:    N_UnregisterInternalPlugin
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1UnregisterInternalPlugin
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefWebPluginManager_1N_N_1UnregisterInternalPlugin(
+    JNIEnv*,
+    jobject,
+    jstring);
 
 /*
  * Class:     org_cef_network_CefWebPluginManager_N
  * Method:    N_RegisterPluginCrash
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1RegisterPluginCrash
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefWebPluginManager_1N_N_1RegisterPluginCrash(JNIEnv*,
+                                                                   jobject,
+                                                                   jstring);
 
 /*
  * Class:     org_cef_network_CefWebPluginManager_N
  * Method:    N_IsWebPluginUnstable
- * Signature: (Ljava/lang/String;Lorg/cef/callback/CefWebPluginUnstableCallback;)V
+ * Signature:
+ * (Ljava/lang/String;Lorg/cef/callback/CefWebPluginUnstableCallback;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_network_CefWebPluginManager_1N_N_1IsWebPluginUnstable
-  (JNIEnv *, jobject, jstring, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefWebPluginManager_1N_N_1IsWebPluginUnstable(JNIEnv*,
+                                                                   jobject,
+                                                                   jstring,
+                                                                   jobject);
 
 #ifdef __cplusplus
 }

@@ -6,17 +6,16 @@
 #define JCEF_NATIVE_URL_REQUEST_CLIENT_H_
 #pragma once
 
-#include <set>
-#include <deque>
 #include <jni.h>
+#include <deque>
+#include <set>
+
 #include "include/cef_urlrequest.h"
 
 // CefURLRequestClient implementation.
 class URLRequestClient : public CefURLRequestClient {
  private:
-   URLRequestClient(JNIEnv* env,
-                    jobject jURLRequestClient,
-                    jobject jURLRequest);
+  URLRequestClient(JNIEnv* env, jobject jURLRequestClient, jobject jURLRequest);
 
  public:
   static CefRefPtr<URLRequestClient> Create(JNIEnv* env,

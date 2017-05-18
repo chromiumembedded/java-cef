@@ -12,48 +12,61 @@ extern "C" {
  * Method:    N_Create
  * Signature: (Lorg/cef/browser/CefMessageRouter/CefMessageRouterConfig;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1Create
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1Create(JNIEnv*, jobject, jobject);
 
 /*
  * Class:     org_cef_browser_CefMessageRouter_N
  * Method:    N_Dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1Dispose
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1Dispose(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_browser_CefMessageRouter_N
  * Method:    N_AddHandler
  * Signature: (Lorg/cef/handler/CefMessageRouterHandler;Z)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1AddHandler
-  (JNIEnv *, jobject, jobject, jboolean);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1AddHandler(JNIEnv*,
+                                                       jobject,
+                                                       jobject,
+                                                       jboolean);
 
 /*
  * Class:     org_cef_browser_CefMessageRouter_N
  * Method:    N_RemoveHandler
  * Signature: (Lorg/cef/handler/CefMessageRouterHandler;)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHandler
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHandler(JNIEnv*,
+                                                          jobject,
+                                                          jobject);
 
 /*
  * Class:     org_cef_browser_CefMessageRouter_N
  * Method:    N_CancelPending
- * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefMessageRouterHandler;)V
+ * Signature:
+ * (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefMessageRouterHandler;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1CancelPending
-  (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1CancelPending(JNIEnv*,
+                                                          jobject,
+                                                          jobject,
+                                                          jobject);
 
 /*
  * Class:     org_cef_browser_CefMessageRouter_N
  * Method:    N_GetPendingCount
- * Signature: (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefMessageRouterHandler;)I
+ * Signature:
+ * (Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefMessageRouterHandler;)I
  */
-JNIEXPORT jint JNICALL Java_org_cef_browser_CefMessageRouter_1N_N_1GetPendingCount
-  (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jint JNICALL
+Java_org_cef_browser_CefMessageRouter_1N_N_1GetPendingCount(JNIEnv*,
+                                                            jobject,
+                                                            jobject,
+                                                            jobject);
 
 #ifdef __cplusplus
 }

@@ -6,8 +6,8 @@
 #define JCEF_NATIVE_LIFE_SPAN_HANDLER_H_
 #pragma once
 
-#include <list>
 #include <jni.h>
+#include <list>
 #include "include/cef_life_span_handler.h"
 
 // LifeSpanHandler implementation.
@@ -34,6 +34,7 @@ class LifeSpanHandler : public CefLifeSpanHandler {
 
   void registerJBrowser(jobject browser);
   void unregisterJBrowser(jobject browser);
+
  protected:
   jobject jhandler_;
   std::list<jobject> jbrowsers_;

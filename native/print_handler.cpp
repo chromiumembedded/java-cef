@@ -21,8 +21,7 @@ void PrintHandler::OnPrintStart(CefRefPtr<CefBrowser> browser) {
   if (!env)
     return;
 
-  JNI_CALL_VOID_METHOD(env, jhandler_,
-                       "onPrintStart",
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onPrintStart",
                        "(Lorg/cef/browser/CefBrowser;)V",
                        GetJNIBrowser(browser));
 }
@@ -38,15 +37,13 @@ void PrintHandler::OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
     return;
   SetCefForJNIObject(env, jsettings, settings.get(), "CefPrintSettings");
 
-  JNI_CALL_VOID_METHOD(env, jhandler_,
-                       "onPrintSettings",
-                       "(Lorg/cef/misc/CefPrintSettings;Z)V",
-                       jsettings,
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onPrintSettings",
+                       "(Lorg/cef/misc/CefPrintSettings;Z)V", jsettings,
                        get_defaults ? JNI_TRUE : JNI_FALSE);
 
   // Do not keep a reference to |settings| outside of this callback.
   SetCefForJNIObject<CefPrintSettings>(env, jsettings, NULL,
-      "CefPrintSettings");
+                                       "CefPrintSettings");
 }
 
 bool PrintHandler::OnPrintDialog(bool has_selection,
@@ -62,20 +59,14 @@ bool PrintHandler::OnPrintDialog(bool has_selection,
   SetCefForJNIObject(env, jcallback, callback.get(), "CefPrintDialogCallback");
 
   jboolean jresult = JNI_FALSE;
-  JNI_CALL_METHOD(env, jhandler_,
-                  "onPrintDialog",
-                  "(ZLorg/cef/callback/CefPrintDialogCallback;)Z",
-                  Boolean,
-                  jresult,
-                  (has_selection ? JNI_TRUE : JNI_FALSE),
-                  jcallback);
+  JNI_CALL_METHOD(env, jhandler_, "onPrintDialog",
+                  "(ZLorg/cef/callback/CefPrintDialogCallback;)Z", Boolean,
+                  jresult, (has_selection ? JNI_TRUE : JNI_FALSE), jcallback);
 
   if (jresult == JNI_FALSE) {
     // delete CefPrintDialogCallback reference from Java
-    SetCefForJNIObject<CefPrintDialogCallback>(env,
-                                              jcallback,
-                                              NULL,
-                                              "CefPrintDialogCallback");
+    SetCefForJNIObject<CefPrintDialogCallback>(env, jcallback, NULL,
+                                               "CefPrintDialogCallback");
   }
   return (jresult != JNI_FALSE);
 }
@@ -94,22 +85,16 @@ bool PrintHandler::OnPrintJob(const CefString& document_name,
   SetCefForJNIObject(env, jcallback, callback.get(), "CefPrintJobCallback");
 
   jboolean jresult = JNI_FALSE;
-  JNI_CALL_METHOD(env, jhandler_,
-                  "onPrintJob",
+  JNI_CALL_METHOD(env, jhandler_, "onPrintJob",
                   "(Ljava/lang/String;Ljava/lang/String;"
                   "Lorg/cef/callback/CefPrintJobCallback;)Z",
-                  Boolean,
-                  jresult,
-                  NewJNIString(env, document_name),
-                  NewJNIString(env, pdf_file_path),
-                  jcallback);
+                  Boolean, jresult, NewJNIString(env, document_name),
+                  NewJNIString(env, pdf_file_path), jcallback);
 
   if (jresult == JNI_FALSE) {
     // delete CefPrintDialogCallback reference from Java
-    SetCefForJNIObject<CefPrintDialogCallback>(env,
-                                              jcallback,
-                                              NULL,
-                                              "CefPrintJobCallback");
+    SetCefForJNIObject<CefPrintDialogCallback>(env, jcallback, NULL,
+                                               "CefPrintJobCallback");
   }
   return (jresult != JNI_FALSE);
 }

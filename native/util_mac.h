@@ -5,11 +5,13 @@
 #ifndef JCEF_NATIVE_UTIL_MAC_H_
 #define JCEF_NATIVE_UTIL_MAC_H_
 
-#include <string>
 #include <jni.h>
-#include "client_app.h"
-#include "include/cef_base.h"
+#include <string>
+
 #include "include/cef_app.h"
+#include "include/cef_base.h"
+
+#include "client_app.h"
 
 #ifdef __OBJC__
 @class NSView;
@@ -28,9 +30,8 @@ std::string GetAbsPath(const std::string& path);
 bool IsNSView(void* ptr);
 
 CefWindowHandle CreateBrowserContentView(CefWindowHandle childView,
-                                         CefRect &orig);
-void TranslateRect(CefWindowHandle view,
-                   CefRect& orig);
+                                         CefRect& orig);
+void TranslateRect(CefWindowHandle view, CefRect& orig);
 
 bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
@@ -40,8 +41,7 @@ void CefShutdownOnMainThread();
 
 void CefDoMessageLoopWorkOnMainThread();
 
-void SetVisibility(CefWindowHandle handle,
-                   bool isVisible);
+void SetVisibility(CefWindowHandle handle, bool isVisible);
 
 void UpdateView(CefWindowHandle handle,
                 CefRect contentRect,

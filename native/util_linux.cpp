@@ -17,10 +17,9 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
 // This function is called by LifeSpanHandler::DoClose().
 void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   // TODO(jcef): Implement this function stub to do some platform dependent
-  // cleanup tasks for the browser reference. 
+  // cleanup tasks for the browser reference.
 
   UNUSED(browser);
 }
 
 }  // namespace util
-

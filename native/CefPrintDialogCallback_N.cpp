@@ -3,33 +3,36 @@
 // can be found in the LICENSE file.
 
 #include "CefPrintDialogCallback_N.h"
-#include "jni_util.h"
 #include "include/cef_print_handler.h"
+#include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintDialogCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj, jobject jprintsettings) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefPrintDialogCallback_1N_N_1Continue(
+    JNIEnv* env,
+    jobject obj,
+    jobject jprintsettings) {
   CefRefPtr<CefPrintDialogCallback> callback =
       GetCefFromJNIObject<CefPrintDialogCallback>(env, obj,
-          "CefPrintDialogCallback");
+                                                  "CefPrintDialogCallback");
   if (!callback.get())
     return;
 
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, jprintsettings,
-          "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetCefFromJNIObject<CefPrintSettings>(
+      env, jprintsettings, "CefPrintSettings");
 
   callback->Continue(settings);
 
   // Clear the reference added in PrintHandler::OnPrintDialog.
   SetCefForJNIObject<CefPrintDialogCallback>(env, obj, NULL,
-      "CefPrintDialogCallback");
+                                             "CefPrintDialogCallback");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintDialogCallback_1N_N_1Cancel
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefPrintDialogCallback_1N_N_1Cancel(JNIEnv* env,
+                                                          jobject obj) {
   CefRefPtr<CefPrintDialogCallback> callback =
       GetCefFromJNIObject<CefPrintDialogCallback>(env, obj,
-          "CefPrintDialogCallback");
+                                                  "CefPrintDialogCallback");
   if (!callback.get())
     return;
 
@@ -37,5 +40,5 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintDialogCallback_1N_N_1Cancel
 
   // Clear the reference added in PrintHandler::OnPrintDialog.
   SetCefForJNIObject<CefPrintDialogCallback>(env, obj, NULL,
-      "CefPrintDialogCallback");
+                                             "CefPrintDialogCallback");
 }

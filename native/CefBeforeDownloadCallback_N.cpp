@@ -6,10 +6,15 @@
 #include "include/cef_download_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefBeforeDownloadCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj, jstring jdownloadPath, jboolean jshowDialog) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefBeforeDownloadCallback_1N_N_1Continue(
+    JNIEnv* env,
+    jobject obj,
+    jstring jdownloadPath,
+    jboolean jshowDialog) {
   CefRefPtr<CefBeforeDownloadCallback> callback =
-      GetCefFromJNIObject<CefBeforeDownloadCallback>(env, obj, "CefBeforeDownloadCallback");
+      GetCefFromJNIObject<CefBeforeDownloadCallback>(
+          env, obj, "CefBeforeDownloadCallback");
   if (!callback.get())
     return;
 
@@ -17,5 +22,6 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefBeforeDownloadCallback_1N_N_1Con
                      jshowDialog != JNI_FALSE);
 
   // Clear the reference added in DownloadHandler::OnBeforeDownload.
-  SetCefForJNIObject<CefBeforeDownloadCallback>(env, obj, NULL, "CefBeforeDownloadCallback");
+  SetCefForJNIObject<CefBeforeDownloadCallback>(env, obj, NULL,
+                                                "CefBeforeDownloadCallback");
 }

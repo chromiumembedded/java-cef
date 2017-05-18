@@ -24,11 +24,9 @@ void CriticalLock::Unlock() {
   pthread_mutex_unlock(&lock_);
 }
 
-
 // CriticalWait
 
-CriticalWait::CriticalWait(CriticalLock* lock)
-    : lock_(lock) {
+CriticalWait::CriticalWait(CriticalLock* lock) : lock_(lock) {
   pthread_cond_init(&cond_, NULL);
 }
 
@@ -41,8 +39,8 @@ void CriticalWait::Wait() {
 }
 
 bool CriticalWait::Wait(unsigned int maxWaitMs) {
-  int sec = (int)(maxWaitMs/1000);
-  int nsec = (maxWaitMs - sec * 1000) * 1000000; // convert to nsec
+  int sec = (int)(maxWaitMs / 1000);
+  int nsec = (maxWaitMs - sec * 1000) * 1000000;  // convert to nsec
   struct timeval tv;
   struct timespec ts;
 
@@ -57,4 +55,3 @@ bool CriticalWait::Wait(unsigned int maxWaitMs) {
 void CriticalWait::WakeUp() {
   pthread_cond_signal(&cond_);
 }
-

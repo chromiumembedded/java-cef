@@ -3,8 +3,8 @@
 // can be found in the LICENSE file.
 
 #include "drag_handler.h"
-#include "client_handler.h"
 
+#include "client_handler.h"
 #include "jni_util.h"
 #include "util.h"
 
@@ -18,8 +18,8 @@ DragHandler::~DragHandler() {
 }
 
 bool DragHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefDragData> dragData,
-                             CefDragHandler::DragOperationsMask mask) {
+                              CefRefPtr<CefDragData> dragData,
+                              CefDragHandler::DragOperationsMask mask) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
@@ -30,16 +30,12 @@ bool DragHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jdragdata, dragData.get(), "CefDragData");
 
   jboolean result = JNI_FALSE;
-  JNI_CALL_METHOD(env, jhandler_,
-                  "onDragEnter",
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDragData;I)Z",
-                  Boolean,
-                  result,
-                  GetJNIBrowser(browser),
-                  jdragdata,
-                  (jint)mask);
+  JNI_CALL_METHOD(
+      env, jhandler_, "onDragEnter",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDragData;I)Z", Boolean,
+      result, GetJNIBrowser(browser), jdragdata, (jint)mask);
 
-  //Remove native reference from java class
+  // Remove native reference from java class
   SetCefForJNIObject<CefDragData>(env, jdragdata, NULL, "CefDragData");
   return (result != JNI_FALSE);
 }

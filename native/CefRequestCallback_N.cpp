@@ -6,8 +6,10 @@
 #include "include/cef_request_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefRequestCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj, jboolean jallow) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefRequestCallback_1N_N_1Continue(JNIEnv* env,
+                                                        jobject obj,
+                                                        jboolean jallow) {
   CefRefPtr<CefRequestCallback> callback =
       GetCefFromJNIObject<CefRequestCallback>(env, obj, "CefRequestCallback");
   if (!callback.get())
@@ -18,8 +20,9 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefRequestCallback_1N_N_1Continue
   SetCefForJNIObject<CefRequestCallback>(env, obj, NULL, "CefRequestCallback");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefRequestCallback_1N_N_1Cancel
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefRequestCallback_1N_N_1Cancel(JNIEnv* env,
+                                                      jobject obj) {
   CefRefPtr<CefRequestCallback> callback =
       GetCefFromJNIObject<CefRequestCallback>(env, obj, "CefRequestCallback");
   if (!callback.get())

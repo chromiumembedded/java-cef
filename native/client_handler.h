@@ -6,11 +6,11 @@
 #define JCEF_NATIVE_CLIENT_HANDLER_H_
 #pragma once
 
-#include <set>
 #include <jni.h>
+#include <set>
+#include "include/base/cef_lock.h"
 #include "include/cef_base.h"
 #include "include/cef_client.h"
-#include "include/base/cef_lock.h"
 #include "message_router_handler.h"
 #include "window_handler.h"
 
@@ -35,10 +35,10 @@ class ClientHandler : public CefClient {
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
 
-  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                        CefProcessId source_process,
-                                        CefRefPtr<CefProcessMessage> message)
-                                        OVERRIDE;
+  virtual bool OnProcessMessageReceived(
+      CefRefPtr<CefBrowser> browser,
+      CefProcessId source_process,
+      CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
   // Additional handler for windowed rendering mode
   CefRefPtr<WindowHandler> GetWindowHandler();
@@ -50,8 +50,7 @@ class ClientHandler : public CefClient {
   // Methods to set and remove a browser ref.
   void OnAfterCreated();
   void OnBeforeClose(CefRefPtr<CefBrowser> browser);
-  void OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                      CefRefPtr<CefFrame> frame);
+  void OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame);
   void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser);
 
   jobject getBrowser(CefRefPtr<CefBrowser> browser);
@@ -60,9 +59,9 @@ class ClientHandler : public CefClient {
   jobject jhandler_;
 
   // The child browser window.
-  std::map<int,jobject> browserMap_;
+  std::map<int, jobject> browserMap_;
 
-  std::set<CefRefPtr<CefMessageRouterBrowserSide> > message_router_;
+  std::set<CefRefPtr<CefMessageRouterBrowserSide>> message_router_;
 
   base::Lock lock_;
 

@@ -6,18 +6,20 @@
 #include "include/cef_callback.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefCallback> callback = GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefCallback> callback =
+      GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
   if (!callback)
     return;
   callback->Continue();
   SetCefForJNIObject<CefCallback>(env, obj, NULL, "CefCallback");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Cancel
-  (JNIEnv *env , jobject obj) {
-  CefRefPtr<CefCallback> callback = GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefCallback_1N_N_1Cancel(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefCallback> callback =
+      GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
   if (!callback)
     return;
   callback->Cancel();

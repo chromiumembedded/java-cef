@@ -35,7 +35,7 @@ void BrowserProcessHandler::OnContextInitialized() {
 
 void BrowserProcessHandler::OnRenderProcessThreadCreated(
     CefRefPtr<CefListValue> extra_info) {
-  int idx=0;
+  int idx = 0;
   static std::set<CefMessageRouterConfig, cmpCfg>::iterator iter;
 
   // Delegate creation of the renderer-side router for query handling.
@@ -54,11 +54,11 @@ CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
   BEGIN_ENV(env)
   jobject handler = NULL;
   JNI_CALL_METHOD(env, app_handler_, "getPrintHandler",
-      "()Lorg/cef/handler/CefPrintHandler;", Object, handler);
+                  "()Lorg/cef/handler/CefPrintHandler;", Object, handler);
 
   if (handler != NULL) {
-    result = GetCefFromJNIObject<CefPrintHandler>(env, handler,
-        "CefPrintHandler");
+    result =
+        GetCefFromJNIObject<CefPrintHandler>(env, handler, "CefPrintHandler");
     if (!result.get()) {
       result = new PrintHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefPrintHandler");
@@ -73,7 +73,8 @@ void BrowserProcessHandler::OnScheduleMessagePumpWork(int64 delay_ms) {
     return;
 
   BEGIN_ENV(env)
-  JNI_CALL_VOID_METHOD(env, app_handler_, "onScheduleMessagePumpWork", "(J)V", delay_ms);
+  JNI_CALL_VOID_METHOD(env, app_handler_, "onScheduleMessagePumpWork", "(J)V",
+                       delay_ms);
   END_ENV(env)
 }
 

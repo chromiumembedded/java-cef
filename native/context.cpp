@@ -5,6 +5,7 @@
 #include "context.h"
 
 #include "include/cef_app.h"
+
 #include "client_app.h"
 #include "jni_util.h"
 
@@ -39,7 +40,7 @@ Context* Context::GetInstance() {
   return g_context;
 }
 
-bool Context::PreInitialize(JNIEnv *env, jobject c) {
+bool Context::PreInitialize(JNIEnv* env, jobject c) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   JavaVM* jvm;
@@ -62,7 +63,8 @@ bool Context::PreInitialize(JNIEnv *env, jobject c) {
   return true;
 }
 
-bool Context::Initialize(JNIEnv *env, jobject c,
+bool Context::Initialize(JNIEnv* env,
+                         jobject c,
                          jstring argPathToJavaDLL,
                          jobject appHandler,
                          jobject jsettings) {
@@ -152,8 +154,7 @@ void Context::DoMessageLoopWork() {
 #endif
 }
 
-Context::Context()
-  : external_message_pump_(true) {
+Context::Context() : external_message_pump_(true) {
   DCHECK(!g_context);
   g_context = this;
 }

@@ -12,16 +12,16 @@
 #include "client_handler.h"
 #include "critical_wait.h"
 #include "jni_util.h"
-#include "render_handler.h"
 #include "life_span_handler.h"
-#include "string_visitor.h"
+#include "render_handler.h"
 #include "run_file_dialog_callback.h"
+#include "string_visitor.h"
 #include "window_handler.h"
 
 #if defined(OS_LINUX)
 #define XK_3270  // for XK_3270_BackTab
-#include <X11/keysym.h>
 #include <X11/XF86keysym.h>
+#include <X11/keysym.h>
 #endif
 
 #if defined(OS_MACOSX)
@@ -35,7 +35,7 @@
 
 namespace {
 
-int GetCefModifiers(JNIEnv *env, jclass cls, int modifiers) {
+int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, ALT_DOWN_MASK, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON1_DOWN_MASK, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON2_DOWN_MASK, 0);
@@ -655,7 +655,7 @@ KeyboardCode KeyboardCodeFromXKeysym(unsigned int keysym) {
     case XF86XK_KbdBrightnessUp:
       return VKEY_KBD_BRIGHTNESS_UP;
 
-    // TODO(sad): some keycodes are still missing.
+      // TODO(sad): some keycodes are still missing.
   }
   return VKEY_UNKNOWN;
 }
@@ -668,7 +668,7 @@ KeyboardCode GetWindowsKeyCodeWithoutLocation(KeyboardCode key_code) {
       return VKEY_CONTROL;
     case VKEY_LSHIFT:
     case VKEY_RSHIFT:
-    return VKEY_SHIFT;
+      return VKEY_SHIFT;
     case VKEY_LMENU:
     case VKEY_RMENU:
       return VKEY_MENU;
@@ -732,60 +732,155 @@ const char kShiftCharsForNumberKeys[] = ")!@#$%^&*(";
 // Convert an ANSI character to a Mac key code.
 int GetMacKeyCodeFromChar(int key_char) {
   switch (key_char) {
-    case ' ': return kVK_Space;
+    case ' ':
+      return kVK_Space;
 
-    case '0': case ')': return kVK_ANSI_0;
-    case '1': case '!': return kVK_ANSI_1;
-    case '2': case '@': return kVK_ANSI_2;
-    case '3': case '#': return kVK_ANSI_3;
-    case '4': case '$': return kVK_ANSI_4;
-    case '5': case '%': return kVK_ANSI_5;
-    case '6': case '^': return kVK_ANSI_6;
-    case '7': case '&': return kVK_ANSI_7;
-    case '8': case '*': return kVK_ANSI_8;
-    case '9': case '(': return kVK_ANSI_9;
+    case '0':
+    case ')':
+      return kVK_ANSI_0;
+    case '1':
+    case '!':
+      return kVK_ANSI_1;
+    case '2':
+    case '@':
+      return kVK_ANSI_2;
+    case '3':
+    case '#':
+      return kVK_ANSI_3;
+    case '4':
+    case '$':
+      return kVK_ANSI_4;
+    case '5':
+    case '%':
+      return kVK_ANSI_5;
+    case '6':
+    case '^':
+      return kVK_ANSI_6;
+    case '7':
+    case '&':
+      return kVK_ANSI_7;
+    case '8':
+    case '*':
+      return kVK_ANSI_8;
+    case '9':
+    case '(':
+      return kVK_ANSI_9;
 
-    case 'a': case 'A': return kVK_ANSI_A;
-    case 'b': case 'B': return kVK_ANSI_B;
-    case 'c': case 'C': return kVK_ANSI_C;
-    case 'd': case 'D': return kVK_ANSI_D;
-    case 'e': case 'E': return kVK_ANSI_E;
-    case 'f': case 'F': return kVK_ANSI_F;
-    case 'g': case 'G': return kVK_ANSI_G;
-    case 'h': case 'H': return kVK_ANSI_H;
-    case 'i': case 'I': return kVK_ANSI_I;
-    case 'j': case 'J': return kVK_ANSI_J;
-    case 'k': case 'K': return kVK_ANSI_K;
-    case 'l': case 'L': return kVK_ANSI_L;
-    case 'm': case 'M': return kVK_ANSI_M;
-    case 'n': case 'N': return kVK_ANSI_N;
-    case 'o': case 'O': return kVK_ANSI_O;
-    case 'p': case 'P': return kVK_ANSI_P;
-    case 'q': case 'Q': return kVK_ANSI_Q;
-    case 'r': case 'R': return kVK_ANSI_R;
-    case 's': case 'S': return kVK_ANSI_S;
-    case 't': case 'T': return kVK_ANSI_T;
-    case 'u': case 'U': return kVK_ANSI_U;
-    case 'v': case 'V': return kVK_ANSI_V;
-    case 'w': case 'W': return kVK_ANSI_W;
-    case 'x': case 'X': return kVK_ANSI_X;
-    case 'y': case 'Y': return kVK_ANSI_Y;
-    case 'z': case 'Z': return kVK_ANSI_Z;
+    case 'a':
+    case 'A':
+      return kVK_ANSI_A;
+    case 'b':
+    case 'B':
+      return kVK_ANSI_B;
+    case 'c':
+    case 'C':
+      return kVK_ANSI_C;
+    case 'd':
+    case 'D':
+      return kVK_ANSI_D;
+    case 'e':
+    case 'E':
+      return kVK_ANSI_E;
+    case 'f':
+    case 'F':
+      return kVK_ANSI_F;
+    case 'g':
+    case 'G':
+      return kVK_ANSI_G;
+    case 'h':
+    case 'H':
+      return kVK_ANSI_H;
+    case 'i':
+    case 'I':
+      return kVK_ANSI_I;
+    case 'j':
+    case 'J':
+      return kVK_ANSI_J;
+    case 'k':
+    case 'K':
+      return kVK_ANSI_K;
+    case 'l':
+    case 'L':
+      return kVK_ANSI_L;
+    case 'm':
+    case 'M':
+      return kVK_ANSI_M;
+    case 'n':
+    case 'N':
+      return kVK_ANSI_N;
+    case 'o':
+    case 'O':
+      return kVK_ANSI_O;
+    case 'p':
+    case 'P':
+      return kVK_ANSI_P;
+    case 'q':
+    case 'Q':
+      return kVK_ANSI_Q;
+    case 'r':
+    case 'R':
+      return kVK_ANSI_R;
+    case 's':
+    case 'S':
+      return kVK_ANSI_S;
+    case 't':
+    case 'T':
+      return kVK_ANSI_T;
+    case 'u':
+    case 'U':
+      return kVK_ANSI_U;
+    case 'v':
+    case 'V':
+      return kVK_ANSI_V;
+    case 'w':
+    case 'W':
+      return kVK_ANSI_W;
+    case 'x':
+    case 'X':
+      return kVK_ANSI_X;
+    case 'y':
+    case 'Y':
+      return kVK_ANSI_Y;
+    case 'z':
+    case 'Z':
+      return kVK_ANSI_Z;
 
     // U.S. Specific mappings.  Mileage may vary.
-    case ';': case ':': return kVK_ANSI_Semicolon;
-    case '=': case '+': return kVK_ANSI_Equal;
-    case ',': case '<': return kVK_ANSI_Comma;
-    case '-': case '_': return kVK_ANSI_Minus;
-    case '.': case '>': return kVK_ANSI_Period;
-    case '/': case '?': return kVK_ANSI_Slash;
-    case '`': case '~': return kVK_ANSI_Grave;
-    case '[': case '{': return kVK_ANSI_LeftBracket;
-    case '\\': case '|': return kVK_ANSI_Backslash;
-    case ']': case '}': return kVK_ANSI_RightBracket;
-    case '\'': case '"': return kVK_ANSI_Quote;
+    case ';':
+    case ':':
+      return kVK_ANSI_Semicolon;
+    case '=':
+    case '+':
+      return kVK_ANSI_Equal;
+    case ',':
+    case '<':
+      return kVK_ANSI_Comma;
+    case '-':
+    case '_':
+      return kVK_ANSI_Minus;
+    case '.':
+    case '>':
+      return kVK_ANSI_Period;
+    case '/':
+    case '?':
+      return kVK_ANSI_Slash;
+    case '`':
+    case '~':
+      return kVK_ANSI_Grave;
+    case '[':
+    case '{':
+      return kVK_ANSI_LeftBracket;
+    case '\\':
+    case '|':
+      return kVK_ANSI_Backslash;
+    case ']':
+    case '}':
+      return kVK_ANSI_RightBracket;
+    case '\'':
+    case '"':
+      return kVK_ANSI_Quote;
   }
-  
+
   return -1;
 }
 #endif  // defined(OS_MACOSX)
@@ -800,8 +895,8 @@ jboolean create(JNIEnv* env,
                 jobject canvas,
                 jobject jcontext,
                 jobject jinspectAt) {
-  CefRefPtr<ClientHandler> clientHandler =
-      GetCefFromJNIObject<ClientHandler>(env, jclientHandler, "CefClientHandler");
+  CefRefPtr<ClientHandler> clientHandler = GetCefFromJNIObject<ClientHandler>(
+      env, jclientHandler, "CefClientHandler");
   if (!clientHandler.get())
     return JNI_FALSE;
 
@@ -821,13 +916,13 @@ jboolean create(JNIEnv* env,
     }
 #if defined(OS_WIN)
     HWND parent = GetHwndOfCanvas(canvas, env);
-    RECT winRect = {0,0, rect.width, rect.height};
-    windowInfo.SetAsChild(parent,winRect);
+    RECT winRect = {0, 0, rect.width, rect.height};
+    windowInfo.SetAsChild(parent, winRect);
 #elif defined(OS_MACOSX)
     CefWindowHandle browserContentView =
         util_mac::CreateBrowserContentView((CefWindowHandle)windowHandle, rect);
     windowInfo.SetAsChild(browserContentView, rect.x, rect.y, rect.width,
-        rect.height);
+                          rect.height);
 #endif
   } else
 #endif
@@ -839,8 +934,8 @@ jboolean create(JNIEnv* env,
   CefRefPtr<CefBrowser> browserObj;
   CefString strUrl = GetJNIString(env, url);
 
-  CefRefPtr<CefRequestContext> context = 
-      GetCefFromJNIObject<CefRequestContext>(env, jcontext, "CefRequestContext");
+  CefRefPtr<CefRequestContext> context = GetCefFromJNIObject<CefRequestContext>(
+      env, jcontext, "CefRequestContext");
 
   CefRefPtr<CefBrowser> parentBrowser =
       GetCefFromJNIObject<CefBrowser>(env, jparentBrowser, "CefBrowser");
@@ -856,18 +951,13 @@ jboolean create(JNIEnv* env,
       GetJNIPoint(env, jinspectAt, &x, &y);
       inspectAt.Set(x, y);
     }
-    parentBrowser->GetHost()->ShowDevTools(windowInfo,
-                                           clientHandler.get(),
-                                           settings,
-                                           inspectAt);
+    parentBrowser->GetHost()->ShowDevTools(windowInfo, clientHandler.get(),
+                                           settings, inspectAt);
     return JNI_TRUE;
   }
 
-  bool result = CefBrowserHost::CreateBrowser(windowInfo,
-                                              clientHandler.get(),
-                                              strUrl,
-                                              settings,
-                                              context);
+  bool result = CefBrowserHost::CreateBrowser(windowInfo, clientHandler.get(),
+                                              strUrl, settings, context);
   if (!result) {
     lifeSpanHandler->unregisterJBrowser(globalRef);
     env->DeleteGlobalRef(globalRef);
@@ -877,7 +967,8 @@ jboolean create(JNIEnv* env,
 }
 
 void getZoomLevel(CefRefPtr<CefBrowserHost> host,
-    CriticalWait* waitCond, double* result) {
+                  CriticalWait* waitCond,
+                  double* result) {
   if (waitCond && result) {
     waitCond->lock()->Lock();
     *result = host->GetZoomLevel();
@@ -889,192 +980,222 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
 #if defined(OS_WIN)
 void CefUpdateWindowRgn(HWND browserHandle, CefRect contentRect) {
   HRGN contentRgn = CreateRectRgn(contentRect.x, contentRect.y,
-      contentRect.x + contentRect.width, contentRect.y + contentRect.height);
+                                  contentRect.x + contentRect.width,
+                                  contentRect.y + contentRect.height);
   SetWindowRgn(GetParent(browserHandle), contentRgn, TRUE);
 }
 
 void CefSetWindowPos(HWND browserHandle, int width, int height) {
-  SetWindowPos(browserHandle, NULL, 0, 0, width, height, SWP_NOZORDER | SWP_NOMOVE);
+  SetWindowPos(browserHandle, NULL, 0, 0, width, height,
+               SWP_NOZORDER | SWP_NOMOVE);
 }
 #endif  // defined(OS_WIN)
 
 }  // namespace
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser
-  (JNIEnv *env, jobject jbrowser, jobject jclientHandler, jlong windowHandle,
-  jstring url, jboolean transparent, jobject canvas, jobject jcontext) {
-
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser(JNIEnv* env,
+                                                    jobject jbrowser,
+                                                    jobject jclientHandler,
+                                                    jlong windowHandle,
+                                                    jstring url,
+                                                    jboolean transparent,
+                                                    jobject canvas,
+                                                    jobject jcontext) {
   return create(env, jbrowser, NULL, jclientHandler, windowHandle, url,
-      transparent, canvas, jcontext, NULL);
+                transparent, canvas, jcontext, NULL);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools
-  (JNIEnv *env, jobject jbrowser, jobject jparent, jobject jclientHandler,
-   jlong windowHandle, jboolean transparent, jobject canvas, jobject inspect) {
-
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools(JNIEnv* env,
+                                                     jobject jbrowser,
+                                                     jobject jparent,
+                                                     jobject jclientHandler,
+                                                     jlong windowHandle,
+                                                     jboolean transparent,
+                                                     jobject canvas,
+                                                     jobject inspect) {
   return create(env, jbrowser, jparent, jclientHandler, windowHandle, NULL,
-      transparent, canvas, NULL, inspect);
+                transparent, canvas, NULL, inspect);
 }
 
-JNIEXPORT jlong JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle
-  (JNIEnv *env, jobject obj, jlong displayHandle) {
+JNIEXPORT jlong JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle(JNIEnv* env,
+                                                      jobject obj,
+                                                      jlong displayHandle) {
   CefWindowHandle windowHandle = kNullWindowHandle;
 #if defined(OS_WIN)
   windowHandle = ::WindowFromDC((HDC)displayHandle);
 #elif defined(OS_LINUX)
-  // TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
-  // until CEF has moved from GTK to Aura.
+// TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
+// until CEF has moved from GTK to Aura.
 #elif defined(OS_MACOSX)
   ASSERT(util_mac::IsNSView((void*)displayHandle));
 #endif
   return (jlong)windowHandle;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CanGoBack
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            JNI_FALSE);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1CanGoBack(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, obj, JNI_FALSE);
   return browser->CanGoBack() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GoBack
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GoBack(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GoBack();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CanGoForward
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            JNI_FALSE);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1CanGoForward(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, obj, JNI_FALSE);
   return browser->CanGoForward() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GoForward
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GoForward(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GoForward();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1IsLoading
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            JNI_FALSE);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1IsLoading(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, obj, JNI_FALSE);
   return browser->IsLoading() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Reload
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1Reload(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->Reload();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ReloadIgnoreCache
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ReloadIgnoreCache(JNIEnv* env,
+                                                        jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->ReloadIgnoreCache();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopLoad
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1StopLoad(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->StopLoad();
 }
 
-JNIEXPORT jint JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetIdentifier
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            -1);
+JNIEXPORT jint JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetIdentifier(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, -1);
   return browser->GetIdentifier();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1IsPopup
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            JNI_FALSE);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1IsPopup(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, obj, JNI_FALSE);
   return browser->IsPopup() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefBrowser_1N_N_1HasDocument
-  (JNIEnv *env, jobject obj) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            JNI_FALSE);
+JNIEXPORT jboolean JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1HasDocument(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, obj, JNI_FALSE);
   return browser->HasDocument() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ViewSource
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ViewSource(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   CefRefPtr<CefFrame> mainFrame = browser->GetMainFrame();
   CefPostTask(TID_UI, base::Bind(&CefFrame::ViewSource, mainFrame.get()));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetSource
-  (JNIEnv *env, jobject obj, jobject jvisitor) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetSource(JNIEnv* env,
+                                                jobject obj,
+                                                jobject jvisitor) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetMainFrame()->GetSource(new StringVisitor(env, jvisitor));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetText
-  (JNIEnv *env, jobject obj, jobject jvisitor) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetText(JNIEnv* env,
+                                              jobject obj,
+                                              jobject jvisitor) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetMainFrame()->GetText(new StringVisitor(env, jvisitor));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadRequest
-  (JNIEnv *env, jobject obj, jobject jrequest) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1LoadRequest(JNIEnv* env,
+                                                  jobject obj,
+                                                  jobject jrequest) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  CefRefPtr<CefRequest> request = GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
+  CefRefPtr<CefRequest> request =
+      GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
   if (!request.get())
     return;
   browser->GetMainFrame()->LoadRequest(request);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadURL
-  (JNIEnv *env, jobject obj, jstring url) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1LoadURL(JNIEnv* env,
+                                              jobject obj,
+                                              jstring url) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetMainFrame()->LoadURL(GetJNIString(env, url));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadString
-  (JNIEnv *env, jobject obj, jstring val, jstring url) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1LoadString(JNIEnv* env,
+                                                 jobject obj,
+                                                 jstring val,
+                                                 jstring url) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetMainFrame()->LoadString(GetJNIString(env,val),
-                                      GetJNIString(env,url));
+  browser->GetMainFrame()->LoadString(GetJNIString(env, val),
+                                      GetJNIString(env, url));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ExecuteJavaScript
-  (JNIEnv *env, jobject obj, jstring code, jstring url, jint line) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ExecuteJavaScript(JNIEnv* env,
+                                                        jobject obj,
+                                                        jstring code,
+                                                        jstring url,
+                                                        jint line) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetMainFrame()->ExecuteJavaScript(GetJNIString(env,code),
-                                             GetJNIString(env,url),
-                                             line);
+  browser->GetMainFrame()->ExecuteJavaScript(GetJNIString(env, code),
+                                             GetJNIString(env, url), line);
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetURL
-  (JNIEnv *env, jobject obj) {
-  jstring tmp = NewJNIString(env,"");
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj,
-                                                            tmp);
+JNIEXPORT jstring JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetURL(JNIEnv* env, jobject obj) {
+  jstring tmp = NewJNIString(env, "");
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, tmp);
   return NewJNIString(env, browser->GetMainFrame()->GetURL());
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1Close(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->CloseBrowser(true);
 }
 
 #if defined(OS_WIN)
 static void FocusParent(HWND browserHandle) {
-    HWND parent = GetParent(browserHandle);
-    SetActiveWindow(parent);
-    SetFocus(parent);
+  HWND parent = GetParent(browserHandle);
+  SetActiveWindow(parent);
+  SetFocus(parent);
 }
 #endif
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
-  (JNIEnv *env, jobject obj, jboolean enable) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SetFocus(JNIEnv* env,
+                                               jobject obj,
+                                               jboolean enable) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   if (browser->GetHost()->IsWindowRenderingDisabled()) {
     browser->GetHost()->SendFocusEvent(enable != JNI_FALSE);
@@ -1093,19 +1214,22 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetFocus
 #endif
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility
-  (JNIEnv *env, jobject obj, jboolean visible) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility(JNIEnv* env,
+                                                          jobject obj,
+                                                          jboolean visible) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
 
 #if defined(OS_MACOSX)
   if (!browser->GetHost()->IsWindowRenderingDisabled()) {
-    util_mac::SetVisibility(browser->GetHost()->GetWindowHandle(), visible != JNI_FALSE);
+    util_mac::SetVisibility(browser->GetHost()->GetWindowHandle(),
+                            visible != JNI_FALSE);
   }
 #endif
 }
 
-JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jdouble JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, 0.0);
   CefRefPtr<CefBrowserHost> host = browser->GetHost();
   double result = 0.0;
@@ -1122,23 +1246,30 @@ JNIEXPORT jdouble JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel
   return result;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetZoomLevel
-  (JNIEnv *env, jobject obj, jdouble zoom) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SetZoomLevel(JNIEnv* env,
+                                                   jobject obj,
+                                                   jdouble zoom) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->SetZoomLevel(zoom);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog
-  (JNIEnv *env, jobject obj, jobject jmode, jstring jtitle, 
-   jstring jdefaultFilePath, jobject jacceptFilters, jint selectedAcceptFilter,
-   jobject jcallback) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog(JNIEnv* env,
+                                                    jobject obj,
+                                                    jobject jmode,
+                                                    jstring jtitle,
+                                                    jstring jdefaultFilePath,
+                                                    jobject jacceptFilters,
+                                                    jint selectedAcceptFilter,
+                                                    jobject jcallback) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
 
   std::vector<CefString> accept_types;
   GetJNIStringVector(env, jacceptFilters, accept_types);
 
   CefBrowserHost::FileDialogMode mode;
-  if (IsJNIEnumValue(env, jmode, 
+  if (IsJNIEnumValue(env, jmode,
                      "org/cef/handler/CefDialogHandler$FileDialogMode",
                      "FILE_DIALOG_OPEN")) {
     mode = FILE_DIALOG_OPEN;
@@ -1154,82 +1285,94 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1RunFileDialog
     mode = FILE_DIALOG_OPEN;
   }
 
-  browser->GetHost()->RunFileDialog(mode,
-                                    GetJNIString(env, jtitle),
+  browser->GetHost()->RunFileDialog(mode, GetJNIString(env, jtitle),
                                     GetJNIString(env, jdefaultFilePath),
-                                    accept_types,
-                                    selectedAcceptFilter,
+                                    accept_types, selectedAcceptFilter,
                                     new RunFileDialogCallback(env, jcallback));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StartDownload
-  (JNIEnv *env, jobject obj, jstring url) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1StartDownload(JNIEnv* env,
+                                                    jobject obj,
+                                                    jstring url) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->StartDownload(GetJNIString(env, url));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1Print(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->Print();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find
-  (JNIEnv *env, jobject obj, jint identifier, jstring searchText, 
-  jboolean forward, jboolean matchCase, jboolean findNext) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1Find(JNIEnv* env,
+                                           jobject obj,
+                                           jint identifier,
+                                           jstring searchText,
+                                           jboolean forward,
+                                           jboolean matchCase,
+                                           jboolean findNext) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->Find((int)identifier, 
-                           GetJNIString(env, searchText),
-                           (forward != JNI_FALSE),
-                           (matchCase != JNI_FALSE),
+  browser->GetHost()->Find((int)identifier, GetJNIString(env, searchText),
+                           (forward != JNI_FALSE), (matchCase != JNI_FALSE),
                            (findNext != JNI_FALSE));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1StopFinding
-  (JNIEnv *env, jobject obj, jboolean clearSelection) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1StopFinding(JNIEnv* env,
+                                                  jobject obj,
+                                                  jboolean clearSelection) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->StopFinding(clearSelection != JNI_FALSE);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1CloseDevTools
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1CloseDevTools(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->CloseDevTools();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1ReplaceMisspelling
-  (JNIEnv *env, jobject obj, jstring jword) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ReplaceMisspelling(JNIEnv* env,
+                                                         jobject obj,
+                                                         jstring jword) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->ReplaceMisspelling(GetJNIString(env, jword));
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1WasResized
-  (JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1WasResized(JNIEnv* env,
+                                                 jobject obj,
+                                                 jint width,
+                                                 jint height) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  if( browser->GetHost()->IsWindowRenderingDisabled() ) {
+  if (browser->GetHost()->IsWindowRenderingDisabled()) {
     browser->GetHost()->WasResized();
   }
-#if defined(OS_WIN) 
+#if defined(OS_WIN)
   else {
     HWND handle = browser->GetHost()->GetWindowHandle();
     if (CefCurrentlyOn(TID_UI)) {
       CefSetWindowPos(handle, width, height);
     } else {
-      CefPostTask(TID_UI,
-          base::Bind(&CefSetWindowPos, handle, (int)width, (int)height));
+      CefPostTask(TID_UI, base::Bind(&CefSetWindowPos, handle, (int)width,
+                                     (int)height));
     }
   }
 #endif
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Invalidate
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1Invalidate(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->Invalidate(PET_VIEW);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent
-  (JNIEnv *env, jobject obj, jobject key_event) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
+                                                   jobject obj,
+                                                   jobject key_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   jclass cls = env->GetObjectClass(key_event);
   if (!cls)
@@ -1254,7 +1397,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent
   BYTE VkCode = LOBYTE(VkKeyScanA(key_char));
   UINT scanCode = MapVirtualKey(VkCode, MAPVK_VK_TO_VSC);
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
-                              1;  // key repeat count
+                              1;                  // key repeat count
 #elif defined(OS_LINUX) || defined(OS_MACOSX)
   int key_code;
   if (!CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
@@ -1311,9 +1454,8 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent
 
   // If ctrl key is pressed down, then control character shall be input.
   if (cef_event.modifiers & EVENTFLAG_CONTROL_DOWN) {
-    cef_event.character =
-      GetControlCharacter(windows_key_code,
-                          cef_event.modifiers & EVENTFLAG_SHIFT_DOWN);
+    cef_event.character = GetControlCharacter(
+        windows_key_code, cef_event.modifiers & EVENTFLAG_SHIFT_DOWN);
   } else {
     cef_event.character = cef_event.unmodified_character;
   }
@@ -1349,7 +1491,7 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent
     cef_event.native_key_code = GetMacKeyCodeFromChar(key_char);
     if (cef_event.native_key_code == -1)
       return;
-    
+
     cef_event.unmodified_character = key_char;
   }
 
@@ -1440,8 +1582,10 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent
   browser->GetHost()->SendKeyEvent(cef_event);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent
-  (JNIEnv *env, jobject obj, jobject mouse_event) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
+                                                     jobject obj,
+                                                     jobject mouse_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   jclass cls = env->GetObjectClass(mouse_event);
   if (!cls)
@@ -1474,7 +1618,8 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent
   if (event_type == JNI_STATIC(MOUSE_PRESSED) ||
       event_type == JNI_STATIC(MOUSE_RELEASED)) {
     int click_count, button;
-    if (!CallJNIMethodI_V(env, cls, mouse_event, "getClickCount", &click_count) ||
+    if (!CallJNIMethodI_V(env, cls, mouse_event, "getClickCount",
+                          &click_count) ||
         !CallJNIMethodI_V(env, cls, mouse_event, "getButton", &button)) {
       return;
     }
@@ -1489,19 +1634,23 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent
     else
       return;
 
-    browser->GetHost()->SendMouseClickEvent(cef_event, cef_mbt,
-        (event_type == JNI_STATIC(MOUSE_RELEASED)), click_count);
+    browser->GetHost()->SendMouseClickEvent(
+        cef_event, cef_mbt, (event_type == JNI_STATIC(MOUSE_RELEASED)),
+        click_count);
   } else if (event_type == JNI_STATIC(MOUSE_MOVED) ||
              event_type == JNI_STATIC(MOUSE_DRAGGED) ||
              event_type == JNI_STATIC(MOUSE_ENTERED) ||
              event_type == JNI_STATIC(MOUSE_EXITED)) {
-    browser->GetHost()->SendMouseMoveEvent(cef_event,
-        (event_type == JNI_STATIC(MOUSE_EXITED)));
+    browser->GetHost()->SendMouseMoveEvent(
+        cef_event, (event_type == JNI_STATIC(MOUSE_EXITED)));
   }
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent
-  (JNIEnv *env, jobject obj, jobject mouse_wheel_event) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
+    JNIEnv* env,
+    jobject obj,
+    jobject mouse_wheel_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   jclass cls = env->GetObjectClass(mouse_wheel_event);
   if (!cls)
@@ -1510,11 +1659,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent
   JNI_STATIC_DEFINE_INT(env, cls, WHEEL_UNIT_SCROLL);
 
   int scroll_type, delta, x, y, modifiers;
-  if (!CallJNIMethodI_V(env, cls, mouse_wheel_event, "getScrollType", &scroll_type) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getWheelRotation", &delta) ||
+  if (!CallJNIMethodI_V(env, cls, mouse_wheel_event, "getScrollType",
+                        &scroll_type) ||
+      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getWheelRotation",
+                        &delta) ||
       !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getX", &x) ||
       !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getModifiersEx", &modifiers)) {
+      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getModifiersEx",
+                        &modifiers)) {
     return;
   }
 
@@ -1538,9 +1690,13 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent
   browser->GetHost()->SendMouseWheelEvent(cef_event, deltaX, deltaY);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
-  (JNIEnv *env, jobject obj, jobject jdragData, jobject pos, jint  jmodifiers,
-   jint allowedOps) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter(JNIEnv* env,
+                                                          jobject obj,
+                                                          jobject jdragData,
+                                                          jobject pos,
+                                                          jint jmodifiers,
+                                                          jint allowedOps) {
   CefRefPtr<CefDragData> drag_data =
       GetCefFromJNIObject<CefDragData>(env, jdragData, "CefDragData");
   if (!drag_data.get())
@@ -1554,37 +1710,45 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter
   cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->DragTargetDragEnter(drag_data, cef_event, 
-      (CefBrowserHost::DragOperationsMask)allowedOps);
+  browser->GetHost()->DragTargetDragEnter(
+      drag_data, cef_event, (CefBrowserHost::DragOperationsMask)allowedOps);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver
-  (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers, jint allowedOps) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver(JNIEnv* env,
+                                                         jobject obj,
+                                                         jobject pos,
+                                                         jint jmodifiers,
+                                                         jint allowedOps) {
   jclass cls = FindClass(env, "java/awt/event/MouseEvent");
   if (!cls)
     return;
-    
+
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
   cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->DragTargetDragOver(cef_event,
-      (CefBrowserHost::DragOperationsMask)allowedOps);
+  browser->GetHost()->DragTargetDragOver(
+      cef_event, (CefBrowserHost::DragOperationsMask)allowedOps);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragLeave(JNIEnv* env,
+                                                          jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDragLeave();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop
-  (JNIEnv *env, jobject obj, jobject pos, jint jmodifiers) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop(JNIEnv* env,
+                                                     jobject obj,
+                                                     jobject pos,
+                                                     jint jmodifiers) {
   jclass cls = FindClass(env, "java/awt/event/MouseEvent");
   if (!cls)
     return;
-    
+
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
   cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
@@ -1593,29 +1757,36 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop
   browser->GetHost()->DragTargetDrop(cef_event);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceEndedAt
-  (JNIEnv *env, jobject obj, jobject pos, jint operation) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragSourceEndedAt(JNIEnv* env,
+                                                        jobject obj,
+                                                        jobject pos,
+                                                        jint operation) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   int x, y;
   GetJNIPoint(env, pos, &x, &y);
-  browser->GetHost()->DragSourceEndedAt(x, y,
-      (CefBrowserHost::DragOperationsMask)operation);
+  browser->GetHost()->DragSourceEndedAt(
+      x, y, (CefBrowserHost::DragOperationsMask)operation);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDragEnded
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1DragSourceSystemDragEnded(JNIEnv* env,
+                                                                jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragSourceSystemDragEnded();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI
-  (JNIEnv *env, jobject obj, jobject jcontentRect, jobject jbrowserRect) {
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI(JNIEnv* env,
+                                               jobject obj,
+                                               jobject jcontentRect,
+                                               jobject jbrowserRect) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   CefRect contentRect = GetJNIRect(env, jcontentRect);
 #if defined(OS_MACOSX)
   CefRect browserRect = GetJNIRect(env, jbrowserRect);
   util_mac::UpdateView(browser->GetHost()->GetWindowHandle(), contentRect,
-      browserRect);
+                       browserRect);
 #elif defined(OS_WIN)
   HWND hwnd = browser->GetHost()->GetWindowHandle();
   if (CefCurrentlyOn(TID_UI))

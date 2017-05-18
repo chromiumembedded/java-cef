@@ -21,8 +21,9 @@ class PrintHandler : public CefPrintHandler {
   virtual void OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
                                bool get_defaults) OVERRIDE;
 
-  virtual bool OnPrintDialog(bool has_selection,
-                             CefRefPtr<CefPrintDialogCallback> callback) OVERRIDE;
+  virtual bool OnPrintDialog(
+      bool has_selection,
+      CefRefPtr<CefPrintDialogCallback> callback) OVERRIDE;
 
   virtual bool OnPrintJob(const CefString& document_name,
                           const CefString& pdf_file_path,

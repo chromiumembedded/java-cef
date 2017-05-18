@@ -29,6 +29,7 @@ class ContextMenuHandler : public CefContextMenuHandler {
 
   virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
                                       CefRefPtr<CefFrame> frame) OVERRIDE;
+
  protected:
   jobject jhandler_;
 

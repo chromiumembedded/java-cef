@@ -3,8 +3,8 @@
 // can be found in the LICENSE file.
 
 #include "download_handler.h"
-#include "client_handler.h"
 
+#include "client_handler.h"
 #include "jni_util.h"
 #include "util.h"
 
@@ -26,59 +26,62 @@ void DownloadHandler::OnBeforeDownload(
   if (!env)
     return;
 
-  jobject jdownloadItem = NewJNIObject(env, "org/cef/callback/CefDownloadItem_N");
+  jobject jdownloadItem =
+      NewJNIObject(env, "org/cef/callback/CefDownloadItem_N");
   if (!jdownloadItem)
     return;
-  SetCefForJNIObject(env, jdownloadItem, download_item.get(), "CefDownloadItem");
+  SetCefForJNIObject(env, jdownloadItem, download_item.get(),
+                     "CefDownloadItem");
 
-  jobject jcallback  = NewJNIObject(env, "org/cef/callback/CefBeforeDownloadCallback_N");
+  jobject jcallback =
+      NewJNIObject(env, "org/cef/callback/CefBeforeDownloadCallback_N");
   if (!jcallback)
     return;
-  SetCefForJNIObject(env, jcallback, callback.get(), "CefBeforeDownloadCallback");
+  SetCefForJNIObject(env, jcallback, callback.get(),
+                     "CefBeforeDownloadCallback");
 
-  JNI_CALL_VOID_METHOD(env, jhandler_, 
-                       "onBeforeDownload", 
-                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDownloadItem;"
-                       "Ljava/lang/String;Lorg/cef/callback/CefBeforeDownloadCallback;)V",
-                       GetJNIBrowser(browser),
-                       jdownloadItem,
-                       NewJNIString(env, suggested_name),
-                       jcallback);
+  JNI_CALL_VOID_METHOD(
+      env, jhandler_, "onBeforeDownload",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDownloadItem;"
+      "Ljava/lang/String;Lorg/cef/callback/CefBeforeDownloadCallback;)V",
+      GetJNIBrowser(browser), jdownloadItem, NewJNIString(env, suggested_name),
+      jcallback);
 
   // delete CefDownloadItem reference from Java because the object
   // is only valid within this call
-  SetCefForJNIObject<CefDownloadItem>(env, jdownloadItem,
-                                      NULL, "CefDownloadItem");
+  SetCefForJNIObject<CefDownloadItem>(env, jdownloadItem, NULL,
+                                      "CefDownloadItem");
 }
 
 void DownloadHandler::OnDownloadUpdated(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefDownloadItem> download_item,
-      CefRefPtr<CefDownloadItemCallback> callback) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefDownloadItem> download_item,
+    CefRefPtr<CefDownloadItemCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
 
-  jobject jdownloadItem = NewJNIObject(env, "org/cef/callback/CefDownloadItem_N");
+  jobject jdownloadItem =
+      NewJNIObject(env, "org/cef/callback/CefDownloadItem_N");
   if (!jdownloadItem)
     return;
-  SetCefForJNIObject(env, jdownloadItem, download_item.get(), "CefDownloadItem");
+  SetCefForJNIObject(env, jdownloadItem, download_item.get(),
+                     "CefDownloadItem");
 
-  jobject jcallback  = NewJNIObject(env, "org/cef/callback/CefDownloadItemCallback_N");
+  jobject jcallback =
+      NewJNIObject(env, "org/cef/callback/CefDownloadItemCallback_N");
   if (!jcallback)
     return;
   SetCefForJNIObject(env, jcallback, callback.get(), "CefDownloadItemCallback");
 
-  JNI_CALL_VOID_METHOD(env, jhandler_,
-                       "onDownloadUpdated",
-                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDownloadItem;"
-                       "Lorg/cef/callback/CefDownloadItemCallback;)V",
-                       GetJNIBrowser(browser),
-                       jdownloadItem,
-                       jcallback);
+  JNI_CALL_VOID_METHOD(
+      env, jhandler_, "onDownloadUpdated",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDownloadItem;"
+      "Lorg/cef/callback/CefDownloadItemCallback;)V",
+      GetJNIBrowser(browser), jdownloadItem, jcallback);
 
   // delete CefDownloadItem reference from Java because the object
   // is only valid within this call
-  SetCefForJNIObject<CefDownloadItem>(env, jdownloadItem,
-                                      NULL, "CefDownloadItem");
+  SetCefForJNIObject<CefDownloadItem>(env, jdownloadItem, NULL,
+                                      "CefDownloadItem");
 }

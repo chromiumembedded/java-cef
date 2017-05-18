@@ -7,8 +7,9 @@
 #pragma once
 
 #include <jni.h>
-#include "include/cef_stream.h"
+
 #include "include/base/cef_lock.h"
+#include "include/cef_stream.h"
 
 // WriteHandler implementation.
 class WriteHandler : public CefWriteHandler {

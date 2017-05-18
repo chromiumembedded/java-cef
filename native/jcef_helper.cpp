@@ -16,17 +16,16 @@ namespace {
 
 // comparator to check if configuration values are the same
 struct cmpCfg {
-  bool operator() (const CefMessageRouterConfig& lValue,
-                   const CefMessageRouterConfig& rValue) const {
+  bool operator()(const CefMessageRouterConfig& lValue,
+                  const CefMessageRouterConfig& rValue) const {
     std::less<std::string> comp;
     return comp(lValue.js_query_function.ToString(),
                 rValue.js_query_function.ToString());
   }
 };
 
-class CefHelperApp : public CefApp,
-                     public CefRenderProcessHandler {
-public:
+class CefHelperApp : public CefApp, public CefRenderProcessHandler {
+ public:
   CefHelperApp() {}
 
   virtual void OnRegisterCustomSchemes(
@@ -34,8 +33,10 @@ public:
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
     char schemeName[512] = "";
-    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled, cIsCspBypassing;
-    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled, isCspBypassing;
+    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled,
+        cIsCspBypassing;
+    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled,
+        isCspBypassing;
 
     fStream.open(fName.c_str(), std::fstream::in);
     while (fStream.is_open() && !fStream.eof()) {
@@ -43,8 +44,12 @@ public:
       if (strlen(schemeName) == 0)
         break;
 
-      fStream.get(cIsStandard).get(cIsLocal).get(cIsDisplayIsolated).
-          get(cIsSecure).get(cIsCorsEnabled).get(cIsCspBypassing);
+      fStream.get(cIsStandard)
+          .get(cIsLocal)
+          .get(cIsDisplayIsolated)
+          .get(cIsSecure)
+          .get(cIsCorsEnabled)
+          .get(cIsCspBypassing);
       isStandard = (cIsStandard == '1');
       isLocal = (cIsLocal == '1');
       isDisplayIsolated = (cIsDisplayIsolated == '1');
@@ -53,17 +58,20 @@ public:
       isCspBypassing = (cIsCspBypassing == '1');
 
       registrar->AddCustomScheme(schemeName, isStandard, isLocal,
-          isDisplayIsolated, isSecure, isCorsEnabled, isCspBypassing);
+                                 isDisplayIsolated, isSecure, isCorsEnabled,
+                                 isCspBypassing);
     }
     fStream.close();
   }
 
-  virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() OVERRIDE {
+  virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler()
+      OVERRIDE {
     return this;
   }
 
-  virtual void OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) OVERRIDE {
-    for (size_t idx=0; idx < extra_info->GetSize(); idx++) {
+  virtual void OnRenderThreadCreated(
+      CefRefPtr<CefListValue> extra_info) OVERRIDE {
+    for (size_t idx = 0; idx < extra_info->GetSize(); idx++) {
       CefRefPtr<CefDictionaryValue> dict = extra_info->GetDictionary((int)idx);
       // Create the renderer-side router for query handling.
       CefMessageRouterConfig config;
@@ -79,21 +87,21 @@ public:
   virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefV8Context> context) OVERRIDE {
-    std::map<CefMessageRouterConfig,
-             CefRefPtr<CefMessageRouterRendererSide>,
+    std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
-    for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
-      iter->second->OnContextCreated(browser,  frame, context);
+    for (iter = message_router_.begin(); iter != message_router_.end();
+         iter++) {
+      iter->second->OnContextCreated(browser, frame, context);
     }
   }
 
   virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefFrame> frame,
                                  CefRefPtr<CefV8Context> context) OVERRIDE {
-    std::map<CefMessageRouterConfig,
-             CefRefPtr<CefMessageRouterRendererSide>,
+    std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
-    for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
+    for (iter = message_router_.begin(); iter != message_router_.end();
+         iter++) {
       iter->second->OnContextReleased(browser, frame, context);
     }
   }
@@ -108,7 +116,7 @@ public:
       config.js_query_function = args->GetString(0);
       config.js_cancel_function = args->GetString(1);
 
-      // only add a new message router if it wasn't already created 
+      // only add a new message router if it wasn't already created
       if (message_router_.find(config) != message_router_.end()) {
         return true;
       }
@@ -129,12 +137,12 @@ public:
     }
 
     bool handled = false;
-    std::map<CefMessageRouterConfig,
-             CefRefPtr<CefMessageRouterRendererSide>,
+    std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
-    for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
-      handled = iter->second->OnProcessMessageReceived(
-          browser, source_process, message);
+    for (iter = message_router_.begin(); iter != message_router_.end();
+         iter++) {
+      handled = iter->second->OnProcessMessageReceived(browser, source_process,
+                                                       message);
       if (handled)
         break;
     }
@@ -144,7 +152,8 @@ public:
  private:
   std::map<CefMessageRouterConfig,
            CefRefPtr<CefMessageRouterRendererSide>,
-           cmpCfg> message_router_;
+           cmpCfg>
+      message_router_;
 
   IMPLEMENT_REFCOUNTING(CefHelperApp);
 };
@@ -154,8 +163,8 @@ public:
 #if defined(OS_WIN)
 int CALLBACK WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow) {
+                     LPSTR lpCmdLine,
+                     int nCmdShow) {
   CefMainArgs main_args(hInstance);
 #else
 int main(int argc, char* argv[]) {

@@ -16,8 +16,7 @@ class WebPluginUnstableCallback : public CefWebPluginUnstableCallback {
   virtual ~WebPluginUnstableCallback();
 
   // WebPluginUnstableCallback methods
-  virtual void IsUnstable(const CefString& path,
-                          bool unstable) OVERRIDE;
+  virtual void IsUnstable(const CefString& path, bool unstable) OVERRIDE;
 
  protected:
   jobject jcallback_;

@@ -13,16 +13,16 @@
 // ClientApp implementation.
 class ClientApp : public CefApp {
  public:
-  explicit ClientApp(const std::string& module_dir,
-                     const jobject app_handler);
+  explicit ClientApp(const std::string& module_dir, const jobject app_handler);
   virtual ~ClientApp();
 
   // CefApp methods
-  virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
+  virtual void OnBeforeCommandLineProcessing(
+      const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE;
 
-  virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
-      OVERRIDE;
+  virtual void OnRegisterCustomSchemes(
+      CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
 
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
       OVERRIDE;

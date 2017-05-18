@@ -22,11 +22,9 @@ void CriticalLock::Unlock() {
   ReleaseMutex(lock_);
 }
 
-
 // CriticalWait
 
-CriticalWait::CriticalWait(CriticalLock* lock)
-    : lock_(lock) {
+CriticalWait::CriticalWait(CriticalLock* lock) : lock_(lock) {
   cond_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
@@ -50,4 +48,3 @@ bool CriticalWait::Wait(unsigned int maxWaitMs) {
 void CriticalWait::WakeUp() {
   SetEvent(cond_);
 }
-

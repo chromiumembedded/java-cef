@@ -6,8 +6,11 @@
 #include "include/cef_request_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefAuthCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj, jstring username, jstring password) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefAuthCallback_1N_N_1Continue(JNIEnv* env,
+                                                     jobject obj,
+                                                     jstring username,
+                                                     jstring password) {
   CefRefPtr<CefAuthCallback> callback =
       GetCefFromJNIObject<CefAuthCallback>(env, obj, "CefAuthCallback");
   if (!callback.get())
@@ -18,8 +21,8 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefAuthCallback_1N_N_1Continue
   SetCefForJNIObject<CefAuthCallback>(env, obj, NULL, "CefAuthCallback");
 }
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefAuthCallback_1N_N_1Cancel
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefAuthCallback_1N_N_1Cancel(JNIEnv* env, jobject obj) {
   CefRefPtr<CefAuthCallback> callback =
       GetCefFromJNIObject<CefAuthCallback>(env, obj, "CefAuthCallback");
   if (!callback.get())

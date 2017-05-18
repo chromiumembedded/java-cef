@@ -29,6 +29,7 @@ class DisplayHandler : public CefDisplayHandler {
                                 const CefString& message,
                                 const CefString& source,
                                 int line) OVERRIDE;
+
  protected:
   jobject jhandler_;
 

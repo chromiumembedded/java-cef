@@ -7,8 +7,9 @@
 
 #include "include/cef_print_handler.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue(JNIEnv* env,
+                                                         jobject obj) {
   CefRefPtr<CefPrintJobCallback> callback =
       GetCefFromJNIObject<CefPrintJobCallback>(env, obj, "CefPrintJobCallback");
   if (!callback.get())
@@ -18,5 +19,5 @@ JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue
 
   // Clear the reference added in PrintHandler::OnPrintJob.
   SetCefForJNIObject<CefPrintJobCallback>(env, obj, NULL,
-      "CefPrintJobCallback");
+                                          "CefPrintJobCallback");
 }

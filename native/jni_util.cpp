@@ -4,15 +4,15 @@
 
 #include "jni_util.h"
 
-#include <algorithm>
 #include <jawt.h>
+#include <algorithm>
 
 #include "client_handler.h"
 #include "util.h"
 
 namespace {
 
-JavaVM *g_jvm = NULL;
+JavaVM* g_jvm = NULL;
 
 jobject g_javaClassLoader = NULL;
 
@@ -24,7 +24,7 @@ void SetJVM(JavaVM* jvm) {
 }
 
 JNIEnv* GetJNIEnv() {
-  JNIEnv *env = NULL;
+  JNIEnv* env = NULL;
   if (g_jvm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED &&
       g_jvm->AttachCurrentThreadAsDaemon((void**)&env, NULL) != JNI_OK) {
     return NULL;
@@ -39,13 +39,13 @@ JNIEnv* GetJNIEnv() {
 // for mustDetach; if you do not, the first call might attach, setting
 // mustDetach to true, but the second will misleadingly set mustDetach
 // to false, leaving a dangling JNIEnv.
-jint GetJNIEnv(JNIEnv **env, bool *mustDetach) {
+jint GetJNIEnv(JNIEnv** env, bool* mustDetach) {
   jint getEnvErr = JNI_OK;
   *mustDetach = false;
   if (g_jvm) {
-    getEnvErr = g_jvm->GetEnv((void **)env, JNI_VERSION_1_4);
+    getEnvErr = g_jvm->GetEnv((void**)env, JNI_VERSION_1_4);
     if (getEnvErr == JNI_EDETACHED) {
-      getEnvErr = g_jvm->AttachCurrentThreadAsDaemon((void **)env, NULL);
+      getEnvErr = g_jvm->AttachCurrentThreadAsDaemon((void**)env, NULL);
       if (getEnvErr == JNI_OK) {
         *mustDetach = true;
       }
@@ -54,7 +54,7 @@ jint GetJNIEnv(JNIEnv **env, bool *mustDetach) {
   return getEnvErr;
 }
 
-void DetachFromThread(bool *mustDetach) {
+void DetachFromThread(bool* mustDetach) {
   if (!g_jvm) {
     return;
   }
@@ -62,7 +62,7 @@ void DetachFromThread(bool *mustDetach) {
     g_jvm->DetachCurrentThread();
 }
 
-void SetJavaClassLoader(JNIEnv *env, jobject javaClassLoader) {
+void SetJavaClassLoader(JNIEnv* env, jobject javaClassLoader) {
   ASSERT(!g_javaClassLoader);
   g_javaClassLoader = env->NewGlobalRef(javaClassLoader);
 }
@@ -71,17 +71,16 @@ jclass FindClass(JNIEnv* env, const char* class_name) {
   ASSERT(g_javaClassLoader);
 
   std::string classNameSeparatedByDots(class_name);
-  std::replace(classNameSeparatedByDots.begin(), classNameSeparatedByDots.end(), '/', '.');
+  std::replace(classNameSeparatedByDots.begin(), classNameSeparatedByDots.end(),
+               '/', '.');
 
-  jstring classNameJString = env->NewStringUTF(classNameSeparatedByDots.c_str());
+  jstring classNameJString =
+      env->NewStringUTF(classNameSeparatedByDots.c_str());
   jobject result = NULL;
 
-  JNI_CALL_METHOD(env, g_javaClassLoader,
-      "loadClass",
-      "(Ljava/lang/String;)Ljava/lang/Class;",
-      Object,
-      result,
-      classNameJString);
+  JNI_CALL_METHOD(env, g_javaClassLoader, "loadClass",
+                  "(Ljava/lang/String;)Ljava/lang/Class;", Object, result,
+                  classNameJString);
 
   env->DeleteLocalRef(classNameJString);
 
@@ -90,13 +89,13 @@ jclass FindClass(JNIEnv* env, const char* class_name) {
 
 jobject NewJNIObject(JNIEnv* env, jclass cls) {
   jmethodID initID = env->GetMethodID(cls, "<init>", "()V");
-  if(initID == 0) {
+  if (initID == 0) {
     env->ExceptionClear();
     return NULL;
   }
 
   jobject obj = env->NewObject(cls, initID);
-  if(obj == NULL) {
+  if (obj == NULL) {
     env->ExceptionClear();
     return NULL;
   }
@@ -112,7 +111,10 @@ jobject NewJNIObject(JNIEnv* env, const char* class_name) {
   return NewJNIObject(env, cls);
 }
 
-jobject NewJNIObject(JNIEnv* env, const char* class_name, const char* sig, ...) {
+jobject NewJNIObject(JNIEnv* env,
+                     const char* class_name,
+                     const char* sig,
+                     ...) {
   jclass cls = FindClass(env, class_name);
   if (!cls)
     return NULL;
@@ -161,52 +163,35 @@ jobject NewJNIStringRef(JNIEnv* env, const CefString& initValue) {
 
 bool GetJNIBoolRef(JNIEnv* env, jobject jboolRef) {
   jboolean boolRefRes = JNI_FALSE;
-  JNI_CALL_METHOD(env, jboolRef, 
-                  "get",
-                   "()Z",
-                   Boolean,
-                   boolRefRes);
+  JNI_CALL_METHOD(env, jboolRef, "get", "()Z", Boolean, boolRefRes);
   return (boolRefRes != JNI_FALSE);
 }
 
 int GetJNIIntRef(JNIEnv* env, jobject jintRef) {
   jint intRefRes = -1;
-  JNI_CALL_METHOD(env, jintRef, 
-                  "get",
-                  "()I",
-                  Int,
-                  intRefRes);
+  JNI_CALL_METHOD(env, jintRef, "get", "()I", Int, intRefRes);
   return intRefRes;
 }
 
 CefString GetJNIStringRef(JNIEnv* env, jobject jstringRef) {
   jobject jstr = NULL;
-  JNI_CALL_METHOD(env, jstringRef, 
-                  "get",
-                  "()Ljava/lang/String;",
-                  Object,
-                  jstr);
+  JNI_CALL_METHOD(env, jstringRef, "get", "()Ljava/lang/String;", Object, jstr);
   return GetJNIString(env, (jstring)jstr);
 }
 
 void SetJNIBoolRef(JNIEnv* env, jobject jboolRef, bool boolValue) {
-  JNI_CALL_VOID_METHOD(env, jboolRef, 
-                       "set",
-                       "(Z)V",
+  JNI_CALL_VOID_METHOD(env, jboolRef, "set", "(Z)V",
                        (boolValue ? JNI_TRUE : JNI_FALSE));
 }
 
 void SetJNIIntRef(JNIEnv* env, jobject jintRef, int intValue) {
-  JNI_CALL_VOID_METHOD(env, jintRef, 
-                       "set",
-                       "(I)V",
-                       intValue);
+  JNI_CALL_VOID_METHOD(env, jintRef, "set", "(I)V", intValue);
 }
 
-void SetJNIStringRef(JNIEnv* env, jobject jstringRef, const CefString& stringValue) {
-  JNI_CALL_VOID_METHOD(env, jstringRef, 
-                       "set",
-                       "(Ljava/lang/String;)V",
+void SetJNIStringRef(JNIEnv* env,
+                     jobject jstringRef,
+                     const CefString& stringValue) {
+  JNI_CALL_VOID_METHOD(env, jstringRef, "set", "(Ljava/lang/String;)V",
                        NewJNIString(env, stringValue));
 }
 
@@ -215,29 +200,27 @@ jobject NewJNIDate(JNIEnv* env, const CefTime& time) {
   if (!jdate)
     return NULL;
   double timestamp = time.GetDoubleT() * 1000;
-  JNI_CALL_VOID_METHOD(env, jdate, "setTime", "(J)V",(jlong)timestamp);
+  JNI_CALL_VOID_METHOD(env, jdate, "setTime", "(J)V", (jlong)timestamp);
   return jdate;
 }
 
 jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
   bool hasExpires = (cookie.has_expires != 0);
   jobject jExpiresDate = hasExpires ? NewJNIDate(env, cookie.expires) : NULL;
-  jobject jcookie = NewJNIObject(env,
-                                 "org/cef/network/CefCookie",
-                                 "(Ljava/lang/String;Ljava/lang/String;"
-                                 "Ljava/lang/String;Ljava/lang/String;"
-                                 "ZZLjava/util/Date;Ljava/util/Date;"
-                                 "ZLjava/util/Date;)V",
-                                 NewJNIString(env, CefString(&cookie.name)),
-                                 NewJNIString(env, CefString(&cookie.value)),
-                                 NewJNIString(env, CefString(&cookie.domain)),
-                                 NewJNIString(env, CefString(&cookie.path)),
-                                 (cookie.secure != 0 ? JNI_TRUE : JNI_FALSE),
-                                 (cookie.httponly != 0 ? JNI_TRUE : JNI_FALSE),
-                                 NewJNIDate(env, cookie.creation),
-                                 NewJNIDate(env, cookie.last_access),
-                                 (hasExpires ? JNI_TRUE : JNI_FALSE),
-                                 jExpiresDate);
+  jobject jcookie = NewJNIObject(
+      env, "org/cef/network/CefCookie",
+      "(Ljava/lang/String;Ljava/lang/String;"
+      "Ljava/lang/String;Ljava/lang/String;"
+      "ZZLjava/util/Date;Ljava/util/Date;"
+      "ZLjava/util/Date;)V",
+      NewJNIString(env, CefString(&cookie.name)),
+      NewJNIString(env, CefString(&cookie.value)),
+      NewJNIString(env, CefString(&cookie.domain)),
+      NewJNIString(env, CefString(&cookie.path)),
+      (cookie.secure != 0 ? JNI_TRUE : JNI_FALSE),
+      (cookie.httponly != 0 ? JNI_TRUE : JNI_FALSE),
+      NewJNIDate(env, cookie.creation), NewJNIDate(env, cookie.last_access),
+      (hasExpires ? JNI_TRUE : JNI_FALSE), jExpiresDate);
   return jcookie;
 }
 
@@ -256,7 +239,7 @@ CefCookie GetJNICookie(JNIEnv* env, jobject jcookie) {
 
   GetJNIFieldString(env, cls, jcookie, "name", &name);
   GetJNIFieldString(env, cls, jcookie, "value", &value);
-  GetJNIFieldString(env, cls, jcookie, "domain", &domain); 
+  GetJNIFieldString(env, cls, jcookie, "domain", &domain);
   GetJNIFieldString(env, cls, jcookie, "path", &path);
   GetJNIFieldBoolean(env, cls, jcookie, "secure", &cookie.secure);
   GetJNIFieldBoolean(env, cls, jcookie, "httponly", &cookie.httponly);
@@ -271,20 +254,20 @@ CefCookie GetJNICookie(JNIEnv* env, jobject jcookie) {
   return cookie;
 }
 
-CefString GetJNIString(JNIEnv* env, jstring jstr)
-{
+CefString GetJNIString(JNIEnv* env, jstring jstr) {
   CefString cef_str;
   const char* chr = NULL;
-  if(jstr)
+  if (jstr)
     chr = env->GetStringUTFChars(jstr, NULL);
-  if(chr)
+  if (chr)
     cef_str = chr;
-  if(jstr)
+  if (jstr)
     env->ReleaseStringUTFChars(jstr, chr);
   return cef_str;
 }
 
-void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
+void GetJNIStringArray(JNIEnv* env,
+                       jobjectArray jarray,
                        std::vector<CefString>& vals) {
   jsize argc = env->GetArrayLength(jarray);
   for (jsize i = 0; i < argc; ++i) {
@@ -307,20 +290,18 @@ CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig) {
     return config;
 
   GetJNIFieldString(env, cls, jConfig, "jsQueryFunction",
-      &config.js_query_function);
+                    &config.js_query_function);
   GetJNIFieldString(env, cls, jConfig, "jsCancelFunction",
-      &config.js_cancel_function);
+                    &config.js_cancel_function);
   return config;
 }
 
-CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env, jobject jRouter) {
+CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
+                                                           jobject jRouter) {
   jobject jrouterConfig = NULL;
-  JNI_CALL_METHOD(env,
-                  jRouter,
-                  "getMessageRouterConfig",
+  JNI_CALL_METHOD(env, jRouter, "getMessageRouterConfig",
                   "()Lorg/cef/browser/CefMessageRouter$CefMessageRouterConfig;",
-                  Object,
-                  jrouterConfig);
+                  Object, jrouterConfig);
   return GetJNIMessageRouterConfig(env, jrouterConfig);
 }
 
@@ -328,89 +309,132 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
   jobject jerrorCode = NULL;
   switch (errorCode) {
     default:
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_NONE, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FAILED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_ABORTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_ARGUMENT, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_HANDLE, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FILE_NOT_FOUND, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_TIMED_OUT, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FILE_TOO_BIG, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNEXPECTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_ACCESS_DENIED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_NOT_IMPLEMENTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CONNECTION_CLOSED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CONNECTION_RESET, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CONNECTION_REFUSED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CONNECTION_ABORTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CONNECTION_FAILED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_NAME_NOT_RESOLVED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INTERNET_DISCONNECTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_SSL_PROTOCOL_ERROR, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_ADDRESS_INVALID, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_ADDRESS_UNREACHABLE, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_SSL_CLIENT_AUTH_CERT_NEEDED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_TUNNEL_CONNECTION_FAILED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_NO_SSL_VERSIONS_ENABLED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_SSL_VERSION_OR_CIPHER_MISMATCH, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_SSL_RENEGOTIATION_REQUESTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_COMMON_NAME_INVALID, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_DATE_INVALID, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_AUTHORITY_INVALID, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_CONTAINS_ERRORS, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_NO_REVOCATION_MECHANISM, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_UNABLE_TO_CHECK_REVOCATION, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_REVOKED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_INVALID, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_END, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_URL, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_DISALLOWED_URL_SCHEME, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNKNOWN_URL_SCHEME, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_TOO_MANY_REDIRECTS, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNSAFE_REDIRECT, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNSAFE_PORT, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_RESPONSE, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_CHUNKED_ENCODING, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_METHOD_NOT_SUPPORTED, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNEXPECTED_PROXY_AUTH, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_EMPTY_RESPONSE, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_RESPONSE_HEADERS_TOO_BIG, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CACHE_MISS, jerrorCode);
-    JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INSECURE_RESPONSE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_NONE,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FAILED,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_ABORTED,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INVALID_ARGUMENT, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INVALID_HANDLE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_FILE_NOT_FOUND, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_TIMED_OUT,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_FILE_TOO_BIG, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNEXPECTED,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_ACCESS_DENIED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_NOT_IMPLEMENTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONNECTION_CLOSED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONNECTION_RESET, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONNECTION_REFUSED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONNECTION_ABORTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONNECTION_FAILED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_NAME_NOT_RESOLVED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INTERNET_DISCONNECTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_SSL_PROTOCOL_ERROR, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_ADDRESS_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_ADDRESS_UNREACHABLE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_SSL_CLIENT_AUTH_CERT_NEEDED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_TUNNEL_CONNECTION_FAILED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_NO_SSL_VERSIONS_ENABLED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_SSL_VERSION_OR_CIPHER_MISMATCH, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_SSL_RENEGOTIATION_REQUESTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_COMMON_NAME_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_DATE_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_AUTHORITY_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_CONTAINS_ERRORS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_NO_REVOCATION_MECHANISM, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_UNABLE_TO_CHECK_REVOCATION, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_REVOKED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_END,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_URL,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DISALLOWED_URL_SCHEME, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_UNKNOWN_URL_SCHEME, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_TOO_MANY_REDIRECTS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_UNSAFE_REDIRECT, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_UNSAFE_PORT,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INVALID_RESPONSE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INVALID_CHUNKED_ENCODING, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_METHOD_NOT_SUPPORTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_UNEXPECTED_PROXY_AUTH, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_EMPTY_RESPONSE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_RESPONSE_HEADERS_TOO_BIG, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CACHE_MISS,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INSECURE_RESPONSE, jerrorCode);
   }
   return jerrorCode;
 }
 
-jstring NewJNIString(JNIEnv* env, const CefString& str)
-{
+jstring NewJNIString(JNIEnv* env, const CefString& str) {
   std::string cstr(str);
   return env->NewStringUTF(cstr.c_str());
 }
 
 jobjectArray NewJNIStringArray(JNIEnv* env,
-                               const std::vector<CefString>& vals)
-{
-  if(vals.empty())
+                               const std::vector<CefString>& vals) {
+  if (vals.empty())
     return NULL;
 
   jclass cls = FindClass(env, "java/lang/String");
   if (!cls)
     return NULL;
 
-  jobjectArray arr = env->NewObjectArray(
-      static_cast<jsize>(vals.size()),
-      cls,
-      NULL);
+  jobjectArray arr =
+      env->NewObjectArray(static_cast<jsize>(vals.size()), cls, NULL);
 
-  for(jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
+  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
     env->SetObjectArrayElement(arr, i, NewJNIString(env, vals[i]));
 
   return arr;
 }
 
-jobject NewJNIStringVector(JNIEnv* env,
-                           const std::vector<CefString>& vals) {
-
+jobject NewJNIStringVector(JNIEnv* env, const std::vector<CefString>& vals) {
   jobject jvector = NewJNIObject(env, "java/util/Vector");
   if (!jvector)
     return NULL;
@@ -422,36 +446,41 @@ jobject NewJNIStringVector(JNIEnv* env,
   return jvector;
 }
 
-void AddJNIStringToVector(JNIEnv* env, jobject jvector, 
-                          const CefString &str) {
+void AddJNIStringToVector(JNIEnv* env, jobject jvector, const CefString& str) {
   jstring argument = NewJNIString(env, str);
-  JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",argument);
+  JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
+                       argument);
 }
 
-void GetJNIStringVector(JNIEnv* env, jobject jvector,
+void GetJNIStringVector(JNIEnv* env,
+                        jobject jvector,
                         std::vector<CefString>& vals) {
   if (!jvector)
     return;
 
-  jint jsize=0;
+  jint jsize = 0;
   JNI_CALL_METHOD(env, jvector, "size", "()I", Int, jsize);
 
-  for (jint index=0; index< jsize; index++) {
-    jobject str=NULL;
-    JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str, index);
+  for (jint index = 0; index < jsize; index++) {
+    jobject str = NULL;
+    JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str,
+                    index);
     vals.push_back(GetJNIString(env, (jstring)str));
   }
 }
 
-bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
-                       const char* field_name, CefString *value) {
+bool GetJNIFieldString(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       CefString* value) {
   jfieldID field = env->GetFieldID(cls, field_name, "Ljava/lang/String;");
   if (field) {
     jstring jstr = (jstring)env->GetObjectField(obj, field);
     const char* chr = NULL;
-    if(jstr)
+    if (jstr)
       chr = env->GetStringUTFChars(jstr, NULL);
-    if(chr) {
+    if (chr) {
       *value = chr;
       env->ReleaseStringUTFChars(jstr, chr);
     }
@@ -461,22 +490,28 @@ bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool GetJNIFieldDate(JNIEnv* env, jclass cls, jobject obj,
-                     const char* field_name, CefTime* value) {
+bool GetJNIFieldDate(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     CefTime* value) {
   jfieldID field = env->GetFieldID(cls, field_name, "Ljava/util/Date;");
   if (field) {
     jobject jdate = env->GetObjectField(obj, field);
     long timestamp = 0;
     JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
-    value->SetDoubleT((double)(timestamp/1000));
+    value->SetDoubleT((double)(timestamp / 1000));
     return true;
   }
   env->ExceptionClear();
   return false;
 }
 
-bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
-                        const char* field_name, int* value) {
+bool GetJNIFieldBoolean(JNIEnv* env,
+                        jclass cls,
+                        jobject obj,
+                        const char* field_name,
+                        int* value) {
   jfieldID field = env->GetFieldID(cls, field_name, "Z");
   if (field) {
     *value = env->GetBooleanField(obj, field) != JNI_FALSE ? 1 : 0;
@@ -486,9 +521,12 @@ bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool GetJNIFieldObject(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, jobject* value,
-                    const char* object_type) {
+bool GetJNIFieldObject(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       jobject* value,
+                       const char* object_type) {
   jfieldID field = env->GetFieldID(cls, field_name, object_type);
   if (field) {
     *value = env->GetObjectField(obj, field);
@@ -498,8 +536,11 @@ bool GetJNIFieldObject(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, int* value) {
+bool GetJNIFieldInt(JNIEnv* env,
+                    jclass cls,
+                    jobject obj,
+                    const char* field_name,
+                    int* value) {
   jfieldID field = env->GetFieldID(cls, field_name, "I");
   if (field) {
     *value = env->GetIntField(obj, field);
@@ -509,8 +550,11 @@ bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool SetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, int value) {
+bool SetJNIFieldInt(JNIEnv* env,
+                    jclass cls,
+                    jobject obj,
+                    const char* field_name,
+                    int value) {
   jfieldID field = env->GetFieldID(cls, field_name, "I");
   if (field) {
     env->SetIntField(obj, field, value);
@@ -520,8 +564,10 @@ bool SetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool GetJNIFieldStaticInt(JNIEnv* env, jclass cls,
-                          const char* field_name, int* value) {
+bool GetJNIFieldStaticInt(JNIEnv* env,
+                          jclass cls,
+                          const char* field_name,
+                          int* value) {
   jfieldID field = env->GetStaticFieldID(cls, field_name, "I");
   if (field) {
     *value = env->GetStaticIntField(cls, field);
@@ -531,8 +577,11 @@ bool GetJNIFieldStaticInt(JNIEnv* env, jclass cls,
   return false;
 }
 
-bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
-                      const char* method_name, int* value) {
+bool CallJNIMethodI_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      int* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()I");
   if (methodID) {
     *value = env->CallIntMethod(obj, methodID);
@@ -542,8 +591,11 @@ bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
   return false;
 }
 
-bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
-                      const char* method_name, char* value) {
+bool CallJNIMethodC_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      char* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()C");
   if (methodID) {
     *value = env->CallCharMethod(obj, methodID);
@@ -640,21 +692,18 @@ jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
   return NULL;
 }
 
-jobjectArray NewJNIRectArray(JNIEnv* env,
-                             const std::vector<CefRect>& vals) {
-  if(vals.empty())
+jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals) {
+  if (vals.empty())
     return NULL;
 
   jclass cls = FindClass(env, "java/awt/Rectangle");
   if (!cls)
     return NULL;
 
-  jobjectArray arr = env->NewObjectArray(
-      static_cast<jsize>(vals.size()),
-      cls,
-      NULL);
+  jobjectArray arr =
+      env->NewObjectArray(static_cast<jsize>(vals.size()), cls, NULL);
 
-  for(jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
+  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
     env->SetObjectArrayElement(arr, i, NewJNIRect(env, vals[i]));
 
   return arr;
@@ -708,15 +757,15 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     tmp.clear();
   }
   GetJNIFieldBoolean(env, cls, obj, "windowless_rendering_enabled",
-      &settings.windowless_rendering_enabled);
+                     &settings.windowless_rendering_enabled);
   GetJNIFieldBoolean(env, cls, obj, "command_line_args_disabled",
-      &settings.command_line_args_disabled);
+                     &settings.command_line_args_disabled);
   if (GetJNIFieldString(env, cls, obj, "cache_path", &tmp) && !tmp.empty()) {
     CefString(&settings.cache_path) = tmp;
     tmp.clear();
   }
   GetJNIFieldBoolean(env, cls, obj, "persist_session_cookies",
-      &settings.persist_session_cookies);
+                     &settings.persist_session_cookies);
   if (GetJNIFieldString(env, cls, obj, "user_agent", &tmp) && !tmp.empty()) {
     CefString(&settings.user_agent) = tmp;
     tmp.clear();
@@ -736,22 +785,22 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
   }
   jobject obj_sev = NULL;
   if (GetJNIFieldObject(env, cls, obj, "log_severity", &obj_sev,
-          "Lorg/cef/CefSettings$LogSeverity;")) {
+                        "Lorg/cef/CefSettings$LogSeverity;")) {
     if (obj_sev != NULL) {
       if (IsJNIEnumValue(env, obj_sev, "org/cef/CefSettings$LogSeverity",
-                     "LOGSEVERITY_VERBOSE"))
+                         "LOGSEVERITY_VERBOSE"))
         settings.log_severity = LOGSEVERITY_VERBOSE;
       else if (IsJNIEnumValue(env, obj_sev, "org/cef/CefSettings$LogSeverity",
-                     "LOGSEVERITY_INFO"))
+                              "LOGSEVERITY_INFO"))
         settings.log_severity = LOGSEVERITY_INFO;
       else if (IsJNIEnumValue(env, obj_sev, "org/cef/CefSettings$LogSeverity",
-                     "LOGSEVERITY_WARNING"))
+                              "LOGSEVERITY_WARNING"))
         settings.log_severity = LOGSEVERITY_WARNING;
       else if (IsJNIEnumValue(env, obj_sev, "org/cef/CefSettings$LogSeverity",
-                     "LOGSEVERITY_ERROR"))
+                              "LOGSEVERITY_ERROR"))
         settings.log_severity = LOGSEVERITY_ERROR;
       else if (IsJNIEnumValue(env, obj_sev, "org/cef/CefSettings$LogSeverity",
-                     "LOGSEVERITY_DISABLE"))
+                              "LOGSEVERITY_DISABLE"))
         settings.log_severity = LOGSEVERITY_DISABLE;
       else
         settings.log_severity = LOGSEVERITY_DEFAULT;
@@ -773,18 +822,18 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     tmp.clear();
   }
   GetJNIFieldBoolean(env, cls, obj, "pack_loading_disabled",
-      &settings.pack_loading_disabled);
+                     &settings.pack_loading_disabled);
   GetJNIFieldInt(env, cls, obj, "remote_debugging_port",
-      &settings.remote_debugging_port);
+                 &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
-      &settings.uncaught_exception_stack_size);
+                 &settings.uncaught_exception_stack_size);
   GetJNIFieldInt(env, cls, obj, "context_safety_implementation",
-      &settings.context_safety_implementation);
+                 &settings.context_safety_implementation);
   GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
-      &settings.ignore_certificate_errors);
+                     &settings.ignore_certificate_errors);
   jobject obj_col = NULL;
   if (GetJNIFieldObject(env, cls, obj, "background_color", &obj_col,
-          "Lorg/cef/CefSettings$ColorType;")) {
+                        "Lorg/cef/CefSettings$ColorType;")) {
     if (obj_col != NULL) {
       jlong jcolor = 0;
       JNI_CALL_METHOD(env, obj_col, "getColor", "()J", Long, jcolor);
@@ -797,23 +846,23 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
 jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return NULL;
-  CefRefPtr<ClientHandler> client = (ClientHandler*)browser->GetHost()->GetClient().get();
+  CefRefPtr<ClientHandler> client =
+      (ClientHandler*)browser->GetHost()->GetClient().get();
   return client->getBrowser(browser);
 }
 
 jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler) {
-    jobject jbrowsers = NULL;
-  JNI_CALL_METHOD(env, jclientHandler,
-                  "getAllBrowser",
-                  "()[Ljava/lang/Object;",
-                  Object,
-                  jbrowsers);
-  if(!jbrowsers)
+  jobject jbrowsers = NULL;
+  JNI_CALL_METHOD(env, jclientHandler, "getAllBrowser", "()[Ljava/lang/Object;",
+                  Object, jbrowsers);
+  if (!jbrowsers)
     return NULL;
   return (jobjectArray)jbrowsers;
 }
 
-jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname) {
+jobject GetJNIEnumValue(JNIEnv* env,
+                        const char* class_name,
+                        const char* enum_valname) {
   jclass sourceCls = FindClass(env, class_name);
   if (!sourceCls)
     return NULL;
@@ -821,7 +870,8 @@ jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_va
   std::string tmp;
   tmp.append("L").append(class_name).append(";");
 
-  jfieldID fieldId = env->GetStaticFieldID(sourceCls, enum_valname, tmp.c_str());
+  jfieldID fieldId =
+      env->GetStaticFieldID(sourceCls, enum_valname, tmp.c_str());
   if (!fieldId)
     return NULL;
 
@@ -829,19 +879,18 @@ jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_va
   return jsource;
 }
 
-bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const char* enum_valname) {
-  if(!jenum)
+bool IsJNIEnumValue(JNIEnv* env,
+                    jobject jenum,
+                    const char* class_name,
+                    const char* enum_valname) {
+  if (!jenum)
     return false;
 
   jobject compareTo = GetJNIEnumValue(env, class_name, enum_valname);
   if (compareTo) {
     jboolean isEqual = JNI_FALSE;
-    JNI_CALL_METHOD(env, jenum,
-                    "equals",
-                    "(Ljava/lang/Object;)Z",
-                    Boolean,
-                    isEqual,
-                    compareTo);
+    JNI_CALL_METHOD(env, jenum, "equals", "(Ljava/lang/Object;)Z", Boolean,
+                    isEqual, compareTo);
     return (isEqual != JNI_FALSE);
   }
   return false;

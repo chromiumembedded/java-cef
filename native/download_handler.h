@@ -17,10 +17,10 @@ class DownloadHandler : public CefDownloadHandler {
 
   // CefDownloadHandler methods
   virtual void OnBeforeDownload(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefDownloadItem> download_item,
-    const CefString& suggested_name,
-    CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefDownloadItem> download_item,
+      const CefString& suggested_name,
+      CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
 
   virtual void OnDownloadUpdated(
       CefRefPtr<CefBrowser> browser,

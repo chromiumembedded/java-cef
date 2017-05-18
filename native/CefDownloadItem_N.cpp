@@ -6,8 +6,8 @@
 #include "include/cef_download_item.h"
 #include "jni_util.h"
 
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsValid
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1IsValid(JNIEnv* env, jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -15,8 +15,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsValid
   return downloadItem->IsValid() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsInProgress
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1IsInProgress(JNIEnv* env,
+                                                         jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -24,8 +25,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsInProgr
   return downloadItem->IsInProgress() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsComplete
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1IsComplete(JNIEnv* env,
+                                                       jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -33,8 +35,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsComplet
   return downloadItem->IsComplete() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsCanceled
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1IsCanceled(JNIEnv* env,
+                                                       jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -42,8 +45,9 @@ JNIEXPORT jboolean JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1IsCancele
   return downloadItem->IsCanceled() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetCurrentSpeed
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jlong JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetCurrentSpeed(JNIEnv* env,
+                                                            jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -51,8 +55,9 @@ JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetCurrentSp
   return downloadItem->GetCurrentSpeed();
 }
 
-JNIEXPORT jint JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetPercentComplete
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetPercentComplete(JNIEnv* env,
+                                                               jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -60,8 +65,9 @@ JNIEXPORT jint JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetPercentCom
   return downloadItem->GetPercentComplete();
 }
 
-JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetTotalBytes
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jlong JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetTotalBytes(JNIEnv* env,
+                                                          jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -69,8 +75,9 @@ JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetTotalByte
   return downloadItem->GetTotalBytes();
 }
 
-JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetReceivedBytes
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jlong JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetReceivedBytes(JNIEnv* env,
+                                                             jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -78,8 +85,9 @@ JNIEXPORT jlong JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetReceivedB
   return downloadItem->GetReceivedBytes();
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetStartTime
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetStartTime(JNIEnv* env,
+                                                         jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -88,8 +96,9 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetStartTi
   return NewJNIDate(env, start);
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime(JNIEnv* env,
+                                                       jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -98,8 +107,9 @@ JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime
   return NewJNIDate(env, end);
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetFullPath
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetFullPath(JNIEnv* env,
+                                                        jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -107,8 +117,8 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetFullPat
   return NewJNIString(env, downloadItem->GetFullPath());
 }
 
-JNIEXPORT jint JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetId
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetId(JNIEnv* env, jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -116,8 +126,8 @@ JNIEXPORT jint JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetId
   return downloadItem->GetId();
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetURL
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetURL(JNIEnv* env, jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -125,8 +135,9 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetURL
   return NewJNIString(env, downloadItem->GetURL());
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetSuggestedFileName
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetSuggestedFileName(JNIEnv* env,
+                                                                 jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -134,8 +145,9 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetSuggest
   return NewJNIString(env, downloadItem->GetSuggestedFileName());
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetContentDisposition
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetContentDisposition(JNIEnv* env,
+                                                                  jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())
@@ -143,8 +155,9 @@ JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetContent
   return NewJNIString(env, downloadItem->GetContentDisposition());
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_callback_CefDownloadItem_1N_N_1GetMimeType
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_callback_CefDownloadItem_1N_N_1GetMimeType(JNIEnv* env,
+                                                        jobject obj) {
   CefRefPtr<CefDownloadItem> downloadItem =
       GetCefFromJNIObject<CefDownloadItem>(env, obj, "CefDownloadItem");
   if (!downloadItem.get())

@@ -25,12 +25,9 @@ bool WindowHandler::GetRect(jobject browser, CefRect& rect) {
   if (!env)
     return false;
   jobject jreturn = NULL;
-  JNI_CALL_METHOD(env, jhandler_, 
-                  "getRect", 
-                  "(Lorg/cef/browser/CefBrowser;)Ljava/awt/Rectangle;",
-                  Object,
-                  jreturn, 
-                  browser);
+  JNI_CALL_METHOD(env, jhandler_, "getRect",
+                  "(Lorg/cef/browser/CefBrowser;)Ljava/awt/Rectangle;", Object,
+                  jreturn, browser);
   if (jreturn) {
     rect = GetJNIRect(env, jreturn);
     env->DeleteLocalRef(jreturn);
@@ -39,18 +36,17 @@ bool WindowHandler::GetRect(jobject browser, CefRect& rect) {
   return false;
 }
 
-void WindowHandler::OnMouseEvent(CefRefPtr<CefBrowser> browser, int mouseEvent,
-    int absX, int absY, int modifier, int button) {
+void WindowHandler::OnMouseEvent(CefRefPtr<CefBrowser> browser,
+                                 int mouseEvent,
+                                 int absX,
+                                 int absY,
+                                 int modifier,
+                                 int button) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  JNI_CALL_VOID_METHOD(env, jhandler_,
-                       "onMouseEvent",
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onMouseEvent",
                        "(Lorg/cef/browser/CefBrowser;IIIII)V",
-                       GetJNIBrowser(browser),
-                       (jint)mouseEvent,
-                       (jint)absX,
-                       (jint)absY,
-                       (jint)modifier,
-                       (jint)button);
+                       GetJNIBrowser(browser), (jint)mouseEvent, (jint)absX,
+                       (jint)absY, (jint)modifier, (jint)button);
 }

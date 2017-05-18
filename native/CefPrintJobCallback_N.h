@@ -12,8 +12,8 @@ extern "C" {
  * Method:    N_Continue
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue(JNIEnv*, jobject);
 
 #ifdef __cplusplus
 }

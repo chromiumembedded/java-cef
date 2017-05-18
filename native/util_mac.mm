@@ -4,19 +4,22 @@
 
 #import "util.h"
 #import "util_mac.h"
+
 #import <Cocoa/Cocoa.h>
 #import <Foundation/NSLock.h>
 #import <jni.h>
 #include <objc/runtime.h>
+
 #include "include/cef_app.h"
 #include "include/cef_application_mac.h"
 #include "include/cef_browser.h"
 #include "include/cef_path_util.h"
+
 #include "client_app.h"
 #include "client_handler.h"
 #include "critical_wait.h"
-#include "render_handler.h"
 #include "jni_util.h"
+#include "render_handler.h"
 #include "window_handler.h"
 
 namespace {
@@ -52,12 +55,13 @@ bool g_handling_send_event = false;
 @end
 
 // Obj-C Wrapper Class to be called by "performSelectorOnMainThread".
-@interface CefHandler : NSObject { }
+@interface CefHandler : NSObject {
+}
 
-+ (void) initialize:(InitializeParams*)params;
-+ (void) shutdown;
-+ (void) doMessageLoopWork;
-+ (void) setVisibility:(SetVisibilityParams*)params;
++ (void)initialize:(InitializeParams*)params;
++ (void)shutdown;
++ (void)doMessageLoopWork;
++ (void)setVisibility:(SetVisibilityParams*)params;
 
 @end  // interface CefHandler
 
@@ -88,73 +92,89 @@ bool g_handling_send_event = false;
       class_getInstanceMethod(self, @selector(_swizzled_terminate:));
   method_exchangeImplementations(originalTerm, swizzledTerm);
 
-  g_mouse_monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:
-      (NSLeftMouseDownMask | NSLeftMouseUpMask | NSLeftMouseDraggedMask |
-      NSRightMouseDownMask | NSRightMouseUpMask | NSRightMouseDraggedMask |
-      NSOtherMouseDownMask | NSOtherMouseUpMask | NSOtherMouseDraggedMask |
-      NSScrollWheelMask | NSMouseMovedMask | NSMouseEnteredMask |
-      NSMouseExitedMask) handler:^(NSEvent *evt) {
+  g_mouse_monitor_ = [NSEvent
+      addLocalMonitorForEventsMatchingMask:(NSLeftMouseDownMask |
+                                            NSLeftMouseUpMask |
+                                            NSLeftMouseDraggedMask |
+                                            NSRightMouseDownMask |
+                                            NSRightMouseUpMask |
+                                            NSRightMouseDraggedMask |
+                                            NSOtherMouseDownMask |
+                                            NSOtherMouseUpMask |
+                                            NSOtherMouseDraggedMask |
+                                            NSScrollWheelMask |
+                                            NSMouseMovedMask |
+                                            NSMouseEnteredMask |
+                                            NSMouseExitedMask)
+                                   handler:^(NSEvent* evt) {
 
-    // Get corresponding CefWindowHandle of Java-Canvas
-    CefWindowHandle browser = NULL;
-    NSPoint absPos = [evt locationInWindow];
-    NSWindow* evtWin = [evt window];
-    g_browsers_lock_.Lock();
-    std::set<CefWindowHandle> browsers = g_browsers_;
-    g_browsers_lock_.Unlock();
+                                     // Get corresponding CefWindowHandle of
+                                     // Java-Canvas
+                                     CefWindowHandle browser = NULL;
+                                     NSPoint absPos = [evt locationInWindow];
+                                     NSWindow* evtWin = [evt window];
+                                     g_browsers_lock_.Lock();
+                                     std::set<CefWindowHandle> browsers =
+                                         g_browsers_;
+                                     g_browsers_lock_.Unlock();
 
-    std::set<CefWindowHandle>::iterator it;
-    for (it = browsers.begin(); it != browsers.end(); ++it) {
-      NSPoint relPos = [*it convertPoint:absPos fromView:nil];
-      if (evtWin == [*it window] && [*it mouse:relPos inRect:[*it frame]]) {
-          browser = *it;
-        break;
-      }
-    }
+                                     std::set<CefWindowHandle>::iterator it;
+                                     for (it = browsers.begin();
+                                          it != browsers.end(); ++it) {
+                                       NSPoint relPos = [*it convertPoint:absPos
+                                                                 fromView:nil];
+                                       if (evtWin == [*it window] &&
+                                           [*it mouse:relPos
+                                               inRect:[*it frame]]) {
+                                         browser = *it;
+                                         break;
+                                       }
+                                     }
 
-    if (!browser)
-      return evt;
+                                     if (!browser)
+                                       return evt;
 
-    // Forward mouse event to browsers parent (JCEF UI)
-    switch([evt type]) {
-      case NSLeftMouseDown:
-      case NSOtherMouseDown:
-      case NSRightMouseDown:
-        [[browser superview] mouseDown:evt];
-        return evt;
+                                     // Forward mouse event to browsers parent
+                                     // (JCEF UI)
+                                     switch ([evt type]) {
+                                       case NSLeftMouseDown:
+                                       case NSOtherMouseDown:
+                                       case NSRightMouseDown:
+                                         [[browser superview] mouseDown:evt];
+                                         return evt;
 
-      case NSLeftMouseUp:
-      case NSOtherMouseUp:
-      case NSRightMouseUp:
-        [[browser superview] mouseUp:evt];
-        return evt;
+                                       case NSLeftMouseUp:
+                                       case NSOtherMouseUp:
+                                       case NSRightMouseUp:
+                                         [[browser superview] mouseUp:evt];
+                                         return evt;
 
-      case NSLeftMouseDragged:
-      case NSOtherMouseDragged:
-      case NSRightMouseDragged:
-        [[browser superview] mouseDragged:evt];
-        return evt;
+                                       case NSLeftMouseDragged:
+                                       case NSOtherMouseDragged:
+                                       case NSRightMouseDragged:
+                                         [[browser superview] mouseDragged:evt];
+                                         return evt;
 
-      case NSMouseMoved:
-        [[browser superview] mouseMoved:evt];
-        return evt;
+                                       case NSMouseMoved:
+                                         [[browser superview] mouseMoved:evt];
+                                         return evt;
 
-      case NSMouseEntered:
-        [[browser superview] mouseEntered:evt];
-        return evt;
+                                       case NSMouseEntered:
+                                         [[browser superview] mouseEntered:evt];
+                                         return evt;
 
-      case NSMouseExited:
-        [[browser superview] mouseExited:evt];
-        return evt;
+                                       case NSMouseExited:
+                                         [[browser superview] mouseExited:evt];
+                                         return evt;
 
-      case NSScrollWheel:
-        [[browser superview] scrollWheel:evt];
-        return evt;
+                                       case NSScrollWheel:
+                                         [[browser superview] scrollWheel:evt];
+                                         return evt;
 
-      default:
-        return evt;
-    }
-  }];
+                                       default:
+                                         return evt;
+                                     }
+                                   }];
 }
 
 - (BOOL)isHandlingSendEvent {
@@ -190,13 +210,13 @@ bool g_handling_send_event = false;
 @implementation CefHandler
 
 // |params| will be released by the caller.
-+ (void) initialize:(InitializeParams*)params {
++ (void)initialize:(InitializeParams*)params {
   g_client_app_ = params->application_;
   params->result_ = CefInitialize(params->args_, params->settings_,
                                   g_client_app_.get(), NULL);
 }
 
-+ (void) shutdown {
++ (void)shutdown {
   // Pump CefDoMessageLoopWork a few times before shutting down.
   for (int i = 0; i < 10; ++i)
     CefDoMessageLoopWork();
@@ -207,11 +227,11 @@ bool g_handling_send_event = false;
   [NSEvent removeMonitor:g_mouse_monitor_];
 }
 
-+ (void) doMessageLoopWork {
++ (void)doMessageLoopWork {
   CefDoMessageLoopWork();
 }
 
-+ (void) setVisibility:(SetVisibilityParams*)params {
++ (void)setVisibility:(SetVisibilityParams*)params {
   if (g_client_app_) {
     bool isHidden = [params->handle_ isHidden];
     if (isHidden == params->isVisible_) {
@@ -232,9 +252,9 @@ bool g_handling_send_event = false;
 // The CefBrowserContentView defines the viewable part of the browser view.
 // In most cases the content view has the same size as the browser view,
 // but for example if you add CefBrowser to a JScrollPane, you only want to
-// see the portion of the browser window you're scrolled to. In this case 
+// see the portion of the browser window you're scrolled to. In this case
 // the sizes of the content view and the browser view differ.
-// 
+//
 // With other words the CefBrowserContentView clips the CefBrowser to its
 // displayable content.
 //
@@ -252,7 +272,7 @@ bool g_handling_send_event = false;
 // |  +-------------------------+ /   /   /  |
 //   /   /   /   /   /   /   /   /   /   /
 // |/   /   /   /   /   /   /   /   /   /   /|
-//     /   /   /   /   /   /   /   /   /   / 
+//     /   /   /   /   /   /   /   /   /   /
 // |  /   /   /   /   /   /   /   /   /   /  |
 // +- - - - - - - - - - - - - - - - - - - - -+
 @interface CefBrowserContentView : NSView {
@@ -261,28 +281,28 @@ bool g_handling_send_event = false;
 
 @property(readonly) BOOL isLiveResizing;
 
--(void) addCefBrowser:(CefRefPtr<CefBrowser>)browser;
--(void) removeCefBrowser;
--(void) updateView:(NSDictionary*)dict;
+- (void)addCefBrowser:(CefRefPtr<CefBrowser>)browser;
+- (void)removeCefBrowser;
+- (void)updateView:(NSDictionary*)dict;
 @end  // interface CefBrowserContentView
 
 @implementation CefBrowserContentView
 
 @synthesize isLiveResizing;
 
--(id)initWithFrame:(NSRect)frameRect {
+- (id)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
   cefBrowser = NULL;
   return self;
 }
 
--(void)dealloc {
+- (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   cefBrowser = NULL;
   [super dealloc];
 }
 
--(void) setFrame:(NSRect)frameRect {
+- (void)setFrame:(NSRect)frameRect {
   // Instead of using the passed frame, get the visible rect from java because
   // the passed frame rect doesn't contain the clipped view part. Otherwise
   // we'll overlay some parts of the Java UI.
@@ -301,38 +321,39 @@ bool g_handling_send_event = false;
   [super setFrame:frameRect];
 }
 
--(void) addCefBrowser:(CefRefPtr<CefBrowser>)browser {
+- (void)addCefBrowser:(CefRefPtr<CefBrowser>)browser {
   cefBrowser = browser;
   // Register for the start and end events of "liveResize" to avoid
   // Java paint updates while someone is resizing the main window (e.g. by
-  // pulling with the mouse cursor) 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-      selector:@selector(windowWillStartLiveResize:)
-      name:NSWindowWillStartLiveResizeNotification
-      object:[self window]];
+  // pulling with the mouse cursor)
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-      selector:@selector(windowDidEndLiveResize:)
-      name:NSWindowDidEndLiveResizeNotification
-      object:[self window]];
+         selector:@selector(windowWillStartLiveResize:)
+             name:NSWindowWillStartLiveResizeNotification
+           object:[self window]];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(windowDidEndLiveResize:)
+             name:NSWindowDidEndLiveResizeNotification
+           object:[self window]];
 }
 
--(void) removeCefBrowser {
+- (void)removeCefBrowser {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   cefBrowser = NULL;
   [self removeFromSuperview];
 }
 
-- (void)windowWillStartLiveResize:(NSNotification *)notification {
+- (void)windowWillStartLiveResize:(NSNotification*)notification {
   isLiveResizing = YES;
 }
 
-- (void)windowDidEndLiveResize:(NSNotification *)notification {
+- (void)windowDidEndLiveResize:(NSNotification*)notification {
   isLiveResizing = NO;
-  [self setFrame: [self frame]];
+  [self setFrame:[self frame]];
 }
 
--(void) updateView:(NSDictionary*)dict {
+- (void)updateView:(NSDictionary*)dict {
   NSRect contentRect = NSRectFromString([dict valueForKey:@"content"]);
   NSRect browserRect = NSRectFromString([dict valueForKey:@"browser"]);
 
@@ -346,7 +367,6 @@ bool g_handling_send_event = false;
 }
 
 @end  // implementation CefBrowserContentView
-
 
 namespace util_mac {
 
@@ -366,17 +386,17 @@ bool IsNSView(void* ptr) {
 }
 
 CefWindowHandle CreateBrowserContentView(CefWindowHandle cefWindow,
-    CefRect& orig) {
+                                         CefRect& orig) {
   NSWindow* window = (NSWindow*)cefWindow;
   NSView* mainView = (CefWindowHandle)[window contentView];
   TranslateRect(mainView, orig);
-  NSRect frame = {{orig.x,orig.y},{orig.width,orig.height}};
+  NSRect frame = {{orig.x, orig.y}, {orig.width, orig.height}};
 
   CefBrowserContentView* contentView =
       [[CefBrowserContentView alloc] initWithFrame:frame];
 
   [mainView addSubview:contentView];
-  [contentView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  [contentView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
   [contentView setNeedsDisplay:YES];
 
   // Make the content view for the window have a layer. This will make all
@@ -387,7 +407,7 @@ CefWindowHandle CreateBrowserContentView(CefWindowHandle cefWindow,
   [contentView release];
 
   // Override origin bevore "orig" is returned because the new origin is
-  // relative to the created CefBrowserContentView object 
+  // relative to the created CefBrowserContentView object
   orig.x = 0;
   orig.y = 0;
   return contentView;
@@ -439,10 +459,11 @@ void SetVisibility(CefWindowHandle handle, bool isVisible) {
                                     waitUntilDone:NO];
 }
 
-void UpdateView(CefWindowHandle handle, CefRect contentRect,
-    CefRect browserRect) {
+void UpdateView(CefWindowHandle handle,
+                CefRect contentRect,
+                CefRect browserRect) {
   util_mac::TranslateRect(handle, contentRect);
-  CefBrowserContentView *browser = (CefBrowserContentView*)[handle superview];
+  CefBrowserContentView* browser = (CefBrowserContentView*)[handle superview];
   browserRect.y = contentRect.height - browserRect.height - browserRect.y;
 
   // Only update the view if nobody is currently resizing the main window.
@@ -450,21 +471,22 @@ void UpdateView(CefWindowHandle handle, CefRect contentRect,
   // significant delay between the native window resize event and the java
   // resize event
   if (![browser isLiveResizing]) {
-    NSString *contentStr = [[NSString alloc] initWithFormat:@"{{%d,%d},{%d,%d}",
-        contentRect.x, contentRect.y, contentRect.width, contentRect.height];
-    NSString *browserStr = [[NSString alloc] initWithFormat:@"{{%d,%d},{%d,%d}",
-        browserRect.x, browserRect.y, browserRect.width, browserRect.height];
-    NSDictionary* dict =
-        [[NSDictionary alloc] initWithObjectsAndKeys:contentStr,@"content",
-                                                     browserStr,@"browser",
-                                                     nil];
-    [browser performSelectorOnMainThread:@selector(updateView:) withObject:dict
-        waitUntilDone:NO];
+    NSString* contentStr = [[NSString alloc]
+        initWithFormat:@"{{%d,%d},{%d,%d}", contentRect.x, contentRect.y,
+                       contentRect.width, contentRect.height];
+    NSString* browserStr = [[NSString alloc]
+        initWithFormat:@"{{%d,%d},{%d,%d}", browserRect.x, browserRect.y,
+                       browserRect.width, browserRect.height];
+    NSDictionary* dict = [[NSDictionary alloc]
+        initWithObjectsAndKeys:contentStr, @"content", browserStr, @"browser",
+                               nil];
+    [browser performSelectorOnMainThread:@selector(updateView:)
+                              withObject:dict
+                           waitUntilDone:NO];
   }
 }
 
 }  // namespace util_mac
-
 
 namespace util {
 
@@ -475,7 +497,7 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
   g_browsers_lock_.Lock();
   g_browsers_.insert(handle);
   g_browsers_lock_.Unlock();
-  CefBrowserContentView *browserImpl =
+  CefBrowserContentView* browserImpl =
       (CefBrowserContentView*)[handle superview];
   [browserImpl addCefBrowser:browser];
 }
@@ -493,7 +515,7 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   // created by calling "window.open()" in JavaScript.
   NSView* superView = [handle superview];
   if ([superView isKindOfClass:[CefBrowserContentView class]]) {
-    CefBrowserContentView *browserView =
+    CefBrowserContentView* browserView =
         (CefBrowserContentView*)[handle superview];
     [browserView removeCefBrowser];
   }

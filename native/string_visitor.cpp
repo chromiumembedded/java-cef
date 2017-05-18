@@ -16,12 +16,10 @@ StringVisitor::~StringVisitor() {
   env->DeleteGlobalRef(jvisitor_);
 }
 
-void StringVisitor::Visit(const CefString &string){
+void StringVisitor::Visit(const CefString& string) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  JNI_CALL_VOID_METHOD(env, jvisitor_,
-                       "visit",
-                       "(Ljava/lang/String;)V",
+  JNI_CALL_VOID_METHOD(env, jvisitor_, "visit", "(Ljava/lang/String;)V",
                        NewJNIString(env, string));
 }

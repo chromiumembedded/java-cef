@@ -25,21 +25,21 @@ size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
   base::AutoLock lock_scope(lock_);
   size_t rv = n;
   BEGIN_ENV(env)
-  jbyteArray jbyteArray = env->NewByteArray((jsize)(size*n));
-  env->SetByteArrayRegion(jbyteArray, 0, (jsize)(size*n), (const jbyte*)ptr);
+  jbyteArray jbyteArray = env->NewByteArray((jsize)(size * n));
+  env->SetByteArrayRegion(jbyteArray, 0, (jsize)(size * n), (const jbyte*)ptr);
 
   JNI_CALL_VOID_METHOD_EX(env, jOutputStream_, "write", "([B)V", jbyteArray);
   if (env->ExceptionOccurred()) {
     env->ExceptionClear();
     rv = 0;
   }
-  offset_ += (rv*size);
+  offset_ += (rv * size);
   END_ENV(env)
 
   return rv;
 }
 
-int WriteHandler::Seek(int64 offset, int whence)  {
+int WriteHandler::Seek(int64 offset, int whence) {
   // not supported by Javas OutputStream
   return -1;
 }

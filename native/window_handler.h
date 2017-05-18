@@ -20,8 +20,12 @@ class WindowHandler : public CefBaseRefCounted {
   // WindowHandler methods
   bool GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
   bool GetRect(jobject browser, CefRect& rect);
-  void OnMouseEvent(CefRefPtr<CefBrowser> browser, int mouseEvent, int absX,
-      int absY, int modifier, int button);
+  void OnMouseEvent(CefRefPtr<CefBrowser> browser,
+                    int mouseEvent,
+                    int absX,
+                    int absY,
+                    int modifier,
+                    int button);
 
  protected:
   jobject jhandler_;

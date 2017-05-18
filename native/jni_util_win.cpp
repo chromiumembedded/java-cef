@@ -3,11 +3,12 @@
 // can be found in the LICENSE file.
 
 #include "jni_util.h"
+
+#include <assert.h>
 #include <jawt.h>
 #include <jawt_md.h>
-#include <assert.h>
 
-HWND GetHwndOfCanvas(jobject canvas, JNIEnv *env) {
+HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
   JAWT awt;
   JAWT_DrawingSurface* ds;
   JAWT_DrawingSurfaceInfo* dsi;

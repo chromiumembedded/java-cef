@@ -12,8 +12,10 @@ extern "C" {
  * Method:    N_Continue
  * Signature: (Z)V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefGeolocationCallback_1N_N_1Continue
-  (JNIEnv *, jobject, jboolean);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefGeolocationCallback_1N_N_1Continue(JNIEnv*,
+                                                            jobject,
+                                                            jboolean);
 
 #ifdef __cplusplus
 }

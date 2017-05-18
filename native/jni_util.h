@@ -23,20 +23,20 @@ JNIEnv* GetJNIEnv();
 //
 // INSTEAD OF USING THIS FUNCTION DIRECTLY, USE THE HELPER MACRO
 // BEGIN_ENV(e) INSTEAD.
-jint GetJNIEnv(JNIEnv **env, bool *mustDetach);
+jint GetJNIEnv(JNIEnv** env, bool* mustDetach);
 
 // Detaches the current thread from the VM.
 //
 // INSTEAD OF USING THIS FUNCTION DIRECTLY; USE THE HELPER MACRO
 // END_ENV(e) INSTEAD.
-void DetachFromThread(bool *mustDetach);
+void DetachFromThread(bool* mustDetach);
 
 // Sets the java class loader to use for creating java objects in native code.
 // We have to use a class loader instead of the JNIEnv::FindClass method
 // because JNIEnv::FindClass always uses the system class loader if called
 // from a non-Java thread, which will not work if the embedding Java code
 // uses a custom class loader for JCEF classes (e.g. in JavaWebStart).
-void SetJavaClassLoader(JNIEnv *env, jobject javaClassLoader);
+void SetJavaClassLoader(JNIEnv* env, jobject javaClassLoader);
 
 // Returns a class with the given fully qualified |class_name| (with '/' as
 // separator).
@@ -44,17 +44,16 @@ jclass FindClass(JNIEnv* env, const char* class_name);
 
 // Helper macros to bind and release the JNI environment
 // to other threads than the JNI function was called on.
-#define BEGIN_ENV(e) \
-  JNIEnv *e = NULL; \
+#define BEGIN_ENV(e)           \
+  JNIEnv* e = NULL;            \
   bool __shouldDetach = false; \
-  if (GetJNIEnv(&e, &__shouldDetach) == JNI_OK && e != NULL) { \
+  if (GetJNIEnv(&e, &__shouldDetach) == JNI_OK && e != NULL) {
+#define END_ENV(e)                   \
+  DetachFromThread(&__shouldDetach); \
+  }
 
-#define END_ENV(e) \
-    DetachFromThread(&__shouldDetach); \
-  } \
-
-# if defined(OS_WIN)
-HWND GetHwndOfCanvas(jobject canvas, JNIEnv *env);
+#if defined(OS_WIN)
+HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env);
 #endif
 
 // Create a new JNI object and call the default constructor.
@@ -75,7 +74,9 @@ CefString GetJNIStringRef(JNIEnv* env, jobject jstringRef);
 // Set primitive reference values
 void SetJNIBoolRef(JNIEnv* env, jobject jboolRef, bool boolValue);
 void SetJNIIntRef(JNIEnv* env, jobject jintRef, int intValue);
-void SetJNIStringRef(JNIEnv* env, jobject jstringRef, const CefString& initValue);
+void SetJNIStringRef(JNIEnv* env,
+                     jobject jstringRef,
+                     const CefString& initValue);
 
 // Create a new date type
 jobject NewJNIDate(JNIEnv* env, const CefTime& time);
@@ -90,11 +91,11 @@ CefCookie GetJNICookie(JNIEnv* env, jobject jcookie);
 CefString GetJNIString(JNIEnv* env, jstring jstr);
 
 // Retrieve a String array.
-void GetJNIStringArray(JNIEnv* env, jobjectArray jarray,
+void GetJNIStringArray(JNIEnv* env,
+                       jobjectArray jarray,
                        std::vector<CefString>& vals);
 
-CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env,
-                                                 jobject jConfig);
+CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig);
 CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
                                                            jobject jRouter);
 
@@ -105,50 +106,74 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
 jstring NewJNIString(JNIEnv* env, const CefString& str);
 
 // Create a new array of String values.
-jobjectArray NewJNIStringArray(JNIEnv* env,
-                               const std::vector<CefString>& vals);
+jobjectArray NewJNIStringArray(JNIEnv* env, const std::vector<CefString>& vals);
 
-jobject NewJNIStringVector(JNIEnv* env,
-                           const std::vector<CefString>& vals);
+jobject NewJNIStringVector(JNIEnv* env, const std::vector<CefString>& vals);
 
-void AddJNIStringToVector(JNIEnv* env, jobject jvector, 
-                          const CefString &str);
+void AddJNIStringToVector(JNIEnv* env, jobject jvector, const CefString& str);
 
-void GetJNIStringVector(JNIEnv* env, jobject jvector,
+void GetJNIStringVector(JNIEnv* env,
+                        jobject jvector,
                         std::vector<CefString>& vals);
 
-bool GetJNIFieldString(JNIEnv* env, jclass cls, jobject obj,
-                       const char* field_name, CefString *value);
+bool GetJNIFieldString(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       CefString* value);
 
-bool GetJNIFieldDate(JNIEnv* env, jclass cls, jobject obj,
-                     const char* field_name, CefTime* value);
+bool GetJNIFieldDate(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     CefTime* value);
 
-bool GetJNIFieldBoolean(JNIEnv* env, jclass cls, jobject obj,
-                        const char* field_name, int* value);
+bool GetJNIFieldBoolean(JNIEnv* env,
+                        jclass cls,
+                        jobject obj,
+                        const char* field_name,
+                        int* value);
 
-bool GetJNIFieldObject(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, jobject* value,
-                    const char* object_type);
+bool GetJNIFieldObject(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       jobject* value,
+                       const char* object_type);
 
 // Retrieve the int value stored in the |field_name| field of |cls|.
-bool GetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, int* value);
+bool GetJNIFieldInt(JNIEnv* env,
+                    jclass cls,
+                    jobject obj,
+                    const char* field_name,
+                    int* value);
 
 // Set the int value stored in the |field_name| field of |cls|.
-bool SetJNIFieldInt(JNIEnv* env, jclass cls, jobject obj,
-                    const char* field_name, int value);
+bool SetJNIFieldInt(JNIEnv* env,
+                    jclass cls,
+                    jobject obj,
+                    const char* field_name,
+                    int value);
 
 // Retrieve the static int value stored in the |field_name| field of |cls|.
-bool GetJNIFieldStaticInt(JNIEnv* env, jclass cls,
-                          const char* field_name, int* value);
+bool GetJNIFieldStaticInt(JNIEnv* env,
+                          jclass cls,
+                          const char* field_name,
+                          int* value);
 
 // Call a JNI method that returns an int and accepts no arguments.
-bool CallJNIMethodI_V(JNIEnv* env, jclass cls, jobject obj,
-                      const char* method_name, int* value);
+bool CallJNIMethodI_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      int* value);
 
 // Call a JNI method that returns a char and accepts no arguments.
-bool CallJNIMethodC_V(JNIEnv* env, jclass cls, jobject obj,
-                      const char* method_name, char* value);
+bool CallJNIMethodC_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      char* value);
 
 // Retrieve the CefPageRange equivalent of a org.cef.misc.CefPageRange
 CefRange GetJNIPageRange(JNIEnv* env, jobject obj);
@@ -166,8 +191,7 @@ CefRect GetJNIRect(JNIEnv* env, jobject obj);
 jobject NewJNIRect(JNIEnv* env, const CefRect& rect);
 
 // create a new array of java.awt.Rectangle.
-jobjectArray NewJNIRectArray(JNIEnv* env,
-                             const std::vector<CefRect>& vals);
+jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals);
 
 // Retrieve the value of a java.awt.Point.
 bool GetJNIPoint(JNIEnv* env, jobject obj, int* x, int* y);
@@ -181,14 +205,19 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj);
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler);
 
-jobject GetJNIEnumValue(JNIEnv* env, const char* class_name, const char* enum_valname);
+jobject GetJNIEnumValue(JNIEnv* env,
+                        const char* class_name,
+                        const char* enum_valname);
 
-bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const char* enum_valname);
+bool IsJNIEnumValue(JNIEnv* env,
+                    jobject jenum,
+                    const char* class_name,
+                    const char* enum_valname);
 
 // Helper macro for handling jni enum values in a switch statement
-#define JNI_CASE(env, cls, type, result) \
-  case type: \
-    result = GetJNIEnumValue(env,cls,#type); \
+#define JNI_CASE(env, cls, type, result)       \
+  case type:                                   \
+    result = GetJNIEnumValue(env, cls, #type); \
     break;
 
 // Helper macros for defining and retrieving static ints.
@@ -197,54 +226,57 @@ bool IsJNIEnumValue(JNIEnv* env, jobject jenum, const char* class_name, const ch
 #define JNI_STATIC_DEFINE_INT(env, cls, name) \
   JNI_STATIC_DEFINE_INT_RV(env, cls, name, );
 
-#define JNI_STATIC_DEFINE_INT_RV(env, cls, name, rv) \
-  static int JNI_STATIC(name) = -1; \
-  if (JNI_STATIC(name) == -1 && \
+#define JNI_STATIC_DEFINE_INT_RV(env, cls, name, rv)             \
+  static int JNI_STATIC(name) = -1;                              \
+  if (JNI_STATIC(name) == -1 &&                                  \
       !GetJNIFieldStaticInt(env, cls, #name, &JNI_STATIC(name))) \
     return rv;
 
 // Helper macros to call a method on the java side
-#define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...) { \
-  if (env && obj) { \
-    jclass _cls = env->GetObjectClass(obj); \
-    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
-    if (_methodId != NULL) { \
-      storeIn = env->Call ## type ## Method(obj, _methodId, ##__VA_ARGS__); \
-    } \
-    if (env->ExceptionOccurred()) { \
-      env->ExceptionDescribe(); \
-      env->ExceptionClear(); \
-    } \
-  } \
-}
+#define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...)        \
+  {                                                                       \
+    if (env && obj) {                                                     \
+      jclass _cls = env->GetObjectClass(obj);                             \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig);          \
+      if (_methodId != NULL) {                                            \
+        storeIn = env->Call##type##Method(obj, _methodId, ##__VA_ARGS__); \
+      }                                                                   \
+      if (env->ExceptionOccurred()) {                                     \
+        env->ExceptionDescribe();                                         \
+        env->ExceptionClear();                                            \
+      }                                                                   \
+    }                                                                     \
+  }
 
-#define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...) { \
-  if (env && obj) {\
-    jclass _cls = env->GetObjectClass(obj); \
-    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
-    if (_methodId != NULL) { \
-      env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__); \
-    } \
-  } \
-}
+#define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...)      \
+  {                                                              \
+    if (env && obj) {                                            \
+      jclass _cls = env->GetObjectClass(obj);                    \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+      if (_methodId != NULL) {                                   \
+        env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__);      \
+      }                                                          \
+    }                                                            \
+  }
 
-#define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...) { \
-  if (env && obj) {\
-    jclass _cls = env->GetObjectClass(obj); \
-    jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
-    if (_methodId != NULL) { \
-      env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__); \
-    } \
-    if (env->ExceptionOccurred()) { \
-      env->ExceptionDescribe(); \
-      env->ExceptionClear(); \
-    } \
-  } \
-}
+#define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...)         \
+  {                                                              \
+    if (env && obj) {                                            \
+      jclass _cls = env->GetObjectClass(obj);                    \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+      if (_methodId != NULL) {                                   \
+        env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__);      \
+      }                                                          \
+      if (env->ExceptionOccurred()) {                            \
+        env->ExceptionDescribe();                                \
+        env->ExceptionClear();                                   \
+      }                                                          \
+    }                                                            \
+  }
 
-#define JNI_GET_BROWSER_OR_RETURN(env, obj, ...) \
+#define JNI_GET_BROWSER_OR_RETURN(env, obj, ...)           \
   GetCefFromJNIObject<CefBrowser>(env, obj, "CefBrowser"); \
-  if (!browser.get()) \
+  if (!browser.get())                                      \
     return __VA_ARGS__;
 
 // Type specialization helpers for SetCefForJNIObject.
@@ -255,31 +287,40 @@ struct SetCefForJNIObjectHelper {
   static inline void Release(CefBaseRefCounted* obj) { obj->Release(); }
 
   // For ref-counted implementations that don't derive from CefBaseRefCounted.
-  template<class T>
-  static inline void AddRef(base::RefCountedThreadSafe<T>* obj) { obj->AddRef(); }
-  template<class T>
-  static inline void Release(base::RefCountedThreadSafe<T>* obj) { obj->Release(); }
+  template <class T>
+  static inline void AddRef(base::RefCountedThreadSafe<T>* obj) {
+    obj->AddRef();
+  }
+  template <class T>
+  static inline void Release(base::RefCountedThreadSafe<T>* obj) {
+    obj->Release();
+  }
 };
 
 // Set the CEF base object for an existing JNI object. A reference will be
 // added to the base object. If a previous base object existed a reference
 // will be removed from that object.
 template <class T>
-bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName) {
+bool SetCefForJNIObject(JNIEnv* env,
+                        jobject obj,
+                        T* base,
+                        const char* varName) {
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
   if (!obj)
     return false;
-  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
+                  previousValue, identifer);
 
   T* oldbase = reinterpret_cast<T*>(previousValue);
-  if(oldbase) {
+  if (oldbase) {
     // Remove a reference from the previous base object.
     SetCefForJNIObjectHelper::Release(oldbase);
   }
 
-  JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V", identifer, (jlong)base);
-  if(base) {
+  JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V",
+                       identifer, (jlong)base);
+  if (base) {
     // Add a reference to the new base object.
     SetCefForJNIObjectHelper::AddRef(base);
   }
@@ -292,11 +333,12 @@ T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
   if (obj != NULL)
-    JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long, previousValue, identifer);
+    JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
+                    previousValue, identifer);
 
   if (previousValue != 0)
     return reinterpret_cast<T*>(previousValue);
   return NULL;
 }
 
-#endif // JCEF_NATIVE_JNI_UTIL_H_
+#endif  // JCEF_NATIVE_JNI_UTIL_H_

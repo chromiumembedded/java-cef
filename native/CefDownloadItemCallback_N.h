@@ -12,8 +12,8 @@ extern "C" {
  * Method:    N_Cancel
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel(JNIEnv*, jobject);
 
 #ifdef __cplusplus
 }

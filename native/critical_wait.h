@@ -11,11 +11,11 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #define WAIT_MUTEX HANDLE
-#define WAIT_COND  HANDLE
+#define WAIT_COND HANDLE
 #else
 #include <pthread.h>
 #define WAIT_MUTEX pthread_mutex_t
-#define WAIT_COND  pthread_cond_t
+#define WAIT_COND pthread_cond_t
 #endif
 
 class CriticalLock {

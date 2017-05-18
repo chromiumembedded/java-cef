@@ -24,40 +24,38 @@ void FocusHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  JNI_CALL_VOID_METHOD(env, jhandler_, 
-                       "onTakeFocus", 
-                       "(Lorg/cef/browser/CefBrowser;Z)V", 
-                       GetJNIBrowser(browser),
-                       (jboolean)next);
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onTakeFocus",
+                       "(Lorg/cef/browser/CefBrowser;Z)V",
+                       GetJNIBrowser(browser), (jboolean)next);
 }
 
 #if defined(OS_WIN)
 static void FocusParent(HWND browserHandle) {
-    HWND parent = GetParent(browserHandle);
-    SetActiveWindow(parent);
-    SetFocus(parent);
+  HWND parent = GetParent(browserHandle);
+  SetActiveWindow(parent);
+  SetFocus(parent);
 }
 #endif
 
-bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) {
+bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
+                              FocusSource source) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
   jboolean jreturn = JNI_FALSE;
   jobject jsource = NULL;
   switch (source) {
-    JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource", FOCUS_SOURCE_NAVIGATION, jsource);
+    JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource",
+             FOCUS_SOURCE_NAVIGATION, jsource);
     default:
-    JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource", FOCUS_SOURCE_SYSTEM, jsource);
+      JNI_CASE(env, "org/cef/handler/CefFocusHandler$FocusSource",
+               FOCUS_SOURCE_SYSTEM, jsource);
   }
 
-  JNI_CALL_METHOD(env, jhandler_, 
-                  "onSetFocus", 
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefFocusHandler$FocusSource;)Z",
-                  Boolean,
-                  jreturn, 
-                  GetJNIBrowser(browser),
-                  jsource);
+  JNI_CALL_METHOD(env, jhandler_, "onSetFocus",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
+                  "CefFocusHandler$FocusSource;)Z",
+                  Boolean, jreturn, GetJNIBrowser(browser), jsource);
   bool result = (jreturn != JNI_FALSE);
 #if defined(OS_WIN)
   if (result) {
@@ -74,9 +72,8 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source)
 void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
-  	return;
-  JNI_CALL_VOID_METHOD(env, jhandler_, 
-                       "onGotFocus", 
-                       "(Lorg/cef/browser/CefBrowser;)V", 
+    return;
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onGotFocus",
+                       "(Lorg/cef/browser/CefBrowser;)V",
                        GetJNIBrowser(browser));
 }

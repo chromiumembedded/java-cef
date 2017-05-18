@@ -16,7 +16,9 @@ class CookieVisitor : public CefCookieVisitor {
   virtual ~CookieVisitor();
 
   // CookieVisitor methods
-  virtual bool Visit(const CefCookie& cookie, int count, int total,
+  virtual bool Visit(const CefCookie& cookie,
+                     int count,
+                     int total,
                      bool& deleteCookie) OVERRIDE;
 
  protected:

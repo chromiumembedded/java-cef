@@ -12,16 +12,19 @@ extern "C" {
  * Method:    N_Continue
  * Signature: (ILjava/util/Vector;)V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue
-  (JNIEnv *, jobject, jint, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue(JNIEnv*,
+                                                           jobject,
+                                                           jint,
+                                                           jobject);
 
 /*
  * Class:     org_cef_callback_CefFileDialogCallback_N
  * Method:    N_Cancel
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefFileDialogCallback_1N_N_1Cancel
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefFileDialogCallback_1N_N_1Cancel(JNIEnv*, jobject);
 
 #ifdef __cplusplus
 }

@@ -6,14 +6,17 @@
 #include "include/cef_download_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel(JNIEnv* env,
+                                                           jobject obj) {
   CefRefPtr<CefDownloadItemCallback> callback =
-      GetCefFromJNIObject<CefDownloadItemCallback>(env, obj, "CefDownloadItemCallback");
+      GetCefFromJNIObject<CefDownloadItemCallback>(env, obj,
+                                                   "CefDownloadItemCallback");
   if (!callback.get())
     return;
   callback->Cancel();
 
   // Clear the reference added in DownloadHandler::OnDownloadUpdated.
-  SetCefForJNIObject<CefBeforeDownloadCallback>(env, obj, NULL, "CefBeforeDownloadCallback");
+  SetCefForJNIObject<CefBeforeDownloadCallback>(env, obj, NULL,
+                                                "CefBeforeDownloadCallback");
 }

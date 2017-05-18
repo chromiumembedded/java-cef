@@ -22,9 +22,8 @@ class GeolocationHandler : public CefGeolocationHandler {
       int request_id,
       CefRefPtr<CefGeolocationCallback> callback) OVERRIDE;
 
-  virtual void OnCancelGeolocationPermission(
-      CefRefPtr<CefBrowser> browser,
-      int request_id) OVERRIDE;
+  virtual void OnCancelGeolocationPermission(CefRefPtr<CefBrowser> browser,
+                                             int request_id) OVERRIDE;
 
  protected:
   jobject jhandler_;

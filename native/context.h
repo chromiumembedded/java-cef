@@ -19,8 +19,9 @@ class Context {
   // Returns the singleton instance of this object.
   static Context* GetInstance();
 
-  bool PreInitialize(JNIEnv *env, jobject c);
-  bool Initialize(JNIEnv *env, jobject c,
+  bool PreInitialize(JNIEnv* env, jobject c);
+  bool Initialize(JNIEnv* env,
+                  jobject c,
                   jstring argPathToJavaDLL,
                   jobject appHandler,
                   jobject jsettings);

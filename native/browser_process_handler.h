@@ -6,16 +6,16 @@
 #define JCEF_NATIVE_BROWSER_PROCESS_HANDLER_H_
 #pragma once
 
-#include <set>
 #include <jni.h>
+#include <set>
 #include "include/base/cef_lock.h"
 #include "include/cef_browser_process_handler.h"
 #include "include/wrapper/cef_message_router.h"
 
 // comparator to check if configuration values are the same
 struct cmpCfg {
-  bool operator() (const CefMessageRouterConfig& lValue,
-                   const CefMessageRouterConfig& rValue) const {
+  bool operator()(const CefMessageRouterConfig& lValue,
+                  const CefMessageRouterConfig& rValue) const {
     std::less<std::string> comp;
     return comp(lValue.js_query_function.ToString(),
                 rValue.js_query_function.ToString());
@@ -37,8 +37,9 @@ class BrowserProcessHandler : public CefBrowserProcessHandler {
 
   virtual void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE;
 
-  static void AddMessageRouterConfig(const CefMessageRouterConfig& cfg);  
+  static void AddMessageRouterConfig(const CefMessageRouterConfig& cfg);
   static void RemoveMessageRouterConfig(const CefMessageRouterConfig& cfg);
+
  protected:
   jobject app_handler_;
   static std::set<CefMessageRouterConfig, cmpCfg> router_cfg_;

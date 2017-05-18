@@ -34,6 +34,7 @@ class LoadHandler : public CefLoadHandler {
                            ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) OVERRIDE;
+
  protected:
   jobject jhandler_;
 

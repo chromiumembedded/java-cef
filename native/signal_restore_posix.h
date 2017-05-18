@@ -8,4 +8,4 @@
 void BackupSignalHandlers();
 void RestoreSignalHandlers();
 
-#endif // SIGNAL_RESTORE_POSIX_H
+#endif  // SIGNAL_RESTORE_POSIX_H

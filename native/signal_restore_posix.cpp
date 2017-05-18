@@ -14,9 +14,9 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
 
 namespace {
 
-const int signals_to_restore[] =
-    {SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
-     SIGALRM, SIGTERM, SIGCHLD, SIGBUS, SIGTRAP, SIGPIPE};
+const int signals_to_restore[] = {SIGHUP, SIGINT,  SIGQUIT, SIGILL,  SIGABRT,
+                                  SIGFPE, SIGSEGV, SIGALRM, SIGTERM, SIGCHLD,
+                                  SIGBUS, SIGTRAP, SIGPIPE};
 
 struct sigaction signal_handlers[arraysize(signals_to_restore)];
 

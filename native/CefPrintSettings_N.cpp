@@ -8,16 +8,16 @@
 #include "include/cef_print_handler.h"
 
 JNIEXPORT void JNICALL
-  Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1CTOR
-    (JNIEnv *env, jobject obj) {
+Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1CTOR(JNIEnv* env,
+                                                                jobject obj) {
   CefRefPtr<CefPrintSettings> settings = CefPrintSettings::Create();
   if (!settings.get())
     return;
   SetCefForJNIObject(env, obj, settings.get(), "CefPrintSettings");
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -25,8 +25,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid
   return settings->IsValid() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -34,8 +34,8 @@ JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly
   return settings->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1Copy
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -52,8 +52,10 @@ JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1Copy
   return jresult;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation
-  (JNIEnv *env, jobject obj, jboolean jlandscape) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation(JNIEnv* env,
+                                                        jobject obj,
+                                                        jboolean jlandscape) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -61,8 +63,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation
   settings->SetOrientation(jlandscape != JNI_FALSE);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -71,9 +73,12 @@ JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape
 }
 
 JNIEXPORT void JNICALL
-  Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea
-    (JNIEnv *env, jobject obj, jobject jphysical_size_device_units,
-  jobject jprintable_area_device_units, jboolean jlandscape_needs_flip) {
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea(
+    JNIEnv* env,
+    jobject obj,
+    jobject jphysical_size_device_units,
+    jobject jprintable_area_device_units,
+    jboolean jlandscape_needs_flip) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -85,8 +90,10 @@ JNIEXPORT void JNICALL
   settings->SetPrinterPrintableArea(physical_size, printable_area, needs_flip);
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName
-  (JNIEnv *env, jobject obj, jstring jname) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName(JNIEnv* env,
+                                                       jobject obj,
+                                                       jstring jname) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -94,8 +101,9 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName
   settings->SetDeviceName(GetJNIString(env, jname));
 }
 
-JNIEXPORT jstring JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv* env,
+                                                       jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -103,8 +111,10 @@ JNIEXPORT jstring JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName
   return NewJNIString(env, settings->GetDeviceName());
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDPI
-  (JNIEnv *env, jobject obj, jint jdpi) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetDPI(JNIEnv* env,
+                                                jobject obj,
+                                                jint jdpi) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -112,8 +122,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDPI
   settings->SetDPI((int)jdpi);
 }
 
-JNIEXPORT jint JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -121,20 +131,22 @@ JNIEXPORT jint JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI
   return (jint)settings->GetDPI();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges
-  (JNIEnv *env, jobject obj, jobject jrangeVector) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges(JNIEnv* env,
+                                                       jobject obj,
+                                                       jobject jrangeVector) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings || !jrangeVector)
     return;
 
   CefPrintSettings::PageRangeList rangeList;
-  jint jsize=0;
+  jint jsize = 0;
   JNI_CALL_METHOD(env, jrangeVector, "size", "()I", Int, jsize);
-  for (jint index=0; index< jsize; index++) {
+  for (jint index = 0; index < jsize; index++) {
     jobject range = NULL;
     JNI_CALL_METHOD(env, jrangeVector, "get", "(I)Ljava/lang/Object;", Object,
-        range, index);
+                    range, index);
     if (!range)
       continue;
     rangeList.push_back(GetJNIPageRange(env, range));
@@ -143,8 +155,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges
 }
 
 JNIEXPORT jint JNICALL
-  Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount
-    (JNIEnv *env, jobject obj) {
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount(JNIEnv* env,
+                                                            jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -152,8 +164,10 @@ JNIEXPORT jint JNICALL
   return (jint)settings->GetPageRangesCount();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges
-  (JNIEnv *env, jobject obj , jobject jrangeVector) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges(JNIEnv* env,
+                                                       jobject obj,
+                                                       jobject jrangeVector) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings || !jrangeVector)
@@ -163,15 +177,18 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges
   settings->GetPageRanges(rangeList);
 
   CefPrintSettings::PageRangeList::size_type i = 0;
-  for (i=0; i < rangeList.size(); ++i) {
+  for (i = 0; i < rangeList.size(); ++i) {
     jobject range = NewJNIPageRange(env, rangeList.at(i));
     JNI_CALL_VOID_METHOD(env, jrangeVector, "addElement",
-        "(Ljava/lang/Object;)V", range);
+                         "(Ljava/lang/Object;)V", range);
   }
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly
-  (JNIEnv *env, jobject obj, jboolean jselection_only) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly(
+    JNIEnv* env,
+    jobject obj,
+    jboolean jselection_only) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -180,8 +197,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly
 }
 
 JNIEXPORT jboolean JNICALL
-  Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly
-    (JNIEnv *env, jobject obj) {
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly(JNIEnv* env,
+                                                         jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -189,8 +206,10 @@ JNIEXPORT jboolean JNICALL
   return settings->IsSelectionOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate
-  (JNIEnv *env, jobject obj, jboolean jcollate) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate(JNIEnv* env,
+                                                    jobject obj,
+                                                    jboolean jcollate) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -198,8 +217,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate
   settings->SetCollate(jcollate != JNI_FALSE);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -207,8 +226,10 @@ JNIEXPORT jboolean JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate
   return settings->WillCollate() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel
-  (JNIEnv *env, jobject obj, jobject jcolor_model) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel(JNIEnv* env,
+                                                       jobject obj,
+                                                       jobject jcolor_model) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -219,80 +240,80 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel
                      "COLOR_MODEL_GRAY")) {
     mode = COLOR_MODEL_GRAY;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_COLOR")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_COLOR")) {
     mode = COLOR_MODEL_COLOR;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_CMYK")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_CMYK")) {
     mode = COLOR_MODEL_CMYK;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_CMY")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_CMY")) {
     mode = COLOR_MODEL_CMY;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_KCMY")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_KCMY")) {
     mode = COLOR_MODEL_KCMY;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_CMY_K")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_CMY_K")) {
     mode = COLOR_MODEL_CMY_K;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_BLACK")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_BLACK")) {
     mode = COLOR_MODEL_BLACK;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_GRAYSCALE")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_GRAYSCALE")) {
     mode = COLOR_MODEL_GRAYSCALE;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_RGB")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_RGB")) {
     mode = COLOR_MODEL_RGB;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_RGB16")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_RGB16")) {
     mode = COLOR_MODEL_RGB16;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_RGBA")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_RGBA")) {
     mode = COLOR_MODEL_RGBA;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_COLORMODE_COLOR")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_COLORMODE_COLOR")) {
     mode = COLOR_MODEL_COLORMODE_COLOR;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_COLORMODE_MONOCHROME")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_COLORMODE_MONOCHROME")) {
     mode = COLOR_MODEL_COLORMODE_MONOCHROME;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_HP_COLOR_COLOR")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_HP_COLOR_COLOR")) {
     mode = COLOR_MODEL_HP_COLOR_COLOR;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_HP_COLOR_BLACK")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_HP_COLOR_BLACK")) {
     mode = COLOR_MODEL_HP_COLOR_BLACK;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_PRINTOUTMODE_NORMAL")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_PRINTOUTMODE_NORMAL")) {
     mode = COLOR_MODEL_PRINTOUTMODE_NORMAL;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_PRINTOUTMODE_NORMAL_GRAY")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_PRINTOUTMODE_NORMAL_GRAY")) {
     mode = COLOR_MODEL_PRINTOUTMODE_NORMAL_GRAY;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_PROCESSCOLORMODEL_CMYK")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_PROCESSCOLORMODEL_CMYK")) {
     mode = COLOR_MODEL_PROCESSCOLORMODEL_CMYK;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_PROCESSCOLORMODEL_GREYSCALE")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_PROCESSCOLORMODEL_GREYSCALE")) {
     mode = COLOR_MODEL_PROCESSCOLORMODEL_GREYSCALE;
   } else if (IsJNIEnumValue(env, jcolor_model,
-                     "org/cef/misc/CefPrintSettings$ColorModel",
-                     "COLOR_MODEL_PROCESSCOLORMODEL_RGB")) {
+                            "org/cef/misc/CefPrintSettings$ColorModel",
+                            "COLOR_MODEL_PROCESSCOLORMODEL_RGB")) {
     mode = COLOR_MODEL_PROCESSCOLORMODEL_RGB;
   } else {
     mode = COLOR_MODEL_UNKNOWN;
@@ -300,65 +321,68 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel
   settings->SetColorModel(mode);
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel
-  (JNIEnv *env, jobject obj) {
-  jobject result = GetJNIEnumValue(env,
-      "org/cef/misc/CefPrintSettings$ColorModel", "COLOR_MODEL_UNKNOWN");
+JNIEXPORT jobject JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel(JNIEnv* env,
+                                                       jobject obj) {
+  jobject result = GetJNIEnumValue(
+      env, "org/cef/misc/CefPrintSettings$ColorModel", "COLOR_MODEL_UNKNOWN");
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
     return result;
 
   switch (settings->GetColorModel()) {
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_GRAY,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_COLOR,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_CMYK,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_CMY,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_KCMY,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_CMY_K,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_BLACK,
+             result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_GRAY, result);
+             COLOR_MODEL_GRAYSCALE, result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_RGB,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_RGB16,
+             result);
+    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel", COLOR_MODEL_RGBA,
+             result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_COLOR, result);
+             COLOR_MODEL_COLORMODE_COLOR, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_CMYK, result);
+             COLOR_MODEL_COLORMODE_MONOCHROME, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_CMY, result);
+             COLOR_MODEL_HP_COLOR_COLOR, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_KCMY, result);
+             COLOR_MODEL_HP_COLOR_BLACK, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_CMY_K, result);
+             COLOR_MODEL_PRINTOUTMODE_NORMAL, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_BLACK, result);
+             COLOR_MODEL_PRINTOUTMODE_NORMAL_GRAY, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_GRAYSCALE, result);
+             COLOR_MODEL_PROCESSCOLORMODEL_CMYK, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_RGB, result);
+             COLOR_MODEL_PROCESSCOLORMODEL_GREYSCALE, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_RGB16, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_RGBA, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_COLORMODE_COLOR, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_COLORMODE_MONOCHROME, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_HP_COLOR_COLOR, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_HP_COLOR_BLACK, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_PRINTOUTMODE_NORMAL, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_PRINTOUTMODE_NORMAL_GRAY, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_PROCESSCOLORMODEL_CMYK, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_PROCESSCOLORMODEL_GREYSCALE, result);
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_PROCESSCOLORMODEL_RGB, result);
+             COLOR_MODEL_PROCESSCOLORMODEL_RGB, result);
     default:
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
-        COLOR_MODEL_UNKNOWN, result);
+      JNI_CASE(env, "org/cef/misc/CefPrintSettings$ColorModel",
+               COLOR_MODEL_UNKNOWN, result);
   }
   return result;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies
-  (JNIEnv *env, jobject obj, jint jcopies) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies(JNIEnv* env,
+                                                   jobject obj,
+                                                   jint jcopies) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -366,8 +390,8 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies
   settings->SetCopies((int)jcopies);
 }
 
-JNIEXPORT jint JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies
-  (JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv* env, jobject obj) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -375,8 +399,10 @@ JNIEXPORT jint JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies
   return (jint)settings->GetCopies();
 }
 
-JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode
-  (JNIEnv *env, jobject obj, jobject jduplex_mode) {
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode(JNIEnv* env,
+                                                       jobject obj,
+                                                       jobject jduplex_mode) {
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -387,12 +413,12 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode
                      "DUPLEX_MODE_SIMPLEX")) {
     mode = DUPLEX_MODE_SIMPLEX;
   } else if (IsJNIEnumValue(env, jduplex_mode,
-                     "org/cef/misc/CefPrintSettings$DuplexMode",
-                     "DUPLEX_MODE_LONG_EDGE")) {
+                            "org/cef/misc/CefPrintSettings$DuplexMode",
+                            "DUPLEX_MODE_LONG_EDGE")) {
     mode = DUPLEX_MODE_LONG_EDGE;
   } else if (IsJNIEnumValue(env, jduplex_mode,
-                     "org/cef/misc/CefPrintSettings$DuplexMode",
-                     "DUPLEX_MODE_SHORT_EDGE")) {
+                            "org/cef/misc/CefPrintSettings$DuplexMode",
+                            "DUPLEX_MODE_SHORT_EDGE")) {
     mode = DUPLEX_MODE_SHORT_EDGE;
   } else {
     mode = DUPLEX_MODE_UNKNOWN;
@@ -400,10 +426,11 @@ JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode
   settings->SetDuplexMode(mode);
 }
 
-JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode
-  (JNIEnv *env, jobject obj) {
-  jobject result = GetJNIEnumValue(env,
-      "org/cef/misc/CefPrintSettings$DuplexMode", "DUPLEX_MODE_UNKNOWN");
+JNIEXPORT jobject JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode(JNIEnv* env,
+                                                       jobject obj) {
+  jobject result = GetJNIEnumValue(
+      env, "org/cef/misc/CefPrintSettings$DuplexMode", "DUPLEX_MODE_UNKNOWN");
   CefRefPtr<CefPrintSettings> settings =
       GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
   if (!settings)
@@ -411,20 +438,20 @@ JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode
 
   switch (settings->GetDuplexMode()) {
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$DuplexMode",
-        DUPLEX_MODE_SIMPLEX, result);
+             DUPLEX_MODE_SIMPLEX, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$DuplexMode",
-        DUPLEX_MODE_LONG_EDGE, result);
+             DUPLEX_MODE_LONG_EDGE, result);
     JNI_CASE(env, "org/cef/misc/CefPrintSettings$DuplexMode",
-        DUPLEX_MODE_SHORT_EDGE, result);
+             DUPLEX_MODE_SHORT_EDGE, result);
     default:
-    JNI_CASE(env, "org/cef/misc/CefPrintSettings$DuplexMode",
-        DUPLEX_MODE_UNKNOWN, result);
+      JNI_CASE(env, "org/cef/misc/CefPrintSettings$DuplexMode",
+               DUPLEX_MODE_UNKNOWN, result);
   }
   return result;
 }
 
 JNIEXPORT void JNICALL
-  Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1DTOR
-    (JNIEnv *env, jobject obj) {
+Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1DTOR(JNIEnv* env,
+                                                                jobject obj) {
   SetCefForJNIObject<CefPrintSettings>(env, obj, NULL, "CefPrintSettings");
 }

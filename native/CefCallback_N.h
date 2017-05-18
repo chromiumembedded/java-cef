@@ -12,16 +12,16 @@ extern "C" {
  * Method:    N_Continue
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Continue
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_callback_CefCallback_N
  * Method:    N_Cancel
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Cancel
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Cancel(JNIEnv*,
+                                                                      jobject);
 
 #ifdef __cplusplus
 }

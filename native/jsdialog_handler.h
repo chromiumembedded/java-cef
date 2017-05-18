@@ -24,10 +24,11 @@ class JSDialogHandler : public CefJSDialogHandler {
                           CefRefPtr<CefJSDialogCallback> callback,
                           bool& suppress_message) OVERRIDE;
 
-  virtual bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
-                                    const CefString& message_text,
-                                    bool is_reload,
-                                    CefRefPtr<CefJSDialogCallback> callback) OVERRIDE;
+  virtual bool OnBeforeUnloadDialog(
+      CefRefPtr<CefBrowser> browser,
+      const CefString& message_text,
+      bool is_reload,
+      CefRefPtr<CefJSDialogCallback> callback) OVERRIDE;
 
   virtual void OnResetDialogState(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnDialogClosed(CefRefPtr<CefBrowser> browser) OVERRIDE;

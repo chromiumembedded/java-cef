@@ -65,7 +65,7 @@ class RequestHandler : public CefRequestHandler {
 
   virtual void OnPluginCrashed(CefRefPtr<CefBrowser> browser,
                                const CefString& plugin_path) OVERRIDE;
-                                  
+
   virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                          TerminationStatus status) OVERRIDE;
 
