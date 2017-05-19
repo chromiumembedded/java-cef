@@ -8,6 +8,7 @@ import sys
 
 # Script directory.
 script_dir = os.path.dirname(__file__)
+root_dir = os.path.join(script_dir, os.pardir)
 
 if sys.platform == 'win32':
   clang_format_exe = 'buildtools/win/clang-format.exe'
@@ -18,8 +19,12 @@ elif sys.platform.startswith('linux'):
 else:
   raise Exception("Unsupported platform: %s" % sys.platform)
 
-def clang_format(file_contents):
-  result = exec_cmd(os.path.join(script_dir, clang_format_exe), ".", file_contents)
+def clang_format(file_name, file_contents):
+  # -assume-filename is necessary to find the .clang-format file and determine
+  # the language when specifying contents via stdin.
+  result = exec_cmd("%s -assume-filename=%s" % \
+                    (os.path.join(script_dir, clang_format_exe), file_name), \
+                    root_dir, file_contents)
   if result['out'] != '':
     output = result['out']
     if sys.platform == 'win32':

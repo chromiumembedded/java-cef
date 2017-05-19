@@ -9,7 +9,7 @@ from file_util import *
 from git_util import get_changed_files
 
 # Valid extensions for files we want to clang-format.
-DEFAULT_LINT_WHITELIST_REGEX = r"(.*\.cpp|.*\.cc|.*\.h|.*\.mm)$"
+DEFAULT_LINT_WHITELIST_REGEX = r"(.*\.cpp|.*\.cc|.*\.h|.*\.java|.*\.mm)$"
 DEFAULT_LINT_BLACKLIST_REGEX = r"$^"
 
 IGNORE_DIRECTORIES = ["binary_distrib", "jcef_build", "out", "third_party",
@@ -37,7 +37,7 @@ def update_file(filename):
     msg(filename, "empty")
     return;
 
-  newcontents = clang_format(oldcontents)
+  newcontents = clang_format(filename, oldcontents)
   if newcontents is None:
     raise Exception("Failed to process %s" % filename)
 
