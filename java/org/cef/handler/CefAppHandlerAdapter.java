@@ -15,82 +15,83 @@ import org.cef.callback.CefSchemeRegistrar;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefAppHandlerAdapter implements CefAppHandler {
-  private String [] args_;
+    private String[] args_;
 
-  public CefAppHandlerAdapter(String [] args) {
-    args_ = args;
-  }
-
-  @Override
-  public void onBeforeCommandLineProcessing(String process_type, CefCommandLine command_line) {
-    if (process_type.isEmpty() && args_ != null) {
-      // Forward switches and arguments from Java to Cef
-      boolean parseSwitchesDone = false;
-      for (String arg : args_) {
-        if (parseSwitchesDone || arg.length() < 2) {
-          command_line.appendArgument(arg);
-          continue;
-        }
-        // Arguments with '--', '-' and, on Windows, '/' prefixes are considered switches.
-        int switchCnt = arg.startsWith("--") ? 2 :
-                        arg.startsWith("/")  ? 1 :
-                        arg.startsWith("-")  ? 1 : 0;
-        switch (switchCnt) {
-          case 2:
-            // An argument of "--" will terminate switch parsing with all subsequent tokens
-            if (arg.length() == 2) {
-              parseSwitchesDone = true;
-              continue;
-            }
-            // FALL THRU
-          case 1: {
-            // Switches can optionally have a value specified using the '=' delimiter
-            // (e.g. "-switch=value").
-            String[] switchVals = arg.substring(switchCnt).split("=");
-            if (switchVals.length == 2) {
-              command_line.appendSwitchWithValue(switchVals[0],switchVals[1]);
-            } else {
-              command_line.appendSwitch(switchVals[0]);
-            }
-            break;
-          }
-          case 0:
-            command_line.appendArgument(arg);
-            break;
-        }
-      }
+    public CefAppHandlerAdapter(String[] args) {
+        args_ = args;
     }
-  }
 
-  @Override
-  public boolean onBeforeTerminate() {
-    // The default implementation does nothing
-    return false;
-  }
+    @Override
+    public void onBeforeCommandLineProcessing(String process_type, CefCommandLine command_line) {
+        if (process_type.isEmpty() && args_ != null) {
+            // Forward switches and arguments from Java to Cef
+            boolean parseSwitchesDone = false;
+            for (String arg : args_) {
+                if (parseSwitchesDone || arg.length() < 2) {
+                    command_line.appendArgument(arg);
+                    continue;
+                }
+                // Arguments with '--', '-' and, on Windows, '/' prefixes are considered switches.
+                int switchCnt = arg.startsWith("--")
+                        ? 2
+                        : arg.startsWith("/") ? 1 : arg.startsWith("-") ? 1 : 0;
+                switch (switchCnt) {
+                    case 2:
+                        // An argument of "--" will terminate switch parsing with all subsequent
+                        // tokens
+                        if (arg.length() == 2) {
+                            parseSwitchesDone = true;
+                            continue;
+                        }
+                    // FALL THRU
+                    case 1: {
+                        // Switches can optionally have a value specified using the '=' delimiter
+                        // (e.g. "-switch=value").
+                        String[] switchVals = arg.substring(switchCnt).split("=");
+                        if (switchVals.length == 2) {
+                            command_line.appendSwitchWithValue(switchVals[0], switchVals[1]);
+                        } else {
+                            command_line.appendSwitch(switchVals[0]);
+                        }
+                        break;
+                    }
+                    case 0:
+                        command_line.appendArgument(arg);
+                        break;
+                }
+            }
+        }
+    }
 
-  @Override
-  public void stateHasChanged(CefAppState state) {
-    // The default implementation does nothing
-  }
+    @Override
+    public boolean onBeforeTerminate() {
+        // The default implementation does nothing
+        return false;
+    }
 
-  @Override
-  public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
-    // The default implementation does nothing
-  }
+    @Override
+    public void stateHasChanged(CefAppState state) {
+        // The default implementation does nothing
+    }
 
-  @Override
-  public void onContextInitialized() {
-    // The default implementation does nothing
-  }
+    @Override
+    public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
+        // The default implementation does nothing
+    }
 
-  @Override
-  public CefPrintHandler getPrintHandler() {
-    // The default implementation does nothing
-    return null;
-  }
+    @Override
+    public void onContextInitialized() {
+        // The default implementation does nothing
+    }
 
-  @Override
-  public void onScheduleMessagePumpWork(long delay_ms) {
-    CefApp.getInstance().doMessageLoopWork(delay_ms);
-  }
+    @Override
+    public CefPrintHandler getPrintHandler() {
+        // The default implementation does nothing
+        return null;
+    }
+
+    @Override
+    public void onScheduleMessagePumpWork(long delay_ms) {
+        CefApp.getInstance().doMessageLoopWork(delay_ms);
+    }
 }

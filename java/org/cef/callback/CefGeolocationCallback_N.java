@@ -4,20 +4,17 @@
 
 package org.cef.callback;
 
-class CefGeolocationCallback_N extends CefNativeAdapter implements
-    CefGeolocationCallback {
+class CefGeolocationCallback_N extends CefNativeAdapter implements CefGeolocationCallback {
+    CefGeolocationCallback_N() {}
 
-  CefGeolocationCallback_N() {
-  }
-
-  @Override
-  public void Continue(boolean allow) {
-    try {
-      N_Continue(allow);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public void Continue(boolean allow) {
+        try {
+            N_Continue(allow);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
-  }
 
-  private final native void N_Continue(boolean allow);
+    private final native void N_Continue(boolean allow);
 }

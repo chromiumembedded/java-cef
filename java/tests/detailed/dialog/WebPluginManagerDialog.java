@@ -24,119 +24,111 @@ import org.cef.network.CefWebPluginManager;
 
 @SuppressWarnings("serial")
 public class WebPluginManagerDialog extends JDialog {
+    private final CefWebPluginManager manager = CefWebPluginManager.getGlobalManager();
+    private final PluginTableModel tblModel = new PluginTableModel();
 
-  private final CefWebPluginManager manager = CefWebPluginManager.getGlobalManager();
-  private final PluginTableModel tblModel = new PluginTableModel();
+    public WebPluginManagerDialog(Frame owner, String title) {
+        super(owner, title, false);
+        setLayout(new BorderLayout());
+        setSize(800, 600);
 
-  public WebPluginManagerDialog(Frame owner, String title) {
-    super(owner, title, false);
-    setLayout(new BorderLayout());
-    setSize(800, 600);
+        JTable pluginTable = new JTable(tblModel);
+        pluginTable.setFillsViewportHeight(true);
 
-    JTable pluginTable = new JTable(tblModel);
-    pluginTable.setFillsViewportHeight(true);
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+        JButton delButton = new JButton("Remove selected plugins");
+        delButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tblModel.removeSelected();
+            }
+        });
+        controlPanel.add(delButton);
 
-    JPanel controlPanel = new JPanel();
-    controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-    JButton delButton = new JButton("Remove selected plugins");
-    delButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        tblModel.removeSelected();
-      }
-    });
-    controlPanel.add(delButton);
+        JButton doneButton = new JButton("Done");
+        doneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+        controlPanel.add(doneButton);
 
-    JButton doneButton = new JButton("Done");
-    doneButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setVisible(false);
-      }
-    });
-    controlPanel.add(doneButton);
+        add(new JScrollPane(pluginTable));
+        add(controlPanel, BorderLayout.SOUTH);
 
-    add(new JScrollPane(pluginTable));
-    add(controlPanel, BorderLayout.SOUTH);
-
-    if (manager == null)
-      throw new NullPointerException("Plugin manager is null");
-    manager.visitPlugins(tblModel);
-  }
-
-  private class PluginTableModel extends AbstractTableModel implements CefWebPluginInfoVisitor {
-    private final String[] columnNames;
-    private Vector<Object[]> rowData = new Vector<>();
-
-    public PluginTableModel() {
-      super();
-      columnNames = new String[] {"Name","Path", "Version", "Description", ""};
+        if (manager == null) throw new NullPointerException("Plugin manager is null");
+        manager.visitPlugins(tblModel);
     }
 
-    // add an entry to the table
-    @Override
-    public boolean visit(CefWebPluginInfo info, int count, int total) {
-      Object[] entry = {
-          info.getName(),
-          info.getPath(),
-          info.getVersion(),
-          info.getDescription(),
-          new Boolean(false)
-      };
-      int row = rowData.size();
-      rowData.addElement(entry);
-      fireTableRowsInserted(row, row);
+    private class PluginTableModel extends AbstractTableModel implements CefWebPluginInfoVisitor {
+        private final String[] columnNames;
+        private Vector<Object[]> rowData = new Vector<>();
 
-      return true;
-    }
-
-    public void removeSelected() {
-      for (int i=0; i < rowData.size(); ++i) {
-        if ((Boolean)rowData.get(i)[4]) {
-          String path = (String)rowData.get(i)[1];
-          rowData.remove(i);
-          fireTableRowsDeleted(i, i);
-          i--;
+        public PluginTableModel() {
+            super();
+            columnNames = new String[] {"Name", "Path", "Version", "Description", ""};
         }
-      }
-      manager.refreshPlugins();
-    }
 
-    public int getRowCount() {
-     return rowData.size();
-    }
+        // add an entry to the table
+        @Override
+        public boolean visit(CefWebPluginInfo info, int count, int total) {
+            Object[] entry = {info.getName(), info.getPath(), info.getVersion(),
+                    info.getDescription(), new Boolean(false)};
+            int row = rowData.size();
+            rowData.addElement(entry);
+            fireTableRowsInserted(row, row);
 
-    @Override
-    public int getColumnCount() {
-      return columnNames.length;
-    }
+            return true;
+        }
 
-    @Override
-    public String getColumnName(int column) {
-      return columnNames[column];
-    }
+        public void removeSelected() {
+            for (int i = 0; i < rowData.size(); ++i) {
+                if ((Boolean) rowData.get(i)[4]) {
+                    String path = (String) rowData.get(i)[1];
+                    rowData.remove(i);
+                    fireTableRowsDeleted(i, i);
+                    i--;
+                }
+            }
+            manager.refreshPlugins();
+        }
 
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-      if (rowData.size() > 0)
-        return rowData.get(0)[columnIndex].getClass();
-      return Object.class;
-    }
+        public int getRowCount() {
+            return rowData.size();
+        }
 
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-      return (columnIndex == 4);
-    }
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
 
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-      return rowData.get(rowIndex)[columnIndex];
-    }
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
 
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-      rowData.get(rowIndex)[columnIndex] = aValue;
-      fireTableCellUpdated(rowIndex, columnIndex);
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            if (rowData.size() > 0) return rowData.get(0)[columnIndex].getClass();
+            return Object.class;
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return (columnIndex == 4);
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return rowData.get(rowIndex)[columnIndex];
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            rowData.get(rowIndex)[columnIndex] = aValue;
+            fireTableCellUpdated(rowIndex, columnIndex);
+        }
     }
-  }
 }

@@ -26,141 +26,124 @@ import tests.detailed.dialog.CertErrorDialog;
 import tests.detailed.dialog.PasswordDialog;
 
 public class RequestHandler extends CefRequestHandlerAdapter {
-  private final Frame owner_;
+    private final Frame owner_;
 
-  public RequestHandler(Frame owner) {
-    owner_ = owner;
-  }
+    public RequestHandler(Frame owner) {
+        owner_ = owner;
+    }
 
-  @Override
-  public boolean onBeforeBrowse(CefBrowser browser,
-                                CefRequest request,
-                                boolean is_redirect) {
-    CefPostData postData = request.getPostData();
-    if (postData != null) {
-      Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
-      postData.getElements(elements);
-      for (CefPostDataElement el : elements) {
-        int numBytes = el.getBytesCount();
-        if (numBytes <= 0)
-          continue;
+    @Override
+    public boolean onBeforeBrowse(CefBrowser browser, CefRequest request, boolean is_redirect) {
+        CefPostData postData = request.getPostData();
+        if (postData != null) {
+            Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
+            postData.getElements(elements);
+            for (CefPostDataElement el : elements) {
+                int numBytes = el.getBytesCount();
+                if (numBytes <= 0) continue;
 
-        byte[] readBytes = new byte[numBytes];
-        if (el.getBytes(numBytes, readBytes) <= 0)
-          continue;
+                byte[] readBytes = new byte[numBytes];
+                if (el.getBytes(numBytes, readBytes) <= 0) continue;
 
-        String readString = new String(readBytes);
-        if (readString.indexOf("ignore") > -1) {
-          SwingUtilities.invokeLater( new Runnable() {
-            @Override
-            public void run() {
-              JOptionPane.showMessageDialog(owner_,
-                  "The request was rejected because you've entered \"ignore\" into the form.");
+                String readString = new String(readBytes);
+                if (readString.indexOf("ignore") > -1) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            JOptionPane.showMessageDialog(owner_,
+                                    "The request was rejected because you've entered \"ignore\" into the form.");
+                        }
+                    });
+                    return true;
+                }
             }
-          });
-          return true;
         }
-      }
+        return false;
     }
-    return false;
-  }
 
-  @Override
-  public boolean onBeforeResourceLoad(CefBrowser browser,
-                                      CefRequest request) {
-    // If you send a HTTP-POST request to http://www.google.com/
-    // google rejects your request because they don't allow HTTP-POST.
-    //
-    // This test extracts the value of the test form.
-    // (see "Show Form" entry within BrowserMenuBar)
-    // and sends its value as HTTP-GET request to Google.
-    if (request.getMethod().equalsIgnoreCase("POST") &&
-        request.getURL().equals("http://www.google.com/")) {
-      String forwardTo = "http://www.google.com/#q=";
-      CefPostData postData = request.getPostData();
-      boolean sendAsGet = false;
-      if (postData != null) {
-        Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
-        postData.getElements(elements);
-        for (CefPostDataElement el : elements) {
-          int numBytes = el.getBytesCount();
-          if (numBytes <= 0)
-            continue;
+    @Override
+    public boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request) {
+        // If you send a HTTP-POST request to http://www.google.com/
+        // google rejects your request because they don't allow HTTP-POST.
+        //
+        // This test extracts the value of the test form.
+        // (see "Show Form" entry within BrowserMenuBar)
+        // and sends its value as HTTP-GET request to Google.
+        if (request.getMethod().equalsIgnoreCase("POST")
+                && request.getURL().equals("http://www.google.com/")) {
+            String forwardTo = "http://www.google.com/#q=";
+            CefPostData postData = request.getPostData();
+            boolean sendAsGet = false;
+            if (postData != null) {
+                Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
+                postData.getElements(elements);
+                for (CefPostDataElement el : elements) {
+                    int numBytes = el.getBytesCount();
+                    if (numBytes <= 0) continue;
 
-          byte[] readBytes = new byte[numBytes];
-          if (el.getBytes(numBytes, readBytes) <= 0)
-            continue;
+                    byte[] readBytes = new byte[numBytes];
+                    if (el.getBytes(numBytes, readBytes) <= 0) continue;
 
-          String readString = new String(readBytes).trim();
-          String[] stringPairs = readString.split("&");
-          for (String s : stringPairs) {
-            int startPos = s.indexOf('=');
-            if (s.startsWith("searchFor"))
-              forwardTo += s.substring(startPos+1);
-            else if (s.startsWith("sendAsGet")) {
-              sendAsGet = true;
+                    String readString = new String(readBytes).trim();
+                    String[] stringPairs = readString.split("&");
+                    for (String s : stringPairs) {
+                        int startPos = s.indexOf('=');
+                        if (s.startsWith("searchFor"))
+                            forwardTo += s.substring(startPos + 1);
+                        else if (s.startsWith("sendAsGet")) {
+                            sendAsGet = true;
+                        }
+                    }
+                }
+                if (sendAsGet) postData.removeElements();
             }
-          }
+            if (sendAsGet) {
+                request.setFlags(0);
+                request.setMethod("GET");
+                request.setURL(forwardTo);
+                request.setFirstPartyForCookies(forwardTo);
+                HashMap<String, String> headerMap = new HashMap<>();
+                request.getHeaderMap(headerMap);
+                headerMap.remove("Content-Type");
+                headerMap.remove("Origin");
+                request.setHeaderMap(headerMap);
+            }
         }
-        if (sendAsGet)
-          postData.removeElements();
-      }
-      if (sendAsGet) {
-        request.setFlags(0);
-        request.setMethod("GET");
-        request.setURL(forwardTo);
-        request.setFirstPartyForCookies(forwardTo);
-        HashMap<String, String> headerMap = new HashMap<>();
-        request.getHeaderMap(headerMap);
-        headerMap.remove("Content-Type");
-        headerMap.remove("Origin");
-        request.setHeaderMap(headerMap);
-      }
+        return false;
     }
-    return false;
-  }
 
-  @Override
-  public CefResourceHandler getResourceHandler(CefBrowser browser,
-                                               CefRequest request) {
-    // the non existing domain "foo.bar" is handled by the ResourceHandler implementation
-    // E.g. if you try to load the URL http://www.foo.bar, you'll be forwarded
-    // to the ResourceHandler class.
-    if (request.getURL().endsWith("foo.bar/")) {
-      return new ResourceHandler();
+    @Override
+    public CefResourceHandler getResourceHandler(CefBrowser browser, CefRequest request) {
+        // the non existing domain "foo.bar" is handled by the ResourceHandler implementation
+        // E.g. if you try to load the URL http://www.foo.bar, you'll be forwarded
+        // to the ResourceHandler class.
+        if (request.getURL().endsWith("foo.bar/")) {
+            return new ResourceHandler();
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public boolean getAuthCredentials(CefBrowser browser,
-                                    boolean isProxy,
-                                    String host,
-                                    int port,
-                                    String realm,
-                                    String scheme,
-                                    CefAuthCallback callback) {
-    SwingUtilities.invokeLater(new PasswordDialog(owner_, callback));
-    return true;
-  }
+    @Override
+    public boolean getAuthCredentials(CefBrowser browser, boolean isProxy, String host, int port,
+            String realm, String scheme, CefAuthCallback callback) {
+        SwingUtilities.invokeLater(new PasswordDialog(owner_, callback));
+        return true;
+    }
 
-  @Override
-  public boolean onCertificateError(CefBrowser browser,
-                                    ErrorCode cert_error,
-                                    String request_url,
-                                    CefRequestCallback callback) {
-    SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
-    return true;
-  }
+    @Override
+    public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,
+            CefRequestCallback callback) {
+        SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
+        return true;
+    }
 
-  @Override
-  public void onPluginCrashed(CefBrowser browser, String pluginPath) {
-    System.out.println("Plugin " + pluginPath  + "CRASHED");
-  }
+    @Override
+    public void onPluginCrashed(CefBrowser browser, String pluginPath) {
+        System.out.println("Plugin " + pluginPath + "CRASHED");
+    }
 
-  @Override
-  public void onRenderProcessTerminated(CefBrowser browser,
-                                        TerminationStatus status) {
-    System.out.println("render process terminated: " + status);
-  }
+    @Override
+    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {
+        System.out.println("render process terminated: " + status);
+    }
 }

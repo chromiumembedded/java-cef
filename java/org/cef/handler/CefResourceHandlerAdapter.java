@@ -17,40 +17,33 @@ import org.cef.network.CefResponse;
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
-public abstract class CefResourceHandlerAdapter extends CefNativeAdapter
-    implements CefResourceHandler {
+public abstract class CefResourceHandlerAdapter
+        extends CefNativeAdapter implements CefResourceHandler {
+    @Override
+    public boolean processRequest(CefRequest request, CefCallback callback) {
+        return false;
+    }
 
-  @Override
-  public boolean processRequest(CefRequest request,
-                                CefCallback callback) {
-    return false;
-  }
+    @Override
+    public void getResponseHeaders(
+            CefResponse response, IntRef response_length, StringRef redirectUrl) {}
 
-  @Override
-  public void getResponseHeaders(CefResponse response,
-                                 IntRef response_length,
-                                 StringRef redirectUrl) {
-  }
+    @Override
+    public boolean readResponse(
+            byte[] data_out, int bytes_to_read, IntRef bytes_read, CefCallback callback) {
+        return false;
+    }
 
-  @Override
-  public boolean readResponse(byte[] data_out,
-                              int bytes_to_read,
-                              IntRef bytes_read,
-                              CefCallback callback) {
-    return false;
-  }
+    @Override
+    public boolean canGetCookie(CefCookie cookie) {
+        return true;
+    }
 
-  @Override
-  public boolean canGetCookie(CefCookie cookie) {
-    return true;
-  }
+    @Override
+    public boolean canSetCookie(CefCookie cookie) {
+        return true;
+    }
 
-  @Override
-  public boolean canSetCookie(CefCookie cookie) {
-    return true;
-  }
-
-  @Override
-  public void cancel() {
-  }
+    @Override
+    public void cancel() {}
 }

@@ -13,14 +13,14 @@ import org.cef.misc.BoolRef;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefKeyboardHandlerAdapter implements CefKeyboardHandler {
-  @Override
-  public boolean onPreKeyEvent(CefBrowser browser, CefKeyEvent event,
-      BoolRef is_keyboard_shortcut) {
-    return false;
-  }
+    @Override
+    public boolean onPreKeyEvent(
+            CefBrowser browser, CefKeyEvent event, BoolRef is_keyboard_shortcut) {
+        return false;
+    }
 
-  @Override
-  public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
-    return false;
-  }
+    @Override
+    public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
+        return false;
+    }
 }

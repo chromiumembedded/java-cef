@@ -8,20 +8,19 @@ package org.cef.misc;
  * Helper class for passing int values by reference.
  */
 public class IntRef {
-  private int value_;
+    private int value_;
 
-  public IntRef() {
-  }
+    public IntRef() {}
 
-  public IntRef(int value) {
-    value_ = value;
-  }
+    public IntRef(int value) {
+        value_ = value;
+    }
 
-  public void set(int value) {
-    value_ = value;
-  }
+    public void set(int value) {
+        value_ = value;
+    }
 
-  public int get() {
-    return value_;
-  }
+    public int get() {
+        return value_;
+    }
 }

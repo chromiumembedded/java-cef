@@ -12,16 +12,15 @@ import org.cef.browser.CefBrowser;
  * class will be called on the browser process UI thread.
  */
 public interface CefRunFileDialogCallback {
-
-  /**
-   * Called asynchronously after the file dialog is dismissed. If the selection
-   * was successful filePaths will be a single value or a list of values
-   * depending on the dialog mode. If the selection was cancelled filePaths
-   * will be empty.
-   * 
-   * @param selectedAcceptFilter 0-based index of the value selected from
-   * the accept filters array passed to CefBrowserHost::RunFileDialog.
-   * @param filePaths list of file paths or empty list.
-   */
-  void onFileDialogDismissed(int selectedAcceptFilter, Vector<String> filePaths);
+    /**
+     * Called asynchronously after the file dialog is dismissed. If the selection
+     * was successful filePaths will be a single value or a list of values
+     * depending on the dialog mode. If the selection was cancelled filePaths
+     * will be empty.
+     *
+     * @param selectedAcceptFilter 0-based index of the value selected from
+     * the accept filters array passed to CefBrowserHost::RunFileDialog.
+     * @param filePaths list of file paths or empty list.
+     */
+    void onFileDialogDismissed(int selectedAcceptFilter, Vector<String> filePaths);
 }

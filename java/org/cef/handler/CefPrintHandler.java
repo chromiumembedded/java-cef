@@ -15,42 +15,38 @@ import org.cef.misc.CefPrintSettings;
  * class will be called on the browser process UI thread.
  */
 public interface CefPrintHandler extends CefNative {
+    /**
+     * Called when printing has started for the specified |browser|. This method
+     * will be called before the other onPrint*() methods and irrespective of how
+     * printing was initiated (e.g. CefBrowser::print(), JavaScript window.print()
+     * or PDF extension print button).
+     */
+    void onPrintStart(CefBrowser browser);
 
-  /**
-   * Called when printing has started for the specified |browser|. This method
-   * will be called before the other onPrint*() methods and irrespective of how
-   * printing was initiated (e.g. CefBrowser::print(), JavaScript window.print()
-   * or PDF extension print button).
-   */
-  void onPrintStart(CefBrowser browser);
+    /**
+     * Synchronize |settings| with client state. If |get_defaults| is true then
+     * populate |settings| with the default print settings. Do not keep a
+     * reference to |settings| outside of this callback.
+     */
+    void onPrintSettings(CefPrintSettings settings, boolean get_defaults);
 
-  /**
-   * Synchronize |settings| with client state. If |get_defaults| is true then
-   * populate |settings| with the default print settings. Do not keep a
-   * reference to |settings| outside of this callback.
-   */
-  void onPrintSettings(CefPrintSettings settings, boolean get_defaults);
+    /**
+     * Show the print dialog. Execute |callback| once the dialog is dismissed.
+     * Return true if the dialog will be displayed or false to cancel the
+     * printing immediately.
+     *
+     */
+    boolean onPrintDialog(boolean has_selection, CefPrintDialogCallback callback);
 
-  /**
-   * Show the print dialog. Execute |callback| once the dialog is dismissed.
-   * Return true if the dialog will be displayed or false to cancel the
-   * printing immediately.
-   *
-  */
-  boolean onPrintDialog(boolean has_selection, 
-                        CefPrintDialogCallback callback);
+    /**
+     * Send the print job to the printer. Execute |callback| once the job is
+     * completed. Return true if the job will proceed or false to cancel the job
+     * immediately.
+     */
+    boolean onPrintJob(String document_name, String pdf_file_path, CefPrintJobCallback callback);
 
-  /**
-   * Send the print job to the printer. Execute |callback| once the job is
-   * completed. Return true if the job will proceed or false to cancel the job
-   * immediately.
-   */
-  boolean onPrintJob(String document_name,
-                     String pdf_file_path,
-                     CefPrintJobCallback callback);
-
-  /**
-   * Reset client state related to printing.
-   */
-  void onPrintReset();
+    /**
+     * Reset client state related to printing.
+     */
+    void onPrintReset();
 }

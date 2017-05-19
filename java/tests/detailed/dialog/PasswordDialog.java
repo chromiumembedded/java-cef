@@ -19,48 +19,47 @@ import org.cef.callback.CefAuthCallback;
 
 @SuppressWarnings("serial")
 public class PasswordDialog extends JDialog implements Runnable {
-  private final JTextField username_ = new JTextField(20);
-  private final JPasswordField password_ = new JPasswordField(20);
-  private final CefAuthCallback callback_;
+    private final JTextField username_ = new JTextField(20);
+    private final JPasswordField password_ = new JPasswordField(20);
+    private final CefAuthCallback callback_;
 
-  public PasswordDialog(Frame owner, CefAuthCallback callback) {
-    super(owner, "Authentication required", true);
-    callback_ = callback;
-    setSize(400,100);
-    setLayout(new GridLayout(0, 2));
-    add(new JLabel("Username:"));
-    add(username_);
-    add(new JLabel("Password:"));
-    add(password_);
+    public PasswordDialog(Frame owner, CefAuthCallback callback) {
+        super(owner, "Authentication required", true);
+        callback_ = callback;
+        setSize(400, 100);
+        setLayout(new GridLayout(0, 2));
+        add(new JLabel("Username:"));
+        add(username_);
+        add(new JLabel("Password:"));
+        add(password_);
 
-    JButton abortButton = new JButton("Abort");
-    abortButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        callback_.cancel();
-        setVisible(false);
-        dispose();
-      }
-    });
-    add(abortButton);
+        JButton abortButton = new JButton("Abort");
+        abortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                callback_.cancel();
+                setVisible(false);
+                dispose();
+            }
+        });
+        add(abortButton);
 
-    JButton okButton = new JButton("OK");
-    okButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (username_.getText().isEmpty())
-          return;
-        String password = new String(password_.getPassword());
-        callback_.Continue(username_.getText(), password);
-        setVisible(false);
-        dispose();
-      }
-    });
-    add(okButton);
-  }
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (username_.getText().isEmpty()) return;
+                String password = new String(password_.getPassword());
+                callback_.Continue(username_.getText(), password);
+                setVisible(false);
+                dispose();
+            }
+        });
+        add(okButton);
+    }
 
-  @Override
-  public void run() {
-    setVisible(true);
-  }
+    @Override
+    public void run() {
+        setVisible(true);
+    }
 }

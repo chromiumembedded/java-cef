@@ -12,28 +12,17 @@ import org.cef.browser.CefBrowser;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefLoadHandlerAdapter implements CefLoadHandler {
-  @Override
-  public void onLoadingStateChange(CefBrowser browser,
-                                   boolean isLoading,
-                                   boolean canGoBack,
-                                   boolean canGoForward) {
-  }
+    @Override
+    public void onLoadingStateChange(
+            CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {}
 
-  @Override
-  public void onLoadStart(CefBrowser browser, int frameIdentifer) {
-  }
+    @Override
+    public void onLoadStart(CefBrowser browser, int frameIdentifer) {}
 
-  @Override
-  public void onLoadEnd(CefBrowser browser,
-                        int frameIdentifier,
-                        int httpStatusCode) {
-  }
+    @Override
+    public void onLoadEnd(CefBrowser browser, int frameIdentifier, int httpStatusCode) {}
 
-  @Override
-  public void onLoadError(CefBrowser browser,
-                          int frameIdentifer,
-                          ErrorCode errorCode,
-                          String errorText,
-                          String failedUrl) {
-  }
+    @Override
+    public void onLoadError(CefBrowser browser, int frameIdentifer, ErrorCode errorCode,
+            String errorText, String failedUrl) {}
 }

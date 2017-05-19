@@ -19,87 +19,82 @@ import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
 
 public class ContextMenuHandler implements CefContextMenuHandler {
-  private final Frame owner_;
-  private Map<Integer,String> suggestions_ = new HashMap<Integer, String>();
+    private final Frame owner_;
+    private Map<Integer, String> suggestions_ = new HashMap<Integer, String>();
 
-  public ContextMenuHandler(Frame owner) {
-    owner_ = owner;
-  }
-
-  @Override
-  public void onBeforeContextMenu(CefBrowser browser,
-                                  CefContextMenuParams params,
-                                  CefMenuModel model) {
-
-    model.clear();
-
-    // Navigation menu
-    model.addItem(MenuId.MENU_ID_BACK, "Back");
-    model.setEnabled(MenuId.MENU_ID_BACK, browser.canGoBack());
-
-    model.addItem(MenuId.MENU_ID_FORWARD, "Forward");
-    model.setEnabled(MenuId.MENU_ID_FORWARD,browser.canGoForward());
-
-    model.addSeparator();
-    model.addItem(MenuId.MENU_ID_FIND, "Find...");
-    if (params.hasImageContents() && params.getSourceUrl() != null)
-      model.addItem(MenuId.MENU_ID_USER_FIRST, "Download Image...");
-    model.addItem(MenuId.MENU_ID_VIEW_SOURCE, "View Source...");
-
-    Vector<String> suggestions = new Vector<String>();
-    params.getDictionarySuggestions(suggestions);
-
-    // Spell checking menu
-    model.addSeparator();
-    if (suggestions.size() == 0) {
-      model.addItem(MenuId.MENU_ID_NO_SPELLING_SUGGESTIONS, "No suggestions");
-      model.setEnabled(MenuId.MENU_ID_NO_SPELLING_SUGGESTIONS, false);
-      return;
+    public ContextMenuHandler(Frame owner) {
+        owner_ = owner;
     }
 
-    int id = MenuId.MENU_ID_SPELLCHECK_SUGGESTION_0;
-    for (String suggestedWord: suggestions) {
-      model.addItem(id, suggestedWord);
-      suggestions_.put(id, suggestedWord);
-      if (++id > MenuId.MENU_ID_SPELLCHECK_SUGGESTION_LAST)
-        break;
-    }
-  }
+    @Override
+    public void onBeforeContextMenu(
+            CefBrowser browser, CefContextMenuParams params, CefMenuModel model) {
+        model.clear();
 
-  @Override
-  public boolean onContextMenuCommand(CefBrowser browser,
-                                      CefContextMenuParams params,
-                                      int commandId,
-                                      int eventFlags) {
-    switch (commandId) {
-      case MenuId.MENU_ID_VIEW_SOURCE:
-        ShowTextDialog visitor = new ShowTextDialog(owner_, "Source of \"" +
-            browser.getURL() + "\"");
-        browser.getSource(visitor);
-        return true;
-      case MenuId.MENU_ID_FIND:
-        SearchDialog search = new SearchDialog(owner_, browser);
-        search.setVisible(true);
-        return true;
-      case MenuId.MENU_ID_USER_FIRST:
-        browser.startDownload(params.getSourceUrl());
-        return true;
-      default:
-        if (commandId >= MenuId.MENU_ID_SPELLCHECK_SUGGESTION_0) {
-          String newWord = suggestions_.get(commandId);
-          if (newWord != null) {
-            System.err.println("replacing " + params.getMisspelledWord() +
-                " with " + newWord);
-            browser.replaceMisspelling(newWord);
-            return true;
-          }
+        // Navigation menu
+        model.addItem(MenuId.MENU_ID_BACK, "Back");
+        model.setEnabled(MenuId.MENU_ID_BACK, browser.canGoBack());
+
+        model.addItem(MenuId.MENU_ID_FORWARD, "Forward");
+        model.setEnabled(MenuId.MENU_ID_FORWARD, browser.canGoForward());
+
+        model.addSeparator();
+        model.addItem(MenuId.MENU_ID_FIND, "Find...");
+        if (params.hasImageContents() && params.getSourceUrl() != null)
+            model.addItem(MenuId.MENU_ID_USER_FIRST, "Download Image...");
+        model.addItem(MenuId.MENU_ID_VIEW_SOURCE, "View Source...");
+
+        Vector<String> suggestions = new Vector<String>();
+        params.getDictionarySuggestions(suggestions);
+
+        // Spell checking menu
+        model.addSeparator();
+        if (suggestions.size() == 0) {
+            model.addItem(MenuId.MENU_ID_NO_SPELLING_SUGGESTIONS, "No suggestions");
+            model.setEnabled(MenuId.MENU_ID_NO_SPELLING_SUGGESTIONS, false);
+            return;
         }
-        return false;
-    }
-  }
 
-  @Override
-  public void onContextMenuDismissed(CefBrowser browser) {
-    suggestions_.clear();
-  }
+        int id = MenuId.MENU_ID_SPELLCHECK_SUGGESTION_0;
+        for (String suggestedWord : suggestions) {
+            model.addItem(id, suggestedWord);
+            suggestions_.put(id, suggestedWord);
+            if (++id > MenuId.MENU_ID_SPELLCHECK_SUGGESTION_LAST) break;
+        }
+    }
+
+    @Override
+    public boolean onContextMenuCommand(
+            CefBrowser browser, CefContextMenuParams params, int commandId, int eventFlags) {
+        switch (commandId) {
+            case MenuId.MENU_ID_VIEW_SOURCE:
+                ShowTextDialog visitor =
+                        new ShowTextDialog(owner_, "Source of \"" + browser.getURL() + "\"");
+                browser.getSource(visitor);
+                return true;
+            case MenuId.MENU_ID_FIND:
+                SearchDialog search = new SearchDialog(owner_, browser);
+                search.setVisible(true);
+                return true;
+            case MenuId.MENU_ID_USER_FIRST:
+                browser.startDownload(params.getSourceUrl());
+                return true;
+            default:
+                if (commandId >= MenuId.MENU_ID_SPELLCHECK_SUGGESTION_0) {
+                    String newWord = suggestions_.get(commandId);
+                    if (newWord != null) {
+                        System.err.println(
+                                "replacing " + params.getMisspelledWord() + " with " + newWord);
+                        browser.replaceMisspelling(newWord);
+                        return true;
+                    }
+                }
+                return false;
+        }
+    }
+
+    @Override
+    public void onContextMenuDismissed(CefBrowser browser) {
+        suggestions_.clear();
+    }
 }

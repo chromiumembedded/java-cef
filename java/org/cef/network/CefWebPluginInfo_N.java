@@ -7,49 +7,48 @@ package org.cef.network;
 import org.cef.callback.CefNativeAdapter;
 
 class CefWebPluginInfo_N extends CefNativeAdapter implements CefWebPluginInfo {
-
-  @Override
-  public String getName() {
-    try {
-      return N_GetName();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public String getName() {
+        try {
+            return N_GetName();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public String getPath() {
-    try {
-      return N_GetPath();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public String getPath() {
+        try {
+            return N_GetPath();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public String getVersion() {
-    try {
-      return N_GetVersion();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public String getVersion() {
+        try {
+            return N_GetVersion();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public String getDescription() {
-    try {
-      return N_GetDescription();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public String getDescription() {
+        try {
+            return N_GetDescription();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
-  private final native String N_GetName();
-  private final native String N_GetPath();
-  private final native String N_GetVersion();
-  private final native String N_GetDescription();
+    private final native String N_GetName();
+    private final native String N_GetPath();
+    private final native String N_GetVersion();
+    private final native String N_GetDescription();
 }

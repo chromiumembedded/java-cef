@@ -5,30 +5,20 @@
 package org.cef.callback;
 
 class CefSchemeRegistrar_N extends CefNativeAdapter implements CefSchemeRegistrar {
-
-  @Override
-  public boolean addCustomScheme(String schemeName,
-                                 boolean isStandard,
-                                 boolean isLocal,
-                                 boolean isDisplayIsolated,
-                                 boolean isSecure,
-                                 boolean isCorsEnabled,
-                                 boolean isCspBypassing) {
-    try {
-      return N_AddCustomScheme(schemeName, isStandard, isLocal,
-                               isDisplayIsolated, isSecure, isCorsEnabled,
-                               isCspBypassing);
-    } catch (UnsatisfiedLinkError err) {
-      err.printStackTrace();
+    @Override
+    public boolean addCustomScheme(String schemeName, boolean isStandard, boolean isLocal,
+            boolean isDisplayIsolated, boolean isSecure, boolean isCorsEnabled,
+            boolean isCspBypassing) {
+        try {
+            return N_AddCustomScheme(schemeName, isStandard, isLocal, isDisplayIsolated, isSecure,
+                    isCorsEnabled, isCspBypassing);
+        } catch (UnsatisfiedLinkError err) {
+            err.printStackTrace();
+        }
+        return false;
     }
-    return false;
-  }
 
-  private final native boolean N_AddCustomScheme(String schemeName,
-                                                 boolean isStandard,
-                                                 boolean isLocal,
-                                                 boolean isDisplayIsolated,
-                                                 boolean isSecure,
-                                                 boolean isCorsEnabled,
-                                                 boolean isCspBypassing);
+    private final native boolean N_AddCustomScheme(String schemeName, boolean isStandard,
+            boolean isLocal, boolean isDisplayIsolated, boolean isSecure, boolean isCorsEnabled,
+            boolean isCspBypassing);
 }

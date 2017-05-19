@@ -8,9 +8,8 @@ package org.cef.callback;
  * Callback interface for asynchronous continuation of print job requests.
  */
 public interface CefPrintJobCallback {
-
-  /**
-   * Indicate completion of the print job.
-   */
-  void Continue();
+    /**
+     * Indicate completion of the print job.
+     */
+    void Continue();
 }

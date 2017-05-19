@@ -8,20 +8,19 @@ package org.cef.misc;
  * Helper class for passing String values by reference.
  */
 public class StringRef {
-  private String value_;
+    private String value_;
 
-  public StringRef() {
-  }
+    public StringRef() {}
 
-  public StringRef(String value) {
-    value_ = value;
-  }
+    public StringRef(String value) {
+        value_ = value;
+    }
 
-  public void set(String value) {
-    value_ = value;
-  }
+    public void set(String value) {
+        value_ = value;
+    }
 
-  public String get() {
-    return value_;
-  }
+    public String get() {
+        return value_;
+    }
 }

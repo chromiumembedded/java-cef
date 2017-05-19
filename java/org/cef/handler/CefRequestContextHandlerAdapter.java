@@ -12,20 +12,15 @@ import org.cef.network.CefWebPluginInfo;
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
-public abstract class CefRequestContextHandlerAdapter
-    implements CefRequestContextHandler {
+public abstract class CefRequestContextHandlerAdapter implements CefRequestContextHandler {
+    @Override
+    public CefCookieManager getCookieManager() {
+        return null;
+    }
 
-  @Override
-  public CefCookieManager getCookieManager() {
-    return null;
-  }
-
-  @Override
-  public boolean onBeforePluginLoad(String mime_type,
-                                    String plugin_url,
-                                    boolean is_main_frame,
-                                    String top_origin_url,
-                                    CefWebPluginInfo plugin_info) {
-    return false;
-  }
+    @Override
+    public boolean onBeforePluginLoad(String mime_type, String plugin_url, boolean is_main_frame,
+            String top_origin_url, CefWebPluginInfo plugin_info) {
+        return false;
+    }
 }

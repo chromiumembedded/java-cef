@@ -8,9 +8,9 @@ package org.cef.callback;
  * Public interface to receive string values asynchronously.
  */
 public interface CefStringVisitor {
-  /**
-   * Called when the string is available.
-   * @param string Requested string.
-   */
-  void visit(String string);
+    /**
+     * Called when the string is available.
+     * @param string Requested string.
+     */
+    void visit(String string);
 }

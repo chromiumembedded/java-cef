@@ -8,13 +8,13 @@ package org.cef.callback;
  * Generic callback interface used for asynchronous continuation.
  */
 public interface CefCallback {
-  /**
-   * Continue processing.
-   */
-  void Continue();
+    /**
+     * Continue processing.
+     */
+    void Continue();
 
-  /**
-   * Cancel processing.
-   */
-  void cancel();
+    /**
+     * Cancel processing.
+     */
+    void cancel();
 }

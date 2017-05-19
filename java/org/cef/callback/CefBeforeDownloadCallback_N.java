@@ -4,20 +4,17 @@
 
 package org.cef.callback;
 
-class CefBeforeDownloadCallback_N extends CefNativeAdapter implements 
-    CefBeforeDownloadCallback {
+class CefBeforeDownloadCallback_N extends CefNativeAdapter implements CefBeforeDownloadCallback {
+    CefBeforeDownloadCallback_N() {}
 
-  CefBeforeDownloadCallback_N() {
-  }
-
-  @Override
-  public void Continue(String downloadPath, boolean showDialog) {
-    try {
-      N_Continue(downloadPath, showDialog);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public void Continue(String downloadPath, boolean showDialog) {
+        try {
+            N_Continue(downloadPath, showDialog);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
-  }
 
-  private final native void N_Continue(String downloadPath, boolean showDialog);
+    private final native void N_Continue(String downloadPath, boolean showDialog);
 }

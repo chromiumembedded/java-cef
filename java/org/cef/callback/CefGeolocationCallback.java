@@ -9,8 +9,8 @@ package org.cef.callback;
  * permission requests.
  */
 public interface CefGeolocationCallback {
-  /**
-   * Call to allow or deny geolocation access.
-   */
-  public void Continue(boolean allow);
+    /**
+     * Call to allow or deny geolocation access.
+     */
+    public void Continue(boolean allow);
 }

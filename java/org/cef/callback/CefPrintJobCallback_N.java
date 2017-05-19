@@ -4,20 +4,17 @@
 
 package org.cef.callback;
 
-class CefPrintJobCallback_N extends CefNativeAdapter
-    implements CefPrintJobCallback {
+class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallback {
+    CefPrintJobCallback_N() {}
 
-  CefPrintJobCallback_N() {
-  }
-
-  @Override
-  public void Continue() {
-    try {
-      N_Continue();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public void Continue() {
+        try {
+            N_Continue();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
-  }
 
-  private final native void N_Continue();
+    private final native void N_Continue();
 }

@@ -11,49 +11,46 @@ import org.cef.callback.CefWebPluginUnstableCallback;
  * Class used to manage web plugins.
  */
 public abstract class CefWebPluginManager {
+    // This CTOR can't be called directly. Call method create() instead.
+    CefWebPluginManager() {}
 
-  // This CTOR can't be called directly. Call method create() instead.
-  CefWebPluginManager() {
-  }
+    /**
+     * Returns the global plugin manager.
+     */
+    public static final CefWebPluginManager getGlobalManager() {
+        return CefWebPluginManager_N.getInstance();
+    }
 
-  /**
-   * Returns the global plugin manager.
-   */
-  public static final CefWebPluginManager getGlobalManager() {
-    return CefWebPluginManager_N.getInstance();
-  }
+    /**
+     * Visit web plugin information. Can be called on any thread in the browser
+     * process.
+     * @param visitor Called with plugin information when available.
+     */
+    public abstract void visitPlugins(CefWebPluginInfoVisitor visitor);
 
-  /**
-   * Visit web plugin information. Can be called on any thread in the browser
-   * process.
-   * @param visitor Called with plugin information when available.
-   */
-  public abstract void visitPlugins(CefWebPluginInfoVisitor visitor);
+    /**
+     * Cause the plugin list to refresh the next time it is accessed regardless
+     * of whether it has already been loaded. Can be called on any thread in the
+     * browser process.
+     */
+    public abstract void refreshPlugins();
 
-  /**
-   * Cause the plugin list to refresh the next time it is accessed regardless
-   * of whether it has already been loaded. Can be called on any thread in the
-   * browser process.
-   */
-  public abstract void refreshPlugins();
+    /**
+     * Unregister an internal plugin. This may be undone the next time
+     * CefRefreshWebPlugins() is called. Can be called on any thread in the browser
+     * process.
+     */
+    public abstract void unregisterInternalPlugin(String path);
 
-  /**
-   * Unregister an internal plugin. This may be undone the next time
-   * CefRefreshWebPlugins() is called. Can be called on any thread in the browser
-   * process.
-   */
-  public abstract void unregisterInternalPlugin(String path);
+    /**
+     * Register a plugin crash. Can be called on any thread in the browser process
+     * but will be executed on the IO thread.
+     */
+    public abstract void registerPluginCrash(String path);
 
-  /**
-   * Register a plugin crash. Can be called on any thread in the browser process
-   * but will be executed on the IO thread.
-   */
-  public abstract void registerPluginCrash(String path);
-
-  /**
-   * Query if a plugin is unstable. Can be called on any thread in the browser
-   * process.
-   */
-  public abstract void isWebPluginUnstable(String path,
-                                           CefWebPluginUnstableCallback callback);
+    /**
+     * Query if a plugin is unstable. Can be called on any thread in the browser
+     * process.
+     */
+    public abstract void isWebPluginUnstable(String path, CefWebPluginUnstableCallback callback);
 }

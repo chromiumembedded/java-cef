@@ -8,8 +8,8 @@ package org.cef.callback;
  * Callback interface used to asynchronously cancel a download.
  */
 public interface CefDownloadItemCallback {
-  /**
-   * Call to cancel the download.
-   */
-  public void cancel();
+    /**
+     * Call to cancel the download.
+     */
+    public void cancel();
 }

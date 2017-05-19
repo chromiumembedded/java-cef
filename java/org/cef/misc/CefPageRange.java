@@ -8,13 +8,13 @@ package org.cef.misc;
  * Class representing a print job page range.
  */
 public class CefPageRange {
-  public int from;
-  public int to;
+    public int from;
+    public int to;
 
-  public CefPageRange() {}
+    public CefPageRange() {}
 
-  public CefPageRange(int from, int to) {
-    this.from = from;
-    this.to = to;
-  }
+    public CefPageRange(int from, int to) {
+        this.from = from;
+        this.to = to;
+    }
 }

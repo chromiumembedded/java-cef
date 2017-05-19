@@ -22,34 +22,32 @@ import org.cef.handler.CefRequestContextHandler;
  * context objects will be ignored.
  */
 public abstract class CefRequestContext {
+    // This CTOR can't be called directly. Call method create() instead.
+    CefRequestContext() {}
 
-  // This CTOR can't be called directly. Call method create() instead.
-  CefRequestContext() {
-  }
+    /**
+     * Returns the global context object.
+     */
+    public static final CefRequestContext getGlobalContext() {
+        return CefRequestContext_N.getGlobalContextNative();
+    }
 
-  /**
-   * Returns the global context object.
-   */
-  public static final CefRequestContext getGlobalContext() {
-    return CefRequestContext_N.getGlobalContextNative();
-  }
+    /**
+     * Creates a new context object with the specified handler.
+     */
+    public static final CefRequestContext createContext(CefRequestContextHandler handler) {
+        return CefRequestContext_N.createNative(handler);
+    }
 
-  /**
-   * Creates a new context object with the specified handler.
-   */
-  public static final CefRequestContext createContext(CefRequestContextHandler handler) {
-    return CefRequestContext_N.createNative(handler);
-  }
+    public abstract void dispose();
 
-  public abstract void dispose();
+    /**
+     * Returns true if this object is the global context.
+     */
+    public abstract boolean isGlobal();
 
-  /**
-   * Returns true if this object is the global context.
-   */
-  public abstract boolean isGlobal();
-
-  /**
-   * Returns the handler for this context if any.
-   */
-  public abstract CefRequestContextHandler getHandler();
+    /**
+     * Returns the handler for this context if any.
+     */
+    public abstract CefRequestContextHandler getHandler();
 }

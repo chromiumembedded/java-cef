@@ -10,14 +10,13 @@ import org.cef.misc.CefPrintSettings;
  * Callback interface for asynchronous continuation of print dialog requests.
  */
 public interface CefPrintDialogCallback {
+    /**
+     * Continue printing with the specified |settings|.
+     */
+    void Continue(CefPrintSettings settings);
 
-  /**
-   * Continue printing with the specified |settings|.
-   */
-  void Continue(CefPrintSettings settings);
-
-  /**
-   * Cancel the printing.
-   */
-  void cancel();
+    /**
+     * Cancel the printing.
+     */
+    void cancel();
 }

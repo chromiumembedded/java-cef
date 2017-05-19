@@ -9,26 +9,21 @@ import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
 
 /**
- * An abstract adapter class for receiving context menu events. 
+ * An abstract adapter class for receiving context menu events.
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefContextMenuHandlerAdapter implements CefContextMenuHandler {
-  @Override
-  public void onBeforeContextMenu(CefBrowser browser,
-                                  CefContextMenuParams params,
-                                  CefMenuModel model) {
-  }
+    @Override
+    public void onBeforeContextMenu(
+            CefBrowser browser, CefContextMenuParams params, CefMenuModel model) {}
 
-  @Override
-  public boolean onContextMenuCommand(CefBrowser browser,
-                                      CefContextMenuParams params,
-                                      int commandId,
-                                      int eventFlags) {
-    return false;
-  }
+    @Override
+    public boolean onContextMenuCommand(
+            CefBrowser browser, CefContextMenuParams params, int commandId, int eventFlags) {
+        return false;
+    }
 
-  @Override
-  public void onContextMenuDismissed(CefBrowser browser) {
-  }
+    @Override
+    public void onContextMenuDismissed(CefBrowser browser) {}
 }

@@ -5,28 +5,26 @@
 package org.cef.callback;
 
 class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
+    CefAuthCallback_N() {}
 
-  CefAuthCallback_N() {
-  }
-
-  @Override
-  public void Continue(String username, String password) {
-    try {
-      N_Continue(username, password);
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public void Continue(String username, String password) {
+        try {
+            N_Continue(username, password);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
-  }
 
-  @Override
-  public void cancel() {
-    try {
-      N_Cancel();
-    } catch (UnsatisfiedLinkError ule) {
-      ule.printStackTrace();
+    @Override
+    public void cancel() {
+        try {
+            N_Cancel();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
-  }
 
-  private final native void N_Continue(String username, String password);
-  private final native void N_Cancel();
+    private final native void N_Continue(String username, String password);
+    private final native void N_Cancel();
 }

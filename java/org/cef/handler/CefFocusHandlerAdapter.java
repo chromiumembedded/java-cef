@@ -7,23 +7,21 @@ package org.cef.handler;
 import org.cef.browser.CefBrowser;
 
 /**
- * An abstract adapter class for receiving focus events. 
+ * An abstract adapter class for receiving focus events.
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefFocusHandlerAdapter implements CefFocusHandler {
+    @Override
+    public void onTakeFocus(CefBrowser browser, boolean next) {
+        return;
+    }
 
-  @Override
-  public void onTakeFocus(CefBrowser browser, boolean next) {
-    return;
-  }
+    @Override
+    public boolean onSetFocus(CefBrowser browser, FocusSource source) {
+        return false;
+    }
 
-  @Override
-  public boolean onSetFocus(CefBrowser browser, FocusSource source) {
-    return false;
-  }
-
-  @Override
-  public void onGotFocus(CefBrowser browser) {
-  }
+    @Override
+    public void onGotFocus(CefBrowser browser) {}
 }

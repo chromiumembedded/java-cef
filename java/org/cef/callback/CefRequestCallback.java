@@ -8,16 +8,16 @@ package org.cef.callback;
  * Callback interface used for asynchronous continuation of quota requests.
  */
 public interface CefRequestCallback {
-  /**
-   * Continue the url request.
-   *
-   * @param allow If set to true the request will be continued.
-   *   Otherwise, the request will be canceled.
-   */
-  void Continue(boolean allow);
+    /**
+     * Continue the url request.
+     *
+     * @param allow If set to true the request will be continued.
+     *   Otherwise, the request will be canceled.
+     */
+    void Continue(boolean allow);
 
-  /**
-   * Cancel the url request.
-   */
-  void Cancel();
+    /**
+     * Cancel the url request.
+     */
+    void Cancel();
 }

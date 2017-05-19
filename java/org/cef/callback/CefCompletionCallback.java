@@ -8,9 +8,8 @@ package org.cef.callback;
  * Generic callback interface used for asynchronous completion.
  */
 public interface CefCompletionCallback {
-
-  /**
-   * Method that will be called once the task is complete.
-   */
-  public abstract void onComplete();
+    /**
+     * Method that will be called once the task is complete.
+     */
+    public abstract void onComplete();
 }

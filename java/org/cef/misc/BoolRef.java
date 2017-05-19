@@ -8,20 +8,19 @@ package org.cef.misc;
  * Helper class for passing boolean values by reference.
  */
 public class BoolRef {
-  private boolean value_;
+    private boolean value_;
 
-  public BoolRef() {
-  }
+    public BoolRef() {}
 
-  public BoolRef(boolean value) {
-    value_ = value;
-  }
+    public BoolRef(boolean value) {
+        value_ = value;
+    }
 
-  public void set(boolean value) {
-    value_ = value;
-  }
+    public void set(boolean value) {
+        value_ = value;
+    }
 
-  public boolean get() {
-    return value_;
-  }
+    public boolean get() {
+        return value_;
+    }
 }

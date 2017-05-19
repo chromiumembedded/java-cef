@@ -35,292 +35,267 @@ import org.cef.handler.CefRenderHandler;
 
 /**
  * This class represents an off-screen rendered browser.
- * The visibility of this class is "package". To create a new 
+ * The visibility of this class is "package". To create a new
  * CefBrowser instance, please use CefBrowserFactory.
  */
 class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
-  private CefRenderer renderer_;
-  private GLCanvas canvas_;
-  private long window_handle_ = 0;
-  private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1);  // Work around CEF issue #1437.
-  private Point screenPoint_ = new Point(0, 0);
-  private CefClientHandler clientHandler_;
-  private String url_;
-  private boolean isTransparent_;
-  private CefRequestContext context_;
-  private CefBrowserOsr parent_ = null;
-  private Point inspectAt_ = null;
-  private CefBrowserOsr devTools_ = null;;
+    private CefRenderer renderer_;
+    private GLCanvas canvas_;
+    private long window_handle_ = 0;
+    private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
+    private Point screenPoint_ = new Point(0, 0);
+    private CefClientHandler clientHandler_;
+    private String url_;
+    private boolean isTransparent_;
+    private CefRequestContext context_;
+    private CefBrowserOsr parent_ = null;
+    private Point inspectAt_ = null;
+    private CefBrowserOsr devTools_ = null;
+    ;
 
-  CefBrowserOsr(CefClientHandler clientHandler,
-                String url,
-                boolean transparent,
-                CefRequestContext context) {
-    this(clientHandler, url, transparent, context, null, null);
-  }
-
-  private CefBrowserOsr(CefClientHandler clientHandler,
-                        String url,
-                        boolean transparent,
-                        CefRequestContext context,
-                        CefBrowserOsr parent,
-                        Point inspectAt) {
-    super();
-    isTransparent_ = transparent;
-    renderer_ = new CefRenderer(transparent);
-    clientHandler_ = clientHandler;
-    url_ = url;
-    context_ = context;
-    parent_ = parent;
-    inspectAt_ = inspectAt;
-    createGLCanvas();
-  }
-
-  @Override
-  public Component getUIComponent() {
-    return canvas_;
-  }
-
-  @Override
-  public CefRenderHandler getRenderHandler() {
-    return this;
-  }
-
-  @Override
-  public synchronized void close() {
-    if (context_ != null)
-      context_.dispose();
-    if (parent_ != null) {
-      parent_.closeDevTools();
-      parent_.devTools_ = null;
-      parent_ = null;
+    CefBrowserOsr(CefClientHandler clientHandler, String url, boolean transparent,
+            CefRequestContext context) {
+        this(clientHandler, url, transparent, context, null, null);
     }
-    super.close();
-  }
 
-  @Override
-  public synchronized CefBrowser getDevTools() {
-    return getDevTools(null);
-  }
-
-  @Override
-  public synchronized CefBrowser getDevTools(Point inspectAt) {
-    if (devTools_ == null) {
-      devTools_ = new CefBrowserOsr(clientHandler_,
-                                    url_,
-                                    isTransparent_,
-                                    context_,
-                                    this,
-                                    inspectAt);
+    private CefBrowserOsr(CefClientHandler clientHandler, String url, boolean transparent,
+            CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
+        super();
+        isTransparent_ = transparent;
+        renderer_ = new CefRenderer(transparent);
+        clientHandler_ = clientHandler;
+        url_ = url;
+        context_ = context;
+        parent_ = parent;
+        inspectAt_ = inspectAt;
+        createGLCanvas();
     }
-    return devTools_;
-  }
 
-  private long getWindowHandle() {
-    if (window_handle_ == 0) {
-      NativeSurface surface = canvas_.getNativeSurface();
-      if (surface != null) {
-        surface.lockSurface();
-        window_handle_ = getWindowHandle(surface.getSurfaceHandle());
-        surface.unlockSurface();
-        assert (window_handle_ != 0);
-      }
+    @Override
+    public Component getUIComponent() {
+        return canvas_;
     }
-    return window_handle_;
-  }
 
-  @SuppressWarnings("serial")
-  private void createGLCanvas() {
-    GLProfile glprofile = GLProfile.getMaxFixedFunc(true);
-    GLCapabilities glcapabilities = new GLCapabilities(glprofile);
-    canvas_ = new GLCanvas(glcapabilities) {
-      @Override
-      public void paint(Graphics g) {
+    @Override
+    public CefRenderHandler getRenderHandler() {
+        return this;
+    }
+
+    @Override
+    public synchronized void close() {
+        if (context_ != null) context_.dispose();
         if (parent_ != null) {
-          createDevTools(parent_,
-                         clientHandler_,
-                         getWindowHandle(),
-                         isTransparent_,
-                         null,
-                         inspectAt_);
-        } else {
-          createBrowser(clientHandler_,
-                        getWindowHandle(),
-                        url_,
-                        isTransparent_,
-                        null,
-                        context_);
+            parent_.closeDevTools();
+            parent_.devTools_ = null;
+            parent_ = null;
         }
-        super.paint(g);
-      }
-    };
+        super.close();
+    }
 
-    canvas_.addGLEventListener(new GLEventListener() {
-      @Override
-      public void reshape(GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
-        browser_rect_.setBounds(x, y, width, height);
-        screenPoint_ = canvas_.getLocationOnScreen();
-        wasResized(width, height);
-      }
+    @Override
+    public synchronized CefBrowser getDevTools() {
+        return getDevTools(null);
+    }
 
-      @Override
-      public void init(GLAutoDrawable glautodrawable) {
-        renderer_.initialize(glautodrawable.getGL().getGL2());
-      }
+    @Override
+    public synchronized CefBrowser getDevTools(Point inspectAt) {
+        if (devTools_ == null) {
+            devTools_ = new CefBrowserOsr(
+                    clientHandler_, url_, isTransparent_, context_, this, inspectAt);
+        }
+        return devTools_;
+    }
 
-      @Override
-      public void dispose(GLAutoDrawable glautodrawable) {
-        renderer_.cleanup(glautodrawable.getGL().getGL2());
-      }
+    private long getWindowHandle() {
+        if (window_handle_ == 0) {
+            NativeSurface surface = canvas_.getNativeSurface();
+            if (surface != null) {
+                surface.lockSurface();
+                window_handle_ = getWindowHandle(surface.getSurfaceHandle());
+                surface.unlockSurface();
+                assert(window_handle_ != 0);
+            }
+        }
+        return window_handle_;
+    }
 
-      @Override
-      public void display(GLAutoDrawable glautodrawable) {
-        renderer_.render(glautodrawable.getGL().getGL2());
-      }
-    });
+    @SuppressWarnings("serial")
+    private void createGLCanvas() {
+        GLProfile glprofile = GLProfile.getMaxFixedFunc(true);
+        GLCapabilities glcapabilities = new GLCapabilities(glprofile);
+        canvas_ = new GLCanvas(glcapabilities) {
+            @Override
+            public void paint(Graphics g) {
+                if (parent_ != null) {
+                    createDevTools(parent_, clientHandler_, getWindowHandle(), isTransparent_, null,
+                            inspectAt_);
+                } else {
+                    createBrowser(clientHandler_, getWindowHandle(), url_, isTransparent_, null,
+                            context_);
+                }
+                super.paint(g);
+            }
+        };
 
-    canvas_.addMouseListener(new MouseListener() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        sendMouseEvent(e);
-      }
+        canvas_.addGLEventListener(new GLEventListener() {
+            @Override
+            public void reshape(
+                    GLAutoDrawable glautodrawable, int x, int y, int width, int height) {
+                browser_rect_.setBounds(x, y, width, height);
+                screenPoint_ = canvas_.getLocationOnScreen();
+                wasResized(width, height);
+            }
 
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        sendMouseEvent(e);
-      }
+            @Override
+            public void init(GLAutoDrawable glautodrawable) {
+                renderer_.initialize(glautodrawable.getGL().getGL2());
+            }
 
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        sendMouseEvent(e);
-      }
+            @Override
+            public void dispose(GLAutoDrawable glautodrawable) {
+                renderer_.cleanup(glautodrawable.getGL().getGL2());
+            }
 
-      @Override
-      public void mouseExited(MouseEvent e) {
-        sendMouseEvent(e);
-      }
+            @Override
+            public void display(GLAutoDrawable glautodrawable) {
+                renderer_.render(glautodrawable.getGL().getGL2());
+            }
+        });
 
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        sendMouseEvent(e);
-      }
-    });
+        canvas_.addMouseListener(new MouseListener() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                sendMouseEvent(e);
+            }
 
-    canvas_.addMouseMotionListener(new MouseMotionListener() {
-      @Override
-      public void mouseMoved(MouseEvent e) {
-        sendMouseEvent(e);
-      }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                sendMouseEvent(e);
+            }
 
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        sendMouseEvent(e);
-      }
-    });
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                sendMouseEvent(e);
+            }
 
-    canvas_.addMouseWheelListener(new MouseWheelListener() {
-      @Override
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        sendMouseWheelEvent(e);
-      }
-    });
+            @Override
+            public void mouseExited(MouseEvent e) {
+                sendMouseEvent(e);
+            }
 
-    canvas_.addKeyListener(new KeyListener() {
-      @Override
-      public void keyTyped(KeyEvent e) {
-        sendKeyEvent(e);
-      }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                sendMouseEvent(e);
+            }
+        });
 
-      @Override
-      public void keyPressed(KeyEvent e) {
-        sendKeyEvent(e);
-      }
+        canvas_.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                sendMouseEvent(e);
+            }
 
-      @Override
-      public void keyReleased(KeyEvent e) {
-        sendKeyEvent(e);
-      }
-    });
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                sendMouseEvent(e);
+            }
+        });
 
-    canvas_.setFocusable(true);
-    canvas_.addFocusListener(new FocusListener() {
-      @Override
-      public void focusLost(FocusEvent e) {
-        setFocus(false);
-      }
+        canvas_.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                sendMouseWheelEvent(e);
+            }
+        });
 
-      @Override
-      public void focusGained(FocusEvent e) {
-        // Dismiss any Java menus that are currently displayed.
-        MenuSelectionManager.defaultManager().clearSelectedPath();
-        setFocus(true);
-      }
-    });
-  }
+        canvas_.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                sendKeyEvent(e);
+            }
 
-  @Override
-  public Rectangle getViewRect(CefBrowser browser) {
-    return browser_rect_;
-  }
+            @Override
+            public void keyPressed(KeyEvent e) {
+                sendKeyEvent(e);
+            }
 
-  @Override
-  public Point getScreenPoint(CefBrowser browser, Point viewPoint) {
-    Point screenPoint = new Point(screenPoint_);
-    screenPoint.translate(viewPoint.x, viewPoint.y);
-    return screenPoint;
-  }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                sendKeyEvent(e);
+            }
+        });
 
-  @Override
-  public void onPopupShow(CefBrowser browser, boolean show) {
-    if (!show) {
-      renderer_.clearPopupRects();
-      invalidate();
-     }
-  }
+        canvas_.setFocusable(true);
+        canvas_.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                setFocus(false);
+            }
 
-  @Override
-  public void onPopupSize(CefBrowser browser, Rectangle size) {
-    renderer_.onPopupSize(size);
-  }
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Dismiss any Java menus that are currently displayed.
+                MenuSelectionManager.defaultManager().clearSelectedPath();
+                setFocus(true);
+            }
+        });
+    }
 
-  @Override
-  public void onPaint(CefBrowser browser, 
-                      boolean popup,
-                      Rectangle[] dirtyRects, 
-                      ByteBuffer buffer, 
-                      int width, 
-                      int height) {
-    canvas_.getContext().makeCurrent();
-    renderer_.onPaint(canvas_.getGL().getGL2(), popup, dirtyRects, buffer, width, height);
-    canvas_.getContext().release();
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        canvas_.display();
-      }
-    });
-  }
+    @Override
+    public Rectangle getViewRect(CefBrowser browser) {
+        return browser_rect_;
+    }
 
-  @Override
-  public void onCursorChange(CefBrowser browser, final int cursorType) {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        canvas_.setCursor(new Cursor(cursorType));
-      }
-    });
-  }
+    @Override
+    public Point getScreenPoint(CefBrowser browser, Point viewPoint) {
+        Point screenPoint = new Point(screenPoint_);
+        screenPoint.translate(viewPoint.x, viewPoint.y);
+        return screenPoint;
+    }
 
-  @Override
-  public boolean startDragging(CefBrowser browser,
-                               CefDragData dragData,
-                               int mask,
-                               int x,
-                               int y) {
-    // TODO(JCEF) Prepared for DnD support using OSR mode.
-    return false;
-  }
+    @Override
+    public void onPopupShow(CefBrowser browser, boolean show) {
+        if (!show) {
+            renderer_.clearPopupRects();
+            invalidate();
+        }
+    }
 
-  @Override
-  public void updateDragCursor(CefBrowser browser, int operation) {
-    // TODO(JCEF) Prepared for DnD support using OSR mode.
-  }
+    @Override
+    public void onPopupSize(CefBrowser browser, Rectangle size) {
+        renderer_.onPopupSize(size);
+    }
+
+    @Override
+    public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
+            ByteBuffer buffer, int width, int height) {
+        canvas_.getContext().makeCurrent();
+        renderer_.onPaint(canvas_.getGL().getGL2(), popup, dirtyRects, buffer, width, height);
+        canvas_.getContext().release();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                canvas_.display();
+            }
+        });
+    }
+
+    @Override
+    public void onCursorChange(CefBrowser browser, final int cursorType) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                canvas_.setCursor(new Cursor(cursorType));
+            }
+        });
+    }
+
+    @Override
+    public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
+        // TODO(JCEF) Prepared for DnD support using OSR mode.
+        return false;
+    }
+
+    @Override
+    public void updateDragCursor(CefBrowser browser, int operation) {
+        // TODO(JCEF) Prepared for DnD support using OSR mode.
+    }
 }
