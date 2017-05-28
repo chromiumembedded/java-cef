@@ -19,12 +19,15 @@ elif sys.platform.startswith('linux'):
 else:
   raise Exception("Unsupported platform: %s" % sys.platform)
 
+
 def clang_format(file_name, file_contents):
   # -assume-filename is necessary to find the .clang-format file and determine
   # the language when specifying contents via stdin.
   result = exec_cmd("%s -assume-filename=%s" % \
                     (os.path.join(script_dir, clang_format_exe), file_name), \
                     root_dir, file_contents)
+  if result['err'] != '':
+    print "clang-format error: %s" % result['err']
   if result['out'] != '':
     output = result['out']
     if sys.platform == 'win32':
