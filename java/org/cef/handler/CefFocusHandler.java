@@ -16,7 +16,7 @@ public interface CefFocusHandler {
      */
     enum FocusSource {
         FOCUS_SOURCE_NAVIGATION, //!< The source is explicit navigation via the API (LoadURL(),
-                                 //!etc).
+                                 //! etc).
         FOCUS_SOURCE_SYSTEM //!< The source is a system-generated focus event.
     }
 
