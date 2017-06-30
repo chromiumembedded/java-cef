@@ -827,8 +827,6 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
                  &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
                  &settings.uncaught_exception_stack_size);
-  GetJNIFieldInt(env, cls, obj, "context_safety_implementation",
-                 &settings.context_safety_implementation);
   GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
                      &settings.ignore_certificate_errors);
   jobject obj_col = NULL;

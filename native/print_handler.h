@@ -18,18 +18,21 @@ class PrintHandler : public CefPrintHandler {
   // CefPrintHandler methods
   virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
-  virtual void OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
+  virtual void OnPrintSettings(CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<CefPrintSettings> settings,
                                bool get_defaults) OVERRIDE;
 
   virtual bool OnPrintDialog(
+      CefRefPtr<CefBrowser> browser,
       bool has_selection,
       CefRefPtr<CefPrintDialogCallback> callback) OVERRIDE;
 
-  virtual bool OnPrintJob(const CefString& document_name,
+  virtual bool OnPrintJob(CefRefPtr<CefBrowser> browser,
+                          const CefString& document_name,
                           const CefString& pdf_file_path,
                           CefRefPtr<CefPrintJobCallback> callback) OVERRIDE;
 
-  virtual void OnPrintReset() OVERRIDE;
+  virtual void OnPrintReset(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
  protected:
   jobject jhandler_;

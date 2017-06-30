@@ -204,28 +204,6 @@ public class CefSettings {
     public int uncaught_exception_stack_size = 0;
 
     /**
-     * By default CEF V8 references will be invalidated (the IsValid() method will
-     * return false) after the owning context has been released. This reduces the
-     * need for external record keeping and avoids crashes due to the use of V8
-     * references after the associated context has been released.
-     *
-     * CEF currently offers two context safety implementations with different
-     * performance characteristics. The default implementation (value of 0) uses a
-     * map of hash values and should provide better performance in situations with
-     * a small number contexts. The alternate implementation (value of 1) uses a
-     * hidden value attached to each context and should provide better performance
-     * in situations with a large number of contexts.
-     *
-     * If you need better performance in the creation of V8 references and you
-     * plan to manually track context lifespan you can disable context safety by
-     * specifying a value of -1.
-     *
-     * Also configurable using the "context-safety-implementation" command-line
-     * switch.
-     */
-    public int context_safety_implementation = 0;
-
-    /**
      * Set to true to ignore errors related to invalid SSL certificates.
      * Enabling this setting can lead to potential security vulnerabilities like
      * "man in the middle" attacks. Applications that load content from the
@@ -263,7 +241,6 @@ public class CefSettings {
         tmp.pack_loading_disabled = pack_loading_disabled;
         tmp.remote_debugging_port = remote_debugging_port;
         tmp.uncaught_exception_stack_size = uncaught_exception_stack_size;
-        tmp.context_safety_implementation = context_safety_implementation;
         tmp.ignore_certificate_errors = ignore_certificate_errors;
         if (background_color != null) tmp.background_color = background_color.clone();
         return tmp;

@@ -10,4 +10,4 @@ export LIB_PATH=$(readlink -f "./bin/lib/linux64")
 export LD_LIBRARY_PATH=$LIB_PATH
 
 # Preload libcef.so to avoid crashes.
-LD_PRELOAD=$LIB_PATH/libcef.so java -cp "./bin:./bin/*" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame
+LD_PRELOAD=$LIB_PATH/libcef.so java -cp "./bin:./bin/*" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame "$@"

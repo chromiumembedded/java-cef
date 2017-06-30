@@ -26,7 +26,8 @@ void PrintHandler::OnPrintStart(CefRefPtr<CefBrowser> browser) {
                        GetJNIBrowser(browser));
 }
 
-void PrintHandler::OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
+void PrintHandler::OnPrintSettings(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefPrintSettings> settings,
                                    bool get_defaults) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
@@ -46,7 +47,8 @@ void PrintHandler::OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
                                        "CefPrintSettings");
 }
 
-bool PrintHandler::OnPrintDialog(bool has_selection,
+bool PrintHandler::OnPrintDialog(CefRefPtr<CefBrowser> browser,
+                                 bool has_selection,
                                  CefRefPtr<CefPrintDialogCallback> callback) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
@@ -71,7 +73,8 @@ bool PrintHandler::OnPrintDialog(bool has_selection,
   return (jresult != JNI_FALSE);
 }
 
-bool PrintHandler::OnPrintJob(const CefString& document_name,
+bool PrintHandler::OnPrintJob(CefRefPtr<CefBrowser> browser,
+                              const CefString& document_name,
                               const CefString& pdf_file_path,
                               CefRefPtr<CefPrintJobCallback> callback) {
   JNIEnv* env = GetJNIEnv();
@@ -99,7 +102,7 @@ bool PrintHandler::OnPrintJob(const CefString& document_name,
   return (jresult != JNI_FALSE);
 }
 
-void PrintHandler::OnPrintReset() {
+void PrintHandler::OnPrintReset(CefRefPtr<CefBrowser> browser) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;

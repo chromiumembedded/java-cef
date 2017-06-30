@@ -927,10 +927,16 @@ jboolean create(JNIEnv* env,
   } else
 #endif
   {
-    windowInfo.SetAsWindowless((CefWindowHandle)windowHandle,
-                               (transparent != JNI_FALSE));
+    windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
   }
+
   CefBrowserSettings settings;
+
+  if (transparent == JNI_FALSE) {
+    // Specify an opaque background color (white) to disable transparency.
+    settings.background_color = CefColorSetARGB(255, 255, 255, 255);
+  }
+
   CefRefPtr<CefBrowser> browserObj;
   CefString strUrl = GetJNIString(env, url);
 

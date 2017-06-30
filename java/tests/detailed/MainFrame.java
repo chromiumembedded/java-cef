@@ -46,11 +46,14 @@ public class MainFrame extends JFrame {
         // OSR mode is enabled by default on Linux.
         // and disabled by default on Windows and Mac OS X.
         boolean osrEnabledArg = OS.isLinux();
+        boolean transparentPaintingEnabledArg = false;
         String cookiePath = null;
         for (String arg : args) {
             arg = arg.toLowerCase();
             if (!OS.isLinux() && arg.equals("--off-screen-rendering-enabled")) {
                 osrEnabledArg = true;
+            } else if (arg.equals("--transparent-painting-enabled")) {
+                transparentPaintingEnabledArg = true;
             } else if (arg.startsWith("--cookie-path=")) {
                 cookiePath = arg.substring("--cookie-path=".length());
                 File testPath = new File(cookiePath);
@@ -68,7 +71,8 @@ public class MainFrame extends JFrame {
 
         // MainFrame keeps all the knowledge to display the embedded browser
         // frame.
-        final MainFrame frame = new MainFrame(osrEnabledArg, cookiePath, args);
+        final MainFrame frame =
+                new MainFrame(osrEnabledArg, transparentPaintingEnabledArg, cookiePath, args);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -88,7 +92,8 @@ public class MainFrame extends JFrame {
     private StatusPanel status_panel_;
     private final CefCookieManager cookieManager_;
 
-    public MainFrame(boolean osrEnabled, String cookiePath, String[] args) {
+    public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled, String cookiePath,
+            String[] args) {
         // 1) CefApp is the entry point for JCEF. You can pass
         //    application arguments to it, if you want to handle any
         //    chromium or CEF related switches/attributes in
@@ -210,8 +215,8 @@ public class MainFrame extends JFrame {
         } else {
             cookieManager_ = CefCookieManager.getGlobalManager();
         }
-        browser_ =
-                client_.createBrowser("http://www.google.com", osrEnabled, false, requestContext);
+        browser_ = client_.createBrowser(
+                "http://www.google.com", osrEnabled, transparentPaintingEnabled, requestContext);
 
         //    Last but not least we're setting up the UI for this example implementation.
         getContentPane().add(createContentPanel(), BorderLayout.CENTER);
@@ -230,8 +235,9 @@ public class MainFrame extends JFrame {
                 "Scheme-Handler Test 1: (scheme \"client\")", "client://tests/handler.html");
         menuBar.addBookmark(
                 "Scheme-Handler Test 2: (scheme \"search\")", "search://do a barrel roll/");
-        menuBar.addBookmark("Spellcheck test", "client://tests/spellcheck.html");
-        menuBar.addBookmark("Test local Storage", "client://tests/localstorage.html");
+        menuBar.addBookmark("Spellcheck Test", "client://tests/spellcheck.html");
+        menuBar.addBookmark("LocalStorage Test", "client://tests/localstorage.html");
+        menuBar.addBookmark("Transparency Test", "client://tests/transparency.html");
         menuBar.addBookmarkSeparator();
         menuBar.addBookmark(
                 "javachromiumembedded", "https://bitbucket.org/chromiumembedded/java-cef");
