@@ -1,0 +1,54 @@
+# This is a configuration file for the continuous delivery service provided
+# by AppVeyor.com. Its purpose is to automatically build both the 32
+# and 64 bit versions of the Java Chromium Embedded Framework (JCEF).
+# Please refer to https://bitbucket.org/chromiumembedded/java-cef
+# for more information on JCEF.
+
+os: Visual Studio 2015
+
+clone_folder: c:\projects\java-cef\src
+
+platform:
+  - win32
+  - x64
+
+configuration:
+  - Release
+
+environment:
+  matrix:
+  - buildType: win32
+    generatorName: Visual Studio 14
+    JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+  - buildType: win64
+    generatorName: Visual Studio 14 Win64
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+
+matrix:
+  exclude:
+    - platform: x64
+      buildType: win32
+    - platform: win32
+      buildType: win64
+
+before_build:
+  - SET PATH=%JAVA_HOME%;%PATH%
+  - echo "Running cmake..."
+  - cd c:\projects\java-cef\src
+  - mkdir jcef_build
+  - cd jcef_build
+  - cmake -G "%generatorName%" ..
+  - echo "Building the JCEF Java classes..."
+  - cd c:\projects\java-cef\src\tools
+  - compile.bat %buildType%
+
+after_build:
+  - echo "Making distribution..."
+  - cd c:\projects\java-cef\src\tools\
+  - make_distrib.bat %buildType%
+  - cd c:\projects\java-cef\src\binary_distrib
+  - 7z a jcef-%buildType%-distribution.zip %buildType%
+
+artifacts:
+  - path: binary_distrib\jcef-%buildType%-distribution.zip
+    name: jcef-%buildType%-distribution
