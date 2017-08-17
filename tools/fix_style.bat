@@ -1,2 +1,2 @@
 @echo off
-python.bat tools\fix_style.py %*
+python tools\fix_style.py %*

@@ -75,7 +75,7 @@ xcopy /sfy %OUT_BINARY_PATH%\*.pak %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_DOCS_PATH%\* %DISTRIB_DOCS_PATH%\
 
 :: Create README.txt
-call python.bat tools\make_readme.py --output-dir %DISTRIB_PATH%\ --platform %DISTRIB_PLATFORM%
+call python tools\make_readme.py --output-dir %DISTRIB_PATH%\ --platform %DISTRIB_PLATFORM%
 
 :: Copy miscellaneous files to the root directory.
 copy .\LICENSE.txt %DISTRIB_PATH%
