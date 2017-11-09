@@ -14,12 +14,14 @@ import java.util.Vector;
 
 import org.cef.callback.CefDragData;
 import org.cef.callback.CefNativeAdapter;
+import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefWindowHandler;
+import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
 /**
@@ -339,6 +341,18 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             ule.printStackTrace();
         }
     }
+    
+    @Override
+    public void printToPDF(String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback) {
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("path was null or empty");
+        }
+        try {
+            N_PrintToPDF(path, settings, callback);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
 
     @Override
     public void find(int identifier, String searchText, boolean forward, boolean matchCase,
@@ -572,6 +586,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             CefRunFileDialogCallback callback);
     private final native void N_StartDownload(String url);
     private final native void N_Print();
+    private final native void N_PrintToPDF(String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
     private final native void N_Find(int identifier, String searchText, boolean forward,
             boolean matchCase, boolean findNext);
     private final native void N_StopFinding(boolean clearSelection);

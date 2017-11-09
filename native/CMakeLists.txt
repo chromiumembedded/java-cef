@@ -110,6 +110,8 @@ set(JCEF_SRCS
   load_handler.h
   message_router_handler.cpp
   message_router_handler.h
+  pdf_print_callback.cpp
+  pdf_print_callback.h
   print_handler.cpp
   print_handler.h
   render_handler.cpp

@@ -8,11 +8,13 @@ import java.awt.Component;
 import java.awt.Point;
 import java.util.Vector;
 
+import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
+import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
 /**
@@ -241,6 +243,17 @@ public interface CefBrowser {
      * Print the current browser contents.
      */
     public void print();
+    
+    /**
+     * Print the current browser contents to a PDF.
+     * 
+     * @param path The path of the file to write to (will be overwritten if it
+     *      already exists).  Cannot be null.
+     * @param settings The pdf print settings to use.  If null then defaults
+     *      will be used.
+     * @param callback Called when the pdf print job has completed.
+     */
+    public void printToPDF(String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
 
     /**
      * Search for some kind of text on the page.

@@ -22,11 +22,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.cef.browser.CefBrowser;
+import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
+import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefCookieManager;
 import org.cef.network.CefRequest;
 
@@ -123,6 +126,41 @@ public class MenuBar extends JMenuBar {
             }
         });
         fileMenu.add(printItem);
+        
+        JMenuItem printToPdfItem = new JMenuItem("Print to PDF");
+        printToPdfItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fc = new JFileChooser();
+                fc.showSaveDialog(owner_);
+                File selectedFile = fc.getSelectedFile();
+                if (selectedFile != null) {
+                    CefPdfPrintSettings pdfSettings = new CefPdfPrintSettings();
+                    pdfSettings.header_footer_enabled = true;
+                    // A4 page size
+                    pdfSettings.page_width = 210000;
+                    pdfSettings.page_height = 297000;
+                    browser.printToPDF(selectedFile.getAbsolutePath(), pdfSettings, new CefPdfPrintCallback() {
+                        @Override
+                        public void onPdfPrintFinished(String path, boolean ok) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (ok) {
+                                    JOptionPane.showMessageDialog(
+                                        owner_, "PDF saved to " + path, "Success", JOptionPane.INFORMATION_MESSAGE);
+                                    } else {
+                                        JOptionPane.showMessageDialog(
+                                            owner_, "PDF failed", "Failed", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+        fileMenu.add(printToPdfItem);
 
         JMenuItem searchItem = new JMenuItem("Search...");
         searchItem.addActionListener(new ActionListener() {

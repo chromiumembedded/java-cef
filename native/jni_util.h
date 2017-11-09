@@ -201,6 +201,8 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y);
 
 CefSettings GetJNISettings(JNIEnv* env, jobject obj);
 
+CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj);
+
 // Get java browser counterpart
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler);

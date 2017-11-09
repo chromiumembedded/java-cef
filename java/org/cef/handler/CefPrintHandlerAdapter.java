@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import java.awt.Dimension;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefPrintDialogCallback;
@@ -42,5 +43,15 @@ public abstract class CefPrintHandlerAdapter extends CefNativeAdapter implements
     @Override
     public void onPrintReset() {
         // The default implementation does nothing
+    }
+    
+    @Override
+    public Dimension getPdfPaperSize(int deviceUnitsPerInch) {
+        // default implementation is A4 letter size
+        // @ 300 DPI, A4 is 2480 x 3508
+        // @ 150 DPI, A4 is 1240 x 1754
+        int adjustedWidth = (int)(((double)deviceUnitsPerInch/300d)*2480d);
+        int adjustedHeight = (int)(((double)deviceUnitsPerInch/300d)*3508d);
+        return new Dimension(adjustedWidth, adjustedHeight);
     }
 }

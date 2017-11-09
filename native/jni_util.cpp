@@ -536,6 +536,20 @@ bool GetJNIFieldObject(JNIEnv* env,
   return false;
 }
 
+bool GetJNIFieldDouble(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       double* value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "D");
+  if (field) {
+    *value = env->GetDoubleField(obj, field);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 bool GetJNIFieldInt(JNIEnv* env,
                     jclass cls,
                     jobject obj,
@@ -838,6 +852,83 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
       settings.background_color = (cef_color_t)jcolor;
     }
   }
+  return settings;
+}
+
+CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
+  CefString tmp;
+  CefPdfPrintSettings settings;
+  if (!obj)
+    return settings;
+
+  jclass cls = FindClass(env, "org/cef/misc/CefPdfPrintSettings");
+  if (!cls)
+    return settings;
+
+  GetJNIFieldBoolean(env, cls, obj, "header_footer_enabled",
+                     &settings.header_footer_enabled);
+  
+  if (GetJNIFieldString(env, cls, obj, "header_footer_title", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.header_footer_title) = tmp;
+    tmp.clear();
+  }
+  
+  if (GetJNIFieldString(env, cls, obj, "header_footer_url", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.header_footer_url) = tmp;
+    tmp.clear();
+  }
+  
+  GetJNIFieldBoolean(env, cls, obj, "landscape",
+                     &settings.landscape);
+  
+  GetJNIFieldBoolean(env, cls, obj, "backgrounds_enabled",
+                     &settings.backgrounds_enabled);
+  
+  GetJNIFieldInt(env, cls, obj, "page_width",
+                     &settings.page_width);
+  
+  GetJNIFieldInt(env, cls, obj, "page_height",
+                     &settings.page_height);
+  
+  GetJNIFieldBoolean(env, cls, obj, "selection_only",
+                     &settings.selection_only);
+  
+  GetJNIFieldInt(env, cls, obj, "scale_factor",
+                     &settings.scale_factor);
+  
+  jobject obj_margin_type = NULL;
+  if (GetJNIFieldObject(env, cls, obj, "margin_type", &obj_margin_type,
+                        "Lorg/cef/misc/CefPdfPrintSettings$MarginType;")) {
+    if (obj_margin_type != NULL) {
+      if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+                         "DEFAULT"))
+        settings.margin_type = PDF_PRINT_MARGIN_DEFAULT;
+      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+                              "NONE"))
+        settings.margin_type = PDF_PRINT_MARGIN_NONE;
+      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+                              "MINIMUM"))
+        settings.margin_type = PDF_PRINT_MARGIN_MINIMUM;
+      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+                              "CUSTOM"))
+        settings.margin_type = PDF_PRINT_MARGIN_CUSTOM;
+    }
+  }
+  
+  GetJNIFieldDouble(env, cls, obj, "margin_top",
+                     &settings.margin_top);
+  
+  GetJNIFieldDouble(env, cls, obj, "margin_bottom",
+                     &settings.margin_bottom);
+  
+  GetJNIFieldDouble(env, cls, obj, "margin_right",
+                     &settings.margin_right);
+  
+  GetJNIFieldDouble(env, cls, obj, "margin_left",
+                     &settings.margin_left);
+  
   return settings;
 }
 

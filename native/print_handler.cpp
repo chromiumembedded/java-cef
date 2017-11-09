@@ -108,3 +108,24 @@ void PrintHandler::OnPrintReset(CefRefPtr<CefBrowser> browser) {
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPrintReset", "()V");
 }
+
+CefSize PrintHandler::GetPdfPaperSize(int device_units_per_inch) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return CefSize(0, 0);
+  
+  jobject jsize = NewJNIObject(env, "java/awt/Dimension");
+  if (!jsize)
+    return CefSize(0, 0);
+
+  JNI_CALL_METHOD(env, jhandler_, "getPdfPaperSize",
+                  "(I)Ljava/awt/Dimension;", Object,
+                  jsize, (jint)device_units_per_inch);
+
+  CefSize size = GetJNISize(env, jsize);
+
+  env->DeleteLocalRef(jsize);
+
+  return size;
+}
+

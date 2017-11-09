@@ -286,6 +286,17 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Print(JNIEnv*,
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_Print
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv*,
+                                                                        jobject,
+                                                                        jstring,
+                                                                        jobject,
+                                                                        jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_Find
  * Signature: (ILjava/lang/String;ZZZ)V
  */

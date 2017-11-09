@@ -13,6 +13,7 @@
 #include "critical_wait.h"
 #include "jni_util.h"
 #include "life_span_handler.h"
+#include "pdf_print_callback.h"
 #include "render_handler.h"
 #include "run_file_dialog_callback.h"
 #include "string_visitor.h"
@@ -1309,6 +1310,22 @@ JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1Print(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->Print();
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv* env,
+                                                 jobject obj,
+                                                 jstring jpath,
+                                                 jobject jsettings,
+                                                 jobject jcallback) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+
+  CefPdfPrintSettings settings = GetJNIPdfPrintSettings(env, jsettings);
+  
+  browser->GetHost()->PrintToPDF(
+    GetJNIString(env, jpath),
+    settings,
+    new PdfPrintCallback(env, jcallback));
 }
 
 JNIEXPORT void JNICALL
