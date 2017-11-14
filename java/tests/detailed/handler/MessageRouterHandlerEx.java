@@ -6,6 +6,7 @@ package tests.detailed.handler;
 
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefMessageRouter.CefMessageRouterConfig;
 import org.cef.callback.CefQueryCallback;
@@ -22,8 +23,8 @@ public class MessageRouterHandlerEx extends CefMessageRouterHandlerAdapter {
     }
 
     @Override
-    public boolean onQuery(CefBrowser browser, long query_id, String request, boolean persistent,
-            CefQueryCallback callback) {
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long query_id, String request,
+            boolean persistent, CefQueryCallback callback) {
         if (request.startsWith("hasExtension")) {
             if (router_ != null)
                 callback.success("");
@@ -55,7 +56,7 @@ public class MessageRouterHandlerEx extends CefMessageRouterHandlerAdapter {
 
     private class JavaVersionMessageRouter extends CefMessageRouterHandlerAdapter {
         @Override
-        public boolean onQuery(CefBrowser browser, long query_id, String request,
+        public boolean onQuery(CefBrowser browser, CefFrame frame, long query_id, String request,
                 boolean persistent, CefQueryCallback callback) {
             if (request.startsWith("jcefJava")) {
                 callback.success(System.getProperty("java.version"));

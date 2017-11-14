@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 
 /**
  * Implement this interface to handle events related to browser display state.
@@ -14,9 +15,10 @@ public interface CefDisplayHandler {
     /**
      * Handle address changes.
      * @param browser The browser generating the event.
+     * @param frame The frame generating the event.
      * @param url The new address.
      */
-    public void onAddressChange(CefBrowser browser, String url);
+    public void onAddressChange(CefBrowser browser, CefFrame frame, String url);
 
     /**
      * Handle title changes.

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefMenuModel.MenuId;
@@ -28,7 +29,7 @@ public class ContextMenuHandler implements CefContextMenuHandler {
 
     @Override
     public void onBeforeContextMenu(
-            CefBrowser browser, CefContextMenuParams params, CefMenuModel model) {
+            CefBrowser browser, CefFrame frame, CefContextMenuParams params, CefMenuModel model) {
         model.clear();
 
         // Navigation menu
@@ -64,8 +65,8 @@ public class ContextMenuHandler implements CefContextMenuHandler {
     }
 
     @Override
-    public boolean onContextMenuCommand(
-            CefBrowser browser, CefContextMenuParams params, int commandId, int eventFlags) {
+    public boolean onContextMenuCommand(CefBrowser browser, CefFrame frame,
+            CefContextMenuParams params, int commandId, int eventFlags) {
         switch (commandId) {
             case MenuId.MENU_ID_VIEW_SOURCE:
                 ShowTextDialog visitor =
@@ -94,7 +95,7 @@ public class ContextMenuHandler implements CefContextMenuHandler {
     }
 
     @Override
-    public void onContextMenuDismissed(CefBrowser browser) {
+    public void onContextMenuDismissed(CefBrowser browser, CefFrame frame) {
         suggestions_.clear();
     }
 }

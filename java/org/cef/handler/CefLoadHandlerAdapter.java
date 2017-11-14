@@ -5,6 +5,8 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.network.CefRequest.TransitionType;
 
 /**
  * An abstract adapter class for receiving load events.
@@ -17,12 +19,12 @@ public abstract class CefLoadHandlerAdapter implements CefLoadHandler {
             CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {}
 
     @Override
-    public void onLoadStart(CefBrowser browser, int frameIdentifer) {}
+    public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType) {}
 
     @Override
-    public void onLoadEnd(CefBrowser browser, int frameIdentifier, int httpStatusCode) {}
+    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {}
 
     @Override
-    public void onLoadError(CefBrowser browser, int frameIdentifer, ErrorCode errorCode,
+    public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
             String errorText, String failedUrl) {}
 }

@@ -177,6 +177,76 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
+    public CefFrame getMainFrame() {
+        try {
+            return N_GetMainFrame();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public CefFrame getFocusedFrame() {
+        try {
+            return N_GetFocusedFrame();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public CefFrame getFrame(long identifier) {
+        try {
+            return N_GetFrame(identifier);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public CefFrame getFrame(String name) {
+        try {
+            return N_GetFrame2(name);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Vector<Long> getFrameIdentifiers() {
+        try {
+            return N_GetFrameIdentifiers();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Vector<String> getFrameNames() {
+        try {
+            return N_GetFrameNames();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public int getFrameCount() {
+        try {
+            return N_GetFrameCount();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+            return -1;
+        }
+    }
+
+    @Override
     public boolean isPopup() {
         try {
             return N_IsPopup();
@@ -566,6 +636,13 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_ReloadIgnoreCache();
     private final native void N_StopLoad();
     private final native int N_GetIdentifier();
+    private final native CefFrame N_GetMainFrame();
+    private final native CefFrame N_GetFocusedFrame();
+    private final native CefFrame N_GetFrame(long identifier);
+    private final native CefFrame N_GetFrame2(String name);
+    private final native Vector<Long> N_GetFrameIdentifiers();
+    private final native Vector<String> N_GetFrameNames();
+    private final native int N_GetFrameCount();
     private final native boolean N_IsPopup();
     private final native boolean N_HasDocument();
     private final native void N_ViewSource();

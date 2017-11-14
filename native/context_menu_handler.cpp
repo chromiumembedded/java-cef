@@ -37,11 +37,12 @@ void ContextMenuHandler::OnBeforeContextMenu(
   SetCefForJNIObject(env, jparams, params.get(), "CefContextMenuParams");
   SetCefForJNIObject(env, jmodel, model.get(), "CefMenuModel");
 
-  JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onBeforeContextMenu",
-      "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefContextMenuParams;"
-      "Lorg/cef/callback/CefMenuModel;)V",
-      GetJNIBrowser(browser), jparams, jmodel);
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onBeforeContextMenu",
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                       "CefFrame;Lorg/cef/callback/CefContextMenuParams;"
+                       "Lorg/cef/callback/CefMenuModel;)V",
+                       GetJNIBrowser(browser), GetJNIFrame(env, frame), jparams,
+                       jmodel);
 
   // Do not keep references to |params| or |model| outside of this callback.
   SetCefForJNIObject<CefContextMenuParams>(env, jparams, NULL,
@@ -67,10 +68,12 @@ bool ContextMenuHandler::OnContextMenuCommand(
 
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "onContextMenuCommand",
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/"
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
+                  "cef/callback/"
                   "CefContextMenuParams;II)Z",
-                  Boolean, result, GetJNIBrowser(browser), jparams,
-                  (jint)command_id, (jint)event_flags);
+                  Boolean, result, GetJNIBrowser(browser),
+                  GetJNIFrame(env, frame), jparams, (jint)command_id,
+                  (jint)event_flags);
 
   // Do not keep references to |params| or |model| outside of this callback.
   SetCefForJNIObject<CefContextMenuParams>(env, jparams, NULL,
@@ -84,7 +87,8 @@ void ContextMenuHandler::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onContextMenuDismissed",
-                       "(Lorg/cef/browser/CefBrowser;)V",
-                       GetJNIBrowser(browser));
+  JNI_CALL_VOID_METHOD(
+      env, jhandler_, "onContextMenuDismissed",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;)V",
+      GetJNIBrowser(browser), GetJNIFrame(env, frame));
 }

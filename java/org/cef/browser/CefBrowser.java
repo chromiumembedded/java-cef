@@ -93,6 +93,50 @@ public interface CefBrowser {
     public int getIdentifier();
 
     /**
+     * Returns the main (top-level) frame for the browser window.
+     * @return The main frame
+     */
+    public CefFrame getMainFrame();
+
+    /**
+     * Returns the focused frame for the browser window.
+     * @return The focused frame
+     */
+    public CefFrame getFocusedFrame();
+
+    /**
+     * Returns the frame with the specified identifier, or NULL if not found.
+     * @param identifier The unique frame identifier
+     * @return The frame or NULL if not found
+     */
+    public CefFrame getFrame(long identifier);
+
+    /**
+     * Returns the frame with the specified name, or NULL if not found.
+     * @param name The specified name
+     * @return The frame or NULL if not found
+     */
+    public CefFrame getFrame(String name);
+
+    /**
+     * Returns the identifiers of all existing frames.
+     * @return All identifiers of existing frames.
+     */
+    public Vector<Long> getFrameIdentifiers();
+
+    /**
+     * Returns the names of all existing frames.
+     * @return The names of all existing frames.
+     */
+    public Vector<String> getFrameNames();
+
+    /**
+     * Returns the number of frames that currently exist.
+     * @return The number of frames
+     */
+    public int getFrameCount();
+
+    /**
      * Tests if the window is a popup window.
      * @return true if the window is a popup window.
      */

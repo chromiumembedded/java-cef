@@ -31,18 +31,23 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return false;
+
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
     return false;
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jboolean result = JNI_FALSE;
-  JNI_CALL_METHOD(
-      env, jhandler_, "onBeforeBrowse",
-      "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;Z)Z", Boolean,
-      result, GetJNIBrowser(browser), jrequest,
-      (is_redirect ? JNI_TRUE : JNI_FALSE));
+  JNI_CALL_METHOD(env, jhandler_, "onBeforeBrowse",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
+                  "cef/network/CefRequest;Z)Z",
+                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
+                  (is_redirect ? JNI_TRUE : JNI_FALSE));
 
+  SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
   return (result != JNI_FALSE);
 }
@@ -57,6 +62,10 @@ RequestHandler::ReturnValue RequestHandler::OnBeforeResourceLoad(
   if (!env)
     return RV_CONTINUE;
 
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return RV_CONTINUE;
+
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
     return RV_CONTINUE;
@@ -64,9 +73,11 @@ RequestHandler::ReturnValue RequestHandler::OnBeforeResourceLoad(
 
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "onBeforeResourceLoad",
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;)Z",
-                  Boolean, result, GetJNIBrowser(browser), jrequest);
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
+                  "cef/network/CefRequest;)Z",
+                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest);
 
+  SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
   return (result != JNI_FALSE) ? RV_CANCEL : RV_CONTINUE;
 }
@@ -79,6 +90,10 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
   if (!env)
     return NULL;
 
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return NULL;
+
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
     return NULL;
@@ -86,9 +101,10 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
 
   jobject jhandler = NULL;
   JNI_CALL_METHOD(env, jhandler_, "getResourceHandler",
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/CefRequest;)"
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
+                  "cef/network/CefRequest;)"
                   "Lorg/cef/handler/CefResourceHandler;",
-                  Object, jhandler, GetJNIBrowser(browser), jrequest);
+                  Object, jhandler, GetJNIBrowser(browser), jframe, jrequest);
   if (!jhandler)
     return NULL;
   CefRefPtr<CefResourceHandler> handler = NULL;
@@ -110,6 +126,10 @@ void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return;
+
   jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
   if (!jrequest)
     return;
@@ -121,12 +141,90 @@ void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
 
   jobject jstringRef = NewJNIStringRef(env, new_url);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onResourceRedirect",
-                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/network/"
-                       "CefRequest;Lorg/cef/network/CefResponse;Lorg/cef/misc/"
-                       "StringRef;)V",
-                       GetJNIBrowser(browser), jrequest, jresponse, jstringRef);
+  JNI_CALL_VOID_METHOD(
+      env, jhandler_, "onResourceRedirect",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/cef/network/"
+      "CefRequest;Lorg/cef/network/CefResponse;Lorg/cef/misc/"
+      "StringRef;)V",
+      GetJNIBrowser(browser), jframe, jrequest, jresponse, jstringRef);
   new_url = GetJNIStringRef(env, jstringRef);
+}
+
+bool RequestHandler::OnResourceResponse(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
+                                        CefRefPtr<CefRequest> request,
+                                        CefRefPtr<CefResponse> response) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return false;
+
+  jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
+  if (!jrequest)
+    return false;
+  SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
+
+  jobject jresponse = NewJNIObject(env, "org/cef/network/CefResponse_N");
+  if (!jresponse)
+    return false;
+  SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
+
+  jboolean result = JNI_FALSE;
+  JNI_CALL_METHOD(env, jhandler_, "onResourceResponse",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
+                  "Lorg/cef/network/CefRequest;Lorg/cef/network/CefResponse;)Z",
+                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
+                  jresponse);
+
+  SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
+  SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
+  SetCefForJNIObject<CefRequest>(env, jresponse, NULL, "CefResponse");
+  return (result != JNI_FALSE);
+}
+
+void RequestHandler::OnResourceLoadComplete(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefResponse> response,
+    CefRequestHandler::URLRequestStatus status,
+    int64 received_content_length) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return;
+
+  jobject jrequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
+  if (!jrequest)
+    return;
+  SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
+
+  jobject jresponse = NewJNIObject(env, "org/cef/network/CefResponse_N");
+  if (!jresponse)
+    return;
+  SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
+
+  jobject jstatus = NewJNIURLRequestStatus(env, status);
+  if (!jstatus)
+    return;
+
+  JNI_CALL_VOID_METHOD(
+      env, jhandler_, "onResourceLoadComplete",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
+      "Lorg/cef/network/CefRequest;Lorg/cef/network/CefResponse;"
+      "Lorg/cef/network/CefURLRequest$Status;J)V",
+      GetJNIBrowser(browser), jframe, jrequest, jresponse, jstatus,
+      (jlong)received_content_length);
+
+  SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
+  SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
+  SetCefForJNIObject<CefRequest>(env, jresponse, NULL, "CefResponse");
 }
 
 bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
@@ -141,6 +239,10 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
+  jobject jframe = GetJNIFrame(env, frame);
+  if (!jframe)
+    return false;
+
   jobject jcallback = NewJNIObject(env, "org/cef/callback/CefAuthCallback_N");
   if (!jcallback)
     return false;
@@ -148,10 +250,11 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
 
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "getAuthCredentials",
-                  "(Lorg/cef/browser/CefBrowser;ZLjava/lang/String;"
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                  "CefFrame;ZLjava/lang/String;"
                   "ILjava/lang/String;Ljava/lang/String;"
                   "Lorg/cef/callback/CefAuthCallback;)Z",
-                  Boolean, result, GetJNIBrowser(browser),
+                  Boolean, result, GetJNIBrowser(browser), jframe,
                   (isProxy ? JNI_TRUE : JNI_FALSE), NewJNIString(env, host),
                   port, NewJNIString(env, realm), NewJNIString(env, scheme),
                   jcallback);
@@ -162,6 +265,8 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
     SetCefForJNIObject<CefAuthCallback>(env, jcallback, NULL,
                                         "CefAuthCallback");
   }
+
+  SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   return (result != JNI_FALSE);
 }
 

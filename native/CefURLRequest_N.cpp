@@ -143,24 +143,12 @@ Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1CTOR(
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv* env,
                                                           jobject obj) {
-  jobject result = GetJNIEnumValue(env, "org/cef/network/CefURLRequest$Status",
-                                   "UR_UNKNOWN");
   CefRefPtr<URLRequest> urlRequest =
       GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
   if (!urlRequest.get())
-    return result;
+    return NULL;
 
-  switch (urlRequest->GetRequestStatus()) {
-    default:
-      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_UNKNOWN, result);
-      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_SUCCESS, result);
-      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_IO_PENDING,
-               result);
-      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_CANCELED,
-               result);
-      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_FAILED, result);
-  }
-  return result;
+  return NewJNIURLRequestStatus(env, urlRequest->GetRequestStatus());
 }
 
 JNIEXPORT jobject JNICALL

@@ -9,6 +9,8 @@
 #include <vector>
 #include "include/cef_base.h"
 #include "include/cef_browser.h"
+#include "include/cef_frame.h"
+#include "include/cef_request_handler.h"
 #include "include/wrapper/cef_message_router.h"
 #include "util.h"
 
@@ -105,12 +107,18 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
 // Create a new String value.
 jstring NewJNIString(JNIEnv* env, const CefString& str);
 
+jobject NewJNILong(JNIEnv* env, const int64& val);
+
 // Create a new array of String values.
 jobjectArray NewJNIStringArray(JNIEnv* env, const std::vector<CefString>& vals);
 
 jobject NewJNIStringVector(JNIEnv* env, const std::vector<CefString>& vals);
 
 void AddJNIStringToVector(JNIEnv* env, jobject jvector, const CefString& str);
+
+jobject NewJNILongVector(JNIEnv* env, const std::vector<int64>& vals);
+
+void AddJNILongToVector(JNIEnv* env, jobject jvector, const int64& val);
 
 void GetJNIStringVector(JNIEnv* env,
                         jobject jvector,
@@ -206,6 +214,14 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj);
 // Get java browser counterpart
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler);
+
+jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame>);
+
+jobject NewJNITransitionType(JNIEnv* env,
+                             CefRequest::TransitionType transitionType);
+
+jobject NewJNIURLRequestStatus(JNIEnv* env,
+                               CefRequestHandler::URLRequestStatus);
 
 jobject GetJNIEnumValue(JNIEnv* env,
                         const char* class_name,

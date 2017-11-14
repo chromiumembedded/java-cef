@@ -24,8 +24,10 @@ void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
   JNI_CALL_VOID_METHOD(env, jhandler_, "onAddressChange",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       GetJNIBrowser(browser), NewJNIString(env, url));
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                       "CefFrame;Ljava/lang/String;)V",
+                       GetJNIBrowser(browser), GetJNIFrame(env, frame),
+                       NewJNIString(env, url));
 }
 
 void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,

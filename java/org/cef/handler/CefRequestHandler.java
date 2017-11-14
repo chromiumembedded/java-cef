@@ -5,12 +5,14 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefRequestCallback;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
+import org.cef.network.CefURLRequest;
 
 /**
  * Implement this interface to handle events related to browser requests. The
@@ -38,21 +40,26 @@ public interface CefRequestHandler {
      * ERR_ABORTED.
      *
      * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
      * @param request The request itself. Can't be modified.
      * @param is_redirect true if the request was redirected.
      * @return true to cancel or false to allow to proceed.
      */
-    boolean onBeforeBrowse(CefBrowser browser, CefRequest request, boolean is_redirect);
+    boolean onBeforeBrowse(
+            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect);
 
     /**
      * Called on the IO thread before a resource request is loaded.
      *
      * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
      * @param request The request object may be modified.
      * @param callback The request object may be modified.
      * @return To cancel the request return true otherwise return false.
      */
-    boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request
+    boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request
             // CefRequestCallback callback
             );
 
@@ -63,22 +70,60 @@ public interface CefRequestHandler {
      * this callback.
      *
      * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
      * @param request The request itself. Should not be modified in this callback.
      * @return a CefResourceHandler instance or NULL.
      */
-    CefResourceHandler getResourceHandler(CefBrowser browser, CefRequest request);
+    CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request);
 
     /**
      * Called on the IO thread when a resource load is redirected.
      *
      * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
      * @param request The request itself. Should not be modified in this callback.
      * @param response The response that resulted in the redirect. Should not be
      *   modified in this callback.
      * @param new_url Contains the new URL and can be changed if desired.
      */
-    void onResourceRedirect(
-            CefBrowser browser, CefRequest request, CefResponse response, StringRef new_url);
+    void onResourceRedirect(CefBrowser browser, CefFrame frame, CefRequest request,
+            CefResponse response, StringRef new_url);
+
+    /**
+     * Called on the IO thread when a resource response is received. To allow the
+     * resource to load normally return false. To redirect or retry the resource
+     * modify |request| (url, headers or post body) and return true. The
+     * |response| object cannot be modified in this callback.
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
+     * @param request The request itself. To redirect or retry the resource
+     *   modify |request| (url, headers or post body) and return true
+     * @param response The response that resulted in the redirect. Should not be
+     *   modified in this callback.
+     * @return True if request modified or false otherwise
+     */
+    boolean onResourceResponse(
+            CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response);
+
+    /**
+     * Called on the IO thread when a resource load has completed. |request| and
+     * |response| represent the request and response respectively and cannot be
+     * modified in this callback. |status| indicates the load completion status.
+     * |received_content_length| is the number of response bytes actually read.
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
+     * @param request The request itself. Should not be modified in this callback.
+     * @param response The response that resulted in the redirect. Should not be
+     *   modified in this callback.
+     * @param status The load completion status
+     * @param receivedContentLength The number of bytes read
+     */
+    void onResourceLoadComplete(CefBrowser browser, CefFrame frame, CefRequest request,
+            CefResponse response, CefURLRequest.Status status, long receivedContentLength);
 
     /**
      * Called on the IO thread when the browser needs credentials from the user.
@@ -87,6 +132,8 @@ public interface CefRequestHandler {
      * Return false to cancel the request.
      *
      * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within
+     *      the scope of this method.
      * @param isProxy indicates whether the host is a proxy server.
      * @param host contains the hostname.
      * @param port contains the port number.
@@ -96,8 +143,8 @@ public interface CefRequestHandler {
      *   information is available.
      * @return true to continue the request or false to cancel.
      */
-    boolean getAuthCredentials(CefBrowser browser, boolean isProxy, String host, int port,
-            String realm, String scheme, CefAuthCallback callback);
+    boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy, String host,
+            int port, String realm, String scheme, CefAuthCallback callback);
 
     /**
      * Called on the IO thread when JavaScript requests a specific storage quota

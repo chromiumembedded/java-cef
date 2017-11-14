@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
@@ -12,6 +13,7 @@ import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
+import org.cef.network.CefURLRequest;
 
 /**
  * An abstract adapter class for receiving browser request events.
@@ -20,27 +22,39 @@ import org.cef.network.CefResponse;
  */
 public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     @Override
-    public boolean onBeforeBrowse(CefBrowser browser, CefRequest request, boolean is_redirect) {
+    public boolean onBeforeBrowse(
+            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect) {
         return false;
     }
 
     @Override
-    public boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request) {
+    public boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request) {
         return false;
     }
 
     @Override
-    public CefResourceHandler getResourceHandler(CefBrowser browser, CefRequest request) {
+    public CefResourceHandler getResourceHandler(
+            CefBrowser browser, CefFrame frame, CefRequest request) {
         return null;
     }
 
     @Override
-    public void onResourceRedirect(
-            CefBrowser browser, CefRequest request, CefResponse response, StringRef new_url) {}
+    public void onResourceRedirect(CefBrowser browser, CefFrame frame, CefRequest request,
+            CefResponse response, StringRef new_url) {}
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, boolean isProxy, String host, int port,
-            String realm, String scheme, CefAuthCallback callback) {
+    public boolean onResourceResponse(
+            CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response) {
+        return false;
+    }
+
+    @Override
+    public void onResourceLoadComplete(CefBrowser browser, CefFrame frame, CefRequest request,
+            CefResponse response, CefURLRequest.Status status, long receivedContentLength) {}
+
+    @Override
+    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+            String host, int port, String realm, String scheme, CefAuthCallback callback) {
         return false;
     }
 

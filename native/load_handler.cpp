@@ -38,9 +38,16 @@ void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+
+  jobject jtransitionType = NewJNITransitionType(env, transition_type);
+  if (!jtransitionType)
+    return;
+
   JNI_CALL_VOID_METHOD(env, jhandler_, "onLoadStart",
-                       "(Lorg/cef/browser/CefBrowser;I)V",
-                       GetJNIBrowser(browser), frame->GetIdentifier());
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                       "CefFrame;Lorg/cef/network/CefRequest$TransitionType;)V",
+                       GetJNIBrowser(browser), GetJNIFrame(env, frame),
+                       jtransitionType);
 }
 
 void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
@@ -50,8 +57,9 @@ void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
   JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onLoadEnd", "(Lorg/cef/browser/CefBrowser;II)V",
-      GetJNIBrowser(browser), frame->GetIdentifier(), httpStatusCode);
+      env, jhandler_, "onLoadEnd",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;I)V",
+      GetJNIBrowser(browser), GetJNIFrame(env, frame), httpStatusCode);
 }
 
 void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
@@ -64,9 +72,9 @@ void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
     return;
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onLoadError",
-      "(Lorg/cef/browser/CefBrowser;ILorg/cef/handler/"
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/cef/handler/"
       "CefLoadHandler$ErrorCode;Ljava/lang/String;Ljava/lang/String;)V",
-      GetJNIBrowser(browser), frame->GetIdentifier(),
+      GetJNIBrowser(browser), GetJNIFrame(env, frame),
       NewJNIErrorCode(env, errorCode), NewJNIString(env, errorText),
       NewJNIString(env, failedUrl));
 }

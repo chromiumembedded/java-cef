@@ -1100,6 +1100,62 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetIdentifier(JNIEnv* env, jobject obj) {
   return browser->GetIdentifier();
 }
 
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetMainFrame(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+  return GetJNIFrame(env, frame);
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFocusedFrame(JNIEnv* env,
+                                                      jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  CefRefPtr<CefFrame> frame = browser->GetFocusedFrame();
+  return GetJNIFrame(env, frame);
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrame(JNIEnv* env,
+                                               jobject obj,
+                                               jlong identifier) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  CefRefPtr<CefFrame> frame = browser->GetFrame(identifier);
+  return GetJNIFrame(env, frame);
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrame2(JNIEnv* env,
+                                                jobject obj,
+                                                jstring name) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  CefRefPtr<CefFrame> frame = browser->GetFrame(GetJNIString(env, name));
+  return GetJNIFrame(env, frame);
+}
+
+JNIEXPORT jint JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameCount(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, -1);
+  return (jint)browser->GetFrameCount();
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameIdentifiers(JNIEnv* env,
+                                                          jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  std::vector<int64> identifiers;
+  browser->GetFrameIdentifiers(identifiers);
+  return NewJNILongVector(env, identifiers);
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameNames(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, NULL);
+  std::vector<CefString> names;
+  browser->GetFrameNames(names);
+  return NewJNIStringVector(env, names);
+}
+
 JNIEXPORT jboolean JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1IsPopup(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser =

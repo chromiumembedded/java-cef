@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefNative;
 import org.cef.callback.CefQueryCallback;
 
@@ -16,6 +17,7 @@ public interface CefMessageRouterHandler extends CefNative {
     /**
      * Called when the browser receives a JavaScript query.
      * @param browser The browser generating the event.
+     * @param frame The frame generating the event.
      * @param query_id The unique ID for the query.
      * @param persistent True if the query is persistent.
      * @param callback Object used to continue or cancel the query asynchronously.
@@ -25,13 +27,14 @@ public interface CefMessageRouterHandler extends CefNative {
      * then the query will be automatically canceled with an error code of -1
      * delivered to the JavaScript onFailure callback.
      */
-    public boolean onQuery(CefBrowser browser, long query_id, String request, boolean persistent,
-            CefQueryCallback callback);
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long query_id, String request,
+            boolean persistent, CefQueryCallback callback);
 
     /**
      * Called when a pending JavaScript query is canceled.
      * @param browser The browser generating the event.
+     * @param frame The frame generating the event.
      * @param query_id The unique ID for the query.
      */
-    public void onQueryCanceled(CefBrowser browser, long query_id);
+    public void onQueryCanceled(CefBrowser browser, CefFrame frame, long query_id);
 }

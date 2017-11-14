@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
 
@@ -37,12 +38,13 @@ public interface CefContextMenuHandler {
      * Called before a context menu is displayed.
      *
      * @param browser The corresponding browser.
+     * @param frame The corresponding frame.
      * @param params provides information about the context menu state.
      * @param model can be cleared to show no context menu or modified
      * to show a custom menu.
      */
     public void onBeforeContextMenu(
-            CefBrowser browser, CefContextMenuParams params, CefMenuModel model);
+            CefBrowser browser, CefFrame frame, CefContextMenuParams params, CefMenuModel model);
 
     /**
      * Called to execute a command selected from the context menu. Return true if
@@ -51,19 +53,21 @@ public interface CefContextMenuHandler {
      * user-defined command ids should be between MENU_ID_USER_FIRST and
      *
      * @param browser The corresponding browser.
+     * @param frame The corresponding frame.
      * @param params Will have the same values as what was passed to onBeforeContextMenu().
      * @param commandId The id of the command.
      * @param eventFlags A combination of event flags defined in EventFlags
      * @return true if the command was handled or false for the default implementation.
      */
-    public boolean onContextMenuCommand(
-            CefBrowser browser, CefContextMenuParams params, int commandId, int eventFlags);
+    public boolean onContextMenuCommand(CefBrowser browser, CefFrame frame,
+            CefContextMenuParams params, int commandId, int eventFlags);
 
     /**
      * Called when the context menu is dismissed irregardless of whether the menu
      * was empty or a command was selected.
      *
      * @param browser The corresponding browser.
+     * @param frame The corresponding frame.
      */
-    public void onContextMenuDismissed(CefBrowser browser);
+    public void onContextMenuDismissed(CefBrowser browser, CefFrame frame);
 }

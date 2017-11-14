@@ -34,6 +34,8 @@ set(JCEF_SRCS
   CefDragData_N.h
   CefFileDialogCallback_N.cpp
   CefFileDialogCallback_N.h
+  CefFrame_N.cpp
+  CefFrame_N.h
   CefGeolocationCallback_N.h
   CefGeolocationCallback_N.cpp
   CefJSDialogCallback_N.h

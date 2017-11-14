@@ -264,29 +264,10 @@ Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv* env,
       GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
   if (!request)
     return NULL;
-  jobject result = NULL;
-  CefRequest::TransitionType tt = request->GetTransitionType();
-  switch (tt & TT_SOURCE_MASK) {
-    default:
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_LINK,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_EXPLICIT,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
-               TT_AUTO_SUBFRAME, result);
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
-               TT_MANUAL_SUBFRAME, result);
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_FORM_SUBMIT,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_RELOAD,
-               result);
-  }
-  if (!result)
-    return NULL;
 
-  int qualifiers = (tt & TT_QUALIFIER_MASK);
-  JNI_CALL_VOID_METHOD(env, result, "addQualifiers", "(I)V", qualifiers);
-  return result;
+  CefRequest::TransitionType transitionType = request->GetTransitionType();
+
+  return NewJNITransitionType(env, transitionType);
 }
 
 JNIEXPORT void JNICALL

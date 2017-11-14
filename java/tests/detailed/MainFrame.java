@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,6 +20,7 @@ import org.cef.CefSettings;
 import org.cef.CefSettings.ColorType;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.handler.CefDisplayHandlerAdapter;
@@ -149,7 +151,7 @@ public class MainFrame extends JFrame {
         //      as for updating the status-bar on the bottom of the browser
         client_.addDisplayHandler(new CefDisplayHandlerAdapter() {
             @Override
-            public void onAddressChange(CefBrowser browser, String url) {
+            public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
                 control_pane_.setAddress(browser, url);
             }
             @Override
@@ -182,7 +184,7 @@ public class MainFrame extends JFrame {
             }
 
             @Override
-            public void onLoadError(CefBrowser browser, int frameIdentifer, ErrorCode errorCode,
+            public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
                     String errorText, String failedUrl) {
                 if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED) {
                     errorMsg_ = "<html><head>";

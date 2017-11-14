@@ -416,6 +416,10 @@ jstring NewJNIString(JNIEnv* env, const CefString& str) {
   return env->NewStringUTF(cstr.c_str());
 }
 
+jobject NewJNILong(JNIEnv* env, const int64& val) {
+  return NewJNIObject(env, "java/lang/Long", "(J)V", (jlong)val);
+}
+
 jobjectArray NewJNIStringArray(JNIEnv* env,
                                const std::vector<CefString>& vals) {
   if (vals.empty())
@@ -448,6 +452,24 @@ jobject NewJNIStringVector(JNIEnv* env, const std::vector<CefString>& vals) {
 
 void AddJNIStringToVector(JNIEnv* env, jobject jvector, const CefString& str) {
   jstring argument = NewJNIString(env, str);
+  JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
+                       argument);
+}
+
+jobject NewJNILongVector(JNIEnv* env, const std::vector<int64>& vals) {
+  jobject jvector = NewJNIObject(env, "java/util/Vector");
+  if (!jvector)
+    return NULL;
+
+  std::vector<int64>::const_iterator iter;
+  for (iter = vals.begin(); iter != vals.end(); ++iter) {
+    AddJNILongToVector(env, jvector, *iter);
+  }
+  return jvector;
+}
+
+void AddJNILongToVector(JNIEnv* env, jobject jvector, const int64& val) {
+  jobject argument = NewJNILong(env, val);
   JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
                        argument);
 }
@@ -947,6 +969,61 @@ jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler) {
   if (!jbrowsers)
     return NULL;
   return (jobjectArray)jbrowsers;
+}
+
+jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame> frame) {
+  if (!frame)
+    return NULL;
+
+  if (!frame.get())
+    return NULL;
+
+  jobject jframe = NewJNIObject(env, "org/cef/browser/CefFrame_N");
+  SetCefForJNIObject<CefFrame>(env, jframe, frame.get(), "CefFrame");
+  return jframe;
+}
+
+jobject NewJNITransitionType(JNIEnv* env,
+                             CefRequest::TransitionType transitionType) {
+  jobject result = NULL;
+  switch (transitionType & TT_SOURCE_MASK) {
+    default:
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_LINK,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_EXPLICIT,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
+               TT_AUTO_SUBFRAME, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
+               TT_MANUAL_SUBFRAME, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_FORM_SUBMIT,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_RELOAD,
+               result);
+  }
+
+  int qualifiers = (transitionType & TT_QUALIFIER_MASK);
+  JNI_CALL_VOID_METHOD(env, result, "addQualifiers", "(I)V", qualifiers);
+
+  return result;
+}
+
+jobject NewJNIURLRequestStatus(JNIEnv* env,
+                               CefRequestHandler::URLRequestStatus status) {
+  jobject result = GetJNIEnumValue(env, "org/cef/network/CefURLRequest$Status",
+                                   "UR_UNKNOWN");
+
+  switch (status) {
+    default:
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_UNKNOWN, result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_SUCCESS, result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_IO_PENDING,
+               result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_CANCELED,
+               result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_FAILED, result);
+  }
+  return result;
 }
 
 jobject GetJNIEnumValue(JNIEnv* env,

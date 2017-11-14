@@ -5,6 +5,8 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.network.CefRequest.TransitionType;
 
 /**
  * Implement this interface to handle events related to browser load status.
@@ -85,9 +87,10 @@ public interface CefLoadHandler {
      * OnLoadingStateChange instead.
      *
      * @param browser The affected browser.
-     * @param frameIdentifer The identifier of the loading frame.
+     * @param frame The loading frame.
+     * @param transitionType The transition type
      */
-    public void onLoadStart(CefBrowser browser, int frameIdentifer);
+    public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType);
 
     /**
      * Called when the browser is done loading a frame. The frameIdentifer value will
@@ -97,20 +100,20 @@ public interface CefLoadHandler {
      * completes successfully.
      *
      * @param browser The affected browser.
-     * @param frameIdentifer The identifier of the loading frame.
-     * @oaram httpStatusCode The status code of the load.
+     * @param frame The loading frame.
+     * @param httpStatusCode The status code of the load.
      */
-    public void onLoadEnd(CefBrowser browser, int frameIdentifier, int httpStatusCode);
+    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode);
 
     /**
      * Called when the resource load for a navigation fails or is canceled.
      *
      * @param browser The affected browser.
-     * @param frameIdentifer The identifier of the loading frame.
+     * @param frame The loading frame.
      * @param errorCode The error code number.
      * @param errorText The error text.
      * @param failedUrl The URL that failed to load.
      */
-    public void onLoadError(CefBrowser browser, int frameIdentifer, ErrorCode errorCode,
+    public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
             String errorText, String failedUrl);
 }

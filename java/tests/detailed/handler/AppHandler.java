@@ -7,6 +7,7 @@ package tests.detailed.handler;
 import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.callback.CefSchemeRegistrar;
 import org.cef.handler.CefAppHandlerAdapter;
@@ -62,7 +63,7 @@ public class AppHandler extends CefAppHandlerAdapter {
     private class SchemeHandlerFactory implements CefSchemeHandlerFactory {
         @Override
         public CefResourceHandler create(
-                CefBrowser browser, String schemeName, CefRequest request) {
+                CefBrowser browser, CefFrame frame, String schemeName, CefRequest request) {
             if (schemeName.equals(SearchSchemeHandler.scheme))
                 return new SearchSchemeHandler(browser);
             else if (schemeName.equals(ClientSchemeHandler.scheme))

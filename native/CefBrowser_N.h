@@ -121,6 +121,62 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetIdentifier(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetMainFrame
+ * Signature: ()Lorg/cef/browser/CefFrame_N;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetMainFrame(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFocusedFrame
+ * Signature: ()Lorg/cef/browser/CefFrame_N;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFocusedFrame(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrame
+ * Signature: (J)Lorg/cef/browser/CefFrame_N;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrame(JNIEnv*, jobject, jlong);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrame
+ * Signature: (Ljava/lang/String;)Lorg/cef/browser/CefFrame_N;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrame2(JNIEnv*, jobject, jstring);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrameCount
+ * Signature: ()I;
+ */
+JNIEXPORT jint JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameCount(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrameIdentifiers
+ * Signature: ()Ljava/util/Vector;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameIdentifiers(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrameNames
+ * Signature: ()Ljava/util/Vector;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameNames(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_IsPopup
  * Signature: ()Z
  */

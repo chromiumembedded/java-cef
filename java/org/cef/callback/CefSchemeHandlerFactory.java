@@ -5,6 +5,7 @@
 package org.cef.callback;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.handler.CefResourceHandler;
 import org.cef.network.CefRequest;
 
@@ -21,5 +22,6 @@ public interface CefSchemeHandlerFactory {
      * (for example, if the request came from CefURLRequest). The |request| object
      * passed to this method will not contain cookie data.
      */
-    public CefResourceHandler create(CefBrowser browser, String schemeName, CefRequest request);
+    public CefResourceHandler create(
+            CefBrowser browser, CefFrame frame, String schemeName, CefRequest request);
 }

@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 
 /**
  * An abstract adapter class for receiving display events.
@@ -13,7 +14,7 @@ import org.cef.browser.CefBrowser;
  */
 public abstract class CefDisplayHandlerAdapter implements CefDisplayHandler {
     @Override
-    public void onAddressChange(CefBrowser browser, String url) {
+    public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
         return;
     }
 

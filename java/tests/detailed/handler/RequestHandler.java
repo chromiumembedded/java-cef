@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefRequestHandlerAdapter;
@@ -20,7 +21,6 @@ import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.network.CefPostData;
 import org.cef.network.CefPostDataElement;
 import org.cef.network.CefRequest;
-import org.cef.network.CefWebPluginInfo;
 
 import tests.detailed.dialog.CertErrorDialog;
 import tests.detailed.dialog.PasswordDialog;
@@ -33,7 +33,8 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     }
 
     @Override
-    public boolean onBeforeBrowse(CefBrowser browser, CefRequest request, boolean is_redirect) {
+    public boolean onBeforeBrowse(
+            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect) {
         CefPostData postData = request.getPostData();
         if (postData != null) {
             Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();
@@ -62,7 +63,7 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     }
 
     @Override
-    public boolean onBeforeResourceLoad(CefBrowser browser, CefRequest request) {
+    public boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request) {
         // If you send a HTTP-POST request to http://www.google.com/
         // google rejects your request because they don't allow HTTP-POST.
         //
@@ -113,7 +114,8 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     }
 
     @Override
-    public CefResourceHandler getResourceHandler(CefBrowser browser, CefRequest request) {
+    public CefResourceHandler getResourceHandler(
+            CefBrowser browser, CefFrame frame, CefRequest request) {
         // the non existing domain "foo.bar" is handled by the ResourceHandler implementation
         // E.g. if you try to load the URL http://www.foo.bar, you'll be forwarded
         // to the ResourceHandler class.
@@ -124,8 +126,8 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     }
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, boolean isProxy, String host, int port,
-            String realm, String scheme, CefAuthCallback callback) {
+    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+            String host, int port, String realm, String scheme, CefAuthCallback callback) {
         SwingUtilities.invokeLater(new PasswordDialog(owner_, callback));
         return true;
     }

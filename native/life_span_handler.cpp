@@ -37,11 +37,12 @@ bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
   jboolean jreturn = JNI_FALSE;
-  JNI_CALL_METHOD(
-      env, jhandler_, "onBeforePopup",
-      "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Ljava/lang/String;)Z",
-      Boolean, jreturn, GetJNIBrowser(browser), NewJNIString(env, target_url),
-      NewJNIString(env, target_frame_name));
+  JNI_CALL_METHOD(env, jhandler_, "onBeforePopup",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                  "CefFrame;Ljava/lang/String;Ljava/lang/String;)Z",
+                  Boolean, jreturn, GetJNIBrowser(browser),
+                  GetJNIFrame(env, frame), NewJNIString(env, target_url),
+                  NewJNIString(env, target_frame_name));
   return (jreturn != JNI_FALSE);
 }
 

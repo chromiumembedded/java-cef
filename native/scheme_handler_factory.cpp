@@ -31,10 +31,12 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
 
   jobject jResourceHandler = NULL;
   JNI_CALL_METHOD(env, jfactory_, "create",
-                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Lorg/cef/"
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
+                  "CefFrame;Ljava/lang/String;Lorg/cef/"
                   "network/CefRequest;)Lorg/cef/handler/CefResourceHandler;",
                   Object, jResourceHandler, GetJNIBrowser(browser),
-                  NewJNIString(env, scheme_name), jRequest);
+                  GetJNIFrame(env, frame), NewJNIString(env, scheme_name),
+                  jRequest);
 
   if (jRequest != NULL)
     SetCefForJNIObject<CefRequest>(env, jRequest, NULL, "CefRequest");

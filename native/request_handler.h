@@ -38,6 +38,18 @@ class RequestHandler : public CefRequestHandler {
                                   CefRefPtr<CefResponse> response,
                                   CefString& new_url) OVERRIDE;
 
+  virtual bool OnResourceResponse(CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefFrame> frame,
+                                  CefRefPtr<CefRequest> request,
+                                  CefRefPtr<CefResponse> response) OVERRIDE;
+
+  virtual void OnResourceLoadComplete(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefRequest> request,
+                                      CefRefPtr<CefResponse> response,
+                                      URLRequestStatus status,
+                                      int64 received_content_length) OVERRIDE;
+
   virtual bool GetAuthCredentials(CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   bool isProxy,

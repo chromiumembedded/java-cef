@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 
 /**
  * Implement this interface to handle events related to browser life span. The
@@ -42,9 +43,8 @@ public interface CefLifeSpanHandler {
      * @return To cancel creation of the popup window return true.
      */
     // TODO(jcef) forward all params form JNI to Java (the commented out ones)
-    boolean onBeforePopup(CefBrowser browser,
-            // CefFrame frame,
-            String target_url, String target_frame_name
+    boolean onBeforePopup(
+            CefBrowser browser, CefFrame frame, String target_url, String target_frame_name
             // WindowOpenDisposition target_disposition,
             // bool user_gesture,
             // CefPopupFeatures popupFeatures,
