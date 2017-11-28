@@ -48,6 +48,16 @@ class CefRequest_N extends CefRequest implements CefNative {
     }
 
     @Override
+    public long getIdentifier() {
+        try {
+            return N_GetIdentifier();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public boolean isReadOnly() {
         try {
             return N_IsReadOnly();
@@ -93,6 +103,35 @@ class CefRequest_N extends CefRequest implements CefNative {
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
+    }
+
+    @Override
+    public void setReferrer(String url, ReferrerPolicy policy) {
+        try {
+            N_SetReferrer(url, policy);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    @Override
+    public String getReferrerURL() {
+        try {
+            return N_GetReferrerURL();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public ReferrerPolicy getReferrerPolicy() {
+        try {
+            return N_GetReferrerPolicy();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -201,11 +240,15 @@ class CefRequest_N extends CefRequest implements CefNative {
     }
 
     private final native void N_CefRequest_CTOR();
+    private final native long N_GetIdentifier();
     private final native boolean N_IsReadOnly();
     private final native String N_GetURL();
     private final native void N_SetURL(String url);
     private final native String N_GetMethod();
-    private final native void N_SetMethod(String string);
+    private final native void N_SetMethod(String method);
+    private final native void N_SetReferrer(String url, ReferrerPolicy policy);
+    private final native String N_GetReferrerURL();
+    private final native ReferrerPolicy N_GetReferrerPolicy();
     private final native CefPostData N_GetPostData();
     private final native void N_SetPostData(CefPostData postData);
     private final native void N_GetHeaderMap(Map<String, String> headerMap);

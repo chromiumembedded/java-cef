@@ -248,6 +248,73 @@ public abstract class CefRequest {
         }
     }
 
+    /**
+     * Policy for how the Referrer HTTP header value will be sent during navigation.
+     * If the `--no-referrers` command-line flag is specified then the policy value
+     * will be ignored and the Referrer value will never be sent.
+     */
+    public enum ReferrerPolicy {
+
+        /**
+         * This is the same as REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE
+         * but here to match CEF native.
+         */
+        REFERRER_POLICY_DEFAULT,
+
+        /**
+         * Clear the referrer header if the header value is HTTPS but the request
+         * destination is HTTP. This is the default behavior.
+         */
+        REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+
+        /**
+         * A slight variant on CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE:
+         * If the request destination is HTTP, an HTTPS referrer will be cleared. If
+         * the request's destination is cross-origin with the referrer (but does not
+         * downgrade), the referrer's granularity will be stripped down to an origin
+         * rather than a full URL. Same-origin requests will send the full referrer.
+         */
+        REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+
+        /**
+         * Strip the referrer down to an origin when the origin of the referrer is
+         * different from the destination's origin.
+         */
+        REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
+
+        /**
+         * Never change the referrer.
+         */
+        REFERRER_POLICY_NEVER_CLEAR_REFERRER,
+
+        /**
+         * Strip the referrer down to the origin regardless of the redirect location.
+         */
+        REFERRER_POLICY_ORIGIN,
+
+        /**
+         * Clear the referrer when the request's referrer is cross-origin with the
+         * request destination.
+         */
+        REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN,
+
+        /**
+         * Strip the referrer down to the origin, but clear it entirely if the
+         * referrer value is HTTPS and the destination is HTTP.
+         */
+        REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+
+        /**
+         * Always clear the referrer regardless of the request destination.
+         */
+        REFERRER_POLICY_NO_REFERRER,
+
+        /**
+         * Always the last value in this enumeration.
+         */
+        REFERRER_POLICY_LAST_VALUE
+    }
+
     // This CTOR can't be called directly. Call method create() instead.
     CefRequest() {}
 
@@ -257,6 +324,13 @@ public abstract class CefRequest {
     public static final CefRequest create() {
         return CefRequest_N.createNative();
     }
+
+    /**
+     * Returns the globally unique identifier for this request or 0 if not
+     * specified. Can be used by CefRequestHandler implementations in the browser
+     * process to track a single request across multiple callbacks.
+     */
+    public abstract long getIdentifier();
 
     /**
      * Returns true if this object is read-only.
@@ -282,7 +356,24 @@ public abstract class CefRequest {
     /**
      * Set the request method type.
      */
-    public abstract void setMethod(String string);
+    public abstract void setMethod(String method);
+
+    /**
+     * Set the referrer URL and policy. If non-empty the referrer URL must be
+     * fully qualified with an HTTP or HTTPS scheme component. Any username,
+     * password or ref component will be removed.
+     */
+    public abstract void setReferrer(String url, ReferrerPolicy policy);
+
+    /**
+     * Get the referrer URL.
+     */
+    public abstract String getReferrerURL();
+
+    /**
+     * Get the referrer policy.
+     */
+    public abstract ReferrerPolicy getReferrerPolicy();
 
     /**
      * Get the post data.
@@ -350,10 +441,12 @@ public abstract class CefRequest {
     @Override
     public String toString() {
         String returnValue = "\nHTTP-Request";
-        returnValue += "\n  Flags:" + getFlags();
+        returnValue += "\n  flags: " + getFlags();
         returnValue += "\n  resourceType: " + getResourceType();
         returnValue += "\n  transitionType: " + getTransitionType();
         returnValue += "\n  firstPartyForCookies: " + getFirstPartyForCookies();
+        returnValue += "\n  referrerURL: " + getReferrerURL();
+        returnValue += "\n  referrerPolicy: " + getReferrerPolicy();
         returnValue += "\n    " + getMethod() + " " + getURL() + " HTTP/1.1\n";
 
         Map<String, String> headerMap = new HashMap<>();

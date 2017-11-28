@@ -6,6 +6,7 @@ package org.cef.network;
 
 import java.util.Map;
 import org.cef.callback.CefNative;
+import org.cef.handler.CefLoadHandler.ErrorCode;
 
 class CefResponse_N extends CefResponse implements CefNative {
     // Used internally to store a pointer to the CEF object.
@@ -55,6 +56,25 @@ class CefResponse_N extends CefResponse implements CefNative {
             ule.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public ErrorCode getError() {
+        try {
+            return N_GetError();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void setError(ErrorCode errorCode) {
+        try {
+            N_SetError(errorCode);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
 
     @Override
@@ -144,6 +164,8 @@ class CefResponse_N extends CefResponse implements CefNative {
 
     private final native void N_CefResponse_CTOR();
     private final native boolean N_IsReadOnly();
+    private final native ErrorCode N_GetError();
+    private final native void N_SetError(ErrorCode errorCode);
     private final native int N_GetStatus();
     private final native void N_SetStatus(int status);
     private final native String N_GetStatusText();

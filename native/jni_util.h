@@ -103,6 +103,7 @@ CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
 
 // Create a new JNI error code.
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
+cef_errorcode_t GetJNIErrorCode(JNIEnv* env, jobject jerrorCode);
 
 // Create a new String value.
 jstring NewJNIString(JNIEnv* env, const CefString& str);

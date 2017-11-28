@@ -122,6 +122,11 @@ public class RequestHandler extends CefRequestHandlerAdapter {
         if (request.getURL().endsWith("foo.bar/")) {
             return new ResourceHandler();
         }
+
+        if (request.getURL().endsWith("seterror.test/")) {
+            return new ResourceSetErrorHandler();
+        }
+
         return null;
     }
 

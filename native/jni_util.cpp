@@ -411,6 +411,18 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
   return jerrorCode;
 }
 
+cef_errorcode_t GetJNIErrorCode(JNIEnv* env, jobject jerrorCode) {
+  cef_errorcode_t errorCode = ERR_NONE;
+
+  if (jerrorCode) {
+    jint jcode = 0;
+    JNI_CALL_METHOD(env, jerrorCode, "getCode", "()I", Int, jcode);
+    errorCode = static_cast<cef_errorcode_t>(jcode);
+  }
+
+  return errorCode;
+}
+
 jstring NewJNIString(JNIEnv* env, const CefString& str) {
   std::string cstr(str);
   return env->NewStringUTF(cstr.c_str());
@@ -889,68 +901,63 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
 
   GetJNIFieldBoolean(env, cls, obj, "header_footer_enabled",
                      &settings.header_footer_enabled);
-  
+
   if (GetJNIFieldString(env, cls, obj, "header_footer_title", &tmp) &&
       !tmp.empty()) {
     CefString(&settings.header_footer_title) = tmp;
     tmp.clear();
   }
-  
+
   if (GetJNIFieldString(env, cls, obj, "header_footer_url", &tmp) &&
       !tmp.empty()) {
     CefString(&settings.header_footer_url) = tmp;
     tmp.clear();
   }
-  
-  GetJNIFieldBoolean(env, cls, obj, "landscape",
-                     &settings.landscape);
-  
+
+  GetJNIFieldBoolean(env, cls, obj, "landscape", &settings.landscape);
+
   GetJNIFieldBoolean(env, cls, obj, "backgrounds_enabled",
                      &settings.backgrounds_enabled);
-  
-  GetJNIFieldInt(env, cls, obj, "page_width",
-                     &settings.page_width);
-  
-  GetJNIFieldInt(env, cls, obj, "page_height",
-                     &settings.page_height);
-  
-  GetJNIFieldBoolean(env, cls, obj, "selection_only",
-                     &settings.selection_only);
-  
-  GetJNIFieldInt(env, cls, obj, "scale_factor",
-                     &settings.scale_factor);
-  
+
+  GetJNIFieldInt(env, cls, obj, "page_width", &settings.page_width);
+
+  GetJNIFieldInt(env, cls, obj, "page_height", &settings.page_height);
+
+  GetJNIFieldBoolean(env, cls, obj, "selection_only", &settings.selection_only);
+
+  GetJNIFieldInt(env, cls, obj, "scale_factor", &settings.scale_factor);
+
   jobject obj_margin_type = NULL;
   if (GetJNIFieldObject(env, cls, obj, "margin_type", &obj_margin_type,
                         "Lorg/cef/misc/CefPdfPrintSettings$MarginType;")) {
     if (obj_margin_type != NULL) {
-      if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+      if (IsJNIEnumValue(env, obj_margin_type,
+                         "org/cef/misc/CefPdfPrintSettings$MarginType",
                          "DEFAULT"))
         settings.margin_type = PDF_PRINT_MARGIN_DEFAULT;
-      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+      else if (IsJNIEnumValue(env, obj_margin_type,
+                              "org/cef/misc/CefPdfPrintSettings$MarginType",
                               "NONE"))
         settings.margin_type = PDF_PRINT_MARGIN_NONE;
-      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+      else if (IsJNIEnumValue(env, obj_margin_type,
+                              "org/cef/misc/CefPdfPrintSettings$MarginType",
                               "MINIMUM"))
         settings.margin_type = PDF_PRINT_MARGIN_MINIMUM;
-      else if (IsJNIEnumValue(env, obj_margin_type, "org/cef/misc/CefPdfPrintSettings$MarginType",
+      else if (IsJNIEnumValue(env, obj_margin_type,
+                              "org/cef/misc/CefPdfPrintSettings$MarginType",
                               "CUSTOM"))
         settings.margin_type = PDF_PRINT_MARGIN_CUSTOM;
     }
   }
-  
-  GetJNIFieldDouble(env, cls, obj, "margin_top",
-                     &settings.margin_top);
-  
-  GetJNIFieldDouble(env, cls, obj, "margin_bottom",
-                     &settings.margin_bottom);
-  
-  GetJNIFieldDouble(env, cls, obj, "margin_right",
-                     &settings.margin_right);
-  
-  GetJNIFieldDouble(env, cls, obj, "margin_left",
-                     &settings.margin_left);
-  
+
+  GetJNIFieldDouble(env, cls, obj, "margin_top", &settings.margin_top);
+
+  GetJNIFieldDouble(env, cls, obj, "margin_bottom", &settings.margin_bottom);
+
+  GetJNIFieldDouble(env, cls, obj, "margin_right", &settings.margin_right);
+
+  GetJNIFieldDouble(env, cls, obj, "margin_left", &settings.margin_left);
+
   return settings;
 }
 

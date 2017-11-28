@@ -3,6 +3,7 @@ package tests.detailed.handler;
 import java.nio.ByteBuffer;
 
 import org.cef.callback.CefCallback;
+import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefResourceHandlerAdapter;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
@@ -25,6 +26,8 @@ public class ResourceHandler extends CefResourceHandlerAdapter {
 
     @Override
     public boolean processRequest(CefRequest request, CefCallback callback) {
+        System.out.println("processRequest: " + request);
+
         startPos = 0;
         callback.Continue();
         return true;
@@ -33,6 +36,8 @@ public class ResourceHandler extends CefResourceHandlerAdapter {
     @Override
     public void getResponseHeaders(
             CefResponse response, IntRef response_length, StringRef redirectUrl) {
+        System.out.println("getResponseHeaders: " + response);
+
         response_length.set(html.length());
         response.setMimeType("text/html");
         response.setStatus(200);

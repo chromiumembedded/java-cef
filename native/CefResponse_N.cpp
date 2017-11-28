@@ -24,6 +24,38 @@ Java_org_cef_network_CefResponse_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
   return response->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefResponse_1N_N_1GetError(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefResponse> response =
+      GetCefFromJNIObject<CefResponse>(env, obj, "CefResponse");
+  if (!response)
+    return NULL;
+  return NewJNIErrorCode(env, response->GetError());
+}
+
+/*
+ * Class:     org_cef_network_CefResponse_N
+ * Method:    N_SetError
+ * Signature: (Lorg/cef/handler/CefLoadHandler$ErrorCode;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefResponse_1N_N_1SetError(JNIEnv* env,
+                                                jobject obj,
+                                                jobject jerrorCode) {
+  CefRefPtr<CefResponse> response =
+      GetCefFromJNIObject<CefResponse>(env, obj, "CefResponse");
+
+  if (!response)
+    return;
+
+  if (!jerrorCode)
+    return;
+
+  cef_errorcode_t errorCode = GetJNIErrorCode(env, jerrorCode);
+
+  response->SetError(errorCode);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_cef_network_CefResponse_1N_N_1GetStatus(JNIEnv* env, jobject obj) {
   CefRefPtr<CefResponse> response =

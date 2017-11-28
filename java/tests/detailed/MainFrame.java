@@ -233,6 +233,7 @@ public class MainFrame extends JFrame {
                 "http://www.colostate.edu/~ric/protect/your.html");
         menuBar.addBookmark("Certificate-error Test", "https://www.k2go.de");
         menuBar.addBookmark("Resource-Handler Test", "http://www.foo.bar/");
+        menuBar.addBookmark("Resource-Handler Set Error Test", "http://seterror.test/");
         menuBar.addBookmark(
                 "Scheme-Handler Test 1: (scheme \"client\")", "client://tests/handler.html");
         menuBar.addBookmark(

@@ -16,6 +16,15 @@ Java_org_cef_network_CefRequest_1N_N_1CefRequest_1CTOR(JNIEnv* env,
   SetCefForJNIObject(env, obj, request.get(), "CefRequest");
 }
 
+JNIEXPORT jlong JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefRequest> request =
+      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  if (!request)
+    return 0;
+  return (jlong)request->GetIdentifier();
+}
+
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefRequest_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
   CefRefPtr<CefRequest> request =
@@ -43,6 +52,118 @@ Java_org_cef_network_CefRequest_1N_N_1SetURL(JNIEnv* env,
   if (!request)
     return;
   request->SetURL(GetJNIString(env, jurl));
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv* env,
+                                                  jobject obj,
+                                                  jstring jurl,
+                                                  jobject jpolicy) {
+  CefRefPtr<CefRequest> request =
+      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  if (!request)
+    return;
+
+  cef_referrer_policy_t policy = REFERRER_POLICY_DEFAULT;
+  if (jpolicy != NULL) {
+    if (IsJNIEnumValue(env, jpolicy,
+                       "org/cef/network/CefRequest$ReferrerPolicy",
+                       "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_"
+                       "SECURE_TO_INSECURE")) {
+      policy =
+          REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_"
+                              "TRANSITION_CROSS_ORIGIN")) {
+      policy =
+          REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
+    } else if (IsJNIEnumValue(
+                   env, jpolicy, "org/cef/network/CefRequest$ReferrerPolicy",
+                   "REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN")) {
+      policy = REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_NEVER_CLEAR_REFERRER")) {
+      policy = REFERRER_POLICY_NEVER_CLEAR_REFERRER;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_ORIGIN")) {
+      policy = REFERRER_POLICY_ORIGIN;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_"
+                              "CROSS_ORIGIN")) {
+      policy = REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_"
+                              "SECURE_TO_INSECURE")) {
+      policy =
+          REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_NO_REFERRER")) {
+      policy = REFERRER_POLICY_NO_REFERRER;
+    } else if (IsJNIEnumValue(env, jpolicy,
+                              "org/cef/network/CefRequest$ReferrerPolicy",
+                              "REFERRER_POLICY_LAST_VALUE")) {
+      policy = REFERRER_POLICY_LAST_VALUE;
+    }
+  }
+
+  request->SetReferrer(GetJNIString(env, jurl), policy);
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv* env, jobject obj) {
+  CefRefPtr<CefRequest> request =
+      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  if (!request)
+    return NULL;
+
+  return NewJNIString(env, request->GetReferrerURL());
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv* env,
+                                                        jobject obj) {
+  CefRefPtr<CefRequest> request =
+      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  if (!request)
+    return NULL;
+
+  jobject result = NULL;
+  CefRequest::ReferrerPolicy rp = request->GetReferrerPolicy();
+  switch (rp) {
+    default:
+      // same as
+      // REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_DEFAULT, result);
+      JNI_CASE(
+          env, "org/cef/network/CefRequest$ReferrerPolicy",
+          REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+          result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_NEVER_CLEAR_REFERRER, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_ORIGIN, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN,
+               result);
+      JNI_CASE(
+          env, "org/cef/network/CefRequest$ReferrerPolicy",
+          REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+          result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_NO_REFERRER, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
+               REFERRER_POLICY_LAST_VALUE, result);
+  }
+  return result;
 }
 
 JNIEXPORT jstring JNICALL

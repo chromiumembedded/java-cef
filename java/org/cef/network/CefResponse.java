@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import org.cef.handler.CefLoadHandler.ErrorCode;
 
 /**
  * Class used to represent a web response. The methods of this class may be
@@ -28,6 +29,16 @@ public abstract class CefResponse {
      * Returns true if this object is read-only.
      */
     public abstract boolean isReadOnly();
+
+    /**
+     * Get the response error code. Returns ERR_NONE if there was no error.
+     */
+    public abstract ErrorCode getError();
+
+    /**
+     * Get the response error code. Returns ERR_NONE if there was no error.
+     */
+    public abstract void setError(ErrorCode errorCode);
 
     /**
      * Get the response status code.
@@ -78,6 +89,8 @@ public abstract class CefResponse {
     public String toString() {
         String returnValue = "\nHTTP-Response:";
 
+        returnValue += "\n  error: " + getError();
+        returnValue += "\n  readOnly: " + isReadOnly();
         returnValue += "\n    HTTP/1.1 " + getStatus() + " " + getStatusText();
         returnValue += "\n    Content-Type: " + getMimeType();
 

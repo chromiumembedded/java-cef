@@ -17,6 +17,14 @@ Java_org_cef_network_CefRequest_1N_N_1CefRequest_1CTOR(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
+ * Method:    N_GetIdentifier
+ * Signature: ()I
+ */
+JNIEXPORT jlong JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_network_CefRequest_N
  * Method:    N_IsReadOnly
  * Signature: ()Z
  */
@@ -56,6 +64,33 @@ Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv*, jobject);
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1SetMethod(JNIEnv*,
                                                                        jobject,
                                                                        jstring);
+
+/*
+ * Class:     org_cef_network_CefRequest_N
+ * Method:    N_SetReferrer
+ * Signature: (Ljava/lang/String;Lorg/cef/network/CefRequest$ReferrerPolicy;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv*,
+                                                  jobject,
+                                                  jstring,
+                                                  jobject);
+
+/*
+ * Class:     org_cef_network_CefRequest_N
+ * Method:    N_GetReferrerURL
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_network_CefRequest_N
+ * Method:    N_GetReferrerPolicy
+ * Signature: ()Lorg/cef/network/CefRequest$ReferrerPolicy;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
