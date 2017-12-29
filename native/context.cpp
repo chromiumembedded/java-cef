@@ -101,7 +101,8 @@ bool Context::Initialize(JNIEnv* env,
   // DoMessageLoopWork.
   settings.external_message_pump = external_message_pump_;
 
-  CefRefPtr<ClientApp> client_app(new ClientApp(module_dir, appHandler));
+  CefRefPtr<ClientApp> client_app(
+      new ClientApp(module_dir, CefString(&settings.cache_path), appHandler));
   bool res = false;
 
 #if defined(OS_POSIX)

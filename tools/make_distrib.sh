@@ -103,10 +103,14 @@ else
     cp -f $OUT_BINARY_PATH/jcef_helper $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/icudtl.dat $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/libcef.so $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/libEGL.so $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/libGLESv2.so $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/natives_blob.bin $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/snapshot_blob.bin $DISTRIB_LIB_PATH
+    cp -f $OUT_BINARY_PATH/v8_context_snapshot.bin $DISTRIB_LIB_PATH
     cp -f $OUT_BINARY_PATH/*.pak $DISTRIB_LIB_PATH
     cp -rf $OUT_BINARY_PATH/locales/ $DISTRIB_LIB_PATH
+    cp -rf $OUT_BINARY_PATH/swiftshader/ $DISTRIB_LIB_PATH
   fi
 
   cd tools

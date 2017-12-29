@@ -13,7 +13,9 @@
 // ClientApp implementation.
 class ClientApp : public CefApp {
  public:
-  explicit ClientApp(const std::string& module_dir, const jobject app_handler);
+  ClientApp(const std::string& module_dir,
+            const std::string& cache_path,
+            const jobject app_handler);
   virtual ~ClientApp();
 
   // CefApp methods
@@ -37,7 +39,8 @@ class ClientApp : public CefApp {
   static void eraseTempFiles();
 
  protected:
-  std::string module_dir_;
+  const std::string module_dir_;
+  const std::string cache_path_;
   jobject app_handler_;
   CefRefPtr<BrowserProcessHandler> process_handler_;
 

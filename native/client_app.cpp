@@ -18,8 +18,10 @@ std::set<std::string>& GetTempFilesSet() {
 
 }  // namespace
 
-ClientApp::ClientApp(const std::string& module_dir, const jobject app_handler)
-    : module_dir_(module_dir), app_handler_(NULL) {
+ClientApp::ClientApp(const std::string& module_dir,
+                     const std::string& cache_path,
+                     const jobject app_handler)
+    : module_dir_(module_dir), cache_path_(cache_path), app_handler_(NULL) {
   JNIEnv* env = GetJNIEnv();
   if (env)
     app_handler_ = env->NewGlobalRef(app_handler);
@@ -71,11 +73,18 @@ void ClientApp::OnBeforeCommandLineProcessing(
     // due Java7 is CALayer based instead of NSLayer based.
     command_line->AppendSwitch("use-core-animation");
 #endif  // defined(OS_MACOSX)
+
 #if defined(OS_WIN)
     // To avoid shutdown issues extensions should not be used in combination
     // with multi-threaded-message-loop.
     command_line->AppendSwitch("disable-extensions");
 #endif
+
+    if (cache_path_.empty() &&
+        !command_line->HasSwitch("disable-gpu-shader-disk-cache")) {
+      // Don't create a "GPUCache" directory when cache_path is unspecified.
+      command_line->AppendSwitch("disable-gpu-shader-disk-cache");
+    }
   }
 }
 
