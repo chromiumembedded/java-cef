@@ -194,7 +194,8 @@ source_group(jcef FILES ${JCEF_HELPER_SRCS})
 set(JCEF_TARGET "jcef")
 if(OS_MACOSX)
   set(JCEF_APP_NAME "jcef_app")
-  set(JCEF_HELPER_TARGET "jcef Helper")
+  set(JCEF_HELPER_TARGET "jcef_Helper")
+  set(JCEF_HELPER_OUTPUT_NAME "jcef Helper")
 else()
   set(JCEF_HELPER_TARGET "jcef_helper")
 endif()
@@ -271,9 +272,17 @@ endif()
 #
 
 if(OS_MACOSX)
+  # Avoid CMP0042 policy errors.
+  set(CMAKE_MACOSX_RPATH 1)
+
+  # Avoid CMP0068 policy errors.
+  if(POLICY CMP0068)
+    cmake_policy(SET CMP0068 NEW)
+  endif()
+
   # Output paths for the app bundles.
   set(JCEF_APP "${CEF_TARGET_OUT_DIR}/${JCEF_APP_NAME}.app")
-  set(JCEF_HELPER_APP "${CEF_TARGET_OUT_DIR}/${JCEF_HELPER_TARGET}.app")
+  set(JCEF_HELPER_APP "${CEF_TARGET_OUT_DIR}/${JCEF_HELPER_OUTPUT_NAME}.app")
 
   # Variable referenced from Info.plist files.
   set(PRODUCT_NAME "${JCEF_APP_NAME}")
@@ -285,6 +294,7 @@ if(OS_MACOSX)
   target_link_libraries(${JCEF_HELPER_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
   set_target_properties(${JCEF_HELPER_TARGET} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/jcef-Info.plist
+    OUTPUT_NAME ${JCEF_HELPER_OUTPUT_NAME}
     )
 
   # Fix the framework rpath in the helper executable.
@@ -322,7 +332,7 @@ if(OS_MACOSX)
     # Copy the helper app bundle into the main app bundle.
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${JCEF_HELPER_APP}"
-            "${JCEF_APP}/Contents/Frameworks/${JCEF_HELPER_TARGET}.app"
+            "${JCEF_APP}/Contents/Frameworks/${JCEF_HELPER_OUTPUT_NAME}.app"
     # Copy the CEF framework into the main app bundle.
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
