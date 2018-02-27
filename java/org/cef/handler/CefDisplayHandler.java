@@ -6,6 +6,7 @@ package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
+import org.cef.CefSettings;
 
 /**
  * Implement this interface to handle events related to browser display state.
@@ -48,10 +49,12 @@ public interface CefDisplayHandler {
      * Called to display a console message.
      *
      * @param browser The browser generating the event.
+     * @param level
      * @param message
      * @param source
      * @param line
      * @return true to stop the message from being output to the console.
      */
-    public boolean onConsoleMessage(CefBrowser browser, String message, String source, int line);
+    public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level,
+            String message, String source, int line);
 }

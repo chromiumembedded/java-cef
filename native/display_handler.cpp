@@ -62,17 +62,32 @@ void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
 }
 
 bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                      cef_log_severity_t level,
                                       const CefString& message,
                                       const CefString& source,
                                       int line) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
+
+  jobject jlevel = NULL;
+  switch (level) {
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_VERBOSE,
+             jlevel);
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_INFO, jlevel);
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_WARNING,
+             jlevel);
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_ERROR, jlevel);
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_DISABLE,
+             jlevel);
+  }
+
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(
       env, jhandler_, "onConsoleMessage",
-      "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Ljava/lang/String;I)Z",
-      Boolean, jreturn, GetJNIBrowser(browser), NewJNIString(env, message),
-      NewJNIString(env, source), line);
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/CefSettings$LogSeverity;"
+      "Ljava/lang/String;Ljava/lang/String;I)Z",
+      Boolean, jreturn, GetJNIBrowser(browser), jlevel,
+      NewJNIString(env, message), NewJNIString(env, source), line);
   return (jreturn != JNI_FALSE);
 }

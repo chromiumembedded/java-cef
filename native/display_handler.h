@@ -26,6 +26,7 @@ class DisplayHandler : public CefDisplayHandler {
   virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser,
                                const CefString& value) OVERRIDE;
   virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                cef_log_severity_t level,
                                 const CefString& message,
                                 const CefString& source,
                                 int line) OVERRIDE;

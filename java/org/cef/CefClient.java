@@ -322,9 +322,10 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean onConsoleMessage(CefBrowser browser, String message, String source, int line) {
+    public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level,
+            String message, String source, int line) {
         if (displayHandler_ != null && browser != null) {
-            return displayHandler_.onConsoleMessage(browser, message, source, line);
+            return displayHandler_.onConsoleMessage(browser, level, message, source, line);
         }
         return false;
     }
