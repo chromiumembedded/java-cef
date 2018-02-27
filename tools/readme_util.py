@@ -16,7 +16,7 @@ def read_readme_file(file, args):
         args['CEF_BUILD'] = verparts[1]
     elif parts[0].startswith('CEF URL'):
       args['CEF_URL'] = parts[1].strip()
-    elif parts[0].startswith('Chromium Verison'):
+    elif parts[0].startswith('Chromium Version'):
       args['CHROMIUM_VER'] = parts[1].strip()
     elif parts[0].startswith('Chromium URL'):
       args['CHROMIUM_URL'] = parts[1].strip()
