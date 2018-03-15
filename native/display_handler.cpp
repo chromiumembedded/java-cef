@@ -80,6 +80,8 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
     JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_ERROR, jlevel);
     JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_DISABLE,
              jlevel);
+    JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_DEFAULT,
+             jlevel);
   }
 
   jboolean jreturn = JNI_FALSE;
