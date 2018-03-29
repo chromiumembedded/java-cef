@@ -157,6 +157,13 @@ bool GetJNIFieldInt(JNIEnv* env,
                     const char* field_name,
                     int* value);
 
+// Retrieve the long value stored in the |field_name| field of |cls|.
+bool GetJNIFieldLong(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     jlong* value);
+
 // Set the int value stored in the |field_name| field of |cls|.
 bool SetJNIFieldInt(JNIEnv* env,
                     jclass cls,

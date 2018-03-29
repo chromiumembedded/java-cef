@@ -1377,11 +1377,9 @@ Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv* env,
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
 
   CefPdfPrintSettings settings = GetJNIPdfPrintSettings(env, jsettings);
-  
-  browser->GetHost()->PrintToPDF(
-    GetJNIString(env, jpath),
-    settings,
-    new PdfPrintCallback(env, jcallback));
+
+  browser->GetHost()->PrintToPDF(GetJNIString(env, jpath), settings,
+                                 new PdfPrintCallback(env, jcallback));
 }
 
 JNIEXPORT void JNICALL
@@ -1473,8 +1471,12 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
   cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
 
 #if defined(OS_WIN)
-  BYTE VkCode = LOBYTE(VkKeyScanA(key_char));
-  UINT scanCode = MapVirtualKey(VkCode, MAPVK_VK_TO_VSC);
+
+  jlong scanCode;
+  bool gotLongSuccessfully =
+      GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
+  ASSERT(gotLongSuccessfully);
+  BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
 #elif defined(OS_LINUX) || defined(OS_MACOSX)

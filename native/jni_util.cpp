@@ -598,6 +598,20 @@ bool GetJNIFieldInt(JNIEnv* env,
   return false;
 }
 
+bool GetJNIFieldLong(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     jlong* value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "J");
+  if (field) {
+    *value = env->GetLongField(obj, field);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 bool SetJNIFieldInt(JNIEnv* env,
                     jclass cls,
                     jobject obj,
