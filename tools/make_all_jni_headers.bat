@@ -25,7 +25,6 @@ call make_jni_header.bat %1 org.cef.callback.CefDownloadItem_N
 call make_jni_header.bat %1 org.cef.callback.CefDownloadItemCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefDragData_N
 call make_jni_header.bat %1 org.cef.callback.CefFileDialogCallback_N
-call make_jni_header.bat %1 org.cef.callback.CefGeolocationCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefJSDialogCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefMenuModel_N
 call make_jni_header.bat %1 org.cef.callback.CefPrintDialogCallback_N

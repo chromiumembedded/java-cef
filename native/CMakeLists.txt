@@ -36,8 +36,6 @@ set(JCEF_SRCS
   CefFileDialogCallback_N.h
   CefFrame_N.cpp
   CefFrame_N.h
-  CefGeolocationCallback_N.h
-  CefGeolocationCallback_N.cpp
   CefJSDialogCallback_N.h
   CefJSDialogCallback_N.cpp
   CefMenuModel_N.cpp
@@ -97,8 +95,6 @@ set(JCEF_SRCS
   drag_handler.h
   focus_handler.cpp
   focus_handler.h
-  geolocation_handler.cpp
-  geolocation_handler.h
   jcef_version.h
   jni_util.h
   jni_util.cpp

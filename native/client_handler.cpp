@@ -18,7 +18,6 @@
 #include "download_handler.h"
 #include "drag_handler.h"
 #include "focus_handler.h"
-#include "geolocation_handler.h"
 #include "jsdialog_handler.h"
 #include "keyboard_handler.h"
 #include "life_span_handler.h"
@@ -148,24 +147,6 @@ CefRefPtr<CefFocusHandler> ClientHandler::GetFocusHandler() {
     if (!result.get()) {
       result = new FocusHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefFocusHandler");
-    }
-  }
-  END_ENV(env)
-  return result;
-}
-
-CefRefPtr<CefGeolocationHandler> ClientHandler::GetGeolocationHandler() {
-  CefRefPtr<CefGeolocationHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getGeolocationHandler",
-                  "()Lorg/cef/handler/CefGeolocationHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefGeolocationHandler>(
-        env, handler, "CefGeolocationHandler");
-    if (!result.get()) {
-      result = new GeolocationHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefGeolocationHandler");
     }
   }
   END_ENV(env)

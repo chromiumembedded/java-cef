@@ -31,7 +31,6 @@ import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
 import org.cef.callback.CefDragData;
 import org.cef.callback.CefFileDialogCallback;
-import org.cef.callback.CefGeolocationCallback;
 import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefRequestCallback;
@@ -42,7 +41,6 @@ import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDownloadHandler;
 import org.cef.handler.CefDragHandler;
 import org.cef.handler.CefFocusHandler;
-import org.cef.handler.CefGeolocationHandler;
 import org.cef.handler.CefJSDialogHandler;
 import org.cef.handler.CefKeyboardHandler;
 import org.cef.handler.CefLifeSpanHandler;
@@ -64,9 +62,9 @@ import org.cef.network.CefWebPluginInfo;
  */
 public class CefClient extends CefClientHandler
         implements CefContextMenuHandler, CefDialogHandler, CefDisplayHandler, CefDownloadHandler,
-                   CefDragHandler, CefFocusHandler, CefGeolocationHandler, CefJSDialogHandler,
-                   CefKeyboardHandler, CefLifeSpanHandler, CefLoadHandler, CefRenderHandler,
-                   CefRequestHandler, CefWindowHandler {
+                   CefDragHandler, CefFocusHandler, CefJSDialogHandler, CefKeyboardHandler,
+                   CefLifeSpanHandler, CefLoadHandler, CefRenderHandler, CefRequestHandler,
+                   CefWindowHandler {
     private HashMap<Integer, CefBrowser> browser_ = new HashMap<Integer, CefBrowser>();
     private CefContextMenuHandler contextMenuHandler_ = null;
     private CefDialogHandler dialogHandler_ = null;
@@ -74,7 +72,6 @@ public class CefClient extends CefClientHandler
     private CefDownloadHandler downloadHandler_ = null;
     private CefDragHandler dragHandler_ = null;
     private CefFocusHandler focusHandler_ = null;
-    private CefGeolocationHandler geolocationHandler_ = null;
     private CefJSDialogHandler jsDialogHandler_ = null;
     private CefKeyboardHandler keyboardHandler_ = null;
     private CefLifeSpanHandler lifeSpanHandler_ = null;
@@ -185,11 +182,6 @@ public class CefClient extends CefClientHandler
 
     @Override
     protected CefFocusHandler getFocusHandler() {
-        return this;
-    }
-
-    @Override
-    protected CefGeolocationHandler getGeolocationHandler() {
         return this;
     }
 
@@ -445,33 +437,6 @@ public class CefClient extends CefClientHandler
         if (focusHandler_ != null) focusHandler_.onGotFocus(browser);
     }
 
-    // CefGeolocationHandler
-
-    public CefClient addGeolocationHandler(CefGeolocationHandler handler) {
-        if (geolocationHandler_ == null) geolocationHandler_ = handler;
-        return this;
-    }
-
-    public void removeGeolocationHandler() {
-        geolocationHandler_ = null;
-    }
-
-    @Override
-    public boolean onRequestGeolocationPermission(CefBrowser browser, String requesting_url,
-            int request_id, CefGeolocationCallback callback) {
-        if (geolocationHandler_ != null && browser != null) {
-            return geolocationHandler_.onRequestGeolocationPermission(
-                    browser, requesting_url, request_id, callback);
-        }
-        return false;
-    }
-
-    @Override
-    public void onCancelGeolocationPermission(CefBrowser browser, int request_id) {
-        if (geolocationHandler_ != null && browser != null)
-            geolocationHandler_.onCancelGeolocationPermission(browser, request_id);
-    }
-
     // CefJSDialogHandler
 
     public CefClient addJSDialogHandler(CefJSDialogHandler handler) {
@@ -595,7 +560,6 @@ public class CefClient extends CefClientHandler
                 removeDownloadHandler(this);
                 removeDragHandler(this);
                 removeFocusHandler(this);
-                removeGeolocationHandler(this);
                 removeJSDialogHandler(this);
                 removeKeyboardHandler(this);
                 removeLifeSpanHandler(this);

@@ -27,7 +27,6 @@ class ClientHandler : public CefClient {
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
   virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
   virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
-  virtual CefRefPtr<CefGeolocationHandler> GetGeolocationHandler() OVERRIDE;
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;

@@ -32,7 +32,6 @@ import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.handler.AppHandler;
 import tests.detailed.handler.ContextMenuHandler;
 import tests.detailed.handler.DragHandler;
-import tests.detailed.handler.GeolocationHandler;
 import tests.detailed.handler.JSDialogHandler;
 import tests.detailed.handler.KeyboardHandler;
 import tests.detailed.handler.MessageRouterHandler;
@@ -131,7 +130,6 @@ public class MainFrame extends JFrame {
         client_.addContextMenuHandler(new ContextMenuHandler(this));
         client_.addDownloadHandler(downloadDialog);
         client_.addDragHandler(new DragHandler());
-        client_.addGeolocationHandler(new GeolocationHandler(this));
         client_.addJSDialogHandler(new JSDialogHandler());
         client_.addKeyboardHandler(new KeyboardHandler());
         client_.addRequestHandler(new RequestHandler(this));
@@ -228,7 +226,6 @@ public class MainFrame extends JFrame {
         menuBar.addBookmark("Binding Test", "client://tests/binding_test.html");
         menuBar.addBookmark("Binding Test 2", "client://tests/binding_test2.html");
         menuBar.addBookmark("Download Test", "http://cefbuilds.com");
-        menuBar.addBookmark("Geolocation Test", "http://slides.html5rocks.com/#geolocation");
         menuBar.addBookmark("Login Test (username:pumpkin, password:pie)",
                 "http://www.colostate.edu/~ric/protect/your.html");
         menuBar.addBookmark("Certificate-error Test", "https://www.k2go.de");

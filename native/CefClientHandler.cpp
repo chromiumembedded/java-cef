@@ -81,15 +81,6 @@ Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler(
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_handler_CefClientHandler_N_1removeGeolocationHandler(
-    JNIEnv* env,
-    jobject clientHandler,
-    jobject geolocationHandler) {
-  SetCefForJNIObject<CefGeolocationHandler>(env, geolocationHandler, NULL,
-                                            "CefGeolocationHandler");
-}
-
-JNIEXPORT void JNICALL
 Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHandler(
     JNIEnv* env,
     jobject clientHandler,
