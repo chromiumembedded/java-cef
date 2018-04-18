@@ -66,9 +66,9 @@ bool g_handling_send_event = false;
 @end  // interface CefHandler
 
 // Java provides an NSApplicationAWT implementation that we can't access or
-// override directly. Therefore add the necessary CrAppControlProtocol
+// override directly. Therefore add the necessary CefAppProtocol
 // functionality to NSApplication using categories and swizzling.
-@interface NSApplication (JCEFApplication)
+@interface NSApplication (JCEFApplication)<CefAppProtocol>
 
 - (BOOL)isHandlingSendEvent;
 - (void)setHandlingSendEvent:(BOOL)handlingSendEvent;
