@@ -1472,10 +1472,8 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 
 #if defined(OS_WIN)
 
-  jlong scanCode;
-  bool gotLongSuccessfully =
-      GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
-  ASSERT(gotLongSuccessfully);
+  jlong scanCode = 0;
+  GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
