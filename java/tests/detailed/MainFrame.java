@@ -5,6 +5,9 @@
 package tests.detailed;
 
 import java.awt.BorderLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 
@@ -22,6 +25,7 @@ import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.handler.CefDisplayHandlerAdapter;
+import org.cef.handler.CefFocusHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefRequestContextHandlerAdapter;
 import org.cef.network.CefCookieManager;
@@ -90,6 +94,7 @@ public class MainFrame extends BrowserFrame {
     private ControlPanel control_pane_;
     private StatusPanel status_panel_;
     private final CefCookieManager cookieManager_;
+    private boolean browserFocus_ = true;
 
     public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled,
             boolean createImmediately, String cookiePath, String[] args) {
@@ -228,6 +233,33 @@ public class MainFrame extends BrowserFrame {
         // Set up the UI for this example implementation.
         JPanel contentPanel = createContentPanel();
         getContentPane().add(contentPanel, BorderLayout.CENTER);
+
+        // Clear focus from the browser when the address field gains focus.
+        control_pane_.getAddressField().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (!browserFocus_) return;
+                browserFocus_ = false;
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
+                control_pane_.getAddressField().requestFocus();
+            }
+        });
+
+        // Clear focus from the address field when the browser gains focus.
+        client_.addFocusHandler(new CefFocusHandlerAdapter() {
+            @Override
+            public void onGotFocus(CefBrowser browser) {
+                if (browserFocus_) return;
+                browserFocus_ = true;
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
+                browser.setFocus(true);
+            }
+
+            @Override
+            public void onTakeFocus(CefBrowser browser, boolean next) {
+                browserFocus_ = false;
+            }
+        });
 
         if (createImmediately) browser.createImmediately();
 

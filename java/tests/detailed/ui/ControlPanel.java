@@ -4,7 +4,6 @@
 
 package tests.detailed.ui;
 
-import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,6 +41,7 @@ public class ControlPanel extends JPanel {
         add(Box.createHorizontalStrut(5));
 
         backButton_ = new JButton("Back");
+        backButton_.setFocusable(false);
         backButton_.setAlignmentX(LEFT_ALIGNMENT);
         backButton_.addActionListener(new ActionListener() {
             @Override
@@ -53,6 +53,7 @@ public class ControlPanel extends JPanel {
         add(Box.createHorizontalStrut(5));
 
         forwardButton_ = new JButton("Forward");
+        forwardButton_.setFocusable(false);
         forwardButton_.setAlignmentX(LEFT_ALIGNMENT);
         forwardButton_.addActionListener(new ActionListener() {
             @Override
@@ -64,6 +65,7 @@ public class ControlPanel extends JPanel {
         add(Box.createHorizontalStrut(5));
 
         reloadButton_ = new JButton("Reload");
+        reloadButton_.setFocusable(false);
         reloadButton_.setAlignmentX(LEFT_ALIGNMENT);
         reloadButton_.addActionListener(new ActionListener() {
             @Override
@@ -98,17 +100,11 @@ public class ControlPanel extends JPanel {
                 browser_.loadURL(getAddress());
             }
         });
-        address_field_.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent arg0) {
-                KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
-                address_field_.requestFocus();
-            }
-        });
         add(address_field_);
         add(Box.createHorizontalStrut(5));
 
         JButton goButton = new JButton("Go");
+        goButton.setFocusable(false);
         goButton.setAlignmentX(LEFT_ALIGNMENT);
         goButton.addActionListener(new ActionListener() {
             @Override
@@ -120,6 +116,7 @@ public class ControlPanel extends JPanel {
         add(Box.createHorizontalStrut(5));
 
         JButton minusButton = new JButton("-");
+        minusButton.setFocusable(false);
         minusButton.setAlignmentX(CENTER_ALIGNMENT);
         minusButton.addActionListener(new ActionListener() {
             @Override
@@ -134,6 +131,7 @@ public class ControlPanel extends JPanel {
         add(zoom_label_);
 
         JButton plusButton = new JButton("+");
+        plusButton.setFocusable(false);
         plusButton.setAlignmentX(CENTER_ALIGNMENT);
         plusButton.addActionListener(new ActionListener() {
             @Override
@@ -176,5 +174,9 @@ public class ControlPanel extends JPanel {
 
     public void setAddress(CefBrowser browser, String address) {
         if (browser == browser_) address_field_.setText(address);
+    }
+
+    public JTextField getAddressField() {
+        return address_field_;
     }
 }
