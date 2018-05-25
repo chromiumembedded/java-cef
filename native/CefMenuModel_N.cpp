@@ -582,10 +582,9 @@ Java_org_cef_callback_CefMenuModel_1N_N_1SetAccelerator(JNIEnv* env,
       GetCefFromJNIObject<CefMenuModel>(env, obj, "CefMenuModel");
   if (!menuModel.get())
     return JNI_FALSE;
-  return menuModel->SetAccelerator(jcommand_id, (jkey_code != JNI_FALSE),
-                                   (jshift_pressed != JNI_FALSE),
-                                   (jctrl_pressed != JNI_FALSE),
-                                   (jalt_pressed != JNI_FALSE))
+  return menuModel->SetAccelerator(
+             jcommand_id, jkey_code, (jshift_pressed != JNI_FALSE),
+             (jctrl_pressed != JNI_FALSE), (jalt_pressed != JNI_FALSE))
              ? JNI_TRUE
              : JNI_FALSE;
 }
@@ -604,7 +603,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1SetAcceleratorAt(
   if (!menuModel.get())
     return JNI_FALSE;
   return menuModel->SetAcceleratorAt(
-             jindex, (jkey_code != JNI_FALSE), (jshift_pressed != JNI_FALSE),
+             jindex, jkey_code, (jshift_pressed != JNI_FALSE),
              (jctrl_pressed != JNI_FALSE), (jalt_pressed != JNI_FALSE))
              ? JNI_TRUE
              : JNI_FALSE;
