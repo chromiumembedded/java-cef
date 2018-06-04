@@ -706,10 +706,11 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean onBeforeBrowse(
-            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect) {
+    public boolean onBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request,
+            boolean user_gesture, boolean is_redirect) {
         if (requestHandler_ != null && browser != null)
-            return requestHandler_.onBeforeBrowse(browser, frame, request, is_redirect);
+            return requestHandler_.onBeforeBrowse(
+                    browser, frame, request, user_gesture, is_redirect);
         return false;
     }
 

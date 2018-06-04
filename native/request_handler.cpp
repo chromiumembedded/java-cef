@@ -21,6 +21,7 @@ RequestHandler::~RequestHandler() {
 bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefRequest> request,
+                                    bool user_gesture,
                                     bool is_redirect) {
   // forward request to clienthandler to make the message_router_ happy
   CefRefPtr<ClientHandler> client =
@@ -43,8 +44,9 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "onBeforeBrowse",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
-                  "cef/network/CefRequest;Z)Z",
+                  "cef/network/CefRequest;Z;Z)Z",
                   Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
+                  (user_gesture ? JNI_TRUE : JNI_FALSE),
                   (is_redirect ? JNI_TRUE : JNI_FALSE));
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");

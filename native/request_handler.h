@@ -19,6 +19,7 @@ class RequestHandler : public CefRequestHandler {
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
+                              bool user_gesture,
                               bool is_redirect) OVERRIDE;
 
   virtual ReturnValue OnBeforeResourceLoad(

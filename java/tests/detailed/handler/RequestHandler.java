@@ -33,8 +33,8 @@ public class RequestHandler extends CefRequestHandlerAdapter {
     }
 
     @Override
-    public boolean onBeforeBrowse(
-            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect) {
+    public boolean onBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request,
+            boolean user_gesture, boolean is_redirect) {
         CefPostData postData = request.getPostData();
         if (postData != null) {
             Vector<CefPostDataElement> elements = new Vector<CefPostDataElement>();

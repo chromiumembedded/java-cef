@@ -22,8 +22,8 @@ import org.cef.network.CefURLRequest;
  */
 public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     @Override
-    public boolean onBeforeBrowse(
-            CefBrowser browser, CefFrame frame, CefRequest request, boolean is_redirect) {
+    public boolean onBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request,
+            boolean user_gesture, boolean is_redirect) {
         return false;
     }
 
