@@ -44,7 +44,7 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   jboolean result = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "onBeforeBrowse",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
-                  "cef/network/CefRequest;Z;Z)Z",
+                  "cef/network/CefRequest;ZZ)Z",
                   Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
                   (user_gesture ? JNI_TRUE : JNI_FALSE),
                   (is_redirect ? JNI_TRUE : JNI_FALSE));
