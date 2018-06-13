@@ -11,6 +11,10 @@
 #include "include/base/cef_macros.h"
 #include "include/base/cef_thread_checker.h"
 
+#if defined(OS_WIN) || defined(OS_MACOSX)
+#include "temp_window.h"
+#endif
+
 class Context {
  public:
   static void Create();
@@ -34,6 +38,11 @@ class Context {
 
   bool external_message_pump_;
   base::ThreadChecker thread_checker_;
+
+#if defined(OS_WIN) || defined(OS_MACOSX)
+  // Used as the temporary parent for windowed browsers during reparenting.
+  TempWindow temp_window_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };

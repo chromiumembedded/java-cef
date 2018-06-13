@@ -126,6 +126,7 @@ set(JCEF_SRCS
   scheme_handler_factory.h
   string_visitor.cpp
   string_visitor.h
+  temp_window.h
   url_request_client.cpp
   url_request_client.h
   util.h
@@ -149,6 +150,8 @@ set(JCEF_SRCS_MACOSX
   critical_wait_posix.cpp
   signal_restore_posix.cpp
   signal_restore_posix.h
+  temp_window_mac.h
+  temp_window_mac.mm
   util_mac.h
   util_mac.mm
   util_posix.cpp
@@ -157,6 +160,8 @@ set(JCEF_SRCS_WINDOWS
   critical_wait_win.cpp
   jni_util_win.cpp
   jcef_dll.rc
+  temp_window_win.cc
+  temp_window_win.h
   util_win.cpp
   )
 APPEND_PLATFORM_SOURCES(JCEF_SRCS)

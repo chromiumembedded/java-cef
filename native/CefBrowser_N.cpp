@@ -17,6 +17,7 @@
 #include "render_handler.h"
 #include "run_file_dialog_callback.h"
 #include "string_visitor.h"
+#include "temp_window.h"
 #include "window_handler.h"
 
 #if defined(OS_LINUX)
@@ -1872,5 +1873,29 @@ Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI(JNIEnv* env,
     CefUpdateWindowRgn(hwnd, contentRect);
   else
     CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, hwnd, contentRect));
+#endif
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
+                                                jobject obj,
+                                                jlong windowHandle,
+                                                jobject canvas) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+
+#if defined(OS_MACOSX)
+  util_mac::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle);
+#elif defined(OS_WIN)
+  HWND parentHwnd;
+  if (canvas != NULL)
+    parentHwnd = GetHwndOfCanvas(canvas, env);
+  else
+    parentHwnd = TempWindow::GetWindowHandle();
+  HWND hwnd = browser->GetHost()->GetWindowHandle();
+
+  if (parentHwnd == NULL || hwnd == NULL)
+    return;
+
+  SetParent(hwnd, parentHwnd);
 #endif
 }

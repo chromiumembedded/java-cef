@@ -20,6 +20,7 @@
 #include "critical_wait.h"
 #include "jni_util.h"
 #include "render_handler.h"
+#include "temp_window.h"
 #include "window_handler.h"
 
 namespace {
@@ -484,6 +485,25 @@ void UpdateView(CefWindowHandle handle,
                               withObject:dict
                            waitUntilDone:NO];
   }
+}
+
+void SetParent(CefWindowHandle handle, jlong parentHandle) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    CefBrowserContentView* browser_view =
+        (CefBrowserContentView*)[handle superview];
+    [browser_view retain];
+    [browser_view removeFromSuperview];
+
+    NSView* contentView;
+    if (parentHandle) {
+      NSWindow* window = (NSWindow*)parentHandle;
+      contentView = [window contentView];
+    } else {
+      contentView = TempWindow::GetWindowHandle();
+    }
+    [contentView addSubview:browser_view];
+    [browser_view release];
+  });
 }
 
 }  // namespace util_mac

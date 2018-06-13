@@ -4,12 +4,15 @@
 
 package tests.detailed.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,13 +20,20 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
+import org.cef.CefApp;
+import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -126,7 +136,7 @@ public class MenuBar extends JMenuBar {
             }
         });
         fileMenu.add(printItem);
-        
+
         JMenuItem printToPdfItem = new JMenuItem("Print to PDF");
         printToPdfItem.addActionListener(new ActionListener() {
             @Override
@@ -140,23 +150,25 @@ public class MenuBar extends JMenuBar {
                     // A4 page size
                     pdfSettings.page_width = 210000;
                     pdfSettings.page_height = 297000;
-                    browser.printToPDF(selectedFile.getAbsolutePath(), pdfSettings, new CefPdfPrintCallback() {
-                        @Override
-                        public void onPdfPrintFinished(String path, boolean ok) {
-                            SwingUtilities.invokeLater(new Runnable() {
+                    browser.printToPDF(
+                            selectedFile.getAbsolutePath(), pdfSettings, new CefPdfPrintCallback() {
                                 @Override
-                                public void run() {
-                                    if (ok) {
-                                    JOptionPane.showMessageDialog(
-                                        owner_, "PDF saved to " + path, "Success", JOptionPane.INFORMATION_MESSAGE);
-                                    } else {
-                                        JOptionPane.showMessageDialog(
-                                            owner_, "PDF failed", "Failed", JOptionPane.ERROR_MESSAGE);
-                                    }
+                                public void onPdfPrintFinished(String path, boolean ok) {
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (ok) {
+                                                JOptionPane.showMessageDialog(owner_,
+                                                        "PDF saved to " + path, "Success",
+                                                        JOptionPane.INFORMATION_MESSAGE);
+                                            } else {
+                                                JOptionPane.showMessageDialog(owner_, "PDF failed",
+                                                        "Failed", JOptionPane.ERROR_MESSAGE);
+                                            }
+                                        }
+                                    });
                                 }
                             });
-                        }
-                    });
                 }
             }
         });
@@ -379,6 +391,49 @@ public class MenuBar extends JMenuBar {
             }
         });
         testMenu.add(testURLRequest);
+
+        JMenuItem reparent = new JMenuItem("Reparent");
+        reparent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final JFrame newFrame = new JFrame("New Window");
+                newFrame.setLayout(new BorderLayout());
+                final JButton reparentButton = new JButton("Reparent <");
+                newFrame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        if (owner_.isVisible() && reparentButton.getText().equals("Reparent >")) {
+                            browser_.close();
+                        }
+                        newFrame.dispose();
+                    }
+                });
+                reparentButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (reparentButton.getText().equals("Reparent <")) {
+                            JRootPane rootPane = (JRootPane) owner_.getComponent(0);
+                            Container container = rootPane.getContentPane();
+                            JPanel panel = (JPanel) container.getComponent(0);
+                            newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
+                            reparentButton.setText("Reparent >");
+                        } else {
+                            newFrame.remove(browser_.getUIComponent());
+                            JRootPane rootPane = (JRootPane) owner_.getComponent(0);
+                            Container container = rootPane.getContentPane();
+                            JPanel panel = (JPanel) container.getComponent(0);
+                            panel.add(browser_.getUIComponent());
+                            owner_.revalidate();
+                            reparentButton.setText("Reparent <");
+                        }
+                    }
+                });
+                newFrame.add(reparentButton, BorderLayout.NORTH);
+                newFrame.setSize(400, 400);
+                newFrame.setVisible(true);
+            }
+        });
+        testMenu.add(reparent);
 
         add(fileMenu);
         add(bookmarkMenu_);

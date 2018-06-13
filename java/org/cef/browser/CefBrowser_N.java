@@ -7,6 +7,7 @@ package org.cef.browser;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -411,9 +412,10 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             ule.printStackTrace();
         }
     }
-    
+
     @Override
-    public void printToPDF(String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback) {
+    public void printToPDF(
+            String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback) {
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("path was null or empty");
         }
@@ -622,6 +624,14 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    protected final void setParent(long windowHandle, Component canvas) {
+        try {
+            N_SetParent(windowHandle, canvas);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle,
             String url, boolean transparent, Component canvas, CefRequestContext context);
     private final native boolean N_CreateDevTools(CefBrowser parent, CefClientHandler clientHandler,
@@ -663,7 +673,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             CefRunFileDialogCallback callback);
     private final native void N_StartDownload(String url);
     private final native void N_Print();
-    private final native void N_PrintToPDF(String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
+    private final native void N_PrintToPDF(
+            String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
     private final native void N_Find(int identifier, String searchText, boolean forward,
             boolean matchCase, boolean findNext);
     private final native void N_StopFinding(boolean clearSelection);
@@ -682,4 +693,5 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_DragSourceEndedAt(Point pos, int operation);
     private final native void N_DragSourceSystemDragEnded();
     private final native void N_UpdateUI(Rectangle contentRect, Rectangle browserRect);
+    private final native void N_SetParent(long windowHandle, Component canvas);
 }

@@ -26,8 +26,11 @@ HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
   assert(ds != NULL);
 
   // Lock the drawing surface.
+  // May fail during shutdown.
   lock = ds->Lock(ds);
-  assert((lock & JAWT_LOCK_ERROR) == 0);
+  if (lock & JAWT_LOCK_ERROR) {
+    return 0;
+  }
 
   // Get the drawing surface info.
   dsi = ds->GetDrawingSurfaceInfo(ds);

@@ -54,7 +54,7 @@ class CefBrowserWr extends CefBrowser_N {
     private CefBrowserWr parent_ = null;
     private Point inspectAt_ = null;
     private CefBrowserWr devTools_ = null;
-    private boolean isDisposed = false;
+    private boolean isDisposed_ = false;
     private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -213,11 +213,41 @@ class CefBrowserWr extends CefBrowser_N {
                 doUpdate();
                 delayedUpdate_.restart();
             }
+
+            @Override
+            public void addNotify() {
+                super.addNotify();
+                if (OS.isMacintosh()) {
+                    setParent(getWindowHandle(this), null);
+                }
+            }
+
+            @Override
+            public void removeNotify() {
+                if (!isDisposed_ && OS.isMacintosh()) {
+                    setParent(0, null);
+                }
+                super.removeNotify();
+            }
         };
         // On windows we have to use a Canvas because its a heavyweight component
         // and we need its native HWND as parent for the browser UI.
         if (OS.isWindows()) {
-            canvas_ = new Canvas();
+            canvas_ = new Canvas() {
+                @Override
+                public void addNotify() {
+                    super.addNotify();
+                    setParent(0, this);
+                }
+
+                @Override
+                public void removeNotify() {
+                    if (!isDisposed_) {
+                        setParent(0, null);
+                    }
+                    super.removeNotify();
+                }
+            };
             ((JPanel) component_).add(canvas_, BorderLayout.CENTER);
         }
 
@@ -270,7 +300,7 @@ class CefBrowserWr extends CefBrowser_N {
 
     @Override
     public synchronized void close() {
-        isDisposed = true;
+        isDisposed_ = true;
         if (context_ != null) context_.dispose();
         if (parent_ != null) {
             parent_.closeDevTools();
@@ -294,11 +324,18 @@ class CefBrowserWr extends CefBrowser_N {
 
     private long getWindowHandle() {
         if (window_handle_ == 0 && OS.isMacintosh()) {
+            window_handle_ = getWindowHandle(component_);
+        }
+        return window_handle_;
+    }
+
+    private static long getWindowHandle(Component component) {
+        if (OS.isMacintosh()) {
             try {
                 Class<?> cls = Class.forName("org.cef.browser.mac.CefBrowserWindowMac");
                 CefBrowserWindow browserWindow = (CefBrowserWindow) cls.newInstance();
                 if (browserWindow != null) {
-                    window_handle_ = browserWindow.getWindowHandle(component_);
+                    return browserWindow.getWindowHandle(component);
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -308,11 +345,11 @@ class CefBrowserWr extends CefBrowser_N {
                 e.printStackTrace();
             }
         }
-        return window_handle_;
+        return 0;
     }
 
     private void doUpdate() {
-        if (isDisposed) return;
+        if (isDisposed_) return;
 
         Rectangle clipping = ((JPanel) component_).getVisibleRect();
 
@@ -346,7 +383,7 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     private void createUIIfRequired() {
-        if (getNativeRef("CefBrowser") == 0 && !isDisposed) {
+        if (getNativeRef("CefBrowser") == 0 && !isDisposed_) {
             if (parent_ != null) {
                 createDevTools(parent_, clientHandler_, getWindowHandle(), false,
                         OS.isWindows() ? canvas_ : component_, inspectAt_);
