@@ -74,7 +74,7 @@ public class AppHandler extends CefAppHandlerAdapter {
 
     @Override
     public void stateHasChanged(CefAppState state) {
-        System.out.println("CefApp: " + state);
+        System.out.println("AppHandler.stateHasChanged: " + state);
         if (state == CefAppState.TERMINATED) System.exit(0);
     }
 }

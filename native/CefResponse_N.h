@@ -26,7 +26,7 @@ Java_org_cef_network_CefResponse_1N_N_1IsReadOnly(JNIEnv*, jobject);
 /*
  * Class:     org_cef_network_CefResponse_N
  * Method:    N_GetError
- * Signature: ()Lorg/cef/handler/CefLoadHandler$ErrorCode;
+ * Signature: ()Lorg/cef/handler/CefLoadHandler/ErrorCode;
  */
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefResponse_1N_N_1GetError(JNIEnv*, jobject);
@@ -34,7 +34,7 @@ Java_org_cef_network_CefResponse_1N_N_1GetError(JNIEnv*, jobject);
 /*
  * Class:     org_cef_network_CefResponse_N
  * Method:    N_SetError
- * Signature: (Lorg/cef/handler/CefLoadHandler$ErrorCode;)V
+ * Signature: (Lorg/cef/handler/CefLoadHandler/ErrorCode;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefResponse_1N_N_1SetError(JNIEnv*,
                                                                        jobject,

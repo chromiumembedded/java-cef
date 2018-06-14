@@ -77,7 +77,7 @@ public class CefClient extends CefClientHandler
     private CefLifeSpanHandler lifeSpanHandler_ = null;
     private CefLoadHandler loadHandler_ = null;
     private CefRequestHandler requestHandler_ = null;
-    private boolean wasDisposed = false;
+    private boolean isDisposed_ = false;
     private volatile CefBrowser focusedBrowser_ = null;
 
     /**
@@ -118,13 +118,8 @@ public class CefClient extends CefClientHandler
 
     @Override
     public void dispose() {
-        wasDisposed = true;
-        synchronized (browser_) {
-            Collection<CefBrowser> browserList = browser_.values();
-            for (CefBrowser browser : browserList) {
-                browser.close();
-            }
-        }
+        isDisposed_ = true;
+        cleanupBrowser(-1);
     }
 
     // CefClientHandler
@@ -136,7 +131,7 @@ public class CefClient extends CefClientHandler
 
     public CefBrowser createBrowser(String url, boolean isOffscreenRendered, boolean isTransparent,
             CefRequestContext context) {
-        if (wasDisposed)
+        if (isDisposed_)
             throw new IllegalStateException("Can't create browser. CefClient is disposed");
         return CefBrowserFactory.create(this, url, isOffscreenRendered, isTransparent, context);
     }
@@ -518,7 +513,7 @@ public class CefClient extends CefClientHandler
     @Override
     public boolean onBeforePopup(
             CefBrowser browser, CefFrame frame, String target_url, String target_frame_name) {
-        if (wasDisposed) return true;
+        if (isDisposed_) return true;
         if (lifeSpanHandler_ != null && browser != null)
             return lifeSpanHandler_.onBeforePopup(browser, frame, target_url, target_frame_name);
         return false;
@@ -538,22 +533,36 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean doClose(CefBrowser browser) {
-        if (lifeSpanHandler_ != null && browser != null) return lifeSpanHandler_.doClose(browser);
-        return false;
+        if (browser == null) return false;
+        if (lifeSpanHandler_ != null) return lifeSpanHandler_.doClose(browser);
+        return browser.doClose();
     }
 
     @Override
     public void onBeforeClose(CefBrowser browser) {
         if (browser == null) return;
-
         if (lifeSpanHandler_ != null) lifeSpanHandler_.onBeforeClose(browser);
+        browser.onBeforeClose();
 
         // remove browser reference
-        int identifier = browser.getIdentifier();
+        cleanupBrowser(browser.getIdentifier());
+    }
 
+    private void cleanupBrowser(int identifier) {
         synchronized (browser_) {
-            browser_.remove(identifier);
-            if (browser_.isEmpty() && wasDisposed) {
+            if (identifier >= 0) {
+                // Remove the specific browser that closed.
+                browser_.remove(identifier);
+            } else if (!browser_.isEmpty()) {
+                // Close all browsers.
+                Collection<CefBrowser> browserList = browser_.values();
+                for (CefBrowser browser : browserList) {
+                    browser.close(true);
+                }
+                return;
+            }
+
+            if (browser_.isEmpty() && isDisposed_) {
                 removeContextMenuHandler(this);
                 removeDialogHandler(this);
                 removeDisplayHandler(this);

@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.cef.CefApp;
 import org.cef.CefClient;
+import org.cef.OS;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -43,6 +44,8 @@ import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefCookieManager;
 import org.cef.network.CefRequest;
 
+import tests.detailed.BrowserFrame;
+import tests.detailed.MainFrame;
 import tests.detailed.dialog.CookieManagerDialog;
 import tests.detailed.dialog.DevToolsDialog;
 import tests.detailed.dialog.DownloadDialog;
@@ -67,7 +70,7 @@ public class MenuBar extends JMenuBar {
         }
     }
 
-    private final Frame owner_;
+    private final BrowserFrame owner_;
     private final CefBrowser browser_;
     private String last_selected_file_ = "";
     private final JMenu bookmarkMenu_;
@@ -75,7 +78,7 @@ public class MenuBar extends JMenuBar {
     private final DownloadDialog downloadDialog_;
     private final CefCookieManager cookieManager_;
 
-    public MenuBar(Frame owner, CefBrowser browser, ControlPanel control_pane,
+    public MenuBar(BrowserFrame owner, CefBrowser browser, ControlPanel control_pane,
             DownloadDialog downloadDialog, CefCookieManager cookieManager) {
         owner_ = owner;
         browser_ = browser;
@@ -396,18 +399,9 @@ public class MenuBar extends JMenuBar {
         reparent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final JFrame newFrame = new JFrame("New Window");
+                final BrowserFrame newFrame = new BrowserFrame("New Window");
                 newFrame.setLayout(new BorderLayout());
                 final JButton reparentButton = new JButton("Reparent <");
-                newFrame.addWindowListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        if (owner_.isVisible() && reparentButton.getText().equals("Reparent >")) {
-                            browser_.close();
-                        }
-                        newFrame.dispose();
-                    }
-                });
                 reparentButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -416,6 +410,8 @@ public class MenuBar extends JMenuBar {
                             Container container = rootPane.getContentPane();
                             JPanel panel = (JPanel) container.getComponent(0);
                             newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
+                            owner_.removeBrowser();
+                            newFrame.setBrowser(browser_);
                             reparentButton.setText("Reparent >");
                         } else {
                             newFrame.remove(browser_.getUIComponent());
@@ -423,6 +419,8 @@ public class MenuBar extends JMenuBar {
                             Container container = rootPane.getContentPane();
                             JPanel panel = (JPanel) container.getComponent(0);
                             panel.add(browser_.getUIComponent());
+                            newFrame.removeBrowser();
+                            owner_.setBrowser(browser_);
                             owner_.revalidate();
                             reparentButton.setText("Reparent <");
                         }
@@ -434,6 +432,17 @@ public class MenuBar extends JMenuBar {
             }
         });
         testMenu.add(reparent);
+
+        JMenuItem newwindow = new JMenuItem("New window");
+        newwindow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final MainFrame frame = new MainFrame(OS.isLinux(), false, null, null);
+                frame.setSize(800, 600);
+                frame.setVisible(true);
+            }
+        });
+        testMenu.add(newwindow);
 
         add(fileMenu);
         add(bookmarkMenu_);

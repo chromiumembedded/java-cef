@@ -15,7 +15,7 @@ else
     mkdir -p "$OUT_PATH"
   fi
 
-  javac -cp $CLS_PATH -d $OUT_PATH java/tests/detailed/*.java java/tests/simple/*.java java/org/cef/*.java java/org/cef/browser/*.java java/org/cef/callback/*.java java/org/cef/handler/*.java java/org/cef/misc/*.java java/org/cef/network/*.java
+  javac -Xdiags:verbose -cp $CLS_PATH -d $OUT_PATH java/tests/detailed/*.java java/tests/simple/*.java java/org/cef/*.java java/org/cef/browser/*.java java/org/cef/callback/*.java java/org/cef/handler/*.java java/org/cef/misc/*.java java/org/cef/network/*.java
 
   # Copy resource files.
   cp -f ./java/tests/detailed/handler/*.html $OUT_PATH/tests/detailed/handler

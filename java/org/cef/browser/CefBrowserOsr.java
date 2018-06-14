@@ -29,8 +29,8 @@ import javax.media.opengl.GLCapabilities;
 import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 
+import org.cef.CefClient;
 import org.cef.callback.CefDragData;
-import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefRenderHandler;
 
 /**
@@ -44,30 +44,17 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private long window_handle_ = 0;
     private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
     private Point screenPoint_ = new Point(0, 0);
-    private CefClientHandler clientHandler_;
-    private String url_;
     private boolean isTransparent_;
-    private CefRequestContext context_;
-    private CefBrowserOsr parent_ = null;
-    private Point inspectAt_ = null;
-    private CefBrowserOsr devTools_ = null;
-    ;
 
-    CefBrowserOsr(CefClientHandler clientHandler, String url, boolean transparent,
-            CefRequestContext context) {
-        this(clientHandler, url, transparent, context, null, null);
+    CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
+        this(client, url, transparent, context, null, null);
     }
 
-    private CefBrowserOsr(CefClientHandler clientHandler, String url, boolean transparent,
+    private CefBrowserOsr(CefClient client, String url, boolean transparent,
             CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
-        super();
+        super(client, url, context, parent, inspectAt);
         isTransparent_ = transparent;
         renderer_ = new CefRenderer(transparent);
-        clientHandler_ = clientHandler;
-        url_ = url;
-        context_ = context;
-        parent_ = parent;
-        inspectAt_ = inspectAt;
         createGLCanvas();
     }
 
@@ -82,31 +69,13 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     @Override
-    public synchronized void close() {
-        if (context_ != null) context_.dispose();
-        if (parent_ != null) {
-            parent_.closeDevTools();
-            parent_.devTools_ = null;
-            parent_ = null;
-        }
-        super.close();
+    protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
+            CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
+        return new CefBrowserOsr(
+                client, url, isTransparent_, context, (CefBrowserOsr) this, inspectAt);
     }
 
-    @Override
-    public synchronized CefBrowser getDevTools() {
-        return getDevTools(null);
-    }
-
-    @Override
-    public synchronized CefBrowser getDevTools(Point inspectAt) {
-        if (devTools_ == null) {
-            devTools_ = new CefBrowserOsr(
-                    clientHandler_, url_, isTransparent_, context_, this, inspectAt);
-        }
-        return devTools_;
-    }
-
-    private long getWindowHandle() {
+    private synchronized long getWindowHandle() {
         if (window_handle_ == 0) {
             NativeSurface surface = canvas_.getNativeSurface();
             if (surface != null) {
@@ -126,12 +95,12 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         canvas_ = new GLCanvas(glcapabilities) {
             @Override
             public void paint(Graphics g) {
-                if (parent_ != null) {
-                    createDevTools(parent_, clientHandler_, getWindowHandle(), isTransparent_, null,
-                            inspectAt_);
+                if (getParentBrowser() != null) {
+                    createDevTools(getParentBrowser(), getClient(), getWindowHandle(),
+                            isTransparent_, null, getInspectAt());
                 } else {
-                    createBrowser(clientHandler_, getWindowHandle(), url_, isTransparent_, null,
-                            context_);
+                    createBrowser(getClient(), getWindowHandle(), getUrl(), isTransparent_, null,
+                            getRequestContext());
                 }
                 super.paint(g);
             }

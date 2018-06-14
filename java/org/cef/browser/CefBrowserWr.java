@@ -33,8 +33,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 
+import org.cef.CefClient;
 import org.cef.OS;
-import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefWindowHandler;
 import org.cef.handler.CefWindowHandlerAdapter;
 
@@ -48,13 +48,6 @@ class CefBrowserWr extends CefBrowser_N {
     private Component component_ = null;
     private Rectangle content_rect_ = new Rectangle(0, 0, 0, 0);
     private long window_handle_ = 0;
-    private CefClientHandler clientHandler_;
-    private String url_;
-    private CefRequestContext context_;
-    private CefBrowserWr parent_ = null;
-    private Point inspectAt_ = null;
-    private CefBrowserWr devTools_ = null;
-    private boolean isDisposed_ = false;
     private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -155,19 +148,14 @@ class CefBrowserWr extends CefBrowser_N {
         }
     };
 
-    CefBrowserWr(CefClientHandler clientHandler, String url, CefRequestContext context) {
-        this(clientHandler, url, context, null, null);
+    CefBrowserWr(CefClient client, String url, CefRequestContext context) {
+        this(client, url, context, null, null);
     }
 
     @SuppressWarnings("serial")
-    private CefBrowserWr(CefClientHandler clientHandler, String url, CefRequestContext context,
+    private CefBrowserWr(CefClient client, String url, CefRequestContext context,
             CefBrowserWr parent, Point inspectAt) {
-        super();
-        clientHandler_ = clientHandler;
-        url_ = url;
-        context_ = context;
-        parent_ = parent;
-        inspectAt_ = inspectAt;
+        super(client, url, context, parent, inspectAt);
         delayedUpdate_.setRepeats(false);
 
         // Disabling lightweight of popup menu is required because
@@ -224,7 +212,7 @@ class CefBrowserWr extends CefBrowser_N {
 
             @Override
             public void removeNotify() {
-                if (!isDisposed_ && OS.isMacintosh()) {
+                if (!isClosed() && OS.isMacintosh()) {
                     setParent(0, null);
                 }
                 super.removeNotify();
@@ -242,7 +230,7 @@ class CefBrowserWr extends CefBrowser_N {
 
                 @Override
                 public void removeNotify() {
-                    if (!isDisposed_) {
+                    if (!isClosed()) {
                         setParent(0, null);
                     }
                     super.removeNotify();
@@ -299,30 +287,12 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     @Override
-    public synchronized void close() {
-        isDisposed_ = true;
-        if (context_ != null) context_.dispose();
-        if (parent_ != null) {
-            parent_.closeDevTools();
-            parent_.devTools_ = null;
-            parent_ = null;
-        }
-        super.close();
+    protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
+            CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
+        return new CefBrowserWr(client, url, context, (CefBrowserWr) this, inspectAt);
     }
 
-    @Override
-    public synchronized CefBrowser getDevTools() {
-        return getDevTools(null);
-    }
-
-    @Override
-    public synchronized CefBrowser getDevTools(Point inspectAt) {
-        if (devTools_ == null)
-            devTools_ = new CefBrowserWr(clientHandler_, url_, context_, this, inspectAt);
-        return devTools_;
-    }
-
-    private long getWindowHandle() {
+    private synchronized long getWindowHandle() {
         if (window_handle_ == 0 && OS.isMacintosh()) {
             window_handle_ = getWindowHandle(component_);
         }
@@ -349,7 +319,7 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     private void doUpdate() {
-        if (isDisposed_) return;
+        if (isClosed()) return;
 
         Rectangle clipping = ((JPanel) component_).getVisibleRect();
 
@@ -383,13 +353,13 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     private void createUIIfRequired() {
-        if (getNativeRef("CefBrowser") == 0 && !isDisposed_) {
-            if (parent_ != null) {
-                createDevTools(parent_, clientHandler_, getWindowHandle(), false,
-                        OS.isWindows() ? canvas_ : component_, inspectAt_);
+        if (getNativeRef("CefBrowser") == 0 && !isClosed()) {
+            if (getParentBrowser() != null) {
+                createDevTools(getParentBrowser(), getClient(), getWindowHandle(), false,
+                        OS.isWindows() ? canvas_ : component_, getInspectAt());
             } else {
-                createBrowser(clientHandler_, getWindowHandle(), url_, false,
-                        OS.isWindows() ? canvas_ : component_, context_);
+                createBrowser(getClient(), getWindowHandle(), getUrl(), false,
+                        OS.isWindows() ? canvas_ : component_, getRequestContext());
             }
         }
     }

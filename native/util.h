@@ -75,9 +75,8 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId);
 // tasks for the browser reference like registering mouse events.
 void AddCefBrowser(CefRefPtr<CefBrowser> browser);
 
-// Called by LifeSpanHandler::DoClose() to do some platform dependent cleanup
-// tasks for the browser reference.
-void RemoveCefBrowser(CefRefPtr<CefBrowser> browser);
+// Called by CefBrowser.close(true) to destroy the native browser window.
+void DestroyCefBrowser(CefRefPtr<CefBrowser> browser);
 
 }  // namespace util
 

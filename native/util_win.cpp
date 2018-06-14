@@ -241,7 +241,7 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
+void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
   CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
@@ -250,6 +250,8 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   WaitForSingleObject(g_browsers_lock_, INFINITE);
   g_browsers_.erase(GetParent(browserHandle));
   ReleaseMutex(g_browsers_lock_);
+
+  ::DestroyWindow(browserHandle);
 
   if (g_mouse_monitor_ == NULL)
     return;

@@ -41,7 +41,7 @@ public class DevToolsDialog extends JDialog {
 
     @Override
     public void dispose() {
-        devTools_.close();
+        devTools_.close(true);
         super.dispose();
     }
 }

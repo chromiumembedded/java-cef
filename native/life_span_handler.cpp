@@ -74,9 +74,6 @@ bool LifeSpanHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   jboolean jreturn = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "doClose", "(Lorg/cef/browser/CefBrowser;)Z",
                   Boolean, jreturn, GetJNIBrowser(browser));
-
-  util::RemoveCefBrowser(browser);
-
   return (jreturn != JNI_FALSE);
 }
 

@@ -283,7 +283,7 @@ bool g_handling_send_event = false;
 @property(readonly) BOOL isLiveResizing;
 
 - (void)addCefBrowser:(CefRefPtr<CefBrowser>)browser;
-- (void)removeCefBrowser;
+- (void)destroyCefBrowser;
 - (void)updateView:(NSDictionary*)dict;
 @end  // interface CefBrowserContentView
 
@@ -339,10 +339,14 @@ bool g_handling_send_event = false;
            object:[self window]];
 }
 
-- (void)removeCefBrowser {
+- (void)destroyCefBrowser {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   cefBrowser = NULL;
   [self removeFromSuperview];
+  // Also remove all subviews so the CEF objects are released.
+  for (NSView* view in [self subviews]) {
+    [view removeFromSuperview];
+  }
 }
 
 - (void)windowWillStartLiveResize:(NSNotification*)notification {
@@ -522,7 +526,7 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
   [browserImpl addCefBrowser:browser];
 }
 
-void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
+void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
   CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
@@ -537,7 +541,7 @@ void RemoveCefBrowser(CefRefPtr<CefBrowser> browser) {
   if ([superView isKindOfClass:[CefBrowserContentView class]]) {
     CefBrowserContentView* browserView =
         (CefBrowserContentView*)[handle superview];
-    [browserView removeCefBrowser];
+    [browserView destroyCefBrowser];
   }
 }
 

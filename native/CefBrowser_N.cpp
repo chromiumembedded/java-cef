@@ -1243,9 +1243,19 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetURL(JNIEnv* env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1Close(JNIEnv* env, jobject obj) {
+Java_org_cef_browser_CefBrowser_1N_N_1Close(JNIEnv* env,
+                                            jobject obj,
+                                            jboolean force) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->CloseBrowser(true);
+  if (force != JNI_FALSE) {
+    // Destroy the native window representation.
+    if (CefCurrentlyOn(TID_UI))
+      util::DestroyCefBrowser(browser);
+    else
+      CefPostTask(TID_UI, base::Bind(&util::DestroyCefBrowser, browser));
+  } else {
+    browser->GetHost()->CloseBrowser(false);
+  }
 }
 
 #if defined(OS_WIN)

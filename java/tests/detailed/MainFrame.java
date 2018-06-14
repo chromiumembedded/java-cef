@@ -5,8 +5,6 @@
 package tests.detailed;
 
 import java.awt.BorderLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 
@@ -41,7 +39,7 @@ import tests.detailed.ui.ControlPanel;
 import tests.detailed.ui.MenuBar;
 import tests.detailed.ui.StatusPanel;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends BrowserFrame {
     private static final long serialVersionUID = -2295538706810864538L;
     public static void main(String[] args) {
         // OSR mode is enabled by default on Linux.
@@ -74,44 +72,41 @@ public class MainFrame extends JFrame {
         // frame.
         final MainFrame frame =
                 new MainFrame(osrEnabledArg, transparentPaintingEnabledArg, cookiePath, args);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                CefApp.getInstance().dispose();
-                frame.dispose();
-            }
-        });
-
         frame.setSize(800, 600);
         frame.setVisible(true);
     }
 
     private final CefClient client_;
     private String errorMsg_ = "";
-    private final CefBrowser browser_;
     private ControlPanel control_pane_;
     private StatusPanel status_panel_;
     private final CefCookieManager cookieManager_;
 
     public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled, String cookiePath,
             String[] args) {
-        // 1) CefApp is the entry point for JCEF. You can pass
-        //    application arguments to it, if you want to handle any
-        //    chromium or CEF related switches/attributes in
-        //    the native world.
-        CefSettings settings = new CefSettings();
-        settings.windowless_rendering_enabled = osrEnabled;
-        // try to load URL "about:blank" to see the background color
-        settings.background_color = settings.new ColorType(100, 255, 242, 211);
-        CefApp myApp = CefApp.getInstance(args, settings);
-        CefVersion version = myApp.getVersion();
-        System.out.println("Using:\n" + version);
+        CefApp myApp;
+        if (CefApp.getState() != CefApp.CefAppState.INITIALIZED) {
+            // 1) CefApp is the entry point for JCEF. You can pass
+            //    application arguments to it, if you want to handle any
+            //    chromium or CEF related switches/attributes in
+            //    the native world.
+            CefSettings settings = new CefSettings();
+            settings.windowless_rendering_enabled = osrEnabled;
+            // try to load URL "about:blank" to see the background color
+            settings.background_color = settings.new ColorType(100, 255, 242, 211);
+            myApp = CefApp.getInstance(args, settings);
 
-        //    We're registering our own AppHandler because we want to
-        //    add an own schemes (search:// and client://) and its corresponding
-        //    protocol handlers. So if you enter "search:something on the web", your
-        //    search request "something on the web" is forwarded to www.google.com
-        CefApp.addAppHandler(new AppHandler(args));
+            CefVersion version = myApp.getVersion();
+            System.out.println("Using:\n" + version);
+
+            //    We're registering our own AppHandler because we want to
+            //    add an own schemes (search:// and client://) and its corresponding
+            //    protocol handlers. So if you enter "search:something on the web", your
+            //    search request "something on the web" is forwarded to www.google.com
+            CefApp.addAppHandler(new AppHandler(args));
+        } else {
+            myApp = CefApp.getInstance();
+        }
 
         //    By calling the method createClient() the native part
         //    of JCEF/CEF will be initialized and an  instance of
@@ -215,13 +210,14 @@ public class MainFrame extends JFrame {
         } else {
             cookieManager_ = CefCookieManager.getGlobalManager();
         }
-        browser_ = client_.createBrowser(
+        CefBrowser browser = client_.createBrowser(
                 "http://www.google.com", osrEnabled, transparentPaintingEnabled, requestContext);
+        setBrowser(browser);
 
         //    Last but not least we're setting up the UI for this example implementation.
         getContentPane().add(createContentPanel(), BorderLayout.CENTER);
-        MenuBar menuBar =
-                new MenuBar(this, browser_, control_pane_, downloadDialog, cookieManager_);
+
+        MenuBar menuBar = new MenuBar(this, browser, control_pane_, downloadDialog, cookieManager_);
 
         menuBar.addBookmark("Binding Test", "client://tests/binding_test.html");
         menuBar.addBookmark("Binding Test 2", "client://tests/binding_test2.html");
@@ -247,13 +243,13 @@ public class MainFrame extends JFrame {
 
     private JPanel createContentPanel() {
         JPanel contentPanel = new JPanel(new BorderLayout());
-        control_pane_ = new ControlPanel(browser_);
+        control_pane_ = new ControlPanel(getBrowser());
         status_panel_ = new StatusPanel();
         contentPanel.add(control_pane_, BorderLayout.NORTH);
 
         // 4) By calling getUIComponen() on the CefBrowser instance, we receive
         //    an displayable UI component which we can add to our application.
-        contentPanel.add(browser_.getUIComponent(), BorderLayout.CENTER);
+        contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
 
         contentPanel.add(status_panel_, BorderLayout.SOUTH);
         return contentPanel;

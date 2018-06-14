@@ -271,7 +271,8 @@ JNIEXPORT jstring JNICALL Java_org_cef_browser_CefBrowser_1N_N_1GetURL(JNIEnv*,
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Close(JNIEnv*,
-                                                                   jobject);
+                                                                   jobject,
+                                                                   jboolean);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N

@@ -10,9 +10,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.HashSet;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -121,8 +118,6 @@ public class CefApp extends CefAppHandlerAdapter {
     private static CefApp self = null;
     private static CefAppHandler appHandler_ = null;
     private static CefAppState state_ = CefAppState.NONE;
-    private final Lock lock = new ReentrantLock();
-    private final Condition cefShutdown = lock.newCondition();
     private Timer workTimer_ = null;
     private HashSet<CefClient> clients_ = new HashSet<CefClient>();
     private CefSettings settings_ = null;
@@ -168,25 +163,6 @@ public class CefApp extends CefAppHandlerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread("JCEF Shutdown Hook") {
-            @Override
-            public void run() {
-                try {
-                    for (CefClient c : clients_) {
-                        c.dispose();
-                    }
-
-                    // Wait for shutdown() to complete.
-                    cefShutdown.awaitUninterruptibly();
-
-                    // Avoid a deadlock. Give the native code at least 150 milliseconds
-                    // to terminate.
-                    Thread.sleep(150);
-                } catch (Exception e) {
-                }
-            }
-        });
     }
 
     /**
@@ -301,7 +277,9 @@ public class CefApp extends CefAppHandlerAdapter {
                 } else {
                     // shutdown() will be called from clientWasDisposed() when the last
                     // client is gone.
-                    for (CefClient c : clients_) {
+                    // Use a copy of the HashSet to avoid iterating during modification.
+                    HashSet<CefClient> clients = new HashSet<CefClient>(clients_);
+                    for (CefClient c : clients) {
                         c.dispose();
                     }
                 }
@@ -382,7 +360,7 @@ public class CefApp extends CefAppHandlerAdapter {
      * are disposed, CefApp will be shutdown.
      * @param client the disposed client.
      */
-    final protected void clientWasDisposed(CefClient client) {
+    protected final synchronized void clientWasDisposed(CefClient client) {
         clients_.remove(client);
         if (clients_.isEmpty() && getState().compareTo(CefAppState.SHUTTING_DOWN) >= 0) {
             // Shutdown native system.
@@ -445,6 +423,7 @@ public class CefApp extends CefAppHandlerAdapter {
      * of a termination event (e.g. someone pressed CMD+Q).
      */
     protected final void handleBeforeTerminate() {
+        System.out.println("Cmd+Q termination request.");
         // Execute on the AWT event dispatching thread. Always call asynchronously
         // so the call stack has a chance to unwind.
         SwingUtilities.invokeLater(new Runnable() {
@@ -473,11 +452,6 @@ public class CefApp extends CefAppHandlerAdapter {
 
                 setState(CefAppState.TERMINATED);
                 CefApp.self = null;
-
-                // Allow the shutdown hook to terminate.
-                lock.lock();
-                cefShutdown.signal();
-                lock.unlock();
             }
         });
     }
