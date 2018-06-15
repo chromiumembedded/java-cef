@@ -234,6 +234,11 @@ public interface CefBrowser {
     public void close(boolean force);
 
     /**
+     * Allow the browser to close.
+     */
+    public void setCloseAllowed();
+
+    /**
      * Called from CefClient.doClose.
      */
     public boolean doClose();

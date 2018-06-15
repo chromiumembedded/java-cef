@@ -45,6 +45,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private CefBrowser_N parent_ = null;
     private Point inspectAt_ = null;
     private CefBrowser_N devTools_ = null;
+    private boolean closeAllowed_ = false;
     private boolean isClosed_ = false;
 
     protected CefBrowser_N(CefClient client, String url, CefRequestContext context,
@@ -92,7 +93,17 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
+    public synchronized void setCloseAllowed() {
+        closeAllowed_ = true;
+    }
+
+    @Override
     public synchronized boolean doClose() {
+        if (closeAllowed_) {
+            // Allow the close to proceed.
+            return false;
+        }
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -104,6 +115,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
                 }
             }
         });
+
+        // Cancel the close.
         return true;
     }
 

@@ -28,10 +28,13 @@ public class BrowserFrame extends JFrame {
         //   1. Clicking the window X button calls WindowAdapter.windowClosing.
         //   2. WindowAdapter.windowClosing calls CefBrowser.close(false).
         //   3. CEF calls CefLifeSpanHandler.doClose() which calls CefBrowser.doClose()
-        //      which returns true.
+        //      which returns true (canceling the close).
         //   4. CefBrowser.doClose() triggers another call to WindowAdapter.windowClosing.
         //   5. WindowAdapter.windowClosing calls CefBrowser.close(true).
-        //   6. CEF calls CefLifeSpanHandler.onBeforeClose and the browser is destroyed.
+        //   6. For windowed browsers CEF destroys the native window handle. For OSR
+        //      browsers CEF calls CefLifeSpanHandler.doClose() which calls
+        //      CefBrowser.doClose() again which returns false (allowing the close).
+        //   7. CEF calls CefLifeSpanHandler.onBeforeClose and the browser is destroyed.
         //
         // On macOS pressing Cmd+Q results in a call to CefApp.handleBeforeTerminate
         // which calls CefBrowser.close(true) for each existing browser. CEF then calls
@@ -54,6 +57,12 @@ public class BrowserFrame extends JFrame {
                 }
 
                 boolean isClosed = isClosed_;
+
+                if (isClosed) {
+                    // Cause browser.doClose() to return false so that OSR browsers
+                    // can close.
+                    browser_.setCloseAllowed();
+                }
 
                 // Results in another call to this method.
                 System.out.println("BrowserFrame.windowClosing CefBrowser.close(" + isClosed + ")");
