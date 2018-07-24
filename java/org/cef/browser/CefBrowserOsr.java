@@ -20,12 +20,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
 
-import javax.media.nativewindow.NativeSurface;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
-import javax.media.opengl.GLCapabilities;
+import com.jogamp.nativewindow.NativeSurface;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.GLCapabilities;
+
 import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 

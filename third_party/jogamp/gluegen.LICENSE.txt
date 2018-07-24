@@ -1,6 +1,12 @@
-
 The GlueGen source code is mostly licensed under the New BSD 2-clause license,
 however it contains other licensed material as well.
+
+Other licensed material is compatible with the 'New BSD 2-Clause License',
+if not stated otherwise.
+
+'New BSD 2-Clause License' incompatible materials are optional, they are:
+
+    NONE
 
 Below you find a detailed list of licenses used in this project.
 
@@ -130,4 +136,47 @@ L.3) The GlueGen source tree contains CGRAM http://www.antlr.org/grammar/cgram/,
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
+
+A.1) The GlueGen source tree contains code from The Apache Software Foundation
+     which is covered by the Apache License Version 2.0
+
+   Apache Harmony - Open Source Java SE
+   =====================================
+
+   <http://harmony.apache.org/>
+
+   Author: The Apache Software Foundation (http://www.apache.org/).
+
+   Copyright 2006, 2010 The Apache Software Foundation.
+
+   Apache License Version 2.0, January 2004
+   http://www.apache.org/licenses/LICENSE-2.0
+   Or within this repository: doc/licenses/Apache.LICENSE-2.0
+
+   Files:
+    - src/java/com/jogamp/common/net/Uri.java 
+      (derived from java.net.URI.Helper and heavily modified)
+
+A.2) The GlueGen source tree contains code from Ben Mankin, a.k.a 'Shevek',
+     which is covered by the Apache License Version 2.0
+
+   JCPP - A Java C Preprocessor
+   =============================
+
+   <http://www.anarres.org/projects/jcpp/>
+   <https://github.com/shevek/jcpp>
+
+   Author: Ben Mankin, a.k.a 'Shevek' (http://www.anarres.org/about/).
+
+   Copyright (c) 2007-2008, Shevek
+
+   Apache License Version 2.0, January 2004
+   http://www.apache.org/licenses/LICENSE-2.0
+   Or within this repository: doc/licenses/Apache.LICENSE-2.0
+
+   Files:
+    The complete git submodule 'jcpp',
+    which is a patched version of the original mentioned above.
+
+   Used for the compile-time module gluegen.jar only.
 
