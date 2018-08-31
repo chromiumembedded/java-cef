@@ -56,6 +56,18 @@ jclass FindClass(JNIEnv* env, const char* class_name);
 
 #if defined(OS_WIN)
 HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env);
+#elif defined(OS_LINUX)
+unsigned long GetDrawableOfCanvas(jobject canvas, JNIEnv* env);
+void X_XMoveResizeWindow(unsigned long browserHandle,
+                         int x,
+                         int y,
+                         unsigned int width,
+                         unsigned int height);
+void X_XMoveWindow(unsigned long browserHandle, int x, int y);
+void X_XReparentWindow(unsigned long browserHandle,
+                       unsigned long parentDrawable);
+void X_XSetInputFocus(unsigned long browserHandle);
+void X_XSetInputFocusParent(unsigned long browserHandle);
 #endif
 
 // Create a new JNI object and call the default constructor.

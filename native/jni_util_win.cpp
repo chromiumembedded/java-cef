@@ -35,6 +35,8 @@ HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
   // Get the drawing surface info.
   dsi = ds->GetDrawingSurfaceInfo(ds);
   if (dsi == NULL) {
+    // Unlock the drawing surface
+    ds->Unlock(ds);
     return 0;
   }
 

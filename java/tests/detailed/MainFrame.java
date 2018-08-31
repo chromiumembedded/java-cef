@@ -42,14 +42,22 @@ import tests.detailed.ui.StatusPanel;
 public class MainFrame extends BrowserFrame {
     private static final long serialVersionUID = -2295538706810864538L;
     public static void main(String[] args) {
+        if (OS.isLinux()) {
+            // This is crucial to get Linux Windowed Rendering to function correctly!
+            // The initXlibForMultithreading call must be done before ANY other call
+            // to Xlib from this process, including calls from the Java runtime.
+            System.loadLibrary("jcef");
+            CefApp.initXlibForMultithreading();
+        }
+
         // OSR mode is enabled by default on Linux.
         // and disabled by default on Windows and Mac OS X.
-        boolean osrEnabledArg = OS.isLinux();
+        boolean osrEnabledArg = false;
         boolean transparentPaintingEnabledArg = false;
         String cookiePath = null;
         for (String arg : args) {
             arg = arg.toLowerCase();
-            if (!OS.isLinux() && arg.equals("--off-screen-rendering-enabled")) {
+            if (arg.equals("--off-screen-rendering-enabled")) {
                 osrEnabledArg = true;
             } else if (arg.equals("--transparent-painting-enabled")) {
                 transparentPaintingEnabledArg = true;

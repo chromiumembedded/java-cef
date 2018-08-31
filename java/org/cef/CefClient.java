@@ -405,21 +405,6 @@ public class CefClient extends CefClientHandler
 
         boolean alreadyHandled = false;
         if (focusHandler_ != null) alreadyHandled = focusHandler_.onSetFocus(browser, source);
-        if (!alreadyHandled) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    Component uiComponent = browser.getUIComponent();
-                    if (uiComponent != null) {
-                        uiComponent.requestFocus();
-                    }
-                }
-            };
-            if (SwingUtilities.isEventDispatchThread())
-                r.run();
-            else
-                SwingUtilities.invokeLater(r);
-        }
         return alreadyHandled;
     }
 

@@ -15,6 +15,10 @@
 #include "scheme_handler_factory.h"
 #include "util.h"
 
+#if defined(OS_LINUX)
+#include <X11/Xlib.h>
+#endif
+
 JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize(JNIEnv* env,
                                                                 jobject c) {
   Context::Create();
@@ -78,4 +82,11 @@ Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories(JNIEnv*, jobject) {
   return CefClearSchemeHandlerFactories() ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_CefApp_N_1InitXlibForMultithreading(JNIEnv*, jclass) {
+#if defined(OS_LINUX)
+  XInitThreads();
+#endif
 }

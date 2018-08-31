@@ -136,12 +136,18 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
+        if (OS.isLinux()) {
+            // This is crucial to get Linux Windowed Rendering to function correctly!
+            // The initXlibForMultithreading call must be done before ANY other call
+            // to Xlib from this process, including calls from the Java runtime.
+            System.loadLibrary("jcef");
+            CefApp.initXlibForMultithreading();
+        }
+
         // The simple example application is created as anonymous class and points
-        // to Google as the very first loaded page. If this example is used on
-        // Linux, it's important to use OSR mode because windowed rendering is not
-        // supported yet. On Macintosh and Windows windowed rendering is used as
-        // default. If you want to test OSR mode on those platforms, simply replace
-        // "OS.isLinux()" with "true" and recompile.
-        new MainFrame("http://www.google.com", OS.isLinux(), false);
+        // to Google as the very first loaded page. Windowed rendering mode is used by
+        // default. If you want to test OSR mode set |useOsr| to true and recompile.
+        boolean useOsr = false;
+        new MainFrame("http://www.google.com", useOsr, false);
     }
 }

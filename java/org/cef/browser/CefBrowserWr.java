@@ -54,12 +54,23 @@ class CefBrowserWr extends CefBrowser_N {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    createUIIfRequired();
-                    if (OS.isMacintosh()) doUpdate();
+                    boolean hasCreatedUI = createUIIfRequired();
+
+                    if (hasCreatedUI) {
+                        delayedUpdate_.restart();
+                    } else {
+                        // If on Mac, this is needed due to the quirk described below
+                        // (in org.cef.browser.CefBrowserWr.CefBrowserWr(...).new JPanel()
+                        // {...}.paint(Graphics)). If on Linux, this is needed to invoke an
+                        // XMoveResizeWindow call shortly after the UI was created. That seems to be
+                        // necessary to actually get a windowed renderer to display something.
+                        if (OS.isMacintosh() || OS.isLinux()) doUpdate();
+                    }
                 }
             });
         }
     });
+
     private CefWindowHandlerAdapter win_handler_ = new CefWindowHandlerAdapter() {
         private Point lastPos = new Point(-1, -1);
         private long[] nextClick = new long[MouseInfo.getNumberOfButtons()];
@@ -219,8 +230,9 @@ class CefBrowserWr extends CefBrowser_N {
             }
         };
         // On windows we have to use a Canvas because its a heavyweight component
-        // and we need its native HWND as parent for the browser UI.
-        if (OS.isWindows()) {
+        // and we need its native HWND as parent for the browser UI. The same
+        // technique is used on Linux as well.
+        if (OS.isWindows() || OS.isLinux()) {
             canvas_ = new Canvas() {
                 @Override
                 public void addNotify() {
@@ -352,15 +364,20 @@ class CefBrowserWr extends CefBrowser_N {
         }
     }
 
-    private void createUIIfRequired() {
+    private boolean createUIIfRequired() {
         if (getNativeRef("CefBrowser") == 0 && !isClosed()) {
             if (getParentBrowser() != null) {
                 createDevTools(getParentBrowser(), getClient(), getWindowHandle(), false,
-                        OS.isWindows() ? canvas_ : component_, getInspectAt());
+                        (OS.isWindows() || OS.isLinux()) ? canvas_ : component_, getInspectAt());
+                return true;
             } else {
                 createBrowser(getClient(), getWindowHandle(), getUrl(), false,
-                        OS.isWindows() ? canvas_ : component_, getRequestContext());
+                        (OS.isWindows() || OS.isLinux()) ? canvas_ : component_,
+                        getRequestContext());
+                return true;
             }
         }
+
+        return false;
     }
 }

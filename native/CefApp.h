@@ -67,6 +67,14 @@ Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory(JNIEnv*,
 JNIEXPORT jboolean JNICALL
 Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories(JNIEnv*, jobject);
 
+/*
+ * Class:     org_cef_CefApp
+ * Method:    N_InitXlibForMultithreading
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1InitXlibForMultithreading(JNIEnv*,
+                                                                        jclass);
+
 #ifdef __cplusplus
 }
 #endif

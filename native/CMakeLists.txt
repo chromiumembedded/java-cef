@@ -141,6 +141,7 @@ set(JCEF_SRCS
   )
 set(JCEF_SRCS_LINUX
   critical_wait_posix.cpp
+  jni_util_linux.cpp
   signal_restore_posix.cpp
   signal_restore_posix.h
   util_linux.cpp

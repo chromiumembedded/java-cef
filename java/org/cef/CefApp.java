@@ -507,6 +507,16 @@ public class CefApp extends CefAppHandlerAdapter {
     }
 
     /**
+     * On Linux this method must be called before ANY other call to Xlib from
+     * this process, including calls from the Java runtime.
+     */
+    public static final void initXlibForMultithreading() {
+        if (OS.isLinux()) {
+            N_InitXlibForMultithreading();
+        }
+    }
+
+    /**
      * Get the path which contains the jcef library
      * @return The path to the jcef library
      */
@@ -537,4 +547,5 @@ public class CefApp extends CefAppHandlerAdapter {
     private final native boolean N_RegisterSchemeHandlerFactory(
             String schemeName, String domainName, CefSchemeHandlerFactory factory);
     private final native boolean N_ClearSchemeHandlerFactories();
+    private final static native void N_InitXlibForMultithreading();
 }

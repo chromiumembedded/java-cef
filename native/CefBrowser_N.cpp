@@ -908,7 +908,6 @@ jboolean create(JNIEnv* env,
     return JNI_FALSE;
 
   CefWindowInfo windowInfo;
-#if defined(OS_WIN) || defined(OS_MACOSX)
   if (canvas != NULL) {
     CefRect rect;
     CefRefPtr<WindowHandler> windowHandler =
@@ -925,10 +924,11 @@ jboolean create(JNIEnv* env,
         util_mac::CreateBrowserContentView((CefWindowHandle)windowHandle, rect);
     windowInfo.SetAsChild(browserContentView, rect.x, rect.y, rect.width,
                           rect.height);
+#elif defined(OS_LINUX)
+    unsigned long parent = GetDrawableOfCanvas(canvas, env);
+    windowInfo.SetAsChild(parent, rect);
 #endif
-  } else
-#endif
-  {
+  } else {
     windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
   }
 
@@ -999,6 +999,17 @@ void CefSetWindowPos(HWND browserHandle, int width, int height) {
 }
 #endif  // defined(OS_WIN)
 
+#if defined(OS_LINUX)
+void CefUpdateWindowRgn(unsigned long browserHandle, CefRect contentRect) {
+  X_XMoveResizeWindow(browserHandle, contentRect.x, contentRect.y,
+                      contentRect.width, contentRect.height);
+}
+
+void CefSetWindowPos(unsigned long browserHandle, int width, int height) {
+  X_XMoveResizeWindow(browserHandle, 0, 0, width, height);
+}
+#endif  // defined(OS_LINUX)
+
 }  // namespace
 
 JNIEXPORT jboolean JNICALL
@@ -1035,8 +1046,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetWindowHandle(JNIEnv* env,
 #if defined(OS_WIN)
   windowHandle = ::WindowFromDC((HDC)displayHandle);
 #elif defined(OS_LINUX)
-// TODO(jcef): The |displayHandle| argument is an X11 Window. We can't use it
-// until CEF has moved from GTK to Aura.
+  return displayHandle;
 #elif defined(OS_MACOSX)
   ASSERT(util_mac::IsNSView((void*)displayHandle));
 #endif
@@ -1445,6 +1455,16 @@ Java_org_cef_browser_CefBrowser_1N_N_1WasResized(JNIEnv* env,
 #if defined(OS_WIN)
   else {
     HWND handle = browser->GetHost()->GetWindowHandle();
+    if (CefCurrentlyOn(TID_UI)) {
+      CefSetWindowPos(handle, width, height);
+    } else {
+      CefPostTask(TID_UI, base::Bind(&CefSetWindowPos, handle, (int)width,
+                                     (int)height));
+    }
+  }
+#elif defined(OS_LINUX)
+  else {
+    unsigned long handle = browser->GetHost()->GetWindowHandle();
     if (CefCurrentlyOn(TID_UI)) {
       CefSetWindowPos(handle, width, height);
     } else {
@@ -1887,6 +1907,12 @@ Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI(JNIEnv* env,
     CefUpdateWindowRgn(hwnd, contentRect);
   else
     CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, hwnd, contentRect));
+#elif defined(OS_LINUX)
+  unsigned long handle = browser->GetHost()->GetWindowHandle();
+  if (CefCurrentlyOn(TID_UI))
+    CefUpdateWindowRgn(handle, contentRect);
+  else
+    CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, handle, contentRect));
 #endif
 }
 
@@ -1911,5 +1937,10 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
     return;
 
   SetParent(hwnd, parentHwnd);
+#elif defined(OS_LINUX)
+  if (canvas != NULL) {
+    unsigned long parentDrawable = GetDrawableOfCanvas(canvas, env);
+    X_XReparentWindow(browser->GetHost()->GetWindowHandle(), parentDrawable);
+  }
 #endif
 }
