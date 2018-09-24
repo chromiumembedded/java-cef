@@ -290,14 +290,9 @@ class CefBrowserWr extends CefBrowser_N {
 
     @Override
     public void createImmediately() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Create the browser immediately. It will be parented to the Java window
-                // once it becomes available.
-                createBrowserIfRequired(false);
-            }
-        });
+        // Create the browser immediately. It will be parented to the Java window
+        // once it becomes available.
+        createBrowserIfRequired(false);
     }
 
     @Override

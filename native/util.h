@@ -96,11 +96,12 @@ void SetParent(CefWindowHandle browserHandle, jlong parentHandle);
 
 #else  // !defined(OS_MACOSX)
 
+// Return the window handle for the specified canvas.
+CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas);
+
 // Set the parent of |browserHandle|. If the parent is NULL the browser will be
 // parented to the TempWindow.
-void SetParent(CefWindowHandle browserHandle,
-               JNIEnv* env,
-               jobject parentCanvas);
+void SetParent(CefWindowHandle browserHandle, CefWindowHandle parentHandle);
 
 // Set the window bounds for |browserHandle|.
 void SetWindowBounds(CefWindowHandle browserHandle, const CefRect& contentRect);

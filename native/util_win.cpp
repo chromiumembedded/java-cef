@@ -264,16 +264,15 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void SetParent(CefWindowHandle browserHandle,
-               JNIEnv* env,
-               jobject parentCanvas) {
-  HWND parentHandle;
-  if (parentCanvas != NULL)
-    parentHandle = GetHwndOfCanvas(parentCanvas, env);
-  else
+CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
+  return GetHwndOfCanvas(canvas, env);
+}
+
+void SetParent(CefWindowHandle browserHandle, CefWindowHandle parentHandle) {
+  if (parentHandle == kNullWindowHandle)
     parentHandle = TempWindow::GetWindowHandle();
-  if (parentHandle != NULL && browserHandle != NULL)
-    SetParent(browserHandle, parentHandle);
+  if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
+    ::SetParent(browserHandle, parentHandle);
 }
 
 void SetWindowBounds(CefWindowHandle browserHandle,

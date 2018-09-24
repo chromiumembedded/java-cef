@@ -48,6 +48,7 @@ TempWindowWin::~TempWindowWin() {
 
 // static
 CefWindowHandle TempWindowWin::GetWindowHandle() {
-  DCHECK(g_temp_window);
+  if (!g_temp_window)
+    return kNullWindowHandle;
   return g_temp_window->hwnd_;
 }

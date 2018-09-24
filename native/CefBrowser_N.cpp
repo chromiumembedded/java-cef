@@ -1902,6 +1902,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
 #if defined(OS_MACOSX)
   util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle);
 #else
-  util::SetParent(browser->GetHost()->GetWindowHandle(), env, canvas);
+  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
+  CefWindowHandle parentHandle =
+      canvas ? util::GetWindowHandle(env, canvas) : kNullWindowHandle;
+  if (CefCurrentlyOn(TID_UI)) {
+    util::SetParent(browserHandle, parentHandle);
+  } else {
+    CefPostTask(TID_UI,
+                base::Bind(util::SetParent, browserHandle, parentHandle));
+  }
 #endif
 }

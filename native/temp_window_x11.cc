@@ -60,7 +60,8 @@ TempWindowX11::~TempWindowX11() {
 
 // static
 CefWindowHandle TempWindowX11::GetWindowHandle() {
-  CHECK(g_temp_window);
+  if (!g_temp_window)
+    return kNullWindowHandle;
   return g_temp_window->xwindow_;
 }
 

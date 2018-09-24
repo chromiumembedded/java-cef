@@ -61,13 +61,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public void createImmediately() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Create the browser immediately.
-                createBrowserIfRequired(false);
-            }
-        });
+        // Create the browser immediately.
+        createBrowserIfRequired(false);
     }
 
     @Override
