@@ -54,7 +54,7 @@ class CefBrowserWr extends CefBrowser_N {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    boolean hasCreatedUI = createUIIfRequired();
+                    boolean hasCreatedUI = createBrowserIfRequired(true);
 
                     if (hasCreatedUI) {
                         delayedUpdate_.restart();
@@ -286,6 +286,15 @@ class CefBrowserWr extends CefBrowser_N {
                 }
             }
         });
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Create the browser immediately. It will be parented to the Java window
+                // once it becomes available.
+                createBrowserIfRequired(false);
+            }
+        });
     }
 
     @Override
@@ -364,18 +373,29 @@ class CefBrowserWr extends CefBrowser_N {
         }
     }
 
-    private boolean createUIIfRequired() {
-        if (getNativeRef("CefBrowser") == 0 && !isClosed()) {
+    private boolean createBrowserIfRequired(boolean hasParent) {
+        if (isClosed()) return false;
+
+        long windowHandle = 0;
+        Component canvas = null;
+        if (hasParent) {
+            windowHandle = getWindowHandle();
+            canvas = (OS.isWindows() || OS.isLinux()) ? canvas_ : component_;
+        }
+
+        if (getNativeRef("CefBrowser") == 0) {
             if (getParentBrowser() != null) {
-                createDevTools(getParentBrowser(), getClient(), getWindowHandle(), false,
-                        (OS.isWindows() || OS.isLinux()) ? canvas_ : component_, getInspectAt());
+                createDevTools(getParentBrowser(), getClient(), windowHandle, false, false, canvas,
+                        getInspectAt());
                 return true;
             } else {
-                createBrowser(getClient(), getWindowHandle(), getUrl(), false,
-                        (OS.isWindows() || OS.isLinux()) ? canvas_ : component_,
+                createBrowser(getClient(), windowHandle, getUrl(), false, false, canvas,
                         getRequestContext());
                 return true;
             }
+        } else if (hasParent) {
+            setParent(windowHandle, canvas);
+            setFocus(true);
         }
 
         return false;

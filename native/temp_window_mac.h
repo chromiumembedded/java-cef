@@ -6,6 +6,7 @@
 #define JCEF_NATIVE_TEMP_WINDOW_MAC_H_
 #pragma once
 
+#include "include/base/cef_scoped_ptr.h"
 #include "include/cef_base.h"
 
 #ifdef __OBJC__
@@ -21,9 +22,13 @@ class TempWindowMac {
   // Returns the singleton window handle.
   static CefWindowHandle GetWindowHandle();
 
+  static NSWindow* GetWindow();
+
  private:
   // A single instance will be created/owned by Context.
   friend class Context;
+  // Allow deletion via scoped_ptr only.
+  friend struct base::DefaultDeleter<TempWindowMac>;
 
   TempWindowMac();
   ~TempWindowMac();

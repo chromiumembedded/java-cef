@@ -151,11 +151,11 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
      * Create a new browser.
      */
     protected void createBrowser(CefClientHandler clientHandler, long windowHandle, String url,
-            boolean transparent, Component canvas, CefRequestContext context) {
+            boolean osr, boolean transparent, Component canvas, CefRequestContext context) {
         if (getNativeRef("CefBrowser") == 0 && !isPending_) {
             try {
                 isPending_ = N_CreateBrowser(
-                        clientHandler, windowHandle, url, transparent, canvas, context);
+                        clientHandler, windowHandle, url, osr, transparent, canvas, context);
             } catch (UnsatisfiedLinkError err) {
                 err.printStackTrace();
             }
@@ -166,11 +166,12 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
      * Create a new browser as dev tools
      */
     protected final void createDevTools(CefBrowser_N parent, CefClientHandler clientHandler,
-            long windowHandle, boolean transparent, Component canvas, Point inspectAt) {
+            long windowHandle, boolean osr, boolean transparent, Component canvas,
+            Point inspectAt) {
         if (getNativeRef("CefBrowser") == 0 && !isPending_) {
             try {
                 isPending_ = N_CreateDevTools(
-                        parent, clientHandler, windowHandle, transparent, canvas, inspectAt);
+                        parent, clientHandler, windowHandle, osr, transparent, canvas, inspectAt);
             } catch (UnsatisfiedLinkError err) {
                 err.printStackTrace();
             }
@@ -736,9 +737,10 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle,
-            String url, boolean transparent, Component canvas, CefRequestContext context);
+            String url, boolean osr, boolean transparent, Component canvas,
+            CefRequestContext context);
     private final native boolean N_CreateDevTools(CefBrowser parent, CefClientHandler clientHandler,
-            long windowHandle, boolean transparent, Component canvas, Point inspectAt);
+            long windowHandle, boolean osr, boolean transparent, Component canvas, Point inspectAt);
     private final native long N_GetWindowHandle(long surfaceHandle);
     private final native boolean N_CanGoBack();
     private final native void N_GoBack();

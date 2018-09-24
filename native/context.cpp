@@ -140,6 +140,21 @@ bool Context::Initialize(JNIEnv* env,
   return res;
 }
 
+void Context::OnContextInitialized() {
+  REQUIRE_UI_THREAD();
+  temp_window_.reset(new TempWindow());
+}
+
+void Context::DoMessageLoopWork() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+#if defined(OS_MACOSX)
+  util_mac::CefDoMessageLoopWorkOnMainThread();
+#else
+  CefDoMessageLoopWork();
+#endif
+}
+
 void Context::Shutdown() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -156,17 +171,9 @@ void Context::Shutdown() {
       CefDoMessageLoopWork();
   }
 
+  temp_window_.reset(nullptr);
+
   CefShutdown();
-#endif
-}
-
-void Context::DoMessageLoopWork() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-#if defined(OS_MACOSX)
-  util_mac::CefDoMessageLoopWorkOnMainThread();
-#else
-  CefDoMessageLoopWork();
 #endif
 }
 

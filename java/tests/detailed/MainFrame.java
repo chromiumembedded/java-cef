@@ -218,12 +218,18 @@ public class MainFrame extends BrowserFrame {
         } else {
             cookieManager_ = CefCookieManager.getGlobalManager();
         }
+
+        // Set up the UI for this example implementation.
+        JPanel contentPanel = createContentPanel();
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
+
+        // Create the browser.
         CefBrowser browser = client_.createBrowser(
                 "http://www.google.com", osrEnabled, transparentPaintingEnabled, requestContext);
         setBrowser(browser);
 
-        //    Last but not least we're setting up the UI for this example implementation.
-        getContentPane().add(createContentPanel(), BorderLayout.CENTER);
+        // Add the browser to the UI.
+        contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
 
         MenuBar menuBar = new MenuBar(this, browser, control_pane_, downloadDialog, cookieManager_);
 
@@ -254,11 +260,6 @@ public class MainFrame extends BrowserFrame {
         control_pane_ = new ControlPanel(getBrowser());
         status_panel_ = new StatusPanel();
         contentPanel.add(control_pane_, BorderLayout.NORTH);
-
-        // 4) By calling getUIComponen() on the CefBrowser instance, we receive
-        //    an displayable UI component which we can add to our application.
-        contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
-
         contentPanel.add(status_panel_, BorderLayout.SOUTH);
         return contentPanel;
     }

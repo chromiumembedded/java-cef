@@ -39,3 +39,9 @@ CefWindowHandle TempWindowMac::GetWindowHandle() {
   DCHECK(g_temp_window);
   return [g_temp_window->window_ contentView];
 }
+
+// static
+NSWindow* TempWindowMac::GetWindow() {
+  DCHECK(g_temp_window);
+  return g_temp_window->window_;
+}

@@ -8,12 +8,16 @@
 
 #if defined(OS_WIN)
 #include "temp_window_win.h"
+#elif defined(OS_LINUX)
+#include "temp_window_x11.h"
 #elif defined(OS_MACOSX)
 #include "temp_window_mac.h"
 #endif
 
 #if defined(OS_WIN)
 typedef TempWindowWin TempWindow;
+#elif defined(OS_LINUX)
+typedef TempWindowX11 TempWindow;
 #elif defined(OS_MACOSX)
 typedef TempWindowMac TempWindow;
 #endif

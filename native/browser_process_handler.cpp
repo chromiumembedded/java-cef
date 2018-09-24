@@ -3,8 +3,9 @@
 // can be found in the LICENSE file.
 
 #include "browser_process_handler.h"
-#include "client_handler.h"
 
+#include "client_handler.h"
+#include "context.h"
 #include "jni_util.h"
 #include "print_handler.h"
 #include "util.h"
@@ -25,6 +26,8 @@ BrowserProcessHandler::~BrowserProcessHandler() {
 }
 
 void BrowserProcessHandler::OnContextInitialized() {
+  Context::GetInstance()->OnContextInitialized();
+
   if (!app_handler_)
     return;
 

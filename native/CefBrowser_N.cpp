@@ -893,6 +893,7 @@ jboolean create(JNIEnv* env,
                 jobject jclientHandler,
                 jlong windowHandle,
                 jstring url,
+                jboolean osr,
                 jboolean transparent,
                 jobject canvas,
                 jobject jcontext,
@@ -908,7 +909,7 @@ jboolean create(JNIEnv* env,
     return JNI_FALSE;
 
   CefWindowInfo windowInfo;
-  if (canvas != NULL) {
+  if (osr == JNI_FALSE) {
     CefRect rect;
     CefRefPtr<WindowHandler> windowHandler =
         (WindowHandler*)clientHandler->GetWindowHandler().get();
@@ -916,16 +917,28 @@ jboolean create(JNIEnv* env,
       windowHandler->GetRect(jbrowser, rect);
     }
 #if defined(OS_WIN)
-    HWND parent = GetHwndOfCanvas(canvas, env);
+    CefWindowHandle parent = TempWindow::GetWindowHandle();
+    if (canvas != NULL) {
+      parent = GetHwndOfCanvas(canvas, env);
+    }
     RECT winRect = {0, 0, rect.width, rect.height};
     windowInfo.SetAsChild(parent, winRect);
 #elif defined(OS_MACOSX)
+    NSWindow* parent = nullptr;
+    if (windowHandle != 0) {
+      parent = (NSWindow*)windowHandle;
+    } else {
+      parent = TempWindow::GetWindow();
+    }
     CefWindowHandle browserContentView =
-        util_mac::CreateBrowserContentView((CefWindowHandle)windowHandle, rect);
+        util_mac::CreateBrowserContentView(parent, rect);
     windowInfo.SetAsChild(browserContentView, rect.x, rect.y, rect.width,
                           rect.height);
 #elif defined(OS_LINUX)
-    unsigned long parent = GetDrawableOfCanvas(canvas, env);
+    CefWindowHandle parent = TempWindow::GetWindowHandle();
+    if (canvas != NULL) {
+      parent = GetDrawableOfCanvas(canvas, env);
+    }
     windowInfo.SetAsChild(parent, rect);
 #endif
   } else {
@@ -1018,10 +1031,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser(JNIEnv* env,
                                                     jobject jclientHandler,
                                                     jlong windowHandle,
                                                     jstring url,
+                                                    jboolean osr,
                                                     jboolean transparent,
                                                     jobject canvas,
                                                     jobject jcontext) {
-  return create(env, jbrowser, NULL, jclientHandler, windowHandle, url,
+  return create(env, jbrowser, NULL, jclientHandler, windowHandle, url, osr,
                 transparent, canvas, jcontext, NULL);
 }
 
@@ -1031,10 +1045,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools(JNIEnv* env,
                                                      jobject jparent,
                                                      jobject jclientHandler,
                                                      jlong windowHandle,
+                                                     jboolean osr,
                                                      jboolean transparent,
                                                      jobject canvas,
                                                      jobject inspect) {
-  return create(env, jbrowser, jparent, jclientHandler, windowHandle, NULL,
+  return create(env, jbrowser, jparent, jclientHandler, windowHandle, NULL, osr,
                 transparent, canvas, NULL, inspect);
 }
 
@@ -1931,16 +1946,17 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
     parentHwnd = GetHwndOfCanvas(canvas, env);
   else
     parentHwnd = TempWindow::GetWindowHandle();
-  HWND hwnd = browser->GetHost()->GetWindowHandle();
-
-  if (parentHwnd == NULL || hwnd == NULL)
-    return;
-
-  SetParent(hwnd, parentHwnd);
+  HWND browserHwnd = browser->GetHost()->GetWindowHandle();
+  if (parentHwnd != NULL && browserHwnd != NULL)
+    SetParent(browserHwnd, parentHwnd);
 #elif defined(OS_LINUX)
-  if (canvas != NULL) {
-    unsigned long parentDrawable = GetDrawableOfCanvas(canvas, env);
-    X_XReparentWindow(browser->GetHost()->GetWindowHandle(), parentDrawable);
-  }
+  CefWindowHandle parentHandle;
+  if (canvas != NULL)
+    parentHandle = GetDrawableOfCanvas(canvas, env);
+  else
+    parentHandle = TempWindow::GetWindowHandle();
+  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
+  if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
+    X_XReparentWindow(browserHandle, parentHandle);
 #endif
 }

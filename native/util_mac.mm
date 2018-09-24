@@ -390,9 +390,7 @@ bool IsNSView(void* ptr) {
   return result;
 }
 
-CefWindowHandle CreateBrowserContentView(CefWindowHandle cefWindow,
-                                         CefRect& orig) {
-  NSWindow* window = (NSWindow*)cefWindow;
+CefWindowHandle CreateBrowserContentView(NSWindow* window, CefRect& orig) {
   NSView* mainView = (CefWindowHandle)[window contentView];
   TranslateRect(mainView, orig);
   NSRect frame = {{orig.x, orig.y}, {orig.width, orig.height}};

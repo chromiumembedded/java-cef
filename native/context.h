@@ -9,11 +9,10 @@
 #include <jni.h>
 
 #include "include/base/cef_macros.h"
+#include "include/base/cef_scoped_ptr.h"
 #include "include/base/cef_thread_checker.h"
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
 #include "temp_window.h"
-#endif
 
 class Context {
  public:
@@ -29,6 +28,7 @@ class Context {
                   jstring argPathToJavaDLL,
                   jobject appHandler,
                   jobject jsettings);
+  void OnContextInitialized();
   void DoMessageLoopWork();
   void Shutdown();
 
@@ -39,10 +39,7 @@ class Context {
   bool external_message_pump_;
   base::ThreadChecker thread_checker_;
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
-  // Used as the temporary parent for windowed browsers during reparenting.
-  TempWindow temp_window_;
-#endif
+  scoped_ptr<TempWindow> temp_window_;
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };

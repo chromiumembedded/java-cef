@@ -49,6 +49,14 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
         this(client, url, transparent, context, null, null);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Create the browser immediately.
+                createBrowserIfRequired(false);
+            }
+        });
     }
 
     private CefBrowserOsr(CefClient client, String url, boolean transparent,
@@ -96,13 +104,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         canvas_ = new GLCanvas(glcapabilities) {
             @Override
             public void paint(Graphics g) {
-                if (getParentBrowser() != null) {
-                    createDevTools(getParentBrowser(), getClient(), getWindowHandle(),
-                            isTransparent_, null, getInspectAt());
-                } else {
-                    createBrowser(getClient(), getWindowHandle(), getUrl(), isTransparent_, null,
-                            getRequestContext());
-                }
+                createBrowserIfRequired(true);
                 super.paint(g);
             }
         };
@@ -267,5 +269,25 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     @Override
     public void updateDragCursor(CefBrowser browser, int operation) {
         // TODO(JCEF) Prepared for DnD support using OSR mode.
+    }
+
+    private void createBrowserIfRequired(boolean hasParent) {
+        long windowHandle = 0;
+        if (hasParent) {
+            windowHandle = getWindowHandle();
+        }
+
+        if (getNativeRef("CefBrowser") == 0) {
+            if (getParentBrowser() != null) {
+                createDevTools(getParentBrowser(), getClient(), windowHandle, true, isTransparent_,
+                        null, getInspectAt());
+            } else {
+                createBrowser(getClient(), windowHandle, getUrl(), true, isTransparent_, null,
+                        getRequestContext());
+            }
+        } else {
+            // OSR windows cannot be reparented after creation.
+            setFocus(true);
+        }
     }
 }

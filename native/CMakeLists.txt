@@ -144,6 +144,8 @@ set(JCEF_SRCS_LINUX
   jni_util_linux.cpp
   signal_restore_posix.cpp
   signal_restore_posix.h
+  temp_window_x11.cc
+  temp_window_x11.h
   util_linux.cpp
   util_posix.cpp
   )
