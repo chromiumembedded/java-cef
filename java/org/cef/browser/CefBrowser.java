@@ -23,6 +23,13 @@ import org.cef.network.CefRequest;
  */
 public interface CefBrowser {
     /**
+     * Call to immediately create the underlying browser object. By default the
+     * browser object will be created when the parent container is displayed for
+     * the first time.
+     */
+    public void createImmediately();
+
+    /**
      * Get the underlying UI component (e.g. java.awt.Canvas).
      * @return The underlying UI component.
      */

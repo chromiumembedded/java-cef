@@ -49,14 +49,6 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
         this(client, url, transparent, context, null, null);
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Create the browser immediately.
-                createBrowserIfRequired(false);
-            }
-        });
     }
 
     private CefBrowserOsr(CefClient client, String url, boolean transparent,
@@ -65,6 +57,17 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         isTransparent_ = transparent;
         renderer_ = new CefRenderer(transparent);
         createGLCanvas();
+    }
+
+    @Override
+    public void createImmediately() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Create the browser immediately.
+                createBrowserIfRequired(false);
+            }
+        });
     }
 
     @Override

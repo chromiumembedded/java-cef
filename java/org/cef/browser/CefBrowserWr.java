@@ -286,7 +286,10 @@ class CefBrowserWr extends CefBrowser_N {
                 }
             }
         });
+    }
 
+    @Override
+    public void createImmediately() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

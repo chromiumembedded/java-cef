@@ -54,6 +54,7 @@ public class MainFrame extends BrowserFrame {
         // and disabled by default on Windows and Mac OS X.
         boolean osrEnabledArg = false;
         boolean transparentPaintingEnabledArg = false;
+        boolean createImmediately = false;
         String cookiePath = null;
         for (String arg : args) {
             arg = arg.toLowerCase();
@@ -61,6 +62,8 @@ public class MainFrame extends BrowserFrame {
                 osrEnabledArg = true;
             } else if (arg.equals("--transparent-painting-enabled")) {
                 transparentPaintingEnabledArg = true;
+            } else if (arg.equals("--create-immediately")) {
+                createImmediately = true;
             } else if (arg.startsWith("--cookie-path=")) {
                 cookiePath = arg.substring("--cookie-path=".length());
                 File testPath = new File(cookiePath);
@@ -78,8 +81,8 @@ public class MainFrame extends BrowserFrame {
 
         // MainFrame keeps all the knowledge to display the embedded browser
         // frame.
-        final MainFrame frame =
-                new MainFrame(osrEnabledArg, transparentPaintingEnabledArg, cookiePath, args);
+        final MainFrame frame = new MainFrame(
+                osrEnabledArg, transparentPaintingEnabledArg, createImmediately, cookiePath, args);
         frame.setSize(800, 600);
         frame.setVisible(true);
     }
@@ -90,8 +93,8 @@ public class MainFrame extends BrowserFrame {
     private StatusPanel status_panel_;
     private final CefCookieManager cookieManager_;
 
-    public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled, String cookiePath,
-            String[] args) {
+    public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled,
+            boolean createImmediately, String cookiePath, String[] args) {
         CefApp myApp;
         if (CefApp.getState() != CefApp.CefAppState.INITIALIZED) {
             // 1) CefApp is the entry point for JCEF. You can pass
@@ -227,6 +230,8 @@ public class MainFrame extends BrowserFrame {
         CefBrowser browser = client_.createBrowser(
                 "http://www.google.com", osrEnabled, transparentPaintingEnabled, requestContext);
         setBrowser(browser);
+
+        if (createImmediately) browser.createImmediately();
 
         // Add the browser to the UI.
         contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
