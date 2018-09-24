@@ -489,25 +489,6 @@ void UpdateView(CefWindowHandle handle,
   }
 }
 
-void SetParent(CefWindowHandle handle, jlong parentHandle) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    CefBrowserContentView* browser_view =
-        (CefBrowserContentView*)[handle superview];
-    [browser_view retain];
-    [browser_view removeFromSuperview];
-
-    NSView* contentView;
-    if (parentHandle) {
-      NSWindow* window = (NSWindow*)parentHandle;
-      contentView = [window contentView];
-    } else {
-      contentView = TempWindow::GetWindowHandle();
-    }
-    [contentView addSubview:browser_view];
-    [browser_view release];
-  });
-}
-
 }  // namespace util_mac
 
 namespace util {
@@ -541,6 +522,25 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
         (CefBrowserContentView*)[handle superview];
     [browserView destroyCefBrowser];
   }
+}
+
+void SetParent(CefWindowHandle handle, jlong parentHandle) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    CefBrowserContentView* browser_view =
+        (CefBrowserContentView*)[handle superview];
+    [browser_view retain];
+    [browser_view removeFromSuperview];
+
+    NSView* contentView;
+    if (parentHandle) {
+      NSWindow* window = (NSWindow*)parentHandle;
+      contentView = [window contentView];
+    } else {
+      contentView = TempWindow::GetWindowHandle();
+    }
+    [contentView addSubview:browser_view];
+    [browser_view release];
+  });
 }
 
 }  // namespace util

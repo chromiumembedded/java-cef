@@ -46,8 +46,6 @@ void UpdateView(CefWindowHandle handle,
                 CefRect contentRect,
                 CefRect browserRect);
 
-void SetParent(CefWindowHandle handle, jlong parentHandle);
-
 }  // namespace util_mac
 
 #endif  // JCEF_NATIVE_UTIL_MAC_H_

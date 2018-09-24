@@ -4,7 +4,46 @@
 
 #include "util.h"
 
+#include <X11/Xlib.h>
+#undef Success
+
+#include "jni_util.h"
+#include "temp_window.h"
+
 namespace util {
+
+namespace {
+
+void X_XMoveResizeWindow(unsigned long browserHandle,
+                         int x,
+                         int y,
+                         unsigned int width,
+                         unsigned int height) {
+  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
+  XMoveResizeWindow(xdisplay, browserHandle, 0, 0, width, height);
+}
+
+void X_XReparentWindow(unsigned long browserHandle,
+                       unsigned long parentDrawable) {
+  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
+  XReparentWindow(xdisplay, browserHandle, parentDrawable, 0, 0);
+}
+
+void X_XSetInputFocusParent(unsigned long browserHandle) {
+  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
+
+  Window root_win;
+  Window parent_win;
+  Window* child_windows;
+  unsigned int num_child_windows;
+  XQueryTree(xdisplay, browserHandle, &root_win, &parent_win, &child_windows,
+             &num_child_windows);
+  XFree(child_windows);
+
+  XSetInputFocus(xdisplay, parent_win, RevertToParent, CurrentTime);
+}
+
+}  // namespace
 
 // This function is called by LifeSpanHandler::OnAfterCreated().
 void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
@@ -20,6 +59,32 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   // cleanup tasks for the browser reference.
 
   UNUSED(browser);
+}
+
+void SetParent(CefWindowHandle browserHandle,
+               JNIEnv* env,
+               jobject parentCanvas) {
+  CefWindowHandle parentHandle;
+  if (parentCanvas != NULL)
+    parentHandle = GetDrawableOfCanvas(parentCanvas, env);
+  else
+    parentHandle = TempWindow::GetWindowHandle();
+  if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
+    X_XReparentWindow(browserHandle, parentHandle);
+}
+
+void SetWindowBounds(CefWindowHandle browserHandle,
+                     const CefRect& contentRect) {
+  X_XMoveResizeWindow(browserHandle, contentRect.x, contentRect.y,
+                      contentRect.width, contentRect.height);
+}
+
+void SetWindowSize(CefWindowHandle browserHandle, int width, int height) {
+  X_XMoveResizeWindow(browserHandle, 0, 0, width, height);
+}
+
+void FocusParent(CefWindowHandle browserHandle) {
+  X_XSetInputFocusParent(browserHandle);
 }
 
 }  // namespace util

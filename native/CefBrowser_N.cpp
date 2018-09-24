@@ -998,31 +998,6 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
   }
 }
 
-#if defined(OS_WIN)
-void CefUpdateWindowRgn(HWND browserHandle, CefRect contentRect) {
-  HRGN contentRgn = CreateRectRgn(contentRect.x, contentRect.y,
-                                  contentRect.x + contentRect.width,
-                                  contentRect.y + contentRect.height);
-  SetWindowRgn(GetParent(browserHandle), contentRgn, TRUE);
-}
-
-void CefSetWindowPos(HWND browserHandle, int width, int height) {
-  SetWindowPos(browserHandle, NULL, 0, 0, width, height,
-               SWP_NOZORDER | SWP_NOMOVE);
-}
-#endif  // defined(OS_WIN)
-
-#if defined(OS_LINUX)
-void CefUpdateWindowRgn(unsigned long browserHandle, CefRect contentRect) {
-  X_XMoveResizeWindow(browserHandle, contentRect.x, contentRect.y,
-                      contentRect.width, contentRect.height);
-}
-
-void CefSetWindowPos(unsigned long browserHandle, int width, int height) {
-  X_XMoveResizeWindow(browserHandle, 0, 0, width, height);
-}
-#endif  // defined(OS_LINUX)
-
 }  // namespace
 
 JNIEXPORT jboolean JNICALL
@@ -1467,24 +1442,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1WasResized(JNIEnv* env,
   if (browser->GetHost()->IsWindowRenderingDisabled()) {
     browser->GetHost()->WasResized();
   }
-#if defined(OS_WIN)
+#if (defined(OS_WIN) || defined(OS_LINUX))
   else {
-    HWND handle = browser->GetHost()->GetWindowHandle();
+    CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
     if (CefCurrentlyOn(TID_UI)) {
-      CefSetWindowPos(handle, width, height);
+      util::SetWindowSize(browserHandle, width, height);
     } else {
-      CefPostTask(TID_UI, base::Bind(&CefSetWindowPos, handle, (int)width,
-                                     (int)height));
-    }
-  }
-#elif defined(OS_LINUX)
-  else {
-    unsigned long handle = browser->GetHost()->GetWindowHandle();
-    if (CefCurrentlyOn(TID_UI)) {
-      CefSetWindowPos(handle, width, height);
-    } else {
-      CefPostTask(TID_UI, base::Bind(&CefSetWindowPos, handle, (int)width,
-                                     (int)height));
+      CefPostTask(TID_UI, base::Bind(util::SetWindowSize, browserHandle,
+                                     (int)width, (int)height));
     }
   }
 #endif
@@ -1916,18 +1881,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI(JNIEnv* env,
   CefRect browserRect = GetJNIRect(env, jbrowserRect);
   util_mac::UpdateView(browser->GetHost()->GetWindowHandle(), contentRect,
                        browserRect);
-#elif defined(OS_WIN)
-  HWND hwnd = browser->GetHost()->GetWindowHandle();
-  if (CefCurrentlyOn(TID_UI))
-    CefUpdateWindowRgn(hwnd, contentRect);
-  else
-    CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, hwnd, contentRect));
-#elif defined(OS_LINUX)
-  unsigned long handle = browser->GetHost()->GetWindowHandle();
-  if (CefCurrentlyOn(TID_UI))
-    CefUpdateWindowRgn(handle, contentRect);
-  else
-    CefPostTask(TID_UI, base::Bind(&CefUpdateWindowRgn, handle, contentRect));
+#else
+  CefWindowHandle windowHandle = browser->GetHost()->GetWindowHandle();
+  if (CefCurrentlyOn(TID_UI)) {
+    util::SetWindowBounds(windowHandle, contentRect);
+  } else {
+    CefPostTask(TID_UI,
+                base::Bind(util::SetWindowBounds, windowHandle, contentRect));
+  }
 #endif
 }
 
@@ -1939,24 +1900,8 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
 
 #if defined(OS_MACOSX)
-  util_mac::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle);
-#elif defined(OS_WIN)
-  HWND parentHwnd;
-  if (canvas != NULL)
-    parentHwnd = GetHwndOfCanvas(canvas, env);
-  else
-    parentHwnd = TempWindow::GetWindowHandle();
-  HWND browserHwnd = browser->GetHost()->GetWindowHandle();
-  if (parentHwnd != NULL && browserHwnd != NULL)
-    SetParent(browserHwnd, parentHwnd);
-#elif defined(OS_LINUX)
-  CefWindowHandle parentHandle;
-  if (canvas != NULL)
-    parentHandle = GetDrawableOfCanvas(canvas, env);
-  else
-    parentHandle = TempWindow::GetWindowHandle();
-  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
-  if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
-    X_XReparentWindow(browserHandle, parentHandle);
+  util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle);
+#else
+  util::SetParent(browser->GetHost()->GetWindowHandle(), env, canvas);
 #endif
 }

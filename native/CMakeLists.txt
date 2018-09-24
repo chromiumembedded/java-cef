@@ -176,7 +176,6 @@ set(JCEF_HELPER_SRCS
   util.h
   )
 set(JCEF_HELPER_SRCS_LINUX
-  util_linux.cpp
   util_posix.cpp
   )
 set(JCEF_HELPER_SRCS_MACOSX
@@ -237,13 +236,14 @@ if(OS_LINUX)
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
   # Compile flags specific to the JCEF library target.
-  # -DUSING_JAVA          = Add the USING_JAVA define.
+  # USING_JAVA          = Add the USING_JAVA define.
+  target_compile_definitions(${JCEF_TARGET} PRIVATE "USING_JAVA")
+
   # -fvisibility=default  = Give default visibility to declarations that are not explicitly marked as visible.
   #                         Necessary so that JNI symbols are properly exported when building with GCC.
   #                         Related discussion: http://mail.openjdk.java.net/pipermail/core-libs-dev/2013-February/014446.html
   #                         Test symbol export with: nm -D --defined-only libjcef.so | grep Java
   set_target_properties(${JCEF_TARGET} PROPERTIES
-    COMPILE_FLAGS -DUSING_JAVA
     COMPILE_FLAGS -fvisibility=default
     )
 
@@ -312,10 +312,8 @@ if(OS_MACOSX)
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
   # Compile flags specific to the JCEF library target.
-  # -DUSING_JAVA          = Add the USING_JAVA define.
-  set_target_properties(${JCEF_TARGET} PROPERTIES
-    COMPILE_FLAGS -DUSING_JAVA
-    )
+  # USING_JAVA          = Add the USING_JAVA define.
+  target_compile_definitions(${JCEF_TARGET} PRIVATE "USING_JAVA")
 
   # Name and location of the JCEF library in the main app bundle.
   set(JCEF_TARGET_LIBRARY "lib${JCEF_TARGET}.dylib")
@@ -372,10 +370,8 @@ if(OS_WINDOWS)
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
   # Compile flags specific to the JCEF library target.
-  # -DUSING_JAVA          = Add the USING_JAVA define.
-  set_target_properties(${JCEF_TARGET} PROPERTIES
-    COMPILE_FLAGS -DUSING_JAVA
-    )
+  # USING_JAVA          = Add the USING_JAVA define.
+  target_compile_definitions(${JCEF_TARGET} PRIVATE "USING_JAVA")
 
   # Add the custom manifest files to the DLL and helper EXE.
   ADD_WINDOWS_MANIFEST("${CMAKE_CURRENT_SOURCE_DIR}" "${JCEF_TARGET}" "dll")

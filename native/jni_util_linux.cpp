@@ -7,9 +7,6 @@
 #include <assert.h>
 #include <jawt.h>
 #include <jawt_md.h>
-#include <X11/Xlib.h>
-
-#include "temp_window.h"
 
 unsigned long GetDrawableOfCanvas(jobject canvas, JNIEnv* env) {
   JAWT awt;
@@ -53,38 +50,4 @@ unsigned long GetDrawableOfCanvas(jobject canvas, JNIEnv* env) {
   awt.FreeDrawingSurface(ds);
 
   return result;
-}
-
-void X_XMoveResizeWindow(unsigned long browserHandle,
-                         int x,
-                         int y,
-                         unsigned int width,
-                         unsigned int height) {
-  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
-  XMoveResizeWindow(xdisplay, browserHandle, 0, 0, width, height);
-}
-
-void X_XReparentWindow(unsigned long browserHandle,
-                       unsigned long parentDrawable) {
-  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
-  XReparentWindow(xdisplay, browserHandle, parentDrawable, 0, 0);
-}
-
-void X_XSetInputFocus(unsigned long browserHandle) {
-  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
-  XSetInputFocus(xdisplay, browserHandle, RevertToParent, CurrentTime);
-}
-
-void X_XSetInputFocusParent(unsigned long browserHandle) {
-  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
-
-  Window root_win;
-  Window parent_win;
-  Window* child_windows;
-  unsigned int num_child_windows;
-  XQueryTree(xdisplay, browserHandle, &root_win, &parent_win, &child_windows,
-             &num_child_windows);
-  XFree(child_windows);
-
-  XSetInputFocus(xdisplay, parent_win, RevertToParent, CurrentTime);
 }

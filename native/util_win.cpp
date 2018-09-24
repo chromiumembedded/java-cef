@@ -4,6 +4,8 @@
 
 #include "util.h"
 
+#include <windows.h>
+
 #include <tchar.h>
 #include <tlhelp32.h>
 #include <windows.h>
@@ -14,6 +16,7 @@
 #ifdef USING_JAVA
 #include "client_handler.h"
 #include "jni_util.h"
+#include "temp_window.h"
 #endif
 
 #include "include/cef_path_util.h"
@@ -21,13 +24,6 @@
 #define XBUTTON1_HI (XBUTTON1 << 16)
 
 namespace util {
-
-static std::map<CefWindowHandle, CefRefPtr<CefBrowser>> g_browsers_;
-static HANDLE g_browsers_lock_ = CreateMutex(NULL, FALSE, NULL);
-static HHOOK g_mouse_monitor_ = NULL;
-static HHOOK g_proc_monitor_ = NULL;
-static int g_mouse_monitor_refs_ = 0;
-static BOOLEAN g_once_ = TRUE;
 
 int GetPid() {
   return (int)GetCurrentProcessId();
@@ -75,6 +71,7 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
 }
 
 #ifdef USING_JAVA
+
 static int getMouseEvent(const char* evtName) {
   int value = 0;
   BEGIN_ENV(env)
@@ -136,10 +133,15 @@ static int getMouseButton(WPARAM wParam) {
   END_ENV(env)
   return mouseButton;
 }
-#endif
+
+static std::map<CefWindowHandle, CefRefPtr<CefBrowser>> g_browsers_;
+static HANDLE g_browsers_lock_ = CreateMutex(NULL, FALSE, NULL);
+static HHOOK g_mouse_monitor_ = NULL;
+static HHOOK g_proc_monitor_ = NULL;
+static int g_mouse_monitor_refs_ = 0;
+static BOOLEAN g_once_ = TRUE;
 
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
-#ifdef USING_JAVA
   if (nCode != HC_ACTION || lParam == NULL)
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 
@@ -213,7 +215,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     handler->OnMouseEvent(cefBrowser, mouseEvent, pStruct->pt.x, pStruct->pt.y,
                           modifiers, mouseButton);
   }
-#endif
+
   return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
@@ -261,5 +263,38 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
     g_mouse_monitor_ = NULL;
   }
 }
+
+void SetParent(CefWindowHandle browserHandle,
+               JNIEnv* env,
+               jobject parentCanvas) {
+  HWND parentHandle;
+  if (parentCanvas != NULL)
+    parentHandle = GetHwndOfCanvas(parentCanvas, env);
+  else
+    parentHandle = TempWindow::GetWindowHandle();
+  if (parentHandle != NULL && browserHandle != NULL)
+    SetParent(browserHandle, parentHandle);
+}
+
+void SetWindowBounds(CefWindowHandle browserHandle,
+                     const CefRect& contentRect) {
+  HRGN contentRgn = CreateRectRgn(contentRect.x, contentRect.y,
+                                  contentRect.x + contentRect.width,
+                                  contentRect.y + contentRect.height);
+  SetWindowRgn(GetParent(browserHandle), contentRgn, TRUE);
+}
+
+void SetWindowSize(CefWindowHandle browserHandle, int width, int height) {
+  SetWindowPos(browserHandle, NULL, 0, 0, width, height,
+               SWP_NOZORDER | SWP_NOMOVE);
+}
+
+void FocusParent(CefWindowHandle browserHandle) {
+  HWND parent = GetParent(browserHandle);
+  SetActiveWindow(parent);
+  SetFocus(parent);
+}
+
+#endif  // USING_JAVA
 
 }  // namespace util

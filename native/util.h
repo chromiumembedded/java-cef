@@ -6,8 +6,16 @@
 #define JCEF_NATIVE_UTIL_H_
 #pragma once
 
+#include <string>
+
+#ifdef USING_JAVA
+
+#include <jni.h>
+
 #include "include/cef_browser.h"
 #include "include/cef_task.h"
+
+#endif  // USING_JAVA
 
 #if defined(OS_WIN)
 
@@ -71,12 +79,41 @@ int GetParentPid();
 // process. |identifer| is attached to the filename.
 std::string GetTempFileName(const std::string& identifer, bool useParentId);
 
+#ifdef USING_JAVA
+
 // Called by LifeSpanHandler::OnAfterCreated() to do some platform dependent
 // tasks for the browser reference like registering mouse events.
 void AddCefBrowser(CefRefPtr<CefBrowser> browser);
 
 // Called by CefBrowser.close(true) to destroy the native browser window.
 void DestroyCefBrowser(CefRefPtr<CefBrowser> browser);
+
+#if defined(OS_MACOSX)
+
+// Set the parent of |browserHandle|. If the parent is NULL the browser will be
+// parented to the TempWindow.
+void SetParent(CefWindowHandle browserHandle, jlong parentHandle);
+
+#else  // !defined(OS_MACOSX)
+
+// Set the parent of |browserHandle|. If the parent is NULL the browser will be
+// parented to the TempWindow.
+void SetParent(CefWindowHandle browserHandle,
+               JNIEnv* env,
+               jobject parentCanvas);
+
+// Set the window bounds for |browserHandle|.
+void SetWindowBounds(CefWindowHandle browserHandle, const CefRect& contentRect);
+
+// Set the window size for |browserHandle|.
+void SetWindowSize(CefWindowHandle browserHandle, int width, int height);
+
+// Set focus to the parent of |browserHandle|.
+void FocusParent(CefWindowHandle browserHandle);
+
+#endif  // !defined(OS_MACOSX)
+
+#endif  // USING_JAVA
 
 }  // namespace util
 
