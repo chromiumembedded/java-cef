@@ -46,14 +46,19 @@ bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jcallback, callback.get(), "CefFileDialogCallback");
 
   jboolean jreturn = JNI_FALSE;
+  jstring jtitle = NewJNIString(env, title);
+  jstring jdefault_file_path = NewJNIString(env, default_file_path);
+  jobject jaccept_filters = NewJNIStringVector(env, accept_filters);
   JNI_CALL_METHOD(
       env, jhandler_, "onFileDialog",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
       "CefDialogHandler$FileDialogMode;Ljava/lang/String;Ljava/lang/"
       "String;Ljava/util/Vector;ILorg/cef/callback/CefFileDialogCallback;)Z",
-      Boolean, jreturn, GetJNIBrowser(browser), jmode, NewJNIString(env, title),
-      NewJNIString(env, default_file_path),
-      NewJNIStringVector(env, accept_filters), selected_accept_filter,
-      jcallback);
+      Boolean, jreturn, GetJNIBrowser(browser), jmode, jtitle,
+      jdefault_file_path, jaccept_filters, selected_accept_filter, jcallback);
+  env->DeleteLocalRef(jaccept_filters);
+  env->DeleteLocalRef(jdefault_file_path);
+  env->DeleteLocalRef(jtitle);
+  env->DeleteLocalRef(jcallback);
   return (jreturn != JNI_FALSE);
 }

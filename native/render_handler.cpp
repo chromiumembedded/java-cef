@@ -180,6 +180,7 @@ bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
     // if result == false the native reference must be deleted
     SetCefForJNIObject<CefDragData>(env, jdragdata, NULL, "CefDragData");
   }
+  env->DeleteLocalRef(jdragdata);
   return result;
 }
 

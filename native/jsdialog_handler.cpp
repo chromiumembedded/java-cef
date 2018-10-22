@@ -50,15 +50,17 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jcallback, callback.get(), "CefJSDialogCallback");
 
   jboolean jresult = JNI_FALSE;
+  jstring jorigin_url = NewJNIString(env, origin_url);
+  jstring jmessage_text = NewJNIString(env, message_text);
+  jstring jdefault_prompt_text = NewJNIString(env, default_prompt_text);
   JNI_CALL_METHOD(
       env, jhandler_, "onJSDialog",
       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
       "Lorg/cef/handler/CefJSDialogHandler$JSDialogType;Ljava/lang/String;"
       "Ljava/lang/String;Lorg/cef/callback/CefJSDialogCallback;Lorg/cef/misc/"
       "BoolRef;)Z",
-      Boolean, jresult, GetJNIBrowser(browser), NewJNIString(env, origin_url),
-      jdialogType, NewJNIString(env, message_text),
-      NewJNIString(env, default_prompt_text), jcallback, jboolRef);
+      Boolean, jresult, GetJNIBrowser(browser), jorigin_url, jdialogType,
+      jmessage_text, jdefault_prompt_text, jcallback, jboolRef);
 
   suppress_message = GetJNIBoolRef(env, jboolRef);
 
@@ -68,6 +70,11 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
     SetCefForJNIObject<CefJSDialogCallback>(env, jcallback, NULL,
                                             "CefJSDialogCallback");
   }
+  env->DeleteLocalRef(jcallback);
+  env->DeleteLocalRef(jorigin_url);
+  env->DeleteLocalRef(jmessage_text);
+  env->DeleteLocalRef(jdefault_prompt_text);
+  env->DeleteLocalRef(jboolRef);
   return (jresult != JNI_FALSE);
 }
 
@@ -87,11 +94,11 @@ bool JSDialogHandler::OnBeforeUnloadDialog(
   SetCefForJNIObject(env, jcallback, callback.get(), "CefJSDialogCallback");
 
   jboolean jresult = JNI_FALSE;
+  jstring jmessage_text = NewJNIString(env, message_text);
   JNI_CALL_METHOD(env, jhandler_, "onBeforeUnloadDialog",
                   "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;ZLorg/cef/"
                   "callback/CefJSDialogCallback;)Z",
-                  Boolean, jresult, GetJNIBrowser(browser),
-                  NewJNIString(env, message_text),
+                  Boolean, jresult, GetJNIBrowser(browser), jmessage_text,
                   (is_reload ? JNI_TRUE : JNI_FALSE), jcallback);
 
   if (jresult == JNI_FALSE) {
@@ -100,6 +107,8 @@ bool JSDialogHandler::OnBeforeUnloadDialog(
     SetCefForJNIObject<CefJSDialogCallback>(env, jcallback, NULL,
                                             "CefJSDialogCallback");
   }
+  env->DeleteLocalRef(jcallback);
+  env->DeleteLocalRef(jmessage_text);
   return (jresult != JNI_FALSE);
 }
 

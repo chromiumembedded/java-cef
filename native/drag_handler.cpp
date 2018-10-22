@@ -37,5 +37,6 @@ bool DragHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
 
   // Remove native reference from java class
   SetCefForJNIObject<CefDragData>(env, jdragdata, NULL, "CefDragData");
+  env->DeleteLocalRef(jdragdata);
   return (result != JNI_FALSE);
 }

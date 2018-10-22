@@ -21,6 +21,8 @@ void PdfPrintCallback::OnPdfPrintFinished(const CefString& path, bool ok) {
   if (!env)
     return;
 
+  jstring jpath = NewJNIString(env, path);
   JNI_CALL_VOID_METHOD(env, jcallback_, "onPdfPrintFinished",
-    "(Ljava/lang/String;Z)V", NewJNIString(env, path), (jboolean)ok);
+                       "(Ljava/lang/String;Z)V", jpath, (jboolean)ok);
+  env->DeleteLocalRef(jpath);
 }

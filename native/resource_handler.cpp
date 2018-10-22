@@ -26,8 +26,10 @@ bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
   if (!jrequest)
     return false;
   jobject jcallback = NewJNIObject(env, "org/cef/callback/CefCallback_N");
-  if (!jcallback)
+  if (!jcallback) {
+    env->DeleteLocalRef(jrequest);
     return false;
+  }
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
   SetCefForJNIObject(env, jcallback, callback.get(), "CefCallback");
 
@@ -40,6 +42,8 @@ bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
     SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
     SetCefForJNIObject<CefCallback>(env, jcallback, NULL, "CefCallback");
   }
+  env->DeleteLocalRef(jcallback);
+  env->DeleteLocalRef(jrequest);
   return (result != JNI_FALSE);
 }
 
@@ -54,11 +58,16 @@ void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
   if (!jresponse)
     return;
   jobject jintRef = NewJNIIntRef(env, response_length);
-  if (!jintRef)
+  if (!jintRef) {
+    env->DeleteLocalRef(jresponse);
     return;
+  }
   jobject jstringRef = NewJNIStringRef(env, redirectUrl);
-  if (!jstringRef)
+  if (!jstringRef) {
+    env->DeleteLocalRef(jintRef);
+    env->DeleteLocalRef(jresponse);
     return;
+  }
 
   SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
 
@@ -69,6 +78,9 @@ void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
   response_length = GetJNIIntRef(env, jintRef);
   redirectUrl = GetJNIStringRef(env, jstringRef);
   SetCefForJNIObject<CefResponse>(env, jresponse, NULL, "CefResponse");
+  env->DeleteLocalRef(jstringRef);
+  env->DeleteLocalRef(jintRef);
+  env->DeleteLocalRef(jresponse);
   return;
 }
 
@@ -84,8 +96,10 @@ bool ResourceHandler::ReadResponse(void* data_out,
   if (!jintRef)
     return false;
   jobject jcallback = NewJNIObject(env, "org/cef/callback/CefCallback_N");
-  if (!jcallback)
+  if (!jcallback) {
+    env->DeleteLocalRef(jintRef);
     return false;
+  }
   SetCefForJNIObject(env, jcallback, callback.get(), "CefCallback");
 
   jbyteArray jbytes = env->NewByteArray(bytes_to_read);
@@ -108,6 +122,8 @@ bool ResourceHandler::ReadResponse(void* data_out,
           (bytes_read < bytes_to_read ? bytes_read : bytes_to_read));
   env->ReleaseByteArrayElements(jbytes, jbyte, JNI_ABORT);
   env->DeleteLocalRef(jbytes);
+  env->DeleteLocalRef(jintRef);
+  env->DeleteLocalRef(jcallback);
   return result;
 }
 

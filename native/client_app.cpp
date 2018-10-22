@@ -57,6 +57,8 @@ void ClientApp::OnBeforeCommandLineProcessing(
       SetCefForJNIObject<CefCommandLine>(env, jcommand_line, NULL,
                                          "CefCommandLine");
     }
+    env->DeleteLocalRef(jcommand_line);
+    env->DeleteLocalRef(jprocess_type);
     END_ENV(env)
   }
 
@@ -104,6 +106,7 @@ void ClientApp::OnRegisterCustomSchemes(
     SetCefForJNIObject<CefSchemeRegistrar>(env, jregistrar, NULL,
                                            "CefSchemeRegistrar");
   }
+  env->DeleteLocalRef(jregistrar);
   END_ENV(env)
 }
 

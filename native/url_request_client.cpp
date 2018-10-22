@@ -92,16 +92,23 @@ bool URLRequestClient::GetAuthCredentials(bool isProxy,
   SetCefForJNIObject<CefAuthCallback>(env, jcallback, callback,
                                       "CefAuthCallback");
 
+  jstring jhost = NewJNIString(env, host);
+  jstring jrealm = NewJNIString(env, realm);
+  jstring jscheme = NewJNIString(env, scheme);
   JNI_CALL_METHOD(env, jURLRequestClient_, "getAuthCredentials",
                   "(ZLjava/lang/String;ILjava/lang/String;Ljava/lang/"
                   "String;Lorg/cef/callback/CefAuthCallback;)Z",
-                  Boolean, jresult, (isProxy ? JNI_TRUE : JNI_FALSE),
-                  NewJNIString(env, host), port, NewJNIString(env, realm),
-                  NewJNIString(env, scheme), jcallback);
+                  Boolean, jresult, (isProxy ? JNI_TRUE : JNI_FALSE), jhost,
+                  port, jrealm, jscheme, jcallback);
+  env->DeleteLocalRef(jhost);
+  env->DeleteLocalRef(jrealm);
+  env->DeleteLocalRef(jscheme);
 
   if (jresult == JNI_FALSE)
     SetCefForJNIObject<CefAuthCallback>(env, jcallback, NULL,
                                         "CefAuthCallback");
+  env->DeleteLocalRef(jcallback);
+
   END_ENV(env)
 
   return (jresult != JNI_FALSE);

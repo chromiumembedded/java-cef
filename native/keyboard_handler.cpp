@@ -54,8 +54,10 @@ bool KeyboardHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
     return false;
 
   jobject jboolRef = NewJNIBoolRef(env, *is_keyboard_shortcut);
-  if (!jboolRef)
+  if (!jboolRef) {
+    env->DeleteLocalRef(jevent);
     return false;
+  }
 
   jboolean jresult = JNI_FALSE;
   JNI_CALL_METHOD(env, jhandler_, "onPreKeyEvent",
@@ -64,6 +66,8 @@ bool KeyboardHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                   Boolean, jresult, GetJNIBrowser(browser), jevent, jboolRef);
 
   *is_keyboard_shortcut = GetJNIBoolRef(env, jboolRef);
+  env->DeleteLocalRef(jevent);
+  env->DeleteLocalRef(jboolRef);
   return (jresult != JNI_FALSE);
 }
 
@@ -84,5 +88,6 @@ bool KeyboardHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
                   "CefKeyboardHandler$CefKeyEvent;)Z",
                   Boolean, jresult, GetJNIBrowser(browser), jevent);
 
+  env->DeleteLocalRef(jevent);
   return (jresult != JNI_FALSE);
 }

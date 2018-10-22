@@ -20,6 +20,8 @@ void StringVisitor::Visit(const CefString& string) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+  jstring j_string = NewJNIString(env, string);
   JNI_CALL_VOID_METHOD(env, jvisitor_, "visit", "(Ljava/lang/String;)V",
-                       NewJNIString(env, string));
+                       j_string);
+  env->DeleteLocalRef(j_string);
 }

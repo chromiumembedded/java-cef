@@ -28,8 +28,7 @@ void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
   JNI_CALL_VOID_METHOD(env, jhandler_, "onAddressChange",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                        "CefFrame;Ljava/lang/String;)V",
-                       GetJNIBrowser(browser), jframe,
-                       jurl);
+                       GetJNIBrowser(browser), jframe, jurl);
   env->DeleteLocalRef(jurl);
   env->DeleteLocalRef(jframe);
 }
@@ -101,8 +100,8 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
       env, jhandler_, "onConsoleMessage",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/CefSettings$LogSeverity;"
       "Ljava/lang/String;Ljava/lang/String;I)Z",
-      Boolean, jreturn, GetJNIBrowser(browser), jlevel,
-      jmessage, jsource, line);
+      Boolean, jreturn, GetJNIBrowser(browser), jlevel, jmessage, jsource,
+      line);
   env->DeleteLocalRef(jsource);
   env->DeleteLocalRef(jmessage);
   return (jreturn != JNI_FALSE);
