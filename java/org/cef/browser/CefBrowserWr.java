@@ -48,6 +48,7 @@ class CefBrowserWr extends CefBrowser_N {
     private Component component_ = null;
     private Rectangle content_rect_ = new Rectangle(0, 0, 0, 0);
     private long window_handle_ = 0;
+    private boolean justCreated_ = false;
     private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -290,6 +291,7 @@ class CefBrowserWr extends CefBrowser_N {
 
     @Override
     public void createImmediately() {
+        justCreated_ = true;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -396,9 +398,10 @@ class CefBrowserWr extends CefBrowser_N {
                         getRequestContext());
                 return true;
             }
-        } else if (hasParent) {
+        } else if (hasParent && justCreated_) {
             setParent(windowHandle, canvas);
             setFocus(true);
+            justCreated_ = false;
         }
 
         return false;
