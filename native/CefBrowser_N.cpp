@@ -1262,14 +1262,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1Close(JNIEnv* env,
   }
 }
 
-#if defined(OS_WIN)
-static void FocusParent(HWND browserHandle) {
-  HWND parent = GetParent(browserHandle);
-  SetActiveWindow(parent);
-  SetFocus(parent);
-}
-#endif
-
 JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1SetFocus(JNIEnv* env,
                                                jobject obj,
@@ -1280,16 +1272,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetFocus(JNIEnv* env,
   } else {
     browser->GetHost()->SetFocus(enable != JNI_FALSE);
   }
-
-#if defined(OS_WIN)
-  if (enable == JNI_FALSE) {
-    HWND browserHandle = browser->GetHost()->GetWindowHandle();
-    if (CefCurrentlyOn(TID_UI))
-      FocusParent(browserHandle);
-    else
-      CefPostTask(TID_UI, base::Bind(&FocusParent, browserHandle));
-  }
-#endif
 }
 
 JNIEXPORT void JNICALL
