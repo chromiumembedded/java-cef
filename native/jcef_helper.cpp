@@ -8,6 +8,17 @@
 #include "include/wrapper/cef_message_router.h"
 #include "util.h"
 
+#if defined(OS_MACOSX)
+// When generating projects with CMake the CEF_USE_SANDBOX value will be defined
+// automatically. Pass -DUSE_SANDBOX=OFF to the CMake command-line to disable
+// use of the sandbox.
+#if defined(CEF_USE_SANDBOX)
+#include "include/cef_sandbox_mac.h"
+#endif
+
+#include "include/wrapper/cef_library_loader.h"
+#endif  // defined(OS_MACOSX)
+
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
@@ -166,10 +177,25 @@ int CALLBACK WinMain(HINSTANCE hInstance,
                      LPSTR lpCmdLine,
                      int nCmdShow) {
   CefMainArgs main_args(hInstance);
-#else
+#else  // !defined(OS_WIN)
 int main(int argc, char* argv[]) {
+#if defined(OS_MACOSX)
+#if defined(CEF_USE_SANDBOX)
+  // Initialize the macOS sandbox for this helper process.
+  CefScopedSandboxContext sandbox_context;
+  if (!sandbox_context.Initialize(argc, argv))
+    return 1;
+#endif  // defined(CEF_USE_SANDBOX)
+
+  // Load the CEF framework library at runtime instead of linking directly
+  // as required by the macOS sandbox implementation.
+  CefScopedLibraryLoader library_loader;
+  if (!library_loader.LoadInHelper())
+    return 1;
+#endif  // defined(OS_MACOSX)
+
   CefMainArgs main_args(argc, argv);
-#endif
+#endif  // !defined(OS_WIN)
 
   CefRefPtr<CefHelperApp> app = new CefHelperApp();
   return CefExecuteProcess(main_args, app.get(), NULL);

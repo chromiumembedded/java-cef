@@ -136,12 +136,10 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        if (OS.isLinux()) {
-            // This is crucial to get Linux Windowed Rendering to function correctly!
-            // The initXlibForMultithreading call must be done before ANY other call
-            // to Xlib from this process, including calls from the Java runtime.
-            System.loadLibrary("jcef");
-            CefApp.initXlibForMultithreading();
+        // Perform startup initialization on platforms that require it.
+        if (!CefApp.startup()) {
+            System.out.println("Startup initialization failed!");
+            return;
         }
 
         // The simple example application is created as anonymous class and points

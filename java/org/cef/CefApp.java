@@ -138,10 +138,12 @@ public class CefApp extends CefAppHandlerAdapter {
             System.loadLibrary("jawt");
             System.loadLibrary("chrome_elf");
             System.loadLibrary("libcef");
+
+            // Other platforms load this library in CefApp.startup().
+            System.loadLibrary("jcef");
         } else if (OS.isLinux()) {
             System.loadLibrary("cef");
         }
-        System.loadLibrary("jcef");
         if (appHandler_ == null) {
             appHandler_ = this;
         }
@@ -507,13 +509,16 @@ public class CefApp extends CefAppHandlerAdapter {
     }
 
     /**
-     * On Linux this method must be called before ANY other call to Xlib from
-     * this process, including calls from the Java runtime.
+     * This method must be called at the beginning of the main() method to perform platform-
+     * specific startup initialization. On Linux this initializes Xlib multithreading and on
+     * macOS this dynamically loads the CEF framework.
      */
-    public static final void initXlibForMultithreading() {
-        if (OS.isLinux()) {
-            N_InitXlibForMultithreading();
+    public static final boolean startup() {
+        if (OS.isLinux() || OS.isMacintosh()) {
+            System.loadLibrary("jcef");
+            return N_Startup();
         }
+        return true;
     }
 
     /**
@@ -538,6 +543,7 @@ public class CefApp extends CefAppHandlerAdapter {
         return library_path;
     }
 
+    private final static native boolean N_Startup();
     private final native boolean N_PreInitialize();
     private final native boolean N_Initialize(
             String pathToJavaDLL, CefAppHandler appHandler, CefSettings settings);
@@ -547,5 +553,4 @@ public class CefApp extends CefAppHandlerAdapter {
     private final native boolean N_RegisterSchemeHandlerFactory(
             String schemeName, String domainName, CefSchemeHandlerFactory factory);
     private final native boolean N_ClearSchemeHandlerFactories();
-    private final static native void N_InitXlibForMultithreading();
 }

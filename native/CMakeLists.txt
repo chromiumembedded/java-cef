@@ -203,8 +203,11 @@ else()
   set(JCEF_HELPER_TARGET "jcef_helper")
 endif()
 
-# Logical target used to link the libcef library.
-ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+if(OS_LINUX OR OS_WINDOWS)
+  # Logical target used to link the libcef library on Linux and Windows.
+  # On macOS the CEF framework is loaded dynamically at startup.
+  ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+endif()
 
 # Determine the target output directory.
 SET_CEF_TARGET_OUT_DIR()
@@ -265,6 +268,7 @@ if(OS_LINUX)
     COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_RESOURCE_DIR}/icudtl.dat ${JAVA_DIR}/jre/bin/icudtl.dat"
     COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/natives_blob.bin ${JAVA_DIR}/jre/bin/natives_blob.bin"
     COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/snapshot_blob.bin ${JAVA_DIR}/jre/bin/snapshot_blob.bin"
+    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/v8_context_snapshot.bin ${JAVA_DIR}/jre/bin/v8_context_snapshot.bin"
     COMMAND ${CMAKE_COMMAND} -E echo ""
     VERBATIM
     )
@@ -295,20 +299,23 @@ if(OS_MACOSX)
   add_executable(${JCEF_HELPER_TARGET} MACOSX_BUNDLE ${JCEF_HELPER_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_HELPER_TARGET})
   add_dependencies(${JCEF_HELPER_TARGET} libcef_dll_wrapper)
-  target_link_libraries(${JCEF_HELPER_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+  target_link_libraries(${JCEF_HELPER_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS})
   set_target_properties(${JCEF_HELPER_TARGET} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/jcef-Info.plist
     OUTPUT_NAME ${JCEF_HELPER_OUTPUT_NAME}
     )
 
-  # Fix the framework rpath in the helper executable.
-  FIX_MACOSX_HELPER_FRAMEWORK_RPATH(${JCEF_HELPER_TARGET})
+  if(USE_SANDBOX)
+    # Logical target used to link the cef_sandbox library.
+    ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+    target_link_libraries(${JCEF_HELPER_TARGET} cef_sandbox_lib)
+  endif()
 
   # JCEF library target.
   add_library(${JCEF_TARGET} SHARED ${JCEF_RESOURCES_SRCS} ${JCEF_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_TARGET})
   add_dependencies(${JCEF_TARGET} libcef_dll_wrapper "${JCEF_HELPER_TARGET}")
-  target_link_libraries(${JCEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS}  ${JNI_LIBRARIES})
+  target_link_libraries(${JCEF_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS}  ${JNI_LIBRARIES})
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
   # Compile flags specific to the JCEF library target.
@@ -345,9 +352,6 @@ if(OS_MACOSX)
             "${JCEF_TARGET_LIBRARY_APP_PATH}"
     VERBATIM
     )
-
-  # Fix the framework rpath in the JCEF library.
-  FIX_MACOSX_MAIN_FRAMEWORK_RPATH(${JCEF_TARGET})
 endif()
 
 

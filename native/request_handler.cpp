@@ -447,6 +447,8 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
              TS_PROCESS_WAS_KILLED, jstatus);
     JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
              TS_PROCESS_CRASHED, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
+             TS_PROCESS_OOM, jstatus);
   }
 
   JNI_CALL_VOID_METHOD(

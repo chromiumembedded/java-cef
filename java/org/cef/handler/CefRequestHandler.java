@@ -25,7 +25,8 @@ public interface CefRequestHandler {
     enum TerminationStatus {
         TS_ABNORMAL_TERMINATION, //!< Non-zero exit status.
         TS_PROCESS_WAS_KILLED, //!< SIGKILL or task manager kill.
-        TS_PROCESS_CRASHED //!< Segmentation fault.
+        TS_PROCESS_CRASHED, //!< Segmentation fault.
+        TS_PROCESS_OOM //!< Out of memory.
     }
 
     /**
