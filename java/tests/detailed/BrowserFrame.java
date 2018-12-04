@@ -110,6 +110,7 @@ public class BrowserFrame extends JFrame {
     }
 
     public void removeBrowser() {
+        remove(browser_.getUIComponent());
         browser_ = null;
     }
 
