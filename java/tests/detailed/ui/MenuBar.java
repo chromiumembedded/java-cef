@@ -77,6 +77,7 @@ public class MenuBar extends JMenuBar {
     private final ControlPanel control_pane_;
     private final DownloadDialog downloadDialog_;
     private final CefCookieManager cookieManager_;
+    private boolean reparentPending_ = false;
 
     public MenuBar(BrowserFrame owner, CefBrowser browser, ControlPanel control_pane,
             DownloadDialog downloadDialog, CefCookieManager cookieManager) {
@@ -405,20 +406,31 @@ public class MenuBar extends JMenuBar {
                 reparentButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        if (reparentPending_) return;
+                        reparentPending_ = true;
+
                         if (reparentButton.getText().equals("Reparent <")) {
-                            owner_.removeBrowser();
-                            newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
-                            newFrame.setBrowser(browser_);
-                            reparentButton.setText("Reparent >");
+                            owner_.removeBrowser(new Runnable() {
+                                public void run() {
+                                    newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
+                                    newFrame.setBrowser(browser_);
+                                    reparentButton.setText("Reparent >");
+                                    reparentPending_ = false;
+                                }
+                            });
                         } else {
-                            newFrame.removeBrowser();
-                            JRootPane rootPane = (JRootPane) owner_.getComponent(0);
-                            Container container = rootPane.getContentPane();
-                            JPanel panel = (JPanel) container.getComponent(0);
-                            panel.add(browser_.getUIComponent());
-                            owner_.setBrowser(browser_);
-                            owner_.revalidate();
-                            reparentButton.setText("Reparent <");
+                            newFrame.removeBrowser(new Runnable() {
+                                public void run() {
+                                    JRootPane rootPane = (JRootPane) owner_.getComponent(0);
+                                    Container container = rootPane.getContentPane();
+                                    JPanel panel = (JPanel) container.getComponent(0);
+                                    panel.add(browser_.getUIComponent());
+                                    owner_.setBrowser(browser_);
+                                    owner_.revalidate();
+                                    reparentButton.setText("Reparent <");
+                                    reparentPending_ = false;
+                                }
+                            });
                         }
                     }
                 });

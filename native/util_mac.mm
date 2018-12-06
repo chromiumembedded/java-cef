@@ -10,6 +10,7 @@
 #import <jni.h>
 #include <objc/runtime.h>
 
+#include "include/base/cef_callback.h"
 #include "include/cef_app.h"
 #include "include/cef_application_mac.h"
 #include "include/cef_browser.h"
@@ -524,7 +525,10 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void SetParent(CefWindowHandle handle, jlong parentHandle) {
+void SetParent(CefWindowHandle handle,
+               jlong parentHandle,
+               const base::Closure& callback) {
+  base::Closure* pCallback = new base::Closure(callback);
   dispatch_async(dispatch_get_main_queue(), ^{
     CefBrowserContentView* browser_view =
         (CefBrowserContentView*)[handle superview];
@@ -540,6 +544,8 @@ void SetParent(CefWindowHandle handle, jlong parentHandle) {
     }
     [contentView addSubview:browser_view];
     [browser_view release];
+    pCallback->Run();
+    delete pCallback;
   });
 }
 

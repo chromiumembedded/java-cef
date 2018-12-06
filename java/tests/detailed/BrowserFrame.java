@@ -7,6 +7,7 @@ package tests.detailed;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.cef.CefApp;
 import org.cef.browser.CefBrowser;
@@ -16,6 +17,7 @@ public class BrowserFrame extends JFrame {
     private boolean isClosed_ = false;
     private CefBrowser browser_ = null;
     private static int browserCount_ = 0;
+    private Runnable afterParentChangedAction_ = null;
 
     public BrowserFrame() {
         this(null);
@@ -91,6 +93,16 @@ public class BrowserFrame extends JFrame {
             }
 
             @Override
+            public void onAfterParentChanged(CefBrowser browser) {
+                System.out.println(
+                        "BrowserFrame.onAfterParentChanged id=" + browser.getIdentifier());
+                if (afterParentChangedAction_ != null) {
+                    SwingUtilities.invokeLater(afterParentChangedAction_);
+                    afterParentChangedAction_ = null;
+                }
+            }
+
+            @Override
             public boolean doClose(CefBrowser browser) {
                 boolean result = browser.doClose();
                 System.out.println("BrowserFrame.doClose id=" + browser.getIdentifier()
@@ -109,8 +121,13 @@ public class BrowserFrame extends JFrame {
         });
     }
 
-    public void removeBrowser() {
+    public void removeBrowser(Runnable r) {
+        System.out.println("BrowserFrame.removeBrowser");
+        afterParentChangedAction_ = r;
         remove(browser_.getUIComponent());
+        // The removeNotify() notification should be sent as a result of calling remove().
+        // However, it isn't in all cases so we do it manually here.
+        browser_.getUIComponent().removeNotify();
         browser_ = null;
     }
 

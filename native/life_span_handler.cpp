@@ -102,6 +102,16 @@ void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   client->OnBeforeClose(browser);
 }
 
+void LifeSpanHandler::OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
+  REQUIRE_UI_THREAD();
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+  jobject jbrowser = GetJNIBrowser(browser);
+  JNI_CALL_VOID_METHOD(env, jhandler_, "onAfterParentChanged",
+                       "(Lorg/cef/browser/CefBrowser;)V", jbrowser);
+}
+
 void LifeSpanHandler::registerJBrowser(jobject browser) {
   jbrowsers_.push_back(browser);
 }

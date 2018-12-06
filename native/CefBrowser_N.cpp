@@ -998,6 +998,24 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
   }
 }
 
+void OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
+  if (!CefCurrentlyOn(TID_UI)) {
+    CefPostTask(TID_UI, base::Bind(&OnAfterParentChanged, browser));
+    return;
+  }
+
+  if (browser->GetHost()->GetClient()) {
+    CefRefPtr<LifeSpanHandler> lifeSpanHandler =
+        (LifeSpanHandler*)browser->GetHost()
+            ->GetClient()
+            ->GetLifeSpanHandler()
+            .get();
+    if (lifeSpanHandler) {
+      lifeSpanHandler->OnAfterParentChanged(browser);
+    }
+  }
+}
+
 }  // namespace
 
 JNIEXPORT jboolean JNICALL
@@ -1880,18 +1898,20 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
                                                 jlong windowHandle,
                                                 jobject canvas) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  const base::Closure& callback = base::Bind(OnAfterParentChanged, browser);
 
 #if defined(OS_MACOSX)
-  util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle);
+  util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle,
+                  callback);
 #else
   CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
   CefWindowHandle parentHandle =
       canvas ? util::GetWindowHandle(env, canvas) : kNullWindowHandle;
   if (CefCurrentlyOn(TID_UI)) {
-    util::SetParent(browserHandle, parentHandle);
+    util::SetParent(browserHandle, parentHandle, callback);
   } else {
-    CefPostTask(TID_UI,
-                base::Bind(util::SetParent, browserHandle, parentHandle));
+    CefPostTask(TID_UI, base::Bind(util::SetParent, browserHandle, parentHandle,
+                                   callback));
   }
 #endif
 }

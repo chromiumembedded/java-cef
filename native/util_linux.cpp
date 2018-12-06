@@ -7,6 +7,8 @@
 #include <X11/Xlib.h>
 #undef Success
 
+#include "include/base/cef_callback.h"
+
 #include "jni_util.h"
 #include "temp_window.h"
 
@@ -65,11 +67,14 @@ CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
   return GetDrawableOfCanvas(canvas, env);
 }
 
-void SetParent(CefWindowHandle browserHandle, CefWindowHandle parentHandle) {
+void SetParent(CefWindowHandle browserHandle,
+               CefWindowHandle parentHandle,
+               const base::Closure& callback) {
   if (parentHandle == kNullWindowHandle)
     parentHandle = TempWindow::GetWindowHandle();
   if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
     X_XReparentWindow(browserHandle, parentHandle);
+  callback.Run();
 }
 
 void SetWindowBounds(CefWindowHandle browserHandle,

@@ -32,6 +32,8 @@ class LifeSpanHandler : public CefLifeSpanHandler {
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
+  void OnAfterParentChanged(CefRefPtr<CefBrowser> browser);
+
   void registerJBrowser(jobject browser);
   void unregisterJBrowser(jobject browser);
 

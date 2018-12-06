@@ -517,6 +517,12 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public void onAfterParentChanged(CefBrowser browser) {
+        if (browser == null) return;
+        if (lifeSpanHandler_ != null) lifeSpanHandler_.onAfterParentChanged(browser);
+    }
+
+    @Override
     public boolean doClose(CefBrowser browser) {
         if (browser == null) return false;
         if (lifeSpanHandler_ != null) return lifeSpanHandler_.doClose(browser);

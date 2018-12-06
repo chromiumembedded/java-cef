@@ -61,6 +61,13 @@ public interface CefLifeSpanHandler {
     public void onAfterCreated(CefBrowser browser);
 
     /**
+     * Called after a browser's native parent window has changed.
+     *
+     * @param browser The browser generating the event.
+     */
+    public void onAfterParentChanged(CefBrowser browser);
+
+    /**
      * Called when a browser has received a request to close.
      *
      * If CEF created an OS window for the browser returning false will send an OS

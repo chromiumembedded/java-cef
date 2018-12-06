@@ -178,6 +178,8 @@ class CefBrowserWr extends CefBrowser_N {
         // We're using a JComponent instead of a Canvas now because the
         // JComponent has clipping informations, which aren't accessible for Canvas.
         component_ = new JPanel(new BorderLayout()) {
+            private boolean removed_ = true;
+
             @Override
             public void setBounds(int x, int y, int width, int height) {
                 super.setBounds(x, y, width, height);
@@ -217,38 +219,29 @@ class CefBrowserWr extends CefBrowser_N {
             @Override
             public void addNotify() {
                 super.addNotify();
-                if (OS.isMacintosh()) {
-                    setParent(getWindowHandle(this), null);
+                if (removed_) {
+                    setParent(getWindowHandle(this), canvas_);
+                    removed_ = false;
                 }
             }
 
             @Override
             public void removeNotify() {
-                if (!isClosed() && OS.isMacintosh()) {
-                    setParent(0, null);
+                if (!removed_) {
+                    if (!isClosed()) {
+                        setParent(0, null);
+                    }
+                    removed_ = true;
                 }
                 super.removeNotify();
             }
         };
+
         // On windows we have to use a Canvas because its a heavyweight component
         // and we need its native HWND as parent for the browser UI. The same
         // technique is used on Linux as well.
         if (OS.isWindows() || OS.isLinux()) {
-            canvas_ = new Canvas() {
-                @Override
-                public void addNotify() {
-                    super.addNotify();
-                    setParent(0, this);
-                }
-
-                @Override
-                public void removeNotify() {
-                    if (!isClosed()) {
-                        setParent(0, null);
-                    }
-                    super.removeNotify();
-                }
-            };
+            canvas_ = new Canvas();
             ((JPanel) component_).add(canvas_, BorderLayout.CENTER);
         }
 

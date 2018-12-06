@@ -23,6 +23,9 @@ public abstract class CefLifeSpanHandlerAdapter implements CefLifeSpanHandler {
     public void onAfterCreated(CefBrowser browser) {}
 
     @Override
+    public void onAfterParentChanged(CefBrowser browser) {}
+
+    @Override
     public boolean doClose(CefBrowser browser) {
         return false;
     }
