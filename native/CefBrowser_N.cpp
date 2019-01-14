@@ -1918,3 +1918,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
   }
 #endif
 }
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv* env,
+                                               jobject obj) {
+#if (defined(OS_WIN) || defined(OS_LINUX))
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  if (!browser->GetHost()->IsWindowRenderingDisabled()) {
+    browser->GetHost()->NotifyMoveOrResizeStarted();
+  }
+#endif
+}

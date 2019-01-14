@@ -736,6 +736,18 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    /**
+     * Call this method if the browser frame was moved.
+     * This fixes positioning of select popups and dismissal on window move/resize.
+     */
+    protected final void notifyMoveOrResizeStarted() {
+        try {
+            N_NotifyMoveOrResizeStarted();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle,
             String url, boolean osr, boolean transparent, Component canvas,
             CefRequestContext context);
@@ -799,4 +811,5 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_DragSourceSystemDragEnded();
     private final native void N_UpdateUI(Rectangle contentRect, Rectangle browserRect);
     private final native void N_SetParent(long windowHandle, Component canvas);
+    private final native void N_NotifyMoveOrResizeStarted();
 }

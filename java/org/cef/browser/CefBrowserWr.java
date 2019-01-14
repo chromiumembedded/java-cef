@@ -270,6 +270,7 @@ class CefBrowserWr extends CefBrowser_N {
             @Override
             public void ancestorMoved(HierarchyEvent e) {
                 doUpdate();
+                notifyMoveOrResizeStarted();
             }
         });
         component_.addHierarchyListener(new HierarchyListener() {
