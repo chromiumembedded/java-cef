@@ -46,14 +46,8 @@ else
       exit 1
     fi
 
-    export DISTRIB_TESTS_PATH="$DISTRIB_PATH/tests"
-
-    if [ ! -d "$DISTRIB_TESTS_PATH" ]; then
-      mkdir -p "$DISTRIB_TESTS_PATH"
-    fi
-
     # Copy test program source file to the tests directory.
-    cp -rf $SOURCE_PATH/tests $DISTRIB_TESTS_PATH
+    cp -rf $SOURCE_PATH/tests $DISTRIB_PATH
 
     # Everything else is contained in the app bundle.
     cp -rf $OUT_BINARY_PATH/jcef_app.app $DISTRIB_BIN_PATH
