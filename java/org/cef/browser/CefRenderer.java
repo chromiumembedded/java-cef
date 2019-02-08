@@ -115,6 +115,7 @@ class CefRenderer {
 
         // Draw the facets with the texture.
         assert(texture_id_[0] != 0);
+        gl2.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
         gl2.glInterleavedArrays(gl2.GL_T2F_V3F, 0, vertices);
         gl2.glDrawArrays(gl2.GL_QUADS, 0, 4);
