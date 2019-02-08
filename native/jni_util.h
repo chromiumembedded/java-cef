@@ -191,7 +191,7 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,
                       const char* method_name,
-                      char* value);
+                      char16* value);
 
 // Retrieve the CefPageRange equivalent of a org.cef.misc.CefPageRange
 CefRange GetJNIPageRange(JNIEnv* env, jobject obj);
