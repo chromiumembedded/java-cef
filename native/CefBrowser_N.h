@@ -528,8 +528,9 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv*,
  * Method:    N_NotifyMoveOrResizeStarted
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv*,
-                                                                                       jobject);
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv*,
+                                                                jobject);
 #ifdef __cplusplus
 }
 #endif
