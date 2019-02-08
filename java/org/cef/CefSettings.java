@@ -40,6 +40,11 @@ public class CefSettings {
         LOGSEVERITY_ERROR,
 
         /**
+         * FATAL logging.
+         */
+        LOGSEVERITY_FATAL,
+
+        /**
          * Completely disable logging.
          */
         LOGSEVERITY_DISABLE

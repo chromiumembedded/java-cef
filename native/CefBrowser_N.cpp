@@ -1929,3 +1929,4 @@ Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv* env,
   }
 #endif
 }
+
