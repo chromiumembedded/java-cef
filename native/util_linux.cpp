@@ -31,20 +31,6 @@ void X_XReparentWindow(unsigned long browserHandle,
   XReparentWindow(xdisplay, browserHandle, parentDrawable, 0, 0);
 }
 
-void X_XSetInputFocusParent(unsigned long browserHandle) {
-  ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
-
-  Window root_win;
-  Window parent_win;
-  Window* child_windows;
-  unsigned int num_child_windows;
-  XQueryTree(xdisplay, browserHandle, &root_win, &parent_win, &child_windows,
-             &num_child_windows);
-  XFree(child_windows);
-
-  XSetInputFocus(xdisplay, parent_win, RevertToParent, CurrentTime);
-}
-
 }  // namespace
 
 // This function is called by LifeSpanHandler::OnAfterCreated().
@@ -85,10 +71,6 @@ void SetWindowBounds(CefWindowHandle browserHandle,
 
 void SetWindowSize(CefWindowHandle browserHandle, int width, int height) {
   X_XMoveResizeWindow(browserHandle, 0, 0, width, height);
-}
-
-void FocusParent(CefWindowHandle browserHandle) {
-  X_XSetInputFocusParent(browserHandle);
 }
 
 }  // namespace util

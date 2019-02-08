@@ -9,7 +9,6 @@
 
 #include "client_handler.h"
 #include "jni_util.h"
-#include "util.h"
 
 FocusHandler::FocusHandler(JNIEnv* env, jobject handler) {
   jhandler_ = env->NewGlobalRef(handler);
@@ -48,17 +47,7 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
                   "CefFocusHandler$FocusSource;)Z",
                   Boolean, jreturn, GetJNIBrowser(browser), jsource);
-  bool result = (jreturn != JNI_FALSE);
-#if (defined(OS_WIN) || defined(OS_LINUX))
-  if (result) {
-    CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
-    if (CefCurrentlyOn(TID_UI))
-      util::FocusParent(browserHandle);
-    else
-      CefPostTask(TID_UI, base::Bind(util::FocusParent, browserHandle));
-  }
-#endif
-  return result;
+  return (jreturn != JNI_FALSE);
 }
 
 void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {

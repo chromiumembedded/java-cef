@@ -292,12 +292,6 @@ void SetWindowSize(CefWindowHandle browserHandle, int width, int height) {
                SWP_NOZORDER | SWP_NOMOVE);
 }
 
-void FocusParent(CefWindowHandle browserHandle) {
-  HWND parent = GetParent(browserHandle);
-  SetActiveWindow(parent);
-  SetFocus(parent);
-}
-
 #endif  // USING_JAVA
 
 }  // namespace util

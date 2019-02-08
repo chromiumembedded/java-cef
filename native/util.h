@@ -114,9 +114,6 @@ void SetWindowBounds(CefWindowHandle browserHandle, const CefRect& contentRect);
 // Set the window size for |browserHandle|.
 void SetWindowSize(CefWindowHandle browserHandle, int width, int height);
 
-// Set focus to the parent of |browserHandle|.
-void FocusParent(CefWindowHandle browserHandle);
-
 #endif  // !defined(OS_MACOSX)
 
 #endif  // USING_JAVA

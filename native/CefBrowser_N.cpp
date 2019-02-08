@@ -920,6 +920,9 @@ jboolean create(JNIEnv* env,
     CefWindowHandle parent = TempWindow::GetWindowHandle();
     if (canvas != NULL) {
       parent = GetHwndOfCanvas(canvas, env);
+    } else {
+      // Do not activate hidden browser windows on creation.
+      windowInfo.ex_style |= WS_EX_NOACTIVATE;
     }
     RECT winRect = {0, 0, rect.width, rect.height};
     windowInfo.SetAsChild(parent, winRect);
