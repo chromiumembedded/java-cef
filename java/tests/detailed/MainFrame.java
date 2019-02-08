@@ -220,14 +220,14 @@ public class MainFrame extends BrowserFrame {
             cookieManager_ = CefCookieManager.getGlobalManager();
         }
 
-        // Set up the UI for this example implementation.
-        JPanel contentPanel = createContentPanel();
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-
         // Create the browser.
         CefBrowser browser = client_.createBrowser(
                 "http://www.google.com", osrEnabled, transparentPaintingEnabled, requestContext);
         setBrowser(browser);
+
+        // Set up the UI for this example implementation.
+        JPanel contentPanel = createContentPanel();
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
 
         if (createImmediately) browser.createImmediately();
 

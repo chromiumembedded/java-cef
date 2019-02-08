@@ -33,8 +33,8 @@ public class ControlPanel extends JPanel {
     private final CefBrowser browser_;
 
     public ControlPanel(CefBrowser browser) {
+        assert browser != null;
         browser_ = browser;
-        setEnabled(browser_ != null);
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
