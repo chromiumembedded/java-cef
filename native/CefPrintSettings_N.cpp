@@ -150,6 +150,7 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges(JNIEnv* env,
     if (!range)
       continue;
     rangeList.push_back(GetJNIPageRange(env, range));
+    env->DeleteLocalRef(range);
   }
   settings->SetPageRanges(rangeList);
 }
@@ -181,6 +182,7 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges(JNIEnv* env,
     jobject range = NewJNIPageRange(env, rangeList.at(i));
     JNI_CALL_VOID_METHOD(env, jrangeVector, "addElement",
                          "(Ljava/lang/Object;)V", range);
+    env->DeleteLocalRef(range);
   }
 }
 

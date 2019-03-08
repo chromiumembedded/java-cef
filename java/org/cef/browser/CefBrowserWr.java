@@ -55,6 +55,9 @@ class CefBrowserWr extends CefBrowser_N {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    if (isClosed())
+                        return;
+
                     boolean hasCreatedUI = createBrowserIfRequired(true);
 
                     if (hasCreatedUI) {

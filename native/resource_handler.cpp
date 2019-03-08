@@ -133,9 +133,11 @@ bool ResourceHandler::CanGetCookie(const CefCookie& cookie) {
     return false;
 
   jboolean result = JNI_FALSE;
+  jobject jcookie = NewJNICookie(env, cookie);
   JNI_CALL_METHOD(env, jhandler_, "canGetCookie",
                   "(Lorg/cef/network/CefCookie;)Z", Boolean, result,
-                  NewJNICookie(env, cookie));
+                  jcookie);
+  env->DeleteLocalRef(jcookie);
   return (result != JNI_FALSE);
 }
 
@@ -145,9 +147,11 @@ bool ResourceHandler::CanSetCookie(const CefCookie& cookie) {
     return false;
 
   jboolean result = JNI_FALSE;
+  jobject jcookie = NewJNICookie(env, cookie);
   JNI_CALL_METHOD(env, jhandler_, "canSetCookie",
                   "(Lorg/cef/network/CefCookie;)Z", Boolean, result,
-                  NewJNICookie(env, cookie));
+                  jcookie);
+  env->DeleteLocalRef(jcookie);
   return (result != JNI_FALSE);
 }
 

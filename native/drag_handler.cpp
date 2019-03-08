@@ -30,13 +30,15 @@ bool DragHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jdragdata, dragData.get(), "CefDragData");
 
   jboolean result = JNI_FALSE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(
       env, jhandler_, "onDragEnter",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDragData;I)Z", Boolean,
-      result, GetJNIBrowser(browser), jdragdata, (jint)mask);
+      result, jbrowser, jdragdata, (jint)mask);
 
   // Remove native reference from java class
   SetCefForJNIObject<CefDragData>(env, jdragdata, NULL, "CefDragData");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jdragdata);
   return (result != JNI_FALSE);
 }

@@ -32,16 +32,18 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
   jobject jResourceHandler = NULL;
   jobject jframe = GetJNIFrame(env, frame);
   jstring jscheme_name = NewJNIString(env, scheme_name);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jfactory_, "create",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                   "CefFrame;Ljava/lang/String;Lorg/cef/"
                   "network/CefRequest;)Lorg/cef/handler/CefResourceHandler;",
-                  Object, jResourceHandler, GetJNIBrowser(browser), jframe,
+                  Object, jResourceHandler, jbrowser, jframe,
                   jscheme_name, jRequest);
 
   if (jRequest != NULL)
     SetCefForJNIObject<CefRequest>(env, jRequest, NULL, "CefRequest");
 
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jscheme_name);
   env->DeleteLocalRef(jRequest);
@@ -50,5 +52,6 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
     return NULL;
   CefRefPtr<CefResourceHandler> result =
       new ResourceHandler(env, jResourceHandler);
+  env->DeleteLocalRef(jResourceHandler);
   return result;
 }

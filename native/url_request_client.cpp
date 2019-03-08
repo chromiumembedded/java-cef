@@ -76,6 +76,9 @@ void URLRequestClient::OnDownloadData(CefRefPtr<CefURLRequest> request,
   JNI_CALL_VOID_METHOD(env, jURLRequestClient_, "onDownloadData",
                        "(Lorg/cef/network/CefURLRequest;[BI)V", jURLRequest_,
                        jbyteArray, (jint)data_length);
+
+  env->ReleaseByteArrayElements(jbyteArray, (jbyte*)data, JNI_ABORT);
+  env->DeleteLocalRef(jbyteArray);
   END_ENV(env)
 }
 

@@ -21,9 +21,11 @@ void PrintHandler::OnPrintStart(CefRefPtr<CefBrowser> browser) {
   if (!env)
     return;
 
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPrintStart",
                        "(Lorg/cef/browser/CefBrowser;)V",
-                       GetJNIBrowser(browser));
+                       jbrowser);
+  env->DeleteLocalRef(jbrowser);
 }
 
 void PrintHandler::OnPrintSettings(CefRefPtr<CefBrowser> browser,

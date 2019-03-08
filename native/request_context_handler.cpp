@@ -27,6 +27,7 @@ CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
     return NULL;
   CefRefPtr<CefCookieManager> result =
       GetCefFromJNIObject<CefCookieManager>(env, jresult, "CefCookieManager");
+  env->DeleteLocalRef(jresult);
   return result;
 }
 

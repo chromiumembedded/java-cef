@@ -79,13 +79,26 @@ RenderHandler::~RenderHandler() {
 
 bool RenderHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,
                                       CefRect& rect) {
-  return GetViewRect(GetJNIBrowser(browser), rect);
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jbrowser = GetJNIBrowser(browser);
+  bool result = GetViewRect(jbrowser, rect);
+  env->DeleteLocalRef(jbrowser);
+  return result;
 }
 
 void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-  if (!GetViewRect(GetJNIBrowser(browser), rect)) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return;
+
+  jobject jbrowser = GetJNIBrowser(browser);
+  if (!GetViewRect(jbrowser, rect)) {
     rect = CefRect(0, 0, 1, 1);
   }
+  env->DeleteLocalRef(jbrowser);
 }
 
 bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
@@ -93,16 +106,26 @@ bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
                                    int viewY,
                                    int& screenX,
                                    int& screenY) {
-  return GetScreenPoint(GetJNIBrowser(browser), viewX, viewY, screenX, screenY);
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jbrowser = GetJNIBrowser(browser);
+  bool result = GetScreenPoint(jbrowser, viewX, viewY, screenX, screenY);
+  env->DeleteLocalRef(jbrowser);
+  return result;
 }
 
 void RenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPopupShow",
                        "(Lorg/cef/browser/CefBrowser;Z)V",
-                       GetJNIBrowser(browser), (jboolean)show);
+                       jbrowser, (jboolean)show);
+  env->DeleteLocalRef(jbrowser);
 }
 
 void RenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
@@ -113,10 +136,12 @@ void RenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
   jobject rect_obj = NewJNIRect(env, rect);
   if (!rect_obj)
     return;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPopupSize",
                        "(Lorg/cef/browser/CefBrowser;Ljava/awt/Rectangle;)V",
-                       GetJNIBrowser(browser), rect_obj);
+                       jbrowser, rect_obj);
   env->DeleteLocalRef(rect_obj);
+  env->DeleteLocalRef(jbrowser);
 }
 
 void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
@@ -132,11 +157,13 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
   jobject direct_buffer =
       env->NewDirectByteBuffer(const_cast<void*>(buffer), width * height * 4);
   jboolean jtype = type == PET_VIEW ? JNI_FALSE : JNI_TRUE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPaint",
                        "(Lorg/cef/browser/CefBrowser;Z[Ljava/awt/"
                        "Rectangle;Ljava/nio/ByteBuffer;II)V",
-                       GetJNIBrowser(browser), jtype, rect_array, direct_buffer,
+                       jbrowser, jtype, rect_array, direct_buffer,
                        width, height);
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(rect_array);
   env->DeleteLocalRef(direct_buffer);
 }
@@ -150,9 +177,11 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
   const int cursorId = GetCursorId(type);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onCursorChange",
                        "(Lorg/cef/browser/CefBrowser;I)V",
-                       GetJNIBrowser(browser), cursorId);
+                       jbrowser, cursorId);
+  env->DeleteLocalRef(jbrowser);
 }
 
 bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
@@ -171,11 +200,13 @@ bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jdragdata, drag_data.get(), "CefDragData");
 
   jboolean jresult = JNI_FALSE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(
       env, jhandler_, "startDragging",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDragData;III)Z",
-      Boolean, jresult, GetJNIBrowser(browser), jdragdata, (jint)allowed_ops,
+      Boolean, jresult, jbrowser, jdragdata, (jint)allowed_ops,
       (jint)x, (jint)y);
+  env->DeleteLocalRef(jbrowser);
 
   bool result = (jresult != JNI_FALSE);
   if (!result) {
@@ -192,9 +223,11 @@ void RenderHandler::UpdateDragCursor(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "updateDragCursor",
                        "(Lorg/cef/browser/CefBrowser;I)V",
-                       GetJNIBrowser(browser), (jint)operation);
+                       jbrowser, (jint)operation);
+  env->DeleteLocalRef(jbrowser);
 }
 
 bool RenderHandler::GetViewRect(jobject browser, CefRect& rect) {
@@ -231,6 +264,7 @@ bool RenderHandler::GetScreenPoint(jobject browser,
       env, jhandler_, "getScreenPoint",
       "(Lorg/cef/browser/CefBrowser;Ljava/awt/Point;)Ljava/awt/Point;", Object,
       jreturn, browser, point_obj);
+  env->DeleteLocalRef(point_obj);
   if (jreturn) {
     GetJNIPoint(env, jreturn, &screenX, &screenY);
     env->DeleteLocalRef(jreturn);

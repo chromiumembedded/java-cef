@@ -23,9 +23,11 @@ void FocusHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onTakeFocus",
                        "(Lorg/cef/browser/CefBrowser;Z)V",
-                       GetJNIBrowser(browser), (jboolean)next);
+                       jbrowser, (jboolean)next);
+  env->DeleteLocalRef(jbrowser);
 }
 
 bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
@@ -43,10 +45,13 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
                FOCUS_SOURCE_SYSTEM, jsource);
   }
 
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onSetFocus",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
                   "CefFocusHandler$FocusSource;)Z",
-                  Boolean, jreturn, GetJNIBrowser(browser), jsource);
+                  Boolean, jreturn, jbrowser, jsource);
+  env->DeleteLocalRef(jbrowser);
+  env->DeleteLocalRef(jsource);
   return (jreturn != JNI_FALSE);
 }
 
@@ -54,7 +59,9 @@ void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onGotFocus",
                        "(Lorg/cef/browser/CefBrowser;)V",
-                       GetJNIBrowser(browser));
+                       jbrowser);
+  env->DeleteLocalRef(jbrowser);
 }

@@ -44,15 +44,17 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jboolean result = JNI_FALSE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onBeforeBrowse",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
                   "cef/network/CefRequest;ZZ)Z",
-                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
+                  Boolean, result, jbrowser, jframe, jrequest,
                   (user_gesture ? JNI_TRUE : JNI_FALSE),
                   (is_redirect ? JNI_TRUE : JNI_FALSE));
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jrequest);
   return (result != JNI_FALSE);
@@ -80,13 +82,15 @@ RequestHandler::ReturnValue RequestHandler::OnBeforeResourceLoad(
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jboolean result = JNI_FALSE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onBeforeResourceLoad",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
                   "cef/network/CefRequest;)Z",
-                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest);
+                  Boolean, result, jbrowser, jframe, jrequest);
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jrequest);
   return (result != JNI_FALSE) ? RV_CANCEL : RV_CONTINUE;
@@ -112,11 +116,13 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
   SetCefForJNIObject(env, jrequest, request.get(), "CefRequest");
 
   jobject jhandler = NULL;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "getResourceHandler",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
                   "cef/network/CefRequest;)"
                   "Lorg/cef/handler/CefResourceHandler;",
-                  Object, jhandler, GetJNIBrowser(browser), jframe, jrequest);
+                  Object, jhandler, jbrowser, jframe, jrequest);
+  env->DeleteLocalRef(jbrowser);
   if (!jhandler) {
     env->DeleteLocalRef(jframe);
     env->DeleteLocalRef(jrequest);
@@ -131,6 +137,7 @@ CefRefPtr<CefResourceHandler> RequestHandler::GetResourceHandler(
   }
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jrequest);
+  env->DeleteLocalRef(jhandler);
   return handler;
 }
 
@@ -163,13 +170,15 @@ void RequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
 
   jobject jstringRef = NewJNIStringRef(env, new_url);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onResourceRedirect",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/cef/network/"
       "CefRequest;Lorg/cef/network/CefResponse;Lorg/cef/misc/"
       "StringRef;)V",
-      GetJNIBrowser(browser), jframe, jrequest, jresponse, jstringRef);
+      jbrowser, jframe, jrequest, jresponse, jstringRef);
   new_url = GetJNIStringRef(env, jstringRef);
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jresponse);
   env->DeleteLocalRef(jrequest);
   env->DeleteLocalRef(jframe);
@@ -205,15 +214,17 @@ bool RequestHandler::OnResourceResponse(CefRefPtr<CefBrowser> browser,
   SetCefForJNIObject(env, jresponse, response.get(), "CefResponse");
 
   jboolean result = JNI_FALSE;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onResourceResponse",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
                   "Lorg/cef/network/CefRequest;Lorg/cef/network/CefResponse;)Z",
-                  Boolean, result, GetJNIBrowser(browser), jframe, jrequest,
+                  Boolean, result, jbrowser, jframe, jrequest,
                   jresponse);
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
   SetCefForJNIObject<CefRequest>(env, jresponse, NULL, "CefResponse");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jrequest);
   env->DeleteLocalRef(jresponse);
@@ -259,17 +270,19 @@ void RequestHandler::OnResourceLoadComplete(
     return;
   }
 
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onResourceLoadComplete",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
       "Lorg/cef/network/CefRequest;Lorg/cef/network/CefResponse;"
       "Lorg/cef/network/CefURLRequest$Status;J)V",
-      GetJNIBrowser(browser), jframe, jrequest, jresponse, jstatus,
+      jbrowser, jframe, jrequest, jresponse, jstatus,
       (jlong)received_content_length);
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
   SetCefForJNIObject<CefRequest>(env, jrequest, NULL, "CefRequest");
   SetCefForJNIObject<CefRequest>(env, jresponse, NULL, "CefResponse");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jrequest);
   env->DeleteLocalRef(jresponse);
@@ -303,12 +316,13 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   jstring jhost = NewJNIString(env, host);
   jstring jrealm = NewJNIString(env, realm);
   jstring jscheme = NewJNIString(env, scheme);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "getAuthCredentials",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                   "CefFrame;ZLjava/lang/String;"
                   "ILjava/lang/String;Ljava/lang/String;"
                   "Lorg/cef/callback/CefAuthCallback;)Z",
-                  Boolean, result, GetJNIBrowser(browser), jframe,
+                  Boolean, result, jbrowser, jframe,
                   (isProxy ? JNI_TRUE : JNI_FALSE), jhost, port, jrealm,
                   jscheme, jcallback);
 
@@ -320,6 +334,7 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   }
 
   SetCefForJNIObject<CefRequest>(env, jframe, NULL, "CefFrame");
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jcallback);
   env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(jhost);
@@ -344,10 +359,11 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 
   jboolean result = JNI_FALSE;
   jstring jorigin_url = NewJNIString(env, origin_url);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onQuotaRequest",
                   "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
                   "JLorg/cef/callback/CefRequestCallback;)Z",
-                  Boolean, result, GetJNIBrowser(browser), jorigin_url,
+                  Boolean, result, jbrowser, jorigin_url,
                   (jlong)new_size, jcallback);
 
   if (result == JNI_FALSE) {
@@ -356,6 +372,7 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
     SetCefForJNIObject<CefRequestCallback>(env, jcallback, NULL,
                                            "CefRequestCallback");
   }
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jcallback);
   env->DeleteLocalRef(jorigin_url);
   return (result != JNI_FALSE);
@@ -370,11 +387,13 @@ void RequestHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
 
   jobject jboolRef = NewJNIBoolRef(env, allow_os_execution);
   jstring jurl = NewJNIString(env, url);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onProtocolExecution",
       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;Lorg/cef/misc/BoolRef;)V",
-      GetJNIBrowser(browser), jurl, jboolRef);
+      jbrowser, jurl, jboolRef);
   allow_os_execution = GetJNIBoolRef(env, jboolRef);
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jboolRef);
   env->DeleteLocalRef(jurl);
 }
@@ -397,11 +416,13 @@ bool RequestHandler::OnCertificateError(
 
   jboolean result = JNI_FALSE;
   jstring jrequest_url = NewJNIString(env, request_url);
+  jobject jbrowser = GetJNIBrowser(browser);
+  jobject jerrorcode = NewJNIErrorCode(env, cert_error);
   JNI_CALL_METHOD(
       env, jhandler_, "onCertificateError",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefLoadHandler$ErrorCode;"
       "Ljava/lang/String;Lorg/cef/callback/CefRequestCallback;)Z",
-      Boolean, result, GetJNIBrowser(browser), NewJNIErrorCode(env, cert_error),
+      Boolean, result, jbrowser, jerrorcode,
       jrequest_url, jcallback);
 
   if (result == JNI_FALSE) {
@@ -410,6 +431,8 @@ bool RequestHandler::OnCertificateError(
     SetCefForJNIObject<CefRequestCallback>(env, jcallback, NULL,
                                            "CefRequestCallback");
   }
+  env->DeleteLocalRef(jbrowser);
+  env->DeleteLocalRef(jerrorcode);
   env->DeleteLocalRef(jrequest_url);
   env->DeleteLocalRef(jcallback);
   return (result != JNI_FALSE);
@@ -422,9 +445,11 @@ void RequestHandler::OnPluginCrashed(CefRefPtr<CefBrowser> browser,
     return;
 
   jstring jplugin_path = NewJNIString(env, plugin_path);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onPluginCrashed",
                        "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       GetJNIBrowser(browser), jplugin_path);
+                       jbrowser, jplugin_path);
+  env->DeleteLocalRef(jbrowser);
   env->DeleteLocalRef(jplugin_path);
 }
 
@@ -451,9 +476,12 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
              TS_PROCESS_OOM, jstatus);
   }
 
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onRenderProcessTerminated",
       "(Lorg/cef/browser/CefBrowser;"
       "Lorg/cef/handler/CefRequestHandler$TerminationStatus;)V",
-      GetJNIBrowser(browser), jstatus);
+      jbrowser, jstatus);
+  env->DeleteLocalRef(jbrowser);
+  env->DeleteLocalRef(jstatus);
 }

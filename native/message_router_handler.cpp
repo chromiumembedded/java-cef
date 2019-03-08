@@ -38,11 +38,12 @@ bool MessageRouterHandler::OnQuery(
   jboolean jresult = JNI_FALSE;
   jstring jrequest = NewJNIString(env, request);
   jobject jframe = GetJNIFrame(env, frame);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_METHOD(env, jhandler_, "onQuery",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                   "CefFrame;JLjava/lang/String;ZLorg/cef/"
                   "callback/CefQueryCallback;)Z",
-                  Boolean, jresult, GetJNIBrowser(browser), jframe,
+                  Boolean, jresult, jbrowser, jframe,
                   (jlong)query_id, jrequest, (jboolean)persistent,
                   query_callback);
   env->DeleteLocalRef(jrequest);
@@ -56,6 +57,7 @@ bool MessageRouterHandler::OnQuery(
   if (jframe)
     env->DeleteLocalRef(jframe);
   env->DeleteLocalRef(query_callback);
+  env->DeleteLocalRef(jbrowser);
   return result;
 }
 
@@ -67,10 +69,12 @@ void MessageRouterHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser,
     return;
 
   jobject jframe = GetJNIFrame(env, frame);
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(
       env, jhandler_, "onQueryCanceled",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;J)V",
-      GetJNIBrowser(browser), jframe, (jlong)query_id);
+      jbrowser, jframe, (jlong)query_id);
   if (jframe)
     env->DeleteLocalRef(jframe);
+  env->DeleteLocalRef(jbrowser);
 }

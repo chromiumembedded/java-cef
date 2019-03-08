@@ -66,6 +66,7 @@ CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
       result = new PrintHandler(env, handler);
       SetCefForJNIObject(env, handler, result.get(), "CefPrintHandler");
     }
+    env->DeleteLocalRef(handler);
   }
   END_ENV(env)
   return result;

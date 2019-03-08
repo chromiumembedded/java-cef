@@ -59,6 +59,7 @@ bool Context::PreInitialize(JNIEnv* env, jobject c) {
   if (!javaClassLoader)
     return false;
   SetJavaClassLoader(env, javaClassLoader);
+  env->DeleteLocalRef(javaClassLoader);
 
   return true;
 }

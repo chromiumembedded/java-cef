@@ -17,7 +17,14 @@ WindowHandler::~WindowHandler() {
 }
 
 bool WindowHandler::GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-  return GetRect(GetJNIBrowser(browser), rect);
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  jobject jbrowser = GetJNIBrowser(browser);
+  bool result = GetRect(jbrowser, rect);
+  env->DeleteLocalRef(jbrowser);
+  return result;
 }
 
 bool WindowHandler::GetRect(jobject browser, CefRect& rect) {
@@ -45,8 +52,10 @@ void WindowHandler::OnMouseEvent(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
+  jobject jbrowser = GetJNIBrowser(browser);
   JNI_CALL_VOID_METHOD(env, jhandler_, "onMouseEvent",
                        "(Lorg/cef/browser/CefBrowser;IIIII)V",
-                       GetJNIBrowser(browser), (jint)mouseEvent, (jint)absX,
+                       jbrowser, (jint)mouseEvent, (jint)absX,
                        (jint)absY, (jint)modifier, (jint)button);
+  env->DeleteLocalRef(jbrowser);
 }

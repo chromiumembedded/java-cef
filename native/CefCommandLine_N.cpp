@@ -91,7 +91,9 @@ Java_org_cef_callback_CefCommandLine_1N_N_1getSwitches(JNIEnv* env,
     JNI_CALL_METHOD(env, hashMap, "put",
                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
                     Object, returnIgn, jkey, jvalue);
-    UNUSED(returnIgn);
+    env->DeleteLocalRef(returnIgn);
+    env->DeleteLocalRef(jkey);
+    env->DeleteLocalRef(jvalue);
   }
   return hashMap;
 }
@@ -151,6 +153,7 @@ Java_org_cef_callback_CefCommandLine_1N_N_1getArguments(JNIEnv* env,
     JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/object;)Z", Boolean, succ,
                     argument);
     UNUSED(succ);
+    env->DeleteLocalRef(argument);
   }
   return vector;
 }

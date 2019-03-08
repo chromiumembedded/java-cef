@@ -466,6 +466,7 @@ void AddJNIStringToVector(JNIEnv* env, jobject jvector, const CefString& str) {
   jstring argument = NewJNIString(env, str);
   JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
                        argument);
+  env->DeleteLocalRef(argument);
 }
 
 jobject NewJNILongVector(JNIEnv* env, const std::vector<int64>& vals) {
@@ -484,6 +485,7 @@ void AddJNILongToVector(JNIEnv* env, jobject jvector, const int64& val) {
   jobject argument = NewJNILong(env, val);
   JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
                        argument);
+  env->DeleteLocalRef(argument);
 }
 
 void GetJNIStringVector(JNIEnv* env,
@@ -500,6 +502,7 @@ void GetJNIStringVector(JNIEnv* env,
     JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str,
                     index);
     vals.push_back(GetJNIString(env, (jstring)str));
+    env->DeleteLocalRef(str);
   }
 }
 
@@ -535,6 +538,7 @@ bool GetJNIFieldDate(JNIEnv* env,
     long timestamp = 0;
     JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
     value->SetDoubleT((double)(timestamp / 1000));
+    env->DeleteLocalRef(jdate);
     return true;
   }
   env->ExceptionClear();
@@ -1078,6 +1082,7 @@ bool IsJNIEnumValue(JNIEnv* env,
     jboolean isEqual = JNI_FALSE;
     JNI_CALL_METHOD(env, jenum, "equals", "(Ljava/lang/Object;)Z", Boolean,
                     isEqual, compareTo);
+    env->DeleteLocalRef(compareTo);
     return (isEqual != JNI_FALSE);
   }
   return false;

@@ -60,6 +60,7 @@ Java_org_cef_network_CefPostData_1N_N_1GetElements(JNIEnv* env,
                        "CefPostDataElement");
     JNI_CALL_VOID_METHOD(env, jelements, "addElement", "(Ljava/lang/Object;)V",
                          jdataElement);
+    env->DeleteLocalRef(jdataElement);
   }
 }
 
