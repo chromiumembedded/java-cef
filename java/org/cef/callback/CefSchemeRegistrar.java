@@ -62,6 +62,8 @@ public interface CefSchemeRegistrar {
      * If |isCspBypassing| is true the scheme can bypass Content-Security-Policy
      * (CSP) checks. This value should be false in most cases where |isStandard|
      * is true.
+     * 
+     * If |is_fetch_enabled| is true the scheme can perform Fetch API requests.
      *
      * This function may be called on any thread. It should only be called once
      * per unique |schemeName| value. If |schemeName| is already registered or
@@ -69,5 +71,5 @@ public interface CefSchemeRegistrar {
      */
     public boolean addCustomScheme(String schemeName, boolean isStandard, boolean isLocal,
             boolean isDisplayIsolated, boolean isSecure, boolean isCorsEnabled,
-            boolean isCspBypassing);
+            boolean isCspBypassing, boolean isFetchEnabled);
 }

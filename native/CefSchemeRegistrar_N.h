@@ -21,6 +21,7 @@ Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCustomScheme(JNIEnv*,
                                                                jboolean,
                                                                jboolean,
                                                                jboolean,
+                                                               jboolean,
                                                                jboolean);
 
 #ifdef __cplusplus

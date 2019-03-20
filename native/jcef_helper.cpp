@@ -44,10 +44,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
     char schemeName[512] = "";
-    char cIsStandard, cIsLocal, cIsDisplayIsolated, cIsSecure, cIsCorsEnabled,
-        cIsCspBypassing;
-    bool isStandard, isLocal, isDisplayIsolated, isSecure, isCorsEnabled,
-        isCspBypassing;
+    int options;
 
     fStream.open(fName.c_str(), std::fstream::in);
     while (fStream.is_open() && !fStream.eof()) {
@@ -55,22 +52,9 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
       if (strlen(schemeName) == 0)
         break;
 
-      fStream.get(cIsStandard)
-          .get(cIsLocal)
-          .get(cIsDisplayIsolated)
-          .get(cIsSecure)
-          .get(cIsCorsEnabled)
-          .get(cIsCspBypassing);
-      isStandard = (cIsStandard == '1');
-      isLocal = (cIsLocal == '1');
-      isDisplayIsolated = (cIsDisplayIsolated == '1');
-      isSecure = (cIsSecure == '1');
-      isCorsEnabled = (cIsCorsEnabled == '1');
-      isCspBypassing = (cIsCspBypassing == '1');
+      fStream >> options;
 
-      registrar->AddCustomScheme(schemeName, isStandard, isLocal,
-                                 isDisplayIsolated, isSecure, isCorsEnabled,
-                                 isCspBypassing);
+      registrar->AddCustomScheme(schemeName, options);
     }
     fStream.close();
   }

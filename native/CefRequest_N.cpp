@@ -160,8 +160,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv* env,
           result);
       JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
                REFERRER_POLICY_NO_REFERRER, result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
-               REFERRER_POLICY_LAST_VALUE, result);
+      // REFERRER_POLICY_LAST_VALUE equals REFERRER_POLICY_NO_REFERRER as of CEF 3683
   }
   return result;
 }

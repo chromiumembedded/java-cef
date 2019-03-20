@@ -22,16 +22,31 @@ Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCustomScheme(
     jboolean jIsDisplayIsolated,
     jboolean jIsSecure,
     jboolean jIsCorsEnabled,
-    jboolean jIsCspBypassing) {
+    jboolean jIsCspBypassing,
+    jboolean jIsFetchEnabled) {
   CefRawPtr<CefSchemeRegistrar> registrar =
       GetCefFromJNIObject<CefSchemeRegistrar>(env, obj, "CefSchemeRegistrar");
   if (!registrar)
     return JNI_FALSE;
   CefString schemeName = GetJNIString(env, jSchemeName);
-  bool result = registrar->AddCustomScheme(
-      schemeName, jIsStandard != JNI_FALSE, jIsLocal != JNI_FALSE,
-      jIsDisplayIsolated != JNI_FALSE, jIsSecure != JNI_FALSE,
-      jIsCorsEnabled != JNI_FALSE, jIsCspBypassing != JNI_FALSE);
+
+  int options = 0;
+  if (jIsStandard != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_STANDARD;
+  if (jIsLocal != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_LOCAL;
+  if (jIsDisplayIsolated != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_DISPLAY_ISOLATED;
+  if (jIsSecure != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_SECURE;
+  if (jIsCorsEnabled != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_CORS_ENABLED;
+  if (jIsCspBypassing != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_CSP_BYPASSING;
+  if (jIsFetchEnabled != JNI_FALSE)
+    options |= CEF_SCHEME_OPTION_FETCH_ENABLED;
+
+  bool result = registrar->AddCustomScheme(schemeName, options);
   if (!result)
     return JNI_FALSE;
 
@@ -46,10 +61,7 @@ Java_org_cef_callback_CefSchemeRegistrar_1N_N_1AddCustomScheme(
 
   if (fStream.is_open()) {
     // 1) Write the scheme name and the params to the file.
-    fStream << schemeName.ToString().c_str() << ","
-            << (jIsStandard != JNI_FALSE) << (jIsLocal != JNI_FALSE)
-            << (jIsDisplayIsolated != JNI_FALSE) << (jIsSecure != JNI_FALSE)
-            << (jIsCorsEnabled != JNI_FALSE) << (jIsCspBypassing != JNI_FALSE);
+    fStream << schemeName.ToString().c_str() << "," << options;
     fStream.close();
 
     // 2) Register file to be deleted in CefShutdown()
