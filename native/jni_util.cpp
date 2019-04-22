@@ -791,8 +791,11 @@ jobjectArray NewJNIStringArray(JNIEnv* env,
   jobjectArray arr =
       env->NewObjectArray(static_cast<jsize>(vals.size()), cls, NULL);
 
-  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
-    env->SetObjectArrayElement(arr, i, NewJNIString(env, vals[i]));
+  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++) {
+    jobject str_obj = NewJNIString(env, vals[i]);
+    env->SetObjectArrayElement(arr, i, str_obj);
+    env->DeleteLocalRef(str_obj);
+  }
 
   return arr;
 }
@@ -1116,8 +1119,11 @@ jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals) {
   jobjectArray arr =
       env->NewObjectArray(static_cast<jsize>(vals.size()), cls, NULL);
 
-  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++)
-    env->SetObjectArrayElement(arr, i, NewJNIRect(env, vals[i]));
+  for (jsize i = 0; i < static_cast<jsize>(vals.size()); i++) {
+    jobject rect_obj = NewJNIRect(env, vals[i]);
+    env->SetObjectArrayElement(arr, i, rect_obj);
+    env->DeleteLocalRef(rect_obj);
+  }
 
   return arr;
 }
