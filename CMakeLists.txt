@@ -121,7 +121,7 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "3.3683.1920.g9f41a27")
+  set(CEF_VERSION "73.1.11+ge6986dc+chromium-73.0.3683.75")
 endif()
 
 # Determine the platform.

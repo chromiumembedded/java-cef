@@ -22,16 +22,17 @@ function(DownloadCEF platform version download_dir)
     set(CEF_DOWNLOAD_PATH "${CEF_DOWNLOAD_DIR}/${CEF_DOWNLOAD_FILENAME}")
     if(NOT EXISTS "${CEF_DOWNLOAD_PATH}")
       set(CEF_DOWNLOAD_URL "http://opensource.spotify.com/cefbuilds/${CEF_DOWNLOAD_FILENAME}")
+      string(REPLACE "+" "%2B" CEF_DOWNLOAD_URL_ESCAPED ${CEF_DOWNLOAD_URL})
 
       # Download the SHA1 hash for the binary distribution.
-      message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}.sha1...")
-      file(DOWNLOAD "${CEF_DOWNLOAD_URL}.sha1" "${CEF_DOWNLOAD_PATH}.sha1")
+      message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}.sha1 from ${CEF_DOWNLOAD_URL_ESCAPED}...")
+      file(DOWNLOAD "${CEF_DOWNLOAD_URL_ESCAPED}.sha1" "${CEF_DOWNLOAD_PATH}.sha1")
       file(READ "${CEF_DOWNLOAD_PATH}.sha1" CEF_SHA1)
 
       # Download the binary distribution and verify the hash.
       message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}...")
       file(
-        DOWNLOAD "${CEF_DOWNLOAD_URL}" "${CEF_DOWNLOAD_PATH}"
+        DOWNLOAD "${CEF_DOWNLOAD_URL_ESCAPED}" "${CEF_DOWNLOAD_PATH}"
         EXPECTED_HASH SHA1=${CEF_SHA1}
         SHOW_PROGRESS
         )

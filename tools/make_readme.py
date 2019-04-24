@@ -129,8 +129,9 @@ if not git.is_checkout(jcef_dir):
 jcef_commit_number = git.get_commit_number(jcef_dir)
 jcef_commit_hash = git.get_hash(jcef_dir)
 jcef_url = git.get_url(jcef_dir)
-jcef_ver = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'],
-                             jcef_commit_number, jcef_commit_hash[:7])
+jcef_ver = '%s.%s.%s.%s+g%s' % (args['CEF_MAJOR'], args['CEF_MINOR'],
+                             args['CEF_PATCH'], jcef_commit_number,
+                             jcef_commit_hash[:7])
 
 date = get_date()
 

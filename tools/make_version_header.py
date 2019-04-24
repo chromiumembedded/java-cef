@@ -72,7 +72,7 @@ def write_svn_header(header):
   args = {}
   read_readme_file(os.path.join(options.cefpath, 'README.txt'), args)
 
-  version = '%s.%s.%s.g%s' % (args['CEF_MAJOR'], args['CEF_BUILD'],
+  version = '%s.%s.%s.%s+g%s' % (args['CEF_MAJOR'], args['CEF_MINOR'], args['CEF_PATCH'],
                               commit_number, commit_hash[:7])
 
   newcontents = '// Copyright (c) '+year+' The Chromium Embedded Framework Authors. All rights\n'+\
