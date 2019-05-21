@@ -12,6 +12,20 @@ import java.util.Vector;
  * on any thread.
  */
 public abstract class CefDragData {
+    /**
+     * Supported drag operation bit flags.
+     */
+    public static final class DragOperations {
+        public final static int DRAG_OPERATION_NONE = 0;
+        public final static int DRAG_OPERATION_COPY = 1;
+        public final static int DRAG_OPERATION_LINK = 2;
+        public final static int DRAG_OPERATION_GENERIC = 4;
+        public final static int DRAG_OPERATION_PRIVATE = 8;
+        public final static int DRAG_OPERATION_MOVE = 16;
+        public final static int DRAG_OPERATION_DELETE = 32;
+        public final static int DRAG_OPERATION_EVERY = Integer.MAX_VALUE;
+    }
+
     // This CTOR can't be called directly. Call method create() instead.
     CefDragData() {}
 
