@@ -10,157 +10,184 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetXCoord
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetXCoord(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetXCoord(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetYCoord
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetYCoord(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetYCoord(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetTypeFlags
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetTypeFlags(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetTypeFlags(JNIEnv*,
+                                                              jobject,
+                                                              jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetLinkUrl
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetLinkUrl(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetLinkUrl(JNIEnv*,
+                                                            jobject,
+                                                            jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetUnfilteredLinkUrl
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetUnfilteredLinkUrl(JNIEnv*,
-                                                                      jobject);
+                                                                      jobject,
+                                                                      jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetSourceUrl
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSourceUrl(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSourceUrl(JNIEnv*,
+                                                              jobject,
+                                                              jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_HasImageContents
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1HasImageContents(JNIEnv*,
-                                                                  jobject);
+                                                                  jobject,
+                                                                  jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetPageUrl
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetPageUrl(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetPageUrl(JNIEnv*,
+                                                            jobject,
+                                                            jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetFrameUrl
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetFrameUrl(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetFrameUrl(JNIEnv*,
+                                                             jobject,
+                                                             jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetFrameCharset
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetFrameCharset(JNIEnv*,
-                                                                 jobject);
+                                                                 jobject,
+                                                                 jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetMediaType
- * Signature: ()Lorg/cef/callback/CefContextMenuParams/MediaType;
+ * Signature: (J)Lorg/cef/callback/CefContextMenuParams/MediaType;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMediaType(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMediaType(JNIEnv*,
+                                                              jobject,
+                                                              jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetMediaStateFlags
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMediaStateFlags(JNIEnv*,
-                                                                    jobject);
+                                                                    jobject,
+                                                                    jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetSelectionText
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSelectionText(JNIEnv*,
-                                                                  jobject);
+                                                                  jobject,
+                                                                  jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetMisspelledWord
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspelledWord(JNIEnv*,
-                                                                   jobject);
+                                                                   jobject,
+                                                                   jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetDictionarySuggestions
- * Signature: (Ljava/util/Vector;)Z
+ * Signature: (JLjava/util/Vector;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetDictionarySuggestions(
     JNIEnv*,
     jobject,
+    jlong,
     jobject);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_IsEditable
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefContextMenuParams_1N_N_1IsEditable(JNIEnv*, jobject);
+Java_org_cef_callback_CefContextMenuParams_1N_N_1IsEditable(JNIEnv*,
+                                                            jobject,
+                                                            jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_IsSpellCheckEnabled
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1IsSpellCheckEnabled(JNIEnv*,
-                                                                     jobject);
+                                                                     jobject,
+                                                                     jlong);
 
 /*
  * Class:     org_cef_callback_CefContextMenuParams_N
  * Method:    N_GetEditStateFlags
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
 Java_org_cef_callback_CefContextMenuParams_1N_N_1GetEditStateFlags(JNIEnv*,
-                                                                   jobject);
+                                                                   jobject,
+                                                                   jlong);
 
 #ifdef __cplusplus
 }

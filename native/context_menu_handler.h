@@ -9,29 +9,28 @@
 #include <jni.h>
 #include "include/cef_context_menu_handler.h"
 
+#include "jni_scoped_helpers.h"
+
 // ContextMenuHandler implementation.
 class ContextMenuHandler : public CefContextMenuHandler {
  public:
   ContextMenuHandler(JNIEnv* env, jobject handler);
-  virtual ~ContextMenuHandler();
 
   // CefContextMenuHandler methods
-  virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefContextMenuParams> params,
-                                   CefRefPtr<CefMenuModel> model) OVERRIDE;
-
-  virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    CefRefPtr<CefContextMenuParams> params,
-                                    int command_id,
-                                    EventFlags event_flags) OVERRIDE;
-
-  virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
-                                      CefRefPtr<CefFrame> frame) OVERRIDE;
+  void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame,
+                           CefRefPtr<CefContextMenuParams> params,
+                           CefRefPtr<CefMenuModel> model) OVERRIDE;
+  bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                            CefRefPtr<CefFrame> frame,
+                            CefRefPtr<CefContextMenuParams> params,
+                            int command_id,
+                            EventFlags event_flags) OVERRIDE;
+  void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ContextMenuHandler);

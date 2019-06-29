@@ -9,6 +9,13 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_CefApp
+ * Method:    N_Startup
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Startup(JNIEnv*, jclass);
+
+/*
+ * Class:     org_cef_CefApp
  * Method:    N_PreInitialize
  * Signature: ()Z
  */
@@ -66,13 +73,6 @@ Java_org_cef_CefApp_N_1RegisterSchemeHandlerFactory(JNIEnv*,
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_CefApp_N_1ClearSchemeHandlerFactories(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_CefApp
- * Method:    N_Startup
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Startup(JNIEnv*, jclass);
 
 #ifdef __cplusplus
 }

@@ -10,57 +10,60 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_Clear
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1Clear(JNIEnv*, jobject);
+Java_org_cef_callback_CefMenuModel_1N_N_1Clear(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetCount
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetCount(JNIEnv*, jobject);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetCount(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_AddSeparator
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1AddSeparator(JNIEnv*, jobject);
+Java_org_cef_callback_CefMenuModel_1N_N_1AddSeparator(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_AddItem
- * Signature: (ILjava/lang/String;)Z
+ * Signature: (JILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1AddItem(JNIEnv*,
                                                  jobject,
+                                                 jlong,
                                                  jint,
                                                  jstring);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_AddCheckItem
- * Signature: (ILjava/lang/String;)Z
+ * Signature: (JILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1AddCheckItem(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jstring);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_AddRadioItem
- * Signature: (ILjava/lang/String;I)Z
+ * Signature: (JILjava/lang/String;I)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1AddRadioItem(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jstring,
                                                       jint);
@@ -68,32 +71,35 @@ Java_org_cef_callback_CefMenuModel_1N_N_1AddRadioItem(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_AddSubMenu
- * Signature: (ILjava/lang/String;)Lorg/cef/callback/CefMenuModel;
+ * Signature: (JILjava/lang/String;)Lorg/cef/callback/CefMenuModel;
  */
 JNIEXPORT jobject JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1AddSubMenu(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jstring);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_InsertSeparatorAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1InsertSeparatorAt(JNIEnv*,
                                                            jobject,
+                                                           jlong,
                                                            jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_InsertItemAt
- * Signature: (IILjava/lang/String;)Z
+ * Signature: (JIILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1InsertItemAt(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jint,
                                                       jstring);
@@ -101,11 +107,12 @@ Java_org_cef_callback_CefMenuModel_1N_N_1InsertItemAt(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_InsertCheckItemAt
- * Signature: (IILjava/lang/String;)Z
+ * Signature: (JIILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1InsertCheckItemAt(JNIEnv*,
                                                            jobject,
+                                                           jlong,
                                                            jint,
                                                            jint,
                                                            jstring);
@@ -113,11 +120,12 @@ Java_org_cef_callback_CefMenuModel_1N_N_1InsertCheckItemAt(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_InsertRadioItemAt
- * Signature: (IILjava/lang/String;I)Z
+ * Signature: (JIILjava/lang/String;I)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1InsertRadioItemAt(JNIEnv*,
                                                            jobject,
+                                                           jlong,
                                                            jint,
                                                            jint,
                                                            jstring,
@@ -126,11 +134,12 @@ Java_org_cef_callback_CefMenuModel_1N_N_1InsertRadioItemAt(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_InsertSubMenuAt
- * Signature: (IILjava/lang/String;)Lorg/cef/callback/CefMenuModel;
+ * Signature: (JIILjava/lang/String;)Lorg/cef/callback/CefMenuModel;
  */
 JNIEXPORT jobject JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1InsertSubMenuAt(JNIEnv*,
                                                          jobject,
+                                                         jlong,
                                                          jint,
                                                          jint,
                                                          jstring);
@@ -138,294 +147,358 @@ Java_org_cef_callback_CefMenuModel_1N_N_1InsertSubMenuAt(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_Remove
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1Remove(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1Remove(JNIEnv*, jobject, jlong, jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_RemoveAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1RemoveAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1RemoveAt(JNIEnv*,
+                                                  jobject,
+                                                  jlong,
+                                                  jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetIndexOf
- * Signature: (I)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetIndexOf(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetIndexOf(JNIEnv*,
+                                                    jobject,
+                                                    jlong,
+                                                    jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetCommandIdAt
- * Signature: (I)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetCommandIdAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetCommandIdAt(JNIEnv*,
+                                                        jobject,
+                                                        jlong,
+                                                        jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetCommandIdAt
- * Signature: (II)Z
+ * Signature: (JII)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetCommandIdAt(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jint,
                                                         jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetLabel
- * Signature: (I)Ljava/lang/String;
+ * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetLabel(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetLabel(JNIEnv*,
+                                                  jobject,
+                                                  jlong,
+                                                  jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetLabelAt
- * Signature: (I)Ljava/lang/String;
+ * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetLabelAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetLabelAt(JNIEnv*,
+                                                    jobject,
+                                                    jlong,
+                                                    jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetLabel
- * Signature: (ILjava/lang/String;)Z
+ * Signature: (JILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetLabel(JNIEnv*,
                                                   jobject,
+                                                  jlong,
                                                   jint,
                                                   jstring);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetLabelAt
- * Signature: (ILjava/lang/String;)Z
+ * Signature: (JILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetLabelAt(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jstring);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetType
- * Signature: (I)Lorg/cef/callback/CefMenuModel/MenuItemType;
+ * Signature: (JI)Lorg/cef/callback/CefMenuModel/MenuItemType;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetType(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetType(JNIEnv*, jobject, jlong, jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetTypeAt
- * Signature: (I)Lorg/cef/callback/CefMenuModel/MenuItemType;
+ * Signature: (JI)Lorg/cef/callback/CefMenuModel/MenuItemType;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetTypeAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetTypeAt(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetGroupId
- * Signature: (I)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetGroupId(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetGroupId(JNIEnv*,
+                                                    jobject,
+                                                    jlong,
+                                                    jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetGroupIdAt
- * Signature: (I)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetGroupIdAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetGroupIdAt(JNIEnv*,
+                                                      jobject,
+                                                      jlong,
+                                                      jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetGroupId
- * Signature: (II)Z
+ * Signature: (JII)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetGroupId(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetGroupIdAt
- * Signature: (II)Z
+ * Signature: (JII)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetGroupIdAt(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetSubMenu
- * Signature: (I)Lorg/cef/callback/CefMenuModel;
+ * Signature: (JI)Lorg/cef/callback/CefMenuModel;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenu(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenu(JNIEnv*,
+                                                    jobject,
+                                                    jlong,
+                                                    jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetSubMenuAt
- * Signature: (I)Lorg/cef/callback/CefMenuModel;
+ * Signature: (JI)Lorg/cef/callback/CefMenuModel;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenuAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenuAt(JNIEnv*,
+                                                      jobject,
+                                                      jlong,
+                                                      jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsVisible
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsVisible(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsVisible(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsVisibleAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsVisibleAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsVisibleAt(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetVisible
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetVisible(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetVisibleAt
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetVisibleAt(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsEnabled
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsEnabled(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsEnabled(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsEnabledAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsEnabledAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsEnabledAt(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetEnabled
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetEnabled(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetEnabledAt
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetEnabledAt(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsChecked
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsChecked(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsChecked(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_IsCheckedAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1IsCheckedAt(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1IsCheckedAt(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetChecked
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetChecked(JNIEnv*,
                                                     jobject,
+                                                    jlong,
                                                     jint,
                                                     jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetCheckedAt
- * Signature: (IZ)Z
+ * Signature: (JIZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetCheckedAt(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jint,
                                                       jboolean);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_HasAccelerator
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefMenuModel_1N_N_1HasAccelerator(JNIEnv*, jobject, jint);
+Java_org_cef_callback_CefMenuModel_1N_N_1HasAccelerator(JNIEnv*,
+                                                        jobject,
+                                                        jlong,
+                                                        jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_HasAcceleratorAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1HasAcceleratorAt(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetAccelerator
- * Signature: (IIZZZ)Z
+ * Signature: (JIIZZZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetAccelerator(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jint,
                                                         jint,
                                                         jboolean,
@@ -435,11 +508,12 @@ Java_org_cef_callback_CefMenuModel_1N_N_1SetAccelerator(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_SetAcceleratorAt
- * Signature: (IIZZZ)Z
+ * Signature: (JIIZZZ)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1SetAcceleratorAt(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jint,
                                                           jint,
                                                           jboolean,
@@ -449,32 +523,35 @@ Java_org_cef_callback_CefMenuModel_1N_N_1SetAcceleratorAt(JNIEnv*,
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_RemoveAccelerator
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1RemoveAccelerator(JNIEnv*,
                                                            jobject,
+                                                           jlong,
                                                            jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_RemoveAcceleratorAt
- * Signature: (I)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1RemoveAcceleratorAt(JNIEnv*,
                                                              jobject,
+                                                             jlong,
                                                              jint);
 
 /*
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetAccelerator
  * Signature:
- * (ILorg/cef/misc/IntRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;)Z
+ * (JILorg/cef/misc/IntRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1GetAccelerator(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jint,
                                                         jobject,
                                                         jobject,
@@ -485,11 +562,12 @@ Java_org_cef_callback_CefMenuModel_1N_N_1GetAccelerator(JNIEnv*,
  * Class:     org_cef_callback_CefMenuModel_N
  * Method:    N_GetAcceleratorAt
  * Signature:
- * (ILorg/cef/misc/IntRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;)Z
+ * (JILorg/cef/misc/IntRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;Lorg/cef/misc/BoolRef;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_callback_CefMenuModel_1N_N_1GetAcceleratorAt(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jint,
                                                           jobject,
                                                           jobject,

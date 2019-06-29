@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.cef.browser.CefBrowser;
-import org.cef.handler.CefDisplayHandlerAdapter;
-import org.cef.handler.CefLoadHandlerAdapter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -30,7 +28,7 @@ class TestFrameTest {
                 assertFalse(gotSetupTest_);
                 gotSetupTest_ = true;
 
-                addResource(testUrl, "<html><body>Test!</body></html>", "test/html");
+                addResource(testUrl, "<html><body>Test!</body></html>", "text/html");
 
                 createBrowser(testUrl);
 

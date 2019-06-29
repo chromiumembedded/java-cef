@@ -12,6 +12,9 @@ set ERRORLEVEL=1
 goto end
 )
 
+:: Make sure the source files have been compiled.
+call compile.bat %1
+
 call make_jni_header.bat %1 org.cef.CefApp
 call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
 call make_jni_header.bat %1 org.cef.browser.CefMessageRouter_N

@@ -6,6 +6,7 @@
 
 #include "client_handler.h"
 #include "context.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "print_handler.h"
 #include "util.h"
@@ -16,9 +17,8 @@
 std::set<CefMessageRouterConfig, cmpCfg> BrowserProcessHandler::router_cfg_;
 base::Lock BrowserProcessHandler::router_cfg_lock_;
 
-BrowserProcessHandler::BrowserProcessHandler(jobject app_handler) {
-  app_handler_ = app_handler;
-}
+BrowserProcessHandler::BrowserProcessHandler(JNIEnv* env, jobject app_handler)
+    : handle_(env, app_handler) {}
 
 BrowserProcessHandler::~BrowserProcessHandler() {
   base::AutoLock lock_scope(router_cfg_lock_);
@@ -28,11 +28,11 @@ BrowserProcessHandler::~BrowserProcessHandler() {
 void BrowserProcessHandler::OnContextInitialized() {
   Context::GetInstance()->OnContextInitialized();
 
-  if (!app_handler_)
+  if (!handle_)
     return;
 
   BEGIN_ENV(env)
-  JNI_CALL_VOID_METHOD(env, app_handler_, "onContextInitialized", "()V");
+  JNI_CALL_VOID_METHOD(env, handle_, "onContextInitialized", "()V");
   END_ENV(env)
 }
 
@@ -53,31 +53,27 @@ void BrowserProcessHandler::OnRenderProcessThreadCreated(
 }
 
 CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
-  CefRefPtr<CefPrintHandler> result = NULL;
+  CefRefPtr<CefPrintHandler> result;
   BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, app_handler_, "getPrintHandler",
-                  "()Lorg/cef/handler/CefPrintHandler;", Object, handler);
+  ScopedJNIObjectResult jresult(env);
+  JNI_CALL_METHOD(env, handle_, "getPrintHandler",
+                  "()Lorg/cef/handler/CefPrintHandler;", Object, jresult);
 
-  if (handler != NULL) {
-    result =
-        GetCefFromJNIObject<CefPrintHandler>(env, handler, "CefPrintHandler");
-    if (!result.get()) {
-      result = new PrintHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefPrintHandler");
-    }
-    env->DeleteLocalRef(handler);
+  if (jresult) {
+    ScopedJNIObject<PrintHandler> jprintHandler(
+        env, jresult.Release(), true /* should_delete */, "CefPrintHandler");
+    result = jprintHandler.GetOrCreateCefObject();
   }
   END_ENV(env)
   return result;
 }
 
 void BrowserProcessHandler::OnScheduleMessagePumpWork(int64 delay_ms) {
-  if (!app_handler_)
+  if (!handle_)
     return;
 
   BEGIN_ENV(env)
-  JNI_CALL_VOID_METHOD(env, app_handler_, "onScheduleMessagePumpWork", "(J)V",
+  JNI_CALL_VOID_METHOD(env, handle_, "onScheduleMessagePumpWork", "(J)V",
                        delay_ms);
   END_ENV(env)
 }

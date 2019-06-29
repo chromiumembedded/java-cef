@@ -20,21 +20,12 @@ std::set<std::string>& GetTempFilesSet() {
 
 ClientApp::ClientApp(const std::string& module_dir,
                      const std::string& cache_path,
+                     JNIEnv* env,
                      const jobject app_handler)
-    : module_dir_(module_dir), cache_path_(cache_path), app_handler_(NULL) {
-  JNIEnv* env = GetJNIEnv();
-  if (env)
-    app_handler_ = env->NewGlobalRef(app_handler);
-  process_handler_ = new BrowserProcessHandler(app_handler_);
-}
-
-ClientApp::~ClientApp() {
-  if (!app_handler_)
-    return;
-  BEGIN_ENV(env)
-  env->DeleteGlobalRef(app_handler_);
-  END_ENV(env)
-}
+    : module_dir_(module_dir),
+      cache_path_(cache_path),
+      handle_(env, app_handler),
+      process_handler_(new BrowserProcessHandler(env, app_handler)) {}
 
 void ClientApp::OnBeforeCommandLineProcessing(
     const CefString& process_type,
@@ -42,23 +33,20 @@ void ClientApp::OnBeforeCommandLineProcessing(
   // If the java code has registered an AppHandler, we'll forward
   // the commandline processing to it before we append the essential
   // switches "locale_pak" and "use-core-animation".
-  if (app_handler_ != NULL && process_type.empty()) {
+  if (handle_ && process_type.empty()) {
     BEGIN_ENV(env)
-    jstring jprocess_type = NewJNIString(env, process_type);
-    jobject jcommand_line =
-        NewJNIObject(env, "org/cef/callback/CefCommandLine_N");
-    if (jcommand_line != NULL) {
-      SetCefForJNIObject(env, jcommand_line, command_line.get(),
-                         "CefCommandLine");
-      JNI_CALL_VOID_METHOD(
-          env, app_handler_, "onBeforeCommandLineProcessing",
-          "(Ljava/lang/String;Lorg/cef/callback/CefCommandLine;)V",
-          jprocess_type, jcommand_line);
-      SetCefForJNIObject<CefCommandLine>(env, jcommand_line, NULL,
-                                         "CefCommandLine");
-    }
-    env->DeleteLocalRef(jcommand_line);
-    env->DeleteLocalRef(jprocess_type);
+
+    ScopedJNIString jprocessType(env, process_type);
+    ScopedJNIObject<CefCommandLine> jcommandLine(
+        env, command_line, "org/cef/callback/CefCommandLine_N",
+        "CefCommandLine");
+    jcommandLine.SetTemporary();
+
+    JNI_CALL_VOID_METHOD(
+        env, handle_, "onBeforeCommandLineProcessing",
+        "(Ljava/lang/String;Lorg/cef/callback/CefCommandLine;)V",
+        jprocessType.get(), jcommandLine.get());
+
     END_ENV(env)
   }
 
@@ -92,21 +80,20 @@ void ClientApp::OnBeforeCommandLineProcessing(
 
 void ClientApp::OnRegisterCustomSchemes(
     CefRawPtr<CefSchemeRegistrar> registrar) {
-  if (!app_handler_)
+  if (!handle_)
     return;
 
   BEGIN_ENV(env)
-  jobject jregistrar =
-      NewJNIObject(env, "org/cef/callback/CefSchemeRegistrar_N");
-  if (jregistrar != NULL) {
-    SetCefForJNIObject(env, jregistrar, registrar, "CefSchemeRegistrar");
-    JNI_CALL_VOID_METHOD(env, app_handler_, "onRegisterCustomSchemes",
-                         "(Lorg/cef/callback/CefSchemeRegistrar;)V",
-                         jregistrar);
-    SetCefForJNIObject<CefSchemeRegistrar>(env, jregistrar, NULL,
-                                           "CefSchemeRegistrar");
-  }
-  env->DeleteLocalRef(jregistrar);
+
+  ScopedJNIObject<CefSchemeRegistrar, CefRawPtr<CefSchemeRegistrar>> jregistrar(
+      env, registrar, "org/cef/callback/CefSchemeRegistrar_N",
+      "CefSchemeRegistrar");
+  jregistrar.SetTemporary();
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onRegisterCustomSchemes",
+                       "(Lorg/cef/callback/CefSchemeRegistrar;)V",
+                       jregistrar.get());
+
   END_ENV(env)
 }
 

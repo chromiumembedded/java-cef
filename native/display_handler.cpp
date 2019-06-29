@@ -4,18 +4,10 @@
 
 #include "display_handler.h"
 
-#include "client_handler.h"
 #include "jni_util.h"
-#include "util.h"
 
-DisplayHandler::DisplayHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
-
-DisplayHandler::~DisplayHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+DisplayHandler::DisplayHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
 void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefFrame> frame,
@@ -23,16 +15,16 @@ void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jobject jframe = GetJNIFrame(env, frame);
-  jstring jurl = NewJNIString(env, url);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onAddressChange",
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIString jurl(env, url);
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onAddressChange",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                        "CefFrame;Ljava/lang/String;)V",
-                       jbrowser, jframe, jurl);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jurl);
-  env->DeleteLocalRef(jframe);
+                       jbrowser.get(), jframe.get(), jurl.get());
 }
 
 void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
@@ -40,27 +32,28 @@ void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jstring jtitle = NewJNIString(env, title);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onTitleChange",
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIString jtitle(env, title);
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onTitleChange",
                        "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       jbrowser, jtitle);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jtitle);
+                       jbrowser.get(), jtitle.get());
 }
 
 bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIString jtext(env, text);
   jboolean jreturn = JNI_FALSE;
-  jstring jtext = NewJNIString(env, text);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_METHOD(env, jhandler_, "onTooltip",
+
+  JNI_CALL_METHOD(env, handle_, "onTooltip",
                   "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)Z", Boolean,
-                  jreturn, jbrowser, jtext);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jtext);
+                  jreturn, jbrowser.get(), jtext.get());
+
   return (jreturn != JNI_FALSE);
 }
 
@@ -69,13 +62,13 @@ void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jstring jvalue = NewJNIString(env, value);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onStatusMessage",
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIString jvalue(env, value);
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onStatusMessage",
                        "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       jbrowser, jvalue);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jvalue);
+                       jbrowser.get(), jvalue.get());
 }
 
 bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
@@ -102,19 +95,17 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
       break;
   }
 
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIString jmessage(env, message);
+  ScopedJNIString jsource(env, source);
   jboolean jreturn = JNI_FALSE;
-  jstring jmessage = NewJNIString(env, message);
-  jstring jsource = NewJNIString(env, source);
-  jobject jbrowser = GetJNIBrowser(browser);
+
   JNI_CALL_METHOD(
-      env, jhandler_, "onConsoleMessage",
+      env, handle_, "onConsoleMessage",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/CefSettings$LogSeverity;"
       "Ljava/lang/String;Ljava/lang/String;I)Z",
-      Boolean, jreturn, jbrowser, jlevel, jmessage, jsource,
+      Boolean, jreturn, jbrowser.get(), jlevel, jmessage.get(), jsource.get(),
       line);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jsource);
-  env->DeleteLocalRef(jmessage);
-  env->DeleteLocalRef(jlevel);
+
   return (jreturn != JNI_FALSE);
 }

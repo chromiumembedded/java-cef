@@ -7,21 +7,23 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_drag_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // DragHandler implementation.
 class DragHandler : public CefDragHandler {
  public:
   DragHandler(JNIEnv* env, jobject handler);
-  virtual ~DragHandler();
 
   // CefDragHandler methods
-  virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefDragData> dragData,
-                           CefDragHandler::DragOperationsMask mask) OVERRIDE;
+  bool OnDragEnter(CefRefPtr<CefBrowser> browser,
+                   CefRefPtr<CefDragData> dragData,
+                   CefDragHandler::DragOperationsMask mask) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DragHandler);

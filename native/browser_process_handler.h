@@ -7,10 +7,14 @@
 #pragma once
 
 #include <jni.h>
+
 #include <set>
+
 #include "include/base/cef_lock.h"
 #include "include/cef_browser_process_handler.h"
 #include "include/wrapper/cef_message_router.h"
+
+#include "jni_scoped_helpers.h"
 
 // comparator to check if configuration values are the same
 struct cmpCfg {
@@ -25,23 +29,20 @@ struct cmpCfg {
 // BrowserProcessHandler implementation.
 class BrowserProcessHandler : public CefBrowserProcessHandler {
  public:
-  BrowserProcessHandler(jobject app_handler);
+  BrowserProcessHandler(JNIEnv* env, jobject app_handler);
   virtual ~BrowserProcessHandler();
 
-  virtual void OnContextInitialized() OVERRIDE;
-
-  virtual void OnRenderProcessThreadCreated(
+  void OnContextInitialized() OVERRIDE;
+  void OnRenderProcessThreadCreated(
       CefRefPtr<CefListValue> extra_info) OVERRIDE;
-
-  virtual CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
-
-  virtual void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE;
+  CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
+  void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE;
 
   static void AddMessageRouterConfig(const CefMessageRouterConfig& cfg);
   static void RemoveMessageRouterConfig(const CefMessageRouterConfig& cfg);
 
  protected:
-  jobject app_handler_;
+  ScopedJNIObjectGlobal handle_;
   static std::set<CefMessageRouterConfig, cmpCfg> router_cfg_;
   static base::Lock router_cfg_lock_;
 

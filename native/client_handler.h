@@ -7,10 +7,14 @@
 #pragma once
 
 #include <jni.h>
+
 #include <set>
+
 #include "include/base/cef_lock.h"
 #include "include/cef_base.h"
 #include "include/cef_client.h"
+
+#include "jni_scoped_helpers.h"
 #include "message_router_handler.h"
 #include "window_handler.h"
 
@@ -18,26 +22,24 @@
 class ClientHandler : public CefClient {
  public:
   ClientHandler(JNIEnv* env, jobject handler);
-  virtual ~ClientHandler();
 
   // CefClient methods
-  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE;
-  virtual CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
-  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
-  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
-  virtual CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
-  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
-  virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
-  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
-  virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
-  virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
+  CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE;
+  CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
+  CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
+  CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
+  CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
+  CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
+  CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
+  CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
+  CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
+  CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
+  CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
+  CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
 
-  virtual bool OnProcessMessageReceived(
-      CefRefPtr<CefBrowser> browser,
-      CefProcessId source_process,
-      CefRefPtr<CefProcessMessage> message) OVERRIDE;
+  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                CefProcessId source_process,
+                                CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
   // Additional handler for windowed rendering mode
   CefRefPtr<WindowHandler> GetWindowHandler();
@@ -52,10 +54,16 @@ class ClientHandler : public CefClient {
   void OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame);
   void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser);
 
-  jobject getBrowser(CefRefPtr<CefBrowser> browser);
+  jobject getBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser);
 
  protected:
-  jobject jhandler_;
+  typedef std::set<CefRefPtr<CefBrowser>> BrowserSet;
+  BrowserSet GetAllBrowsers(JNIEnv* env);
+
+  template <class T>
+  CefRefPtr<T> GetHandler(const char* class_name);
+
+  ScopedJNIObjectGlobal handle_;
 
   // The child browser window.
   std::map<int, jobject> browserMap_;

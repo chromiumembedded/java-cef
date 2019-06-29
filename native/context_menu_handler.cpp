@@ -4,18 +4,24 @@
 
 #include "context_menu_handler.h"
 
-#include "client_handler.h"
-#include "jni_util.h"
-#include "util.h"
+namespace {
 
-ContextMenuHandler::ContextMenuHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
+// JNI CefContextMenuParams object.
+class ScopedJNIContextMenuParams
+    : public ScopedJNIObject<CefContextMenuParams> {
+ public:
+  ScopedJNIContextMenuParams(JNIEnv* env, CefRefPtr<CefContextMenuParams> obj)
+      : ScopedJNIObject<CefContextMenuParams>(
+            env,
+            obj,
+            "org/cef/callback/CefContextMenuParams_N",
+            "CefContextMenuParams") {}
+};
 
-ContextMenuHandler::~ContextMenuHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+}  // namespace
+
+ContextMenuHandler::ContextMenuHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
 void ContextMenuHandler::OnBeforeContextMenu(
     CefRefPtr<CefBrowser> browser,
@@ -26,37 +32,20 @@ void ContextMenuHandler::OnBeforeContextMenu(
   if (!env)
     return;
 
-  jobject jparams =
-      NewJNIObject(env, "org/cef/callback/CefContextMenuParams_N");
-  if (!jparams)
-    return;
-  jobject jmodel = NewJNIObject(env, "org/cef/callback/CefMenuModel_N");
-  if (!jmodel) {
-    env->DeleteLocalRef(jparams);
-    return;
-  }
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIContextMenuParams jparams(env, params);
+  jparams.SetTemporary();
+  ScopedJNIMenuModel jmodel(env, model);
+  jmodel.SetTemporary();
 
-  SetCefForJNIObject(env, jparams, params.get(), "CefContextMenuParams");
-  SetCefForJNIObject(env, jmodel, model.get(), "CefMenuModel");
-
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jbrowser = GetJNIBrowser(browser);
-
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onBeforeContextMenu",
+  JNI_CALL_VOID_METHOD(env, handle_, "onBeforeContextMenu",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                        "CefFrame;Lorg/cef/callback/CefContextMenuParams;"
                        "Lorg/cef/callback/CefMenuModel;)V",
-                       jbrowser, jframe, jparams, jmodel);
-
-  // Do not keep references to |params| or |model| outside of this callback.
-  SetCefForJNIObject<CefContextMenuParams>(env, jparams, NULL,
-                                           "CefContextMenuParams");
-  SetCefForJNIObject<CefMenuModel>(env, jmodel, NULL, "CefMenuModel");
-
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jparams);
-  env->DeleteLocalRef(jmodel);
-  env->DeleteLocalRef(jframe);
+                       jbrowser.get(), jframe.get(), jparams.get(),
+                       jmodel.get());
 }
 
 bool ContextMenuHandler::OnContextMenuCommand(
@@ -69,28 +58,20 @@ bool ContextMenuHandler::OnContextMenuCommand(
   if (!env)
     return false;
 
-  jobject jparams =
-      NewJNIObject(env, "org/cef/callback/CefContextMenuParams_N");
-  if (!jparams)
-    return false;
-  SetCefForJNIObject(env, jparams, params.get(), "CefContextMenuParams");
-
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIContextMenuParams jparams(env, params);
+  jparams.SetTemporary();
   jboolean result = JNI_FALSE;
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_METHOD(env, jhandler_, "onContextMenuCommand",
+
+  JNI_CALL_METHOD(env, handle_, "onContextMenuCommand",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
                   "cef/callback/"
                   "CefContextMenuParams;II)Z",
-                  Boolean, result, jbrowser, jframe, jparams,
+                  Boolean, result, jbrowser.get(), jframe.get(), jparams.get(),
                   (jint)command_id, (jint)event_flags);
 
-  // Do not keep references to |params| or |model| outside of this callback.
-  SetCefForJNIObject<CefContextMenuParams>(env, jparams, NULL,
-                                           "CefContextMenuParams");
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jparams);
-  env->DeleteLocalRef(jframe);
   return (result != JNI_FALSE);
 }
 
@@ -100,12 +81,12 @@ void ContextMenuHandler::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jbrowser = GetJNIBrowser(browser);
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+
   JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onContextMenuDismissed",
+      env, handle_, "onContextMenuDismissed",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;)V",
-      jbrowser, jframe);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jframe);
+      jbrowser.get(), jframe.get());
 }

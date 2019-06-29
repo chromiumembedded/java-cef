@@ -7,27 +7,27 @@
 #pragma once
 
 #include <jni.h>
-#include "browser_process_handler.h"
+
 #include "include/cef_app.h"
+
+#include "browser_process_handler.h"
+#include "jni_scoped_helpers.h"
 
 // ClientApp implementation.
 class ClientApp : public CefApp {
  public:
   ClientApp(const std::string& module_dir,
             const std::string& cache_path,
+            JNIEnv* env,
             const jobject app_handler);
-  virtual ~ClientApp();
 
-  // CefApp methods
-  virtual void OnBeforeCommandLineProcessing(
+  // CefApp methods:
+  void OnBeforeCommandLineProcessing(
       const CefString& process_type,
       CefRefPtr<CefCommandLine> command_line) OVERRIDE;
-
-  virtual void OnRegisterCustomSchemes(
+  void OnRegisterCustomSchemes(
       CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
-
-  virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
-      OVERRIDE;
+  CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE;
 
 #if defined(OS_MACOSX)
   // Used to continue termination handling in Java.
@@ -41,7 +41,7 @@ class ClientApp : public CefApp {
  protected:
   const std::string module_dir_;
   const std::string cache_path_;
-  jobject app_handler_;
+  ScopedJNIObjectGlobal handle_;
   CefRefPtr<BrowserProcessHandler> process_handler_;
 
   // Include the default reference counting implementation.

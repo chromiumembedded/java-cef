@@ -18,196 +18,223 @@ Java_org_cef_callback_CefDragData_1N_N_1Create(JNIEnv*, jclass);
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_Clone
- * Signature: ()Lorg/cef/callback/CefDragData_N;
+ * Signature: (J)Lorg/cef/callback/CefDragData_N;
  */
-JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1Clone(JNIEnv*, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_callback_CefDragData_1N_N_1Clone(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_Dispose
- * Signature: ()V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_cef_callback_CefDragData_1N_N_1Dispose(JNIEnv*,
-                                                                       jobject);
+                                                                       jobject,
+                                                                       jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_IsReadOnly
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1IsReadOnly(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1IsReadOnly(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_IsLink
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1IsLink(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1IsLink(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_IsFragment
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1IsFragment(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1IsFragment(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_IsFile
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1IsFile(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1IsFile(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetLinkURL
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetLinkURL(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetLinkURL(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetLinkTitle
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetLinkTitle(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetLinkTitle(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetLinkMetadata
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetLinkMetadata(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetLinkMetadata(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFragmentText
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetFragmentText(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetFragmentText(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFragmentHtml
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetFragmentHtml(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetFragmentHtml(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFragmentBaseURL
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetFragmentBaseURL(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetFragmentBaseURL(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFileContents
- * Signature: (Ljava/io/OutputStream;)I
+ * Signature: (JLjava/io/OutputStream;)I
  */
 JNIEXPORT jint JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1GetFileContents(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jobject);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFileName
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetFileName(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetFileName(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_GetFileNames
- * Signature: (Ljava/util/Vector;)Z
+ * Signature: (JLjava/util/Vector;)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1GetFileNames(JNIEnv*, jobject, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1GetFileNames(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jobject);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetLinkURL
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1SetLinkURL(JNIEnv*, jobject, jstring);
+Java_org_cef_callback_CefDragData_1N_N_1SetLinkURL(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetLinkTitle
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1SetLinkTitle(JNIEnv*, jobject, jstring);
+Java_org_cef_callback_CefDragData_1N_N_1SetLinkTitle(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetLinkMetadata
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1SetLinkMetadata(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetFragmentText
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1SetFragmentText(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetFragmentHtml
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1SetFragmentHtml(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_SetFragmentBaseURL
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1SetFragmentBaseURL(JNIEnv*,
                                                            jobject,
+                                                           jlong,
                                                            jstring);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_ResetFileContents
- * Signature: ()V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefDragData_1N_N_1ResetFileContents(JNIEnv*, jobject);
+Java_org_cef_callback_CefDragData_1N_N_1ResetFileContents(JNIEnv*,
+                                                          jobject,
+                                                          jlong);
 
 /*
  * Class:     org_cef_callback_CefDragData_N
  * Method:    N_AddFile
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_callback_CefDragData_1N_N_1AddFile(JNIEnv*,
                                                                        jobject,
+                                                                       jlong,
                                                                        jstring,
                                                                        jstring);
 

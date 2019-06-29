@@ -979,21 +979,22 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
   return settings;
 }
 
-jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
-  if (!browser.get())
+jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
+  if (!browser)
     return NULL;
   CefRefPtr<ClientHandler> client =
       (ClientHandler*)browser->GetHost()->GetClient().get();
-  return client->getBrowser(browser);
+  return client->getBrowser(env, browser);
 }
 
-jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler) {
-  jobject jbrowsers = NULL;
-  JNI_CALL_METHOD(env, jclientHandler, "getAllBrowser", "()[Ljava/lang/Object;",
-                  Object, jbrowsers);
-  if (!jbrowsers)
+jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
+  if (!browser)
     return NULL;
-  return (jobjectArray)jbrowsers;
+  jobject jbrowser = NULL;
+  BEGIN_ENV(env)
+  jbrowser = GetJNIBrowser(env, browser);
+  END_ENV(env)
+  return jbrowser;
 }
 
 jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame> frame) {

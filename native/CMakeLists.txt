@@ -96,6 +96,8 @@ set(JCEF_SRCS
   focus_handler.cpp
   focus_handler.h
   jcef_version.h
+  jni_scoped_helpers.h
+  jni_scoped_helpers.cpp
   jni_util.h
   jni_util.cpp
   jsdialog_handler.cpp

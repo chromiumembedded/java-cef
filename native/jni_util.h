@@ -221,10 +221,13 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj);
 
 CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj);
 
-// Get java browser counterpart
-jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
-jobjectArray GetAllJNIBrowser(JNIEnv* env, jobject jclientHandler);
+// Get the Java browser counterpart.
+jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser>);
 
+// TODO: Remove this method once all callers are converted to scoped helpers.
+jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
+
+// TODO: Remove this method once all callers are converted to scoped helpers.
 jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame>);
 
 jobject NewJNITransitionType(JNIEnv* env,
@@ -311,8 +314,19 @@ bool IsJNIEnumValue(JNIEnv* env,
 struct SetCefForJNIObjectHelper {
   static inline void AddRef(CefBaseScoped* obj) {}
   static inline void Release(CefBaseScoped* obj) {}
+
+  template <class T>
+  static inline T* Get(CefRawPtr<T> obj) {
+    return obj;
+  }
+
   static inline void AddRef(CefBaseRefCounted* obj) { obj->AddRef(); }
   static inline void Release(CefBaseRefCounted* obj) { obj->Release(); }
+
+  template <class T>
+  static inline T* Get(CefRefPtr<T> obj) {
+    return obj.get();
+  }
 
   // For ref-counted implementations that don't derive from CefBaseRefCounted.
   template <class T>
@@ -335,15 +349,14 @@ bool SetCefForJNIObject(JNIEnv* env,
                         const char* varName) {
   if (!obj)
     return false;
+
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
   JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
                   previousValue, identifer);
-
-  T* oldbase = reinterpret_cast<T*>(previousValue);
-  if (oldbase) {
+  if (previousValue != 0) {
     // Remove a reference from the previous base object.
-    SetCefForJNIObjectHelper::Release(oldbase);
+    SetCefForJNIObjectHelper::Release(reinterpret_cast<T*>(previousValue));
   }
 
   JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V",
@@ -359,11 +372,13 @@ bool SetCefForJNIObject(JNIEnv* env,
 // Retrieve the CEF base object from an existing JNI object.
 template <class T>
 T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
+  if (!obj)
+    return NULL;
+
   jstring identifer = env->NewStringUTF(varName);
   jlong previousValue = 0;
-  if (obj != NULL)
-    JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
-                    previousValue, identifer);
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
+                  previousValue, identifer);
 
   env->DeleteLocalRef(identifer);
   if (previousValue != 0)

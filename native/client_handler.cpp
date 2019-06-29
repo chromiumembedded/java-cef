@@ -36,241 +36,85 @@
 #include "jni_util.h"
 #include "util.h"
 
-ClientHandler::ClientHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
+ClientHandler::ClientHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
-ClientHandler::~ClientHandler() {
+template <class T>
+CefRefPtr<T> ClientHandler::GetHandler(const char* class_name) {
+  std::string methodName, className, methodSig;
+
+  std::stringstream ss;
+  ss << "get" << class_name;
+  methodName = ss.str();
+
+  ss.str(std::string());
+  ss << "Cef" << class_name;
+  className = ss.str();
+
+  ss.str(std::string());
+  ss << "()Lorg/cef/handler/" << className << ";";
+  methodSig = ss.str();
+
+  CefRefPtr<T> result = NULL;
   BEGIN_ENV(env)
-  env->DeleteGlobalRef(jhandler_);
-  END_ENV(env)
-}
-CefRefPtr<CefContextMenuHandler> ClientHandler::GetContextMenuHandler() {
-  CefRefPtr<CefContextMenuHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getContextMenuHandler",
-                  "()Lorg/cef/handler/CefContextMenuHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefContextMenuHandler>(
-        env, handler, "CefContextMenuHandler");
-    if (!result.get()) {
-      result = new ContextMenuHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefContextMenuHandler");
-    }
-    env->DeleteLocalRef(handler);
+  ScopedJNIObjectResult jresult(env);
+  JNI_CALL_METHOD(env, handle_, methodName.c_str(), methodSig.c_str(), Object,
+                  jresult);
+  if (jresult) {
+    ScopedJNIObject<T> jhandler(env, jresult.Release(),
+                                true /* should_delete */, className.c_str());
+    result = jhandler.GetOrCreateCefObject();
   }
   END_ENV(env)
   return result;
+}
+
+CefRefPtr<CefContextMenuHandler> ClientHandler::GetContextMenuHandler() {
+  return GetHandler<ContextMenuHandler>("ContextMenuHandler");
 }
 
 CefRefPtr<CefDialogHandler> ClientHandler::GetDialogHandler() {
-  CefRefPtr<CefDialogHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getDialogHandler",
-                  "()Lorg/cef/handler/CefDialogHandler;", Object, handler);
-  if (handler) {
-    result =
-        GetCefFromJNIObject<CefDialogHandler>(env, handler, "CefDialogHandler");
-    if (!result.get()) {
-      result = new DialogHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefDialogHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<DialogHandler>("DialogHandler");
 }
 
 CefRefPtr<CefDisplayHandler> ClientHandler::GetDisplayHandler() {
-  CefRefPtr<CefDisplayHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getDisplayHandler",
-                  "()Lorg/cef/handler/CefDisplayHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefDisplayHandler>(env, handler,
-                                                    "CefDisplayHandler");
-    if (!result.get()) {
-      result = new DisplayHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefDisplayHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<DisplayHandler>("DisplayHandler");
 }
 
 CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
-  CefRefPtr<CefDownloadHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getDownloadHandler",
-                  "()Lorg/cef/handler/CefDownloadHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefDownloadHandler>(env, handler,
-                                                     "CefDownloadHandler");
-    if (!result.get()) {
-      result = new DownloadHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefDownloadHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<DownloadHandler>("DownloadHandler");
 }
 
 CefRefPtr<CefDragHandler> ClientHandler::GetDragHandler() {
-  CefRefPtr<CefDragHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getDragHandler",
-                  "()Lorg/cef/handler/CefDragHandler;", Object, handler);
-  if (handler) {
-    result =
-        GetCefFromJNIObject<CefDragHandler>(env, handler, "CefDragHandler");
-    if (!result.get()) {
-      result = new DragHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefDragHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<DragHandler>("DragHandler");
 }
 
 CefRefPtr<CefFocusHandler> ClientHandler::GetFocusHandler() {
-  CefRefPtr<CefFocusHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getFocusHandler",
-                  "()Lorg/cef/handler/CefFocusHandler;", Object, handler);
-  if (handler) {
-    result =
-        GetCefFromJNIObject<CefFocusHandler>(env, handler, "CefFocusHandler");
-    if (!result.get()) {
-      result = new FocusHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefFocusHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<FocusHandler>("FocusHandler");
 }
 
 CefRefPtr<CefJSDialogHandler> ClientHandler::GetJSDialogHandler() {
-  CefRefPtr<CefJSDialogHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getJSDialogHandler",
-                  "()Lorg/cef/handler/CefJSDialogHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefJSDialogHandler>(env, handler,
-                                                     "CefJSDialogHandler");
-    if (!result.get()) {
-      result = new JSDialogHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefJSDialogHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<JSDialogHandler>("JSDialogHandler");
 }
 
 CefRefPtr<CefKeyboardHandler> ClientHandler::GetKeyboardHandler() {
-  CefRefPtr<CefKeyboardHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getKeyboardHandler",
-                  "()Lorg/cef/handler/CefKeyboardHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefKeyboardHandler>(env, handler,
-                                                     "CefKeyboardHandler");
-    if (!result.get()) {
-      result = new KeyboardHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefKeyboardHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<KeyboardHandler>("KeyboardHandler");
 }
 
 CefRefPtr<CefLifeSpanHandler> ClientHandler::GetLifeSpanHandler() {
-  CefRefPtr<CefLifeSpanHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getLifeSpanHandler",
-                  "()Lorg/cef/handler/CefLifeSpanHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefLifeSpanHandler>(env, handler,
-                                                     "CefLifeSpanHandler");
-    if (!result.get()) {
-      result = new LifeSpanHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefLifeSpanHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<LifeSpanHandler>("LifeSpanHandler");
 }
 
 CefRefPtr<CefLoadHandler> ClientHandler::GetLoadHandler() {
-  CefRefPtr<CefLoadHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getLoadHandler",
-                  "()Lorg/cef/handler/CefLoadHandler;", Object, handler);
-  if (handler) {
-    result =
-        GetCefFromJNIObject<CefLoadHandler>(env, handler, "CefLoadHandler");
-    if (!result.get()) {
-      result = new LoadHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefLoadHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<LoadHandler>("LoadHandler");
 }
 
 CefRefPtr<CefRenderHandler> ClientHandler::GetRenderHandler() {
-  CefRefPtr<CefRenderHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getRenderHandler",
-                  "()Lorg/cef/handler/CefRenderHandler;", Object, handler);
-  if (handler) {
-    result =
-        GetCefFromJNIObject<CefRenderHandler>(env, handler, "CefRenderHandler");
-    if (!result.get()) {
-      result = new RenderHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefRenderHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<RenderHandler>("RenderHandler");
 }
 
 CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
-  CefRefPtr<CefRequestHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getRequestHandler",
-                  "()Lorg/cef/handler/CefRequestHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<CefRequestHandler>(env, handler,
-                                                    "CefRequestHandler");
-    if (!result.get()) {
-      result = new RequestHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "CefRequestHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<RequestHandler>("RequestHandler");
 }
 
 bool ClientHandler::OnProcessMessageReceived(
@@ -291,21 +135,7 @@ bool ClientHandler::OnProcessMessageReceived(
 }
 
 CefRefPtr<WindowHandler> ClientHandler::GetWindowHandler() {
-  CefRefPtr<WindowHandler> result = NULL;
-  BEGIN_ENV(env)
-  jobject handler = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getWindowHandler",
-                  "()Lorg/cef/handler/CefWindowHandler;", Object, handler);
-  if (handler) {
-    result = GetCefFromJNIObject<WindowHandler>(env, handler, "WindowHandler");
-    if (!result.get()) {
-      result = new WindowHandler(env, handler);
-      SetCefForJNIObject(env, handler, result.get(), "WindowHandler");
-    }
-    env->DeleteLocalRef(handler);
-  }
-  END_ENV(env)
-  return result;
+  return GetHandler<WindowHandler>("WindowHandler");
 }
 
 void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
@@ -326,8 +156,8 @@ void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   BrowserProcessHandler::AddMessageRouterConfig(config);
 
   // 3) Update running render-processes.
-  jobjectArray jbrowserArray = GetAllJNIBrowser(env, jhandler_);
-  if (!jbrowserArray)
+  BrowserSet allBrowsers = GetAllBrowsers(env);
+  if (allBrowsers.empty())
     return;
 
   CefRefPtr<CefProcessMessage> message =
@@ -336,17 +166,10 @@ void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   args->SetString(0, config.js_query_function);
   args->SetString(1, config.js_cancel_function);
 
-  jint length = env->GetArrayLength(jbrowserArray);
-  for (int i = 0; i < length; ++i) {
-    jobject jbrowser = env->GetObjectArrayElement(jbrowserArray, i);
-    CefRefPtr<CefBrowser> browser =
-        GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
-    env->DeleteLocalRef(jbrowser);
-    if (!browser.get())
-      continue;
-    browser->SendProcessMessage(PID_RENDERER, message);
+  BrowserSet::const_iterator it = allBrowsers.begin();
+  for (; it != allBrowsers.end(); ++it) {
+    (*it)->SendProcessMessage(PID_RENDERER, message);
   }
-  env->DeleteLocalRef(jbrowserArray);
 }
 
 void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
@@ -367,8 +190,8 @@ void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   BrowserProcessHandler::RemoveMessageRouterConfig(config);
 
   // 3) Update running render-processes.
-  jobjectArray jbrowserArray = GetAllJNIBrowser(env, jhandler_);
-  if (!jbrowserArray)
+  BrowserSet allBrowsers = GetAllBrowsers(env);
+  if (allBrowsers.empty())
     return;
 
   CefRefPtr<CefProcessMessage> message =
@@ -377,17 +200,10 @@ void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
   args->SetString(0, config.js_query_function);
   args->SetString(1, config.js_cancel_function);
 
-  jint length = env->GetArrayLength(jbrowserArray);
-  for (int i = 0; i < length; ++i) {
-    jobject jbrowser = env->GetObjectArrayElement(jbrowserArray, i);
-    CefRefPtr<CefBrowser> browser =
-        GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
-    env->DeleteLocalRef(jbrowser);
-    if (!browser.get())
-      continue;
-    browser->SendProcessMessage(PID_RENDERER, message);
+  BrowserSet::const_iterator it = allBrowsers.begin();
+  for (; it != allBrowsers.end(); ++it) {
+    (*it)->SendProcessMessage(PID_RENDERER, message);
   }
-  env->DeleteLocalRef(jbrowserArray);
 }
 
 void ClientHandler::OnAfterCreated() {}
@@ -419,12 +235,38 @@ void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-jobject ClientHandler::getBrowser(CefRefPtr<CefBrowser> browser) {
+jobject ClientHandler::getBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
   jobject jbrowser = NULL;
-  BEGIN_ENV(env)
-  JNI_CALL_METHOD(env, jhandler_, "getBrowser",
-                  "(I)Lorg/cef/browser/CefBrowser;", Object, jbrowser,
-                  browser->GetIdentifier());
-  END_ENV(env)
+  JNI_CALL_METHOD(env, handle_, "getBrowser", "(I)Lorg/cef/browser/CefBrowser;",
+                  Object, jbrowser, browser->GetIdentifier());
   return jbrowser;
+}
+
+ClientHandler::BrowserSet ClientHandler::GetAllBrowsers(JNIEnv* env) {
+  BrowserSet result;
+
+  jobject jbrowsers = NULL;
+  JNI_CALL_METHOD(env, handle_, "getAllBrowser", "()[Ljava/lang/Object;",
+                  Object, jbrowsers);
+  if (!jbrowsers)
+    return result;
+
+  jobjectArray jbrowserArray = (jobjectArray)jbrowsers;
+  jint length = env->GetArrayLength(jbrowserArray);
+  for (int i = 0; i < length; ++i) {
+    jobject jbrowser = env->GetObjectArrayElement(jbrowserArray, i);
+    if (!jbrowser)
+      continue;
+
+    ScopedJNIBrowser sbrowser(env);
+    sbrowser.SetHandle(jbrowser, true /* should_delete */);
+    CefRefPtr<CefBrowser> browser = sbrowser.GetCefObject();
+    if (!browser)
+      continue;
+
+    result.insert(browser);
+  }
+  env->DeleteLocalRef(jbrowserArray);
+
+  return result;
 }

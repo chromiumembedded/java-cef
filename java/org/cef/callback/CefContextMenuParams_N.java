@@ -12,7 +12,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public int getXCoord() {
         try {
-            return N_GetXCoord();
+            return N_GetXCoord(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -22,7 +22,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public int getYCoord() {
         try {
-            return N_GetYCoord();
+            return N_GetYCoord(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -32,7 +32,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public int getTypeFlags() {
         try {
-            return N_GetTypeFlags();
+            return N_GetTypeFlags(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -42,7 +42,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getLinkUrl() {
         try {
-            return N_GetLinkUrl();
+            return N_GetLinkUrl(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -52,7 +52,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getUnfilteredLinkUrl() {
         try {
-            return N_GetUnfilteredLinkUrl();
+            return N_GetUnfilteredLinkUrl(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -62,7 +62,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getSourceUrl() {
         try {
-            return N_GetSourceUrl();
+            return N_GetSourceUrl(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -72,7 +72,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public boolean hasImageContents() {
         try {
-            return N_HasImageContents();
+            return N_HasImageContents(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -82,7 +82,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getPageUrl() {
         try {
-            return N_GetPageUrl();
+            return N_GetPageUrl(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -92,7 +92,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getFrameUrl() {
         try {
-            return N_GetFrameUrl();
+            return N_GetFrameUrl(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -102,7 +102,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getFrameCharset() {
         try {
-            return N_GetFrameCharset();
+            return N_GetFrameCharset(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -112,7 +112,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public MediaType getMediaType() {
         try {
-            return N_GetMediaType();
+            return N_GetMediaType(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -122,7 +122,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public int getMediaStateFlags() {
         try {
-            return N_GetMediaStateFlags();
+            return N_GetMediaStateFlags(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -132,7 +132,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getSelectionText() {
         try {
-            return N_GetSelectionText();
+            return N_GetSelectionText(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -142,7 +142,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public String getMisspelledWord() {
         try {
-            return N_GetMisspelledWord();
+            return N_GetMisspelledWord(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -152,7 +152,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public boolean getDictionarySuggestions(Vector<String> suggestions) {
         try {
-            return N_GetDictionarySuggestions(suggestions);
+            return N_GetDictionarySuggestions(getNativeRef(null), suggestions);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -162,7 +162,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public boolean isEditable() {
         try {
-            return N_IsEditable();
+            return N_IsEditable(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -172,7 +172,7 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public boolean isSpellCheckEnabled() {
         try {
-            return N_IsSpellCheckEnabled();
+            return N_IsSpellCheckEnabled(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -182,29 +182,29 @@ class CefContextMenuParams_N extends CefNativeAdapter implements CefContextMenuP
     @Override
     public int getEditStateFlags() {
         try {
-            return N_GetEditStateFlags();
+            return N_GetEditStateFlags(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
         return 0;
     }
 
-    private final native int N_GetXCoord();
-    private final native int N_GetYCoord();
-    private final native int N_GetTypeFlags();
-    private final native String N_GetLinkUrl();
-    private final native String N_GetUnfilteredLinkUrl();
-    private final native String N_GetSourceUrl();
-    private final native boolean N_HasImageContents();
-    private final native String N_GetPageUrl();
-    private final native String N_GetFrameUrl();
-    private final native String N_GetFrameCharset();
-    private final native MediaType N_GetMediaType();
-    private final native int N_GetMediaStateFlags();
-    private final native String N_GetSelectionText();
-    private final native String N_GetMisspelledWord();
-    private final native boolean N_GetDictionarySuggestions(Vector<String> suggestions);
-    private final native boolean N_IsEditable();
-    private final native boolean N_IsSpellCheckEnabled();
-    private final native int N_GetEditStateFlags();
+    private final native int N_GetXCoord(long self);
+    private final native int N_GetYCoord(long self);
+    private final native int N_GetTypeFlags(long self);
+    private final native String N_GetLinkUrl(long self);
+    private final native String N_GetUnfilteredLinkUrl(long self);
+    private final native String N_GetSourceUrl(long self);
+    private final native boolean N_HasImageContents(long self);
+    private final native String N_GetPageUrl(long self);
+    private final native String N_GetFrameUrl(long self);
+    private final native String N_GetFrameCharset(long self);
+    private final native MediaType N_GetMediaType(long self);
+    private final native int N_GetMediaStateFlags(long self);
+    private final native String N_GetSelectionText(long self);
+    private final native String N_GetMisspelledWord(long self);
+    private final native boolean N_GetDictionarySuggestions(long self, Vector<String> suggestions);
+    private final native boolean N_IsEditable(long self);
+    private final native boolean N_IsSpellCheckEnabled(long self);
+    private final native int N_GetEditStateFlags(long self);
 }
