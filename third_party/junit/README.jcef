@@ -1,0 +1,11 @@
+Name: JUnit
+Short Name: junit
+URL: https://junit.org/junit5/
+Version: 5.4.2
+License: Mixed (see LICENSE.txt files in *.jar)
+
+Description:
+Command-line Java application for launching the JUnit Platform from the console.
+
+Local Modifications:
+None.

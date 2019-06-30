@@ -43,10 +43,7 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
 
 // This function is called by LifeSpanHandler::DoClose().
 void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
-  // TODO(jcef): Implement this function stub to do some platform dependent
-  // cleanup tasks for the browser reference.
-
-  UNUSED(browser);
+  browser->GetHost()->CloseBrowser(true);
 }
 
 CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
