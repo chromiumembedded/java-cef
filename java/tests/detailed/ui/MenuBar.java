@@ -4,6 +4,18 @@
 
 package tests.detailed.ui;
 
+import org.cef.CefApp;
+import org.cef.CefClient;
+import org.cef.OS;
+import org.cef.browser.CefBrowser;
+import org.cef.callback.CefPdfPrintCallback;
+import org.cef.callback.CefRunFileDialogCallback;
+import org.cef.callback.CefStringVisitor;
+import org.cef.handler.CefDialogHandler.FileDialogMode;
+import org.cef.misc.CefPdfPrintSettings;
+import org.cef.network.CefCookieManager;
+import org.cef.network.CefRequest;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -31,18 +43,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
-
-import org.cef.CefApp;
-import org.cef.CefClient;
-import org.cef.OS;
-import org.cef.browser.CefBrowser;
-import org.cef.callback.CefPdfPrintCallback;
-import org.cef.callback.CefRunFileDialogCallback;
-import org.cef.callback.CefStringVisitor;
-import org.cef.handler.CefDialogHandler.FileDialogMode;
-import org.cef.misc.CefPdfPrintSettings;
-import org.cef.network.CefCookieManager;
-import org.cef.network.CefRequest;
 
 import tests.detailed.BrowserFrame;
 import tests.detailed.MainFrame;
@@ -445,7 +445,7 @@ public class MenuBar extends JMenuBar {
         newwindow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, null, null);
+                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, null);
                 frame.setSize(800, 600);
                 frame.setVisible(true);
             }

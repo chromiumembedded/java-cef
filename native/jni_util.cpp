@@ -1034,8 +1034,9 @@ jobject NewJNITransitionType(JNIEnv* env,
   return result;
 }
 
-jobject NewJNIURLRequestStatus(JNIEnv* env,
-                               CefRequestHandler::URLRequestStatus status) {
+jobject NewJNIURLRequestStatus(
+    JNIEnv* env,
+    CefResourceRequestHandler::URLRequestStatus status) {
   jobject result = GetJNIEnumValue(env, "org/cef/network/CefURLRequest$Status",
                                    "UR_UNKNOWN");
 

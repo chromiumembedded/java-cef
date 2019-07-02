@@ -964,6 +964,7 @@ jboolean create(JNIEnv* env,
   CefRefPtr<CefBrowser> parentBrowser =
       GetCefFromJNIObject<CefBrowser>(env, jparentBrowser, "CefBrowser");
 
+  // Add a global ref that will be released in LifeSpanHandler::OnAfterCreated.
   jobject globalRef = env->NewGlobalRef(jbrowser);
   lifeSpanHandler->registerJBrowser(globalRef);
 
@@ -981,7 +982,7 @@ jboolean create(JNIEnv* env,
   }
 
   bool result = CefBrowserHost::CreateBrowser(windowInfo, clientHandler.get(),
-                                              strUrl, settings, context);
+                                              strUrl, settings, NULL, context);
   if (!result) {
     lifeSpanHandler->unregisterJBrowser(globalRef);
     env->DeleteGlobalRef(globalRef);
@@ -1929,4 +1930,3 @@ Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv* env,
   }
 #endif
 }
-

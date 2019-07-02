@@ -4,7 +4,8 @@
 
 #include "jni_scoped_helpers.h"
 
-ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle) {
+ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle)
+    : jhandle_(NULL) {
   if (handle) {
     jhandle_ = env->NewGlobalRef(handle);
     DCHECK(jhandle_);

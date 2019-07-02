@@ -82,6 +82,8 @@ set(JCEF_SRCS
   context.h
   context_menu_handler.cpp
   context_menu_handler.h
+  cookie_access_filter.cpp
+  cookie_access_filter.h
   cookie_visitor.cpp
   cookie_visitor.h
   critical_wait.h
@@ -122,6 +124,8 @@ set(JCEF_SRCS
   request_handler.h
   resource_handler.cpp
   resource_handler.h
+  resource_request_handler.cpp
+  resource_request_handler.h
   run_file_dialog_callback.cpp
   run_file_dialog_callback.h
   scheme_handler_factory.cpp

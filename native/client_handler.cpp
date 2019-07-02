@@ -119,6 +119,7 @@ CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
 
 bool ClientHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
   std::set<CefRefPtr<CefMessageRouterBrowserSide>>::iterator iter;
@@ -126,8 +127,8 @@ bool ClientHandler::OnProcessMessageReceived(
 
   base::AutoLock lock_scope(lock_);
   for (iter = message_router_.begin(); iter != message_router_.end(); iter++) {
-    handled =
-        (*iter)->OnProcessMessageReceived(browser, source_process, message);
+    handled = (*iter)->OnProcessMessageReceived(browser, frame, source_process,
+                                                message);
     if (handled)
       break;
   }
@@ -168,7 +169,7 @@ void ClientHandler::AddMessageRouter(JNIEnv* env, jobject jmessageRouter) {
 
   BrowserSet::const_iterator it = allBrowsers.begin();
   for (; it != allBrowsers.end(); ++it) {
-    (*it)->SendProcessMessage(PID_RENDERER, message);
+    (*it)->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
   }
 }
 
@@ -202,7 +203,7 @@ void ClientHandler::RemoveMessageRouter(JNIEnv* env, jobject jmessageRouter) {
 
   BrowserSet::const_iterator it = allBrowsers.begin();
   for (; it != allBrowsers.end(); ++it) {
-    (*it)->SendProcessMessage(PID_RENDERER, message);
+    (*it)->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
   }
 }
 

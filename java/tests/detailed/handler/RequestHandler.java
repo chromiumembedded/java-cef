@@ -4,6 +4,20 @@
 
 package tests.detailed.handler;
 
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.callback.CefAuthCallback;
+import org.cef.callback.CefRequestCallback;
+import org.cef.handler.CefLoadHandler.ErrorCode;
+import org.cef.handler.CefRequestHandler;
+import org.cef.handler.CefResourceHandler;
+import org.cef.handler.CefResourceRequestHandler;
+import org.cef.handler.CefResourceRequestHandlerAdapter;
+import org.cef.misc.BoolRef;
+import org.cef.network.CefPostData;
+import org.cef.network.CefPostDataElement;
+import org.cef.network.CefRequest;
+
 import java.awt.Frame;
 import java.util.HashMap;
 import java.util.Vector;
@@ -11,21 +25,10 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.cef.browser.CefBrowser;
-import org.cef.browser.CefFrame;
-import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefRequestCallback;
-import org.cef.handler.CefRequestHandlerAdapter;
-import org.cef.handler.CefResourceHandler;
-import org.cef.handler.CefLoadHandler.ErrorCode;
-import org.cef.network.CefPostData;
-import org.cef.network.CefPostDataElement;
-import org.cef.network.CefRequest;
-
 import tests.detailed.dialog.CertErrorDialog;
 import tests.detailed.dialog.PasswordDialog;
 
-public class RequestHandler extends CefRequestHandlerAdapter {
+public class RequestHandler extends CefResourceRequestHandlerAdapter implements CefRequestHandler {
     private final Frame owner_;
 
     public RequestHandler(Frame owner) {
@@ -60,6 +63,13 @@ public class RequestHandler extends CefRequestHandlerAdapter {
             }
         }
         return false;
+    }
+
+    @Override
+    public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame,
+            CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator,
+            BoolRef disableDefaultHandling) {
+        return this;
     }
 
     @Override
@@ -135,6 +145,12 @@ public class RequestHandler extends CefRequestHandlerAdapter {
             String host, int port, String realm, String scheme, CefAuthCallback callback) {
         SwingUtilities.invokeLater(new PasswordDialog(owner_, callback));
         return true;
+    }
+
+    @Override
+    public boolean onQuotaRequest(
+            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
+        return false;
     }
 
     @Override

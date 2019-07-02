@@ -17,43 +17,44 @@ Java_org_cef_network_CefCookieManager_1N_N_1GetGlobalManager(JNIEnv*, jclass);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
- * Method:    N_CreateManager
- * Signature: (Ljava/lang/String;Z)Lorg/cef/network/CefCookieManager_N;
+ * Method:    N_Dispose
+ * Signature: (J)V
  */
-JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1CreateManager(JNIEnv*,
-                                                          jclass,
-                                                          jstring,
-                                                          jboolean);
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefCookieManager_1N_N_1Dispose(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_SetSupportedSchemes
- * Signature: (Ljava/util/Vector;)V
+ * Signature: (JLjava/util/Vector;Z)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1SetSupportedSchemes(JNIEnv*,
                                                                 jobject,
-                                                                jobject);
+                                                                jlong,
+                                                                jobject,
+                                                                jboolean);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_VisitAllCookies
- * Signature: (Lorg/cef/callback/CefCookieVisitor;)Z
+ * Signature: (JLorg/cef/callback/CefCookieVisitor;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1VisitAllCookies(JNIEnv*,
                                                             jobject,
+                                                            jlong,
                                                             jobject);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_VisitUrlCookies
- * Signature: (Ljava/lang/String;ZLorg/cef/callback/CefCookieVisitor;)Z
+ * Signature: (JLjava/lang/String;ZLorg/cef/callback/CefCookieVisitor;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1VisitUrlCookies(JNIEnv*,
                                                             jobject,
+                                                            jlong,
                                                             jstring,
                                                             jboolean,
                                                             jobject);
@@ -61,54 +62,37 @@ Java_org_cef_network_CefCookieManager_1N_N_1VisitUrlCookies(JNIEnv*,
 /*
  * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_SetCookie
- * Signature: (Ljava/lang/String;Lorg/cef/network/CefCookie;)Z
+ * Signature: (JLjava/lang/String;Lorg/cef/network/CefCookie;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1SetCookie(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jstring,
                                                       jobject);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_DeleteCookies
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1DeleteCookies(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jstring,
                                                           jstring);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
- * Method:    N_SetStoragePath
- * Signature: (Ljava/lang/String;Z)Z
- */
-JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1SetStoragePath(JNIEnv*,
-                                                           jobject,
-                                                           jstring,
-                                                           jboolean);
-
-/*
- * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_FlushStore
- * Signature: (Lorg/cef/callback/CefCompletionCallback;)Z
+ * Signature: (JLorg/cef/callback/CefCompletionCallback;)Z
  */
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1FlushStore(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jobject);
-
-/*
- * Class:     org_cef_network_CefCookieManager_N
- * Method:    N_CefCookieManager_DTOR
- * Signature: ()V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1CefCookieManager_1DTOR(JNIEnv*,
-                                                                   jobject);
 
 #ifdef __cplusplus
 }

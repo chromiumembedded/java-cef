@@ -8,9 +8,15 @@ class CefCallback_N extends CefNativeAdapter implements CefCallback {
     CefCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        cancel();
+        super.finalize();
+    }
+
+    @Override
     public void Continue() {
         try {
-            N_Continue();
+            N_Continue(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -19,12 +25,12 @@ class CefCallback_N extends CefNativeAdapter implements CefCallback {
     @Override
     public void cancel() {
         try {
-            N_Cancel();
+            N_Cancel(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Continue();
-    private final native void N_Cancel();
+    private final native void N_Continue(long self);
+    private final native void N_Cancel(long self);
 }

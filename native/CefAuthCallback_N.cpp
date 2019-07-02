@@ -6,29 +6,39 @@
 #include "include/cef_request_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefAuthCallback_1N_N_1Continue(JNIEnv* env,
-                                                     jobject obj,
-                                                     jstring username,
-                                                     jstring password) {
-  CefRefPtr<CefAuthCallback> callback =
-      GetCefFromJNIObject<CefAuthCallback>(env, obj, "CefAuthCallback");
-  if (!callback.get())
-    return;
-  callback->Continue(GetJNIString(env, username), GetJNIString(env, password));
+namespace {
 
-  // Clear the reference added in RequestHandler::GetAuthCredentials
+CefRefPtr<CefAuthCallback> GetSelf(jlong self) {
+  return reinterpret_cast<CefAuthCallback*>(self);
+}
+
+void ClearSelf(JNIEnv* env, jobject obj) {
+  // Clear the reference added in RequestHandler::GetAuthCredentials.
   SetCefForJNIObject<CefAuthCallback>(env, obj, NULL, "CefAuthCallback");
 }
 
+}  // namespace
+
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefAuthCallback_1N_N_1Cancel(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefAuthCallback> callback =
-      GetCefFromJNIObject<CefAuthCallback>(env, obj, "CefAuthCallback");
-  if (!callback.get())
+Java_org_cef_callback_CefAuthCallback_1N_N_1Continue(JNIEnv* env,
+                                                     jobject obj,
+                                                     jlong self,
+                                                     jstring username,
+                                                     jstring password) {
+  CefRefPtr<CefAuthCallback> callback = GetSelf(self);
+  if (!callback)
+    return;
+  callback->Continue(GetJNIString(env, username), GetJNIString(env, password));
+  ClearSelf(env, obj);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefAuthCallback_1N_N_1Cancel(JNIEnv* env,
+                                                   jobject obj,
+                                                   jlong self) {
+  CefRefPtr<CefAuthCallback> callback = GetSelf(self);
+  if (!callback)
     return;
   callback->Cancel();
-
-  // Clear the reference added in RequestHandler::GetAuthCredentials
-  SetCefForJNIObject<CefAuthCallback>(env, obj, NULL, "CefAuthCallback");
+  ClearSelf(env, obj);
 }

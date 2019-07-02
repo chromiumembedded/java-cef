@@ -103,6 +103,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
 
   virtual bool OnProcessMessageReceived(
       CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefFrame> frame,
       CefProcessId source_process,
       CefRefPtr<CefProcessMessage> message) OVERRIDE {
     if (message->GetName() == "AddMessageRouter") {
@@ -136,8 +137,8 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
              cmpCfg>::iterator iter;
     for (iter = message_router_.begin(); iter != message_router_.end();
          iter++) {
-      handled = iter->second->OnProcessMessageReceived(browser, source_process,
-                                                       message);
+      handled = iter->second->OnProcessMessageReceived(browser, frame,
+                                                       source_process, message);
       if (handled)
         break;
     }

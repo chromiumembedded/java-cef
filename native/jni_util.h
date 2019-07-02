@@ -234,7 +234,7 @@ jobject NewJNITransitionType(JNIEnv* env,
                              CefRequest::TransitionType transitionType);
 
 jobject NewJNIURLRequestStatus(JNIEnv* env,
-                               CefRequestHandler::URLRequestStatus);
+                               CefResourceRequestHandler::URLRequestStatus);
 
 jobject GetJNIEnumValue(JNIEnv* env,
                         const char* class_name,

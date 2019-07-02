@@ -6,22 +6,37 @@
 #include "include/cef_callback.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefCallback> callback =
-      GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
-  if (!callback)
-    return;
-  callback->Continue();
+namespace {
+
+CefRefPtr<CefCallback> GetSelf(jlong self) {
+  return reinterpret_cast<CefCallback*>(self);
+}
+
+void ClearSelf(JNIEnv* env, jobject obj) {
+  // Clear the reference added in ResourceHandler.
   SetCefForJNIObject<CefCallback>(env, obj, NULL, "CefCallback");
 }
 
+}  // namespace
+
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCallback_1N_N_1Cancel(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefCallback> callback =
-      GetCefFromJNIObject<CefCallback>(env, obj, "CefCallback");
+Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  CefRefPtr<CefCallback> callback = GetSelf(self);
+  if (!callback)
+    return;
+  callback->Continue();
+  ClearSelf(env, obj);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefCallback_1N_N_1Cancel(JNIEnv* env,
+                                               jobject obj,
+                                               jlong self) {
+  CefRefPtr<CefCallback> callback = GetSelf(self);
   if (!callback)
     return;
   callback->Cancel();
-  SetCefForJNIObject<CefCallback>(env, obj, NULL, "CefCallback");
+  ClearSelf(env, obj);
 }

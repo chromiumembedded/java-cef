@@ -8,9 +8,15 @@ class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
     CefAuthCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        cancel();
+        super.finalize();
+    }
+
+    @Override
     public void Continue(String username, String password) {
         try {
-            N_Continue(username, password);
+            N_Continue(getNativeRef(null), username, password);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -19,12 +25,12 @@ class CefAuthCallback_N extends CefNativeAdapter implements CefAuthCallback {
     @Override
     public void cancel() {
         try {
-            N_Cancel();
+            N_Cancel(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Continue(String username, String password);
-    private final native void N_Cancel();
+    private final native void N_Continue(long self, String username, String password);
+    private final native void N_Cancel(long self);
 }

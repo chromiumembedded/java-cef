@@ -5,31 +5,25 @@
 #include "request_context_handler.h"
 
 #include "jni_util.h"
+#include "resource_request_handler.h"
 #include "util.h"
 
-RequestContextHandler::RequestContextHandler(JNIEnv* env, jobject jhandler) {
-  jhandler_ = env->NewGlobalRef(jhandler);
-}
+namespace {
 
-RequestContextHandler::~RequestContextHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+// JNI CefWebPluginInfo object.
+class ScopedJNIWebPluginInfo : public ScopedJNIObject<CefWebPluginInfo> {
+ public:
+  ScopedJNIWebPluginInfo(JNIEnv* env, CefRefPtr<CefWebPluginInfo> obj)
+      : ScopedJNIObject<CefWebPluginInfo>(env,
+                                          obj,
+                                          "org/cef/network/CefWebPluginInfo_N",
+                                          "CefWebPluginInfo") {}
+};
 
-CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
-  JNIEnv* env = GetJNIEnv();
-  if (!env)
-    return NULL;
-  jobject jresult = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getCookieManager",
-                  "()Lorg/cef/network/CefCookieManager;", Object, jresult);
-  if (!jresult)
-    return NULL;
-  CefRefPtr<CefCookieManager> result =
-      GetCefFromJNIObject<CefCookieManager>(env, jresult, "CefCookieManager");
-  env->DeleteLocalRef(jresult);
-  return result;
-}
+}  // namespace
+
+RequestContextHandler::RequestContextHandler(JNIEnv* env, jobject jhandler)
+    : handle_(env, jhandler) {}
 
 bool RequestContextHandler::OnBeforePluginLoad(
     const CefString& mime_type,
@@ -42,27 +36,19 @@ bool RequestContextHandler::OnBeforePluginLoad(
   if (!env)
     return false;
 
-  jobject jinfo = NewJNIObject(env, "org/cef/network/CefWebPluginInfo_N");
-  if (!jinfo)
-    return false;
-  SetCefForJNIObject(env, jinfo, plugin_info.get(), "CefWebPluginInfo");
-
+  ScopedJNIString jmimeType(env, mime_type);
+  ScopedJNIString jpluginUrl(env, plugin_url);
+  ScopedJNIString jtopOriginUrl(env, top_origin_url);
+  ScopedJNIWebPluginInfo jpluginInfo(env, plugin_info);
   jboolean jresult = JNI_FALSE;
-  jstring jmime_type = NewJNIString(env, mime_type);
-  jstring jplugin_url = NewJNIString(env, plugin_url);
-  jstring jtop_origin_url = NewJNIString(env, top_origin_url);
-  JNI_CALL_METHOD(env, jhandler_, "onBeforePluginLoad",
+
+  JNI_CALL_METHOD(env, handle_, "onBeforePluginLoad",
                   "Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lorg/"
                   "cef/network/CefWebPluginInfo;)Z",
-                  Boolean, jresult, jmime_type, jplugin_url,
-                  is_main_frame ? JNI_TRUE : JNI_FALSE, jtop_origin_url, jinfo);
+                  Boolean, jresult, jmimeType.get(), jpluginUrl.get(),
+                  is_main_frame ? JNI_TRUE : JNI_FALSE, jtopOriginUrl.get(),
+                  jpluginInfo.get());
 
-  SetCefForJNIObject<CefWebPluginInfo>(env, jinfo, NULL, "CefWebPluginInfo");
-
-  env->DeleteLocalRef(jtop_origin_url);
-  env->DeleteLocalRef(jplugin_url);
-  env->DeleteLocalRef(jmime_type);
-  env->DeleteLocalRef(jinfo);
   if (jresult == JNI_FALSE) {
     // Allow the plugin load.
     if (*plugin_policy != PLUGIN_POLICY_ALLOW &&
@@ -80,4 +66,42 @@ bool RequestContextHandler::OnBeforePluginLoad(
   }
 
   return false;
+}
+
+CefRefPtr<CefResourceRequestHandler>
+RequestContextHandler::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    bool is_navigation,
+    bool is_download,
+    const CefString& request_initiator,
+    bool& disable_default_handling) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return NULL;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIRequest jrequest(env, request);
+  jrequest.SetTemporary();
+  ScopedJNIString jrequestInitiator(env, request_initiator);
+  ScopedJNIBoolRef jdisableDefaultHandling(env, disable_default_handling);
+  ScopedJNIObjectResult jresult(env);
+
+  JNI_CALL_METHOD(env, handle_, "getResourceRequestHandler",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/"
+                  "cef/network/CefRequest;ZZLjava/lang/String;Lorg/cef/misc/"
+                  "BoolRef;)Lorg/cef/handler/CefResourceRequestHandler;",
+                  Object, jresult, jbrowser.get(), jframe.get(), jrequest.get(),
+                  is_navigation ? JNI_TRUE : JNI_FALSE,
+                  is_download ? JNI_TRUE : JNI_FALSE, jrequestInitiator.get(),
+                  jdisableDefaultHandling.get());
+
+  disable_default_handling = jdisableDefaultHandling;
+
+  if (jresult)
+    return new ResourceRequestHandler(env, jresult);
+  return NULL;
 }

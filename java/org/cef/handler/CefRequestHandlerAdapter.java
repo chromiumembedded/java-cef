@@ -10,9 +10,7 @@ import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.misc.BoolRef;
-import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
-import org.cef.network.CefResponse;
 import org.cef.network.CefURLRequest;
 
 /**
@@ -28,29 +26,11 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
-    public boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request) {
-        return false;
-    }
-
-    @Override
-    public CefResourceHandler getResourceHandler(
-            CefBrowser browser, CefFrame frame, CefRequest request) {
+    public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame,
+            CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator,
+            BoolRef disableDefaultHandling) {
         return null;
     }
-
-    @Override
-    public void onResourceRedirect(CefBrowser browser, CefFrame frame, CefRequest request,
-            CefResponse response, StringRef new_url) {}
-
-    @Override
-    public boolean onResourceResponse(
-            CefBrowser browser, CefFrame frame, CefRequest request, CefResponse response) {
-        return false;
-    }
-
-    @Override
-    public void onResourceLoadComplete(CefBrowser browser, CefFrame frame, CefRequest request,
-            CefResponse response, CefURLRequest.Status status, long receivedContentLength) {}
 
     @Override
     public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
@@ -63,9 +43,6 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
             CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
         return false;
     }
-
-    @Override
-    public void onProtocolExecution(CefBrowser browser, String url, BoolRef allow_os_execution) {}
 
     @Override
     public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,

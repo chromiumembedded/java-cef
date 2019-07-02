@@ -4,11 +4,11 @@
 
 package org.cef.network;
 
-import java.util.Vector;
-
 import org.cef.callback.CefCompletionCallback;
 import org.cef.callback.CefCookieVisitor;
 import org.cef.callback.CefNative;
+
+import java.util.Vector;
 
 class CefCookieManager_N extends CefCookieManager implements CefNative {
     // Used internally to store a pointer to the CEF object.
@@ -30,6 +30,11 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     }
 
     static synchronized final CefCookieManager_N getGlobalManagerNative() {
+        if (globalInstance != null && globalInstance.N_CefHandle != 0) {
+            // The global instance is still valid.
+            return globalInstance;
+        }
+
         CefCookieManager_N result = null;
         try {
             result = CefCookieManager_N.N_GetGlobalManager();
@@ -37,39 +42,23 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
             ule.printStackTrace();
         }
 
-        if (globalInstance == null) {
-            globalInstance = result;
-        } else if (globalInstance.N_CefHandle == result.N_CefHandle) {
-            result.N_CefCookieManager_DTOR();
-        }
+        globalInstance = result;
         return globalInstance;
     }
 
-    static final CefCookieManager_N createNative(String path, boolean persistSessionCookies) {
-        CefCookieManager_N result = null;
-        try {
-            result = CefCookieManager_N.N_CreateManager(path, persistSessionCookies);
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-        return result;
-    }
-
     @Override
-    protected void finalize() throws Throwable {
+    public void dispose() {
         try {
-            N_CefCookieManager_DTOR();
+            N_Dispose(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
-        } finally {
-            super.finalize();
         }
     }
 
     @Override
-    public void setSupportedSchemes(Vector<String> schemes) {
+    public void setSupportedSchemes(Vector<String> schemes, boolean includeDefaults) {
         try {
-            N_SetSupportedSchemes(schemes);
+            N_SetSupportedSchemes(N_CefHandle, schemes, includeDefaults);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -78,7 +67,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     @Override
     public boolean visitAllCookies(CefCookieVisitor visitor) {
         try {
-            return N_VisitAllCookies(visitor);
+            return N_VisitAllCookies(N_CefHandle, visitor);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -88,7 +77,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     @Override
     public boolean visitUrlCookies(String url, boolean includeHttpOnly, CefCookieVisitor visitor) {
         try {
-            return N_VisitUrlCookies(url, includeHttpOnly, visitor);
+            return N_VisitUrlCookies(N_CefHandle, url, includeHttpOnly, visitor);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -98,7 +87,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     @Override
     public boolean setCookie(String url, CefCookie cookie) {
         try {
-            return N_SetCookie(url, cookie);
+            return N_SetCookie(N_CefHandle, url, cookie);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -108,17 +97,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     @Override
     public boolean deleteCookies(String url, String cookieName) {
         try {
-            return N_DeleteCookies(url, cookieName);
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean setStoragePath(String path, boolean persistSessionCookies) {
-        try {
-            return N_SetStoragePath(path, persistSessionCookies);
+            return N_DeleteCookies(N_CefHandle, url, cookieName);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -128,7 +107,7 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     @Override
     public boolean flushStore(CefCompletionCallback handler) {
         try {
-            return N_FlushStore(handler);
+            return N_FlushStore(N_CefHandle, handler);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -136,15 +115,13 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     }
 
     private final static native CefCookieManager_N N_GetGlobalManager();
-    private final static native CefCookieManager_N N_CreateManager(
-            String path, boolean persistSessionCookies);
-    private final native void N_SetSupportedSchemes(Vector<String> schemes);
-    private final native boolean N_VisitAllCookies(CefCookieVisitor visitor);
+    private final native void N_Dispose(long self);
+    private final native void N_SetSupportedSchemes(
+            long self, Vector<String> schemes, boolean include_defaults);
+    private final native boolean N_VisitAllCookies(long self, CefCookieVisitor visitor);
     private final native boolean N_VisitUrlCookies(
-            String url, boolean includeHttpOnly, CefCookieVisitor visitor);
-    private final native boolean N_SetCookie(String url, CefCookie cookie);
-    private final native boolean N_DeleteCookies(String url, String cookieName);
-    private final native boolean N_SetStoragePath(String path, boolean persistSessionCookies);
-    private final native boolean N_FlushStore(CefCompletionCallback handler);
-    private final native void N_CefCookieManager_DTOR();
+            long self, String url, boolean includeHttpOnly, CefCookieVisitor visitor);
+    private final native boolean N_SetCookie(long self, String url, CefCookie cookie);
+    private final native boolean N_DeleteCookies(long self, String url, String cookieName);
+    private final native boolean N_FlushStore(long self, CefCompletionCallback handler);
 }

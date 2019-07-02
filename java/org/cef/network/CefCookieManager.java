@@ -4,98 +4,95 @@
 
 package org.cef.network;
 
-import java.util.Vector;
-
 import org.cef.callback.CefCompletionCallback;
 import org.cef.callback.CefCookieVisitor;
 
+import java.util.Vector;
+
 /**
- * Class used for managing cookies. The methods of this class may be called on
- * any thread unless otherwise indicated.
+ * Class used for managing cookies. The methods of this class may be called on any thread unless
+ * otherwise indicated.
  */
 public abstract class CefCookieManager {
     // This CTOR can't be called directly. Call method create() instead.
     CefCookieManager() {}
 
+    @Override
+    protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
+    }
+
     /**
-     * Returns the global cookie manager. By default data will be stored at
-     * CefSettings.cache_path if specified or in memory otherwise.
+     * Returns the global cookie manager. By default data will be stored at CefSettings.cache_path
+     * if specified or in memory otherwise.
+     * @return The global cookie manager.
      */
     public static final CefCookieManager getGlobalManager() {
         return CefCookieManager_N.getGlobalManagerNative();
     }
 
     /**
-     * Creates a new cookie manager. If |path| is empty data will be stored in
-     * memory only. Otherwise, data will be stored at the specified |path|. To
-     * persist session cookies (cookies without an expiry date or validity
-     * interval) set |persistSessionCookies| to true. Session cookies are
-     * generally intended to be transient and most Web browsers do not persist
-     * them.
-     *
-     * @return null if creation fails.
+     * Removes the native reference from an unused object.
      */
-    public static final CefCookieManager createManager(String path, boolean persistSessionCookies) {
-        return CefCookieManager_N.createNative(path, persistSessionCookies);
-    }
+    public abstract void dispose();
 
     /**
-     * Set the schemes supported by this manager. By default only "http" and
-     * "https" schemes are supported. Must be called before any cookies are
-     * accessed.
+     * Set the schemes supported by this manager. Calling this method with an empty |schemes| value
+     * and |includeDefaults| set to false will disable all loading and saving of cookies for this
+     * manager. Must be called before any cookies are accessed.
+     * @param schemes List of supported schemes.
+     * @param includeDefaults If true the default schemes ("http", "https", "ws" and "wss") will
+     *         also be supported.
      */
-    public abstract void setSupportedSchemes(Vector<String> schemes);
+    public abstract void setSupportedSchemes(Vector<String> schemes, boolean includeDefaults);
 
     /**
-     * Visit all cookies. The returned cookies are ordered by longest path, then
-     * by earliest creation date. Returns false if cookies cannot be accessed.
+     * Visit all cookies. The returned cookies are ordered by longest path, then by earliest
+     * creation date.
+     * @param visitor Callback that will receive cookies on the UI thread.
+     * @return False if cookies cannot be accessed.
      */
     public abstract boolean visitAllCookies(CefCookieVisitor visitor);
 
     /**
-     * Visit a subset of cookies. The results are filtered by the given url
-     * scheme, host, domain and path. If |includeHttpOnly| is true HTTP-only
-     * cookies will also be included in the results. The returned cookies are
-     * ordered by longest path, then by earliest creation date. Returns false if
-     * cookies cannot be accessed.
+     * Visit a subset of cookies. The returned cookies are ordered by longest path, then by earliest
+     * creation date.
+     * @param url Results are filtered by the given url scheme, host, domain and path.
+     * @param includeHttpOnly If true HTTP-only cookies will also be included in the results.
+     * @param visitor Callback that will receive cookies on the UI thread.
+     * @return False if cookies cannot be accessed.
      */
     public abstract boolean visitUrlCookies(
             String url, boolean includeHttpOnly, CefCookieVisitor visitor);
 
     /**
-     * Sets a cookie given a valid URL and explicit user-provided cookie
-     * attributes. This function expects each attribute to be well-formed. It will
-     * check for disallowed characters (e.g. the ';' character is disallowed
-     * within the cookie value attribute). This method will be called on the
-     * IO thread. If posting the task was successful the method returns true.
+     * Sets a cookie given a valid URL and explicit user-provided cookie attributes. This function
+     * expects each attribute to be well-formed. It will check for disallowed characters (e.g. the
+     * ';' character is disallowed within the cookie value attribute) and fail without setting the
+     * cookie if such characters are found.
+     * @param url The cookie URL.
+     * @param cookie The cookie attributes.
+     * @return False if an invalid URL is specified or if cookies cannot be accessed.
      */
     public abstract boolean setCookie(String url, CefCookie cookie);
 
     /**
-     * Delete all cookies that match the specified parameters. If both |url| and
-     * values |cookieName| are specified all host and domain cookies matching
-     * both will be deleted. If only |url| is specified all host cookies (but not
-     * domain cookies) irrespective of path will be deleted. If |url| is empty all
-     * cookies for all hosts and domains will be deleted. This method will be
-     * called on the IO thread. If posting the task was successful the method
-     * returns true.
+     * Delete all cookies that match the specified parameters. If both |url| and |cookieName| values
+     * are specified all host and domain cookies matching both will be deleted. If only |url| is
+     * specified all host cookies (but not domain cookies) irrespective of path will be deleted. If
+     * |url| is empty all cookies for all hosts and domains will be deleted. Cookies can alternately
+     * be deleted using the visit*Cookies() methods.
+     * @param url The cookie URL to delete or null.
+     * @param cookieName The cookie name to delete or null.
+     * @return False if a non-empty invalid URL is secified or if cookies cannot be accessed.
      */
     public abstract boolean deleteCookies(String url, String cookieName);
 
     /**
-     *  Sets the directory path that will be used for storing cookie data. If
-     * |path| is empty data will be stored in memory only. Otherwise, data will be
-     * stored at the specified |path|. To persist session cookies (cookies without
-     * an expiry date or validity interval) set |persistSessionCookies| to true.
-     * Session cookies are generally intended to be transient and most Web browsers
-     * do not persist them. Returns false if cookies cannot be accessed.
-     */
-    public abstract boolean setStoragePath(String path, boolean persistSessionCookies);
-
-    /**
-     * Flush the backing store (if any) to disk and execute the specified
-     * |handler| on the IO thread when done. Returns false if cookies cannot be
-     * accessed.
+     * Flush the backing store (if any) to disk.
+     * @param handler Callback that will be executed on the UI thread upon completion.
+     * @return False if cookies cannot be accessed.
      */
     public abstract boolean flushStore(CefCompletionCallback handler);
 }

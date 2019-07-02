@@ -7,30 +7,30 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_resource_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // ResourceHandler implementation.
 class ResourceHandler : public CefResourceHandler {
  public:
   ResourceHandler(JNIEnv* env, jobject handler);
-  virtual ~ResourceHandler();
 
-  // CefResourceHandler methods
-  virtual bool ProcessRequest(CefRefPtr<CefRequest> request,
-                              CefRefPtr<CefCallback> callback) OVERRIDE;
-  virtual void GetResponseHeaders(CefRefPtr<CefResponse> response,
-                                  int64& response_length,
-                                  CefString& redirectUrl) OVERRIDE;
-  virtual bool ReadResponse(void* data_out,
-                            int bytes_to_read,
-                            int& bytes_read,
-                            CefRefPtr<CefCallback> callback) OVERRIDE;
-  virtual bool CanGetCookie(const CefCookie& cookie) OVERRIDE;
-  virtual bool CanSetCookie(const CefCookie& cookie) OVERRIDE;
-  virtual void Cancel() OVERRIDE;
+  // CefResourceHandler methods:
+  bool ProcessRequest(CefRefPtr<CefRequest> request,
+                      CefRefPtr<CefCallback> callback) OVERRIDE;
+  void GetResponseHeaders(CefRefPtr<CefResponse> response,
+                          int64& response_length,
+                          CefString& redirectUrl) OVERRIDE;
+  bool ReadResponse(void* data_out,
+                    int bytes_to_read,
+                    int& bytes_read,
+                    CefRefPtr<CefCallback> callback) OVERRIDE;
+  void Cancel() OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ResourceHandler);

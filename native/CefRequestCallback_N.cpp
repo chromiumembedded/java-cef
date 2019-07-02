@@ -6,29 +6,38 @@
 #include "include/cef_request_handler.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefRequestCallback_1N_N_1Continue(JNIEnv* env,
-                                                        jobject obj,
-                                                        jboolean jallow) {
-  CefRefPtr<CefRequestCallback> callback =
-      GetCefFromJNIObject<CefRequestCallback>(env, obj, "CefRequestCallback");
-  if (!callback.get())
-    return;
-  callback->Continue(jallow != JNI_FALSE);
+namespace {
 
+CefRefPtr<CefRequestCallback> GetSelf(jlong self) {
+  return reinterpret_cast<CefRequestCallback*>(self);
+}
+
+void ClearSelf(JNIEnv* env, jobject obj) {
   // Clear the reference added in RequestHandler.
   SetCefForJNIObject<CefRequestCallback>(env, obj, NULL, "CefRequestCallback");
 }
 
+}  // namespace
+
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefRequestCallback_1N_N_1Continue(JNIEnv* env,
+                                                        jobject obj,
+                                                        jlong self,
+                                                        jboolean jallow) {
+  CefRefPtr<CefRequestCallback> callback = GetSelf(self);
+  if (!callback)
+    return;
+  callback->Continue(jallow != JNI_FALSE);
+  ClearSelf(env, obj);
+}
+
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefRequestCallback_1N_N_1Cancel(JNIEnv* env,
-                                                      jobject obj) {
-  CefRefPtr<CefRequestCallback> callback =
-      GetCefFromJNIObject<CefRequestCallback>(env, obj, "CefRequestCallback");
-  if (!callback.get())
+                                                      jobject obj,
+                                                      jlong self) {
+  CefRefPtr<CefRequestCallback> callback = GetSelf(self);
+  if (!callback)
     return;
   callback->Cancel();
-
-  // Clear the reference added in RequestHandler.
-  SetCefForJNIObject<CefRequestCallback>(env, obj, NULL, "CefRequestCallback");
+  ClearSelf(env, obj);
 }

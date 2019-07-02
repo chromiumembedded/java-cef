@@ -3,6 +3,7 @@
 // can be found in the LICENSE file.
 
 #include "CefCookieManager_N.h"
+
 #include "include/base/cef_bind.h"
 #include "include/cef_cookie.h"
 #include "include/cef_task.h"
@@ -12,72 +13,66 @@
 #include "cookie_visitor.h"
 #include "jni_util.h"
 
+namespace {
+
+const char kCefClassName[] = "CefCookieManager";
+
+CefRefPtr<CefCookieManager> GetSelf(jlong self) {
+  return reinterpret_cast<CefCookieManager*>(self);
+}
+}  // namespace
+
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1GetGlobalManager(JNIEnv* env,
                                                              jclass cls) {
   // TODO(JCEF): Expose the callback object.
   CefRefPtr<CefCookieManager> manager =
       CefCookieManager::GetGlobalManager(NULL);
-  if (!manager.get())
+  if (!manager)
     return NULL;
 
   jobject jManager = NewJNIObject(env, cls);
   if (!jManager)
     return NULL;
 
-  SetCefForJNIObject(env, jManager, manager.get(), "CefCookieManager");
+  SetCefForJNIObject(env, jManager, manager.get(), kCefClassName);
   return jManager;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1CreateManager(
-    JNIEnv* env,
-    jclass cls,
-    jstring jpath,
-    jboolean jpersistSessionCookies) {
-  // TODO(JCEF): Expose the callback object.
-  CefRefPtr<CefCookieManager> manager = CefCookieManager::CreateManager(
-      GetJNIString(env, jpath), (jpersistSessionCookies != JNI_FALSE), NULL);
-  if (!manager.get())
-    return NULL;
-
-  jobject jManager = NewJNIObject(env, cls);
-  if (!jManager)
-    return NULL;
-
-  SetCefForJNIObject(env, jManager, manager.get(), "CefCookieManager");
-  return jManager;
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefCookieManager_1N_N_1Dispose(JNIEnv* env,
+                                                    jobject obj,
+                                                    jlong self) {
+  SetCefForJNIObject<CefCookieManager>(env, obj, NULL, kCefClassName);
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1SetSupportedSchemes(
     JNIEnv* env,
     jobject obj,
-    jobject jschemes) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get())
+    jlong self,
+    jobject jschemes,
+    jboolean includeDefaults) {
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager)
     return;
 
   std::vector<CefString> schemes;
   GetJNIStringVector(env, jschemes, schemes);
   // TODO(JCEF): Expose the callback object.
-  manager->SetSupportedSchemes(schemes, NULL);
+  manager->SetSupportedSchemes(schemes, includeDefaults != JNI_FALSE, NULL);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1VisitAllCookies(JNIEnv* env,
                                                             jobject obj,
+                                                            jlong self,
                                                             jobject jvisitor) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get() || !jvisitor)
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager || !jvisitor)
     return JNI_FALSE;
 
   CefRefPtr<CefCookieVisitor> visitor = new CookieVisitor(env, jvisitor);
-  if (!visitor.get())
-    return JNI_FALSE;
-
   return manager->VisitAllCookies(visitor) ? JNI_TRUE : JNI_FALSE;
 }
 
@@ -85,18 +80,15 @@ JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1VisitUrlCookies(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jstring jurl,
     jboolean jincludeHttpOnly,
     jobject jvisitor) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get() || !jvisitor)
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager || !jvisitor)
     return JNI_FALSE;
 
   CefRefPtr<CefCookieVisitor> visitor = new CookieVisitor(env, jvisitor);
-  if (!visitor.get())
-    return JNI_FALSE;
-
   bool result = manager->VisitUrlCookies(
       GetJNIString(env, jurl), (jincludeHttpOnly != JNI_FALSE), visitor);
   return result ? JNI_TRUE : JNI_FALSE;
@@ -105,11 +97,11 @@ Java_org_cef_network_CefCookieManager_1N_N_1VisitUrlCookies(
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1SetCookie(JNIEnv* env,
                                                       jobject obj,
+                                                      jlong self,
                                                       jstring jurl,
                                                       jobject jcookie) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get())
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager)
     return JNI_FALSE;
 
   // The method CefCookieManager::SetCookie must be called on the IO thread.
@@ -127,11 +119,11 @@ Java_org_cef_network_CefCookieManager_1N_N_1SetCookie(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1DeleteCookies(JNIEnv* env,
                                                           jobject obj,
+                                                          jlong self,
                                                           jstring jurl,
                                                           jstring jcookieName) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get())
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager)
     return JNI_FALSE;
 
   // The method CefCookieManager::DeleteCookies must be called on the IO thread.
@@ -147,38 +139,15 @@ Java_org_cef_network_CefCookieManager_1N_N_1DeleteCookies(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1SetStoragePath(
-    JNIEnv* env,
-    jobject obj,
-    jstring jpath,
-    jboolean jpersistSessionCookies) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get())
-    return JNI_FALSE;
-  // TODO(JCEF): Expose the callback object.
-  bool result = manager->SetStoragePath(
-      GetJNIString(env, jpath), (jpersistSessionCookies != JNI_FALSE), NULL);
-  return result ? JNI_TRUE : JNI_FALSE;
-}
-
-JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1FlushStore(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jhandler) {
-  CefRefPtr<CefCookieManager> manager =
-      GetCefFromJNIObject<CefCookieManager>(env, obj, "CefCookieManager");
-  if (!manager.get())
+  CefRefPtr<CefCookieManager> manager = GetSelf(self);
+  if (!manager)
     return JNI_FALSE;
   CefRefPtr<CefCompletionCallback> callback =
       new CompletionCallback(env, jhandler);
   bool result = manager->FlushStore(callback);
   return result ? JNI_TRUE : JNI_FALSE;
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1CefCookieManager_1DTOR(
-    JNIEnv* env,
-    jobject obj) {
-  SetCefForJNIObject<CefCookieManager>(env, obj, NULL, "CefCookieManager");
 }

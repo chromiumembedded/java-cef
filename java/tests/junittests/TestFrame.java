@@ -15,10 +15,12 @@ import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefRequestCallback;
+import org.cef.handler.CefCookieAccessFilter;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefRequestHandler;
 import org.cef.handler.CefResourceHandler;
+import org.cef.handler.CefResourceRequestHandler;
 import org.cef.misc.BoolRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -36,7 +38,8 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JFrame;
 
 // Base class for browsers that run tests.
-class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, CefRequestHandler {
+class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, CefRequestHandler,
+                                          CefResourceRequestHandler {
     private static final long serialVersionUID = -5570653778104813836L;
     private boolean isClosed_ = false;
     private CountDownLatch countdown_ = new CountDownLatch(1);
@@ -215,6 +218,45 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
     }
 
     @Override
+    public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame,
+            CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator,
+            BoolRef disableDefaultHandling) {
+        return this;
+    }
+
+    @Override
+    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+            String host, int port, String realm, String scheme, CefAuthCallback callback) {
+        return false;
+    }
+
+    @Override
+    public boolean onQuotaRequest(
+            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
+        return false;
+    }
+
+    @Override
+    public boolean onCertificateError(CefBrowser browser, CefLoadHandler.ErrorCode cert_error,
+            String request_url, CefRequestCallback callback) {
+        return false;
+    }
+
+    @Override
+    public void onPluginCrashed(CefBrowser browser, String pluginPath) {}
+
+    @Override
+    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {}
+
+    // CefResourceRequestHandler methods:
+
+    @Override
+    public CefCookieAccessFilter getCookieAccessFilter(
+            CefBrowser browser, CefFrame frame, CefRequest request) {
+        return null;
+    }
+
+    @Override
     public boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request) {
         return false;
     }
@@ -254,29 +296,6 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
             CefResponse response, CefURLRequest.Status status, long receivedContentLength) {}
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
-            String host, int port, String realm, String scheme, CefAuthCallback callback) {
-        return false;
-    }
-
-    @Override
-    public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
-        return false;
-    }
-
-    @Override
-    public void onProtocolExecution(CefBrowser browser, String url, BoolRef allow_os_execution) {}
-
-    @Override
-    public boolean onCertificateError(CefBrowser browser, CefLoadHandler.ErrorCode cert_error,
-            String request_url, CefRequestCallback callback) {
-        return false;
-    }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {}
-
-    @Override
-    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {}
+    public void onProtocolExecution(
+            CefBrowser browser, CefFrame frame, CefRequest request, BoolRef allowOsExecution) {}
 }

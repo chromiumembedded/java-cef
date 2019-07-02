@@ -10,18 +10,20 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefCallback_N
  * Method:    N_Continue
- * Signature: ()V
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Continue(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefCallback_N
  * Method:    N_Cancel
- * Signature: ()V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_cef_callback_CefCallback_1N_N_1Cancel(JNIEnv*,
-                                                                      jobject);
+                                                                      jobject,
+                                                                      jlong);
 
 #ifdef __cplusplus
 }

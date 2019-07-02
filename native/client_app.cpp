@@ -64,12 +64,6 @@ void ClientApp::OnBeforeCommandLineProcessing(
     command_line->AppendSwitch("use-core-animation");
 #endif  // defined(OS_MACOSX)
 
-#if defined(OS_WIN)
-    // To avoid shutdown issues extensions should not be used in combination
-    // with multi-threaded-message-loop.
-    command_line->AppendSwitch("disable-extensions");
-#endif
-
     if (cache_path_.empty() &&
         !command_line->HasSwitch("disable-gpu-shader-disk-cache")) {
       // Don't create a "GPUCache" directory when cache_path is unspecified.
