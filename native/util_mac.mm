@@ -70,7 +70,7 @@ bool g_handling_send_event = false;
 // Java provides an NSApplicationAWT implementation that we can't access or
 // override directly. Therefore add the necessary CefAppProtocol
 // functionality to NSApplication using categories and swizzling.
-@interface NSApplication (JCEFApplication)<CefAppProtocol>
+@interface NSApplication (JCEFApplication) <CefAppProtocol>
 
 - (BOOL)isHandlingSendEvent;
 - (void)setHandlingSendEvent:(BOOL)handlingSendEvent;
@@ -109,10 +109,9 @@ bool g_handling_send_event = false;
                                             NSMouseEnteredMask |
                                             NSMouseExitedMask)
                                    handler:^(NSEvent* evt) {
-
                                      // Get corresponding CefWindowHandle of
                                      // Java-Canvas
-                                     CefWindowHandle browser = NULL;
+                                     NSView* browser = NULL;
                                      NSPoint absPos = [evt locationInWindow];
                                      NSWindow* evtWin = [evt window];
                                      g_browsers_lock_.Lock();
@@ -123,12 +122,15 @@ bool g_handling_send_event = false;
                                      std::set<CefWindowHandle>::iterator it;
                                      for (it = browsers.begin();
                                           it != browsers.end(); ++it) {
-                                       NSPoint relPos = [*it convertPoint:absPos
-                                                                 fromView:nil];
-                                       if (evtWin == [*it window] &&
-                                           [*it mouse:relPos
-                                               inRect:[*it frame]]) {
-                                         browser = *it;
+                                       NSView* wh =
+                                           CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(
+                                               *it);
+                                       NSPoint relPos = [wh convertPoint:absPos
+                                                                fromView:nil];
+                                       if (evtWin == [wh window] &&
+                                           [wh mouse:relPos
+                                               inRect:[wh frame]]) {
+                                         browser = wh;
                                          break;
                                        }
                                      }
@@ -235,11 +237,12 @@ bool g_handling_send_event = false;
 
 + (void)setVisibility:(SetVisibilityParams*)params {
   if (g_client_app_) {
-    bool isHidden = [params->handle_ isHidden];
+    NSView* wh = CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(params->handle_);
+    bool isHidden = [wh isHidden];
     if (isHidden == params->isVisible_) {
-      [params->handle_ setHidden:!params->isVisible_];
-      [params->handle_ needsDisplay];
-      [[params->handle_ superview] display];
+      [wh setHidden:!params->isVisible_];
+      [wh needsDisplay];
+      [[wh superview] display];
     }
   }
   [params release];
@@ -392,7 +395,7 @@ bool IsNSView(void* ptr) {
 }
 
 CefWindowHandle CreateBrowserContentView(NSWindow* window, CefRect& orig) {
-  NSView* mainView = (CefWindowHandle)[window contentView];
+  NSView* mainView = CAST_CEF_WINDOW_HANDLE_TO_NSVIEW([window contentView]);
   TranslateRect(mainView, orig);
   NSRect frame = {{orig.x, orig.y}, {orig.width, orig.height}};
 
@@ -419,7 +422,8 @@ CefWindowHandle CreateBrowserContentView(NSWindow* window, CefRect& orig) {
 
 // translate java's window origin to Obj-C's window origin
 void TranslateRect(CefWindowHandle view, CefRect& orig) {
-  NSRect bounds = [[[view window] contentView] bounds];
+  NSRect bounds =
+      [[[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(view) window] contentView] bounds];
   orig.y = bounds.size.height - orig.height - orig.y;
 }
 
@@ -467,7 +471,9 @@ void UpdateView(CefWindowHandle handle,
                 CefRect contentRect,
                 CefRect browserRect) {
   util_mac::TranslateRect(handle, contentRect);
-  CefBrowserContentView* browser = (CefBrowserContentView*)[handle superview];
+  CefBrowserContentView* browser =
+      (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)
+          superview];
   browserRect.y = contentRect.height - browserRect.height - browserRect.y;
 
   // Only update the view if nobody is currently resizing the main window.
@@ -502,14 +508,16 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
   g_browsers_.insert(handle);
   g_browsers_lock_.Unlock();
   CefBrowserContentView* browserImpl =
-      (CefBrowserContentView*)[handle superview];
+      (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)
+          superview];
   [browserImpl addCefBrowser:browser];
 }
 
 void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
-  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+  NSView* handle =
+      CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(browser->GetHost()->GetWindowHandle());
   g_browsers_lock_.Lock();
   g_browsers_.erase(handle);
   g_browsers_lock_.Unlock();
@@ -531,7 +539,8 @@ void SetParent(CefWindowHandle handle,
   base::Closure* pCallback = new base::Closure(callback);
   dispatch_async(dispatch_get_main_queue(), ^{
     CefBrowserContentView* browser_view =
-        (CefBrowserContentView*)[handle superview];
+        (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)
+            superview];
     [browser_view retain];
     [browser_view removeFromSuperview];
 
@@ -540,7 +549,8 @@ void SetParent(CefWindowHandle handle,
       NSWindow* window = (NSWindow*)parentHandle;
       contentView = [window contentView];
     } else {
-      contentView = TempWindow::GetWindowHandle();
+      contentView =
+          CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(TempWindow::GetWindowHandle());
     }
     [contentView addSubview:browser_view];
     [browser_view release];
