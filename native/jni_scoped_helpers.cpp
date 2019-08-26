@@ -44,8 +44,8 @@ ScopedJNIString::ScopedJNIString(JNIEnv* env, const CefString& str)
 
 ScopedJNIBrowser::ScopedJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> obj)
     : ScopedJNIBase<jobject>(env) {
+  // Will return NULL for browsers that represent native popup windows.
   jhandle_ = GetJNIBrowser(env_, obj);
-  DCHECK(jhandle_);
 }
 
 void ScopedJNIBrowser::SetHandle(jobject handle, bool should_delete) {
