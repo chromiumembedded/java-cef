@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Vector;
 
 class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
+    CefCommandLine_N() {}
+
     @Override
     public void reset() {
         try {
-            N_reset();
+            N_Reset(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -20,7 +22,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public String getProgram() {
         try {
-            return N_getProgram();
+            return N_GetProgram(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -30,7 +32,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public void setProgram(String program) {
         try {
-            N_setProgram(program);
+            N_SetProgram(getNativeRef(null), program);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -39,7 +41,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public boolean hasSwitches() {
         try {
-            return N_hasSwitches();
+            return N_HasSwitches(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -49,7 +51,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public boolean hasSwitch(String name) {
         try {
-            return N_hasSwitch(name);
+            return N_HasSwitch(getNativeRef(null), name);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -59,7 +61,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public String getSwitchValue(String name) {
         try {
-            return N_getSwitchValue(name);
+            return N_GetSwitchValue(getNativeRef(null), name);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -69,7 +71,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public Map<String, String> getSwitches() {
         try {
-            return N_getSwitches();
+            return N_GetSwitches(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -79,7 +81,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public void appendSwitch(String name) {
         try {
-            N_appendSwitch(name);
+            N_AppendSwitch(getNativeRef(null), name);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -88,7 +90,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public void appendSwitchWithValue(String name, String value) {
         try {
-            N_appendSwitchWithValue(name, value);
+            N_AppendSwitchWithValue(getNativeRef(null), name, value);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -97,7 +99,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public boolean hasArguments() {
         try {
-            return N_hasArguments();
+            return N_HasArguments(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -107,7 +109,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public Vector<String> getArguments() {
         try {
-            return N_getArguments();
+            return N_GetArguments(getNativeRef(null));
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -117,7 +119,7 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
     @Override
     public void appendArgument(String argument) {
         try {
-            N_appendArgument(argument);
+            N_AppendArgument(getNativeRef(null), argument);
         } catch (UnsatisfiedLinkError err) {
             err.printStackTrace();
         }
@@ -137,16 +139,16 @@ class CefCommandLine_N extends CefNativeAdapter implements CefCommandLine {
         return result + "]";
     }
 
-    private final native void N_reset();
-    private final native String N_getProgram();
-    private final native void N_setProgram(String program);
-    private final native boolean N_hasSwitches();
-    private final native boolean N_hasSwitch(String name);
-    private final native String N_getSwitchValue(String name);
-    private final native Map<String, String> N_getSwitches();
-    private final native void N_appendSwitch(String name);
-    private final native void N_appendSwitchWithValue(String name, String value);
-    private final native boolean N_hasArguments();
-    private final native Vector<String> N_getArguments();
-    private final native void N_appendArgument(String argument);
+    private final native void N_Reset(long self);
+    private final native String N_GetProgram(long self);
+    private final native void N_SetProgram(long self, String program);
+    private final native boolean N_HasSwitches(long self);
+    private final native boolean N_HasSwitch(long self, String name);
+    private final native String N_GetSwitchValue(long self, String name);
+    private final native Map<String, String> N_GetSwitches(long self);
+    private final native void N_AppendSwitch(long self, String name);
+    private final native void N_AppendSwitchWithValue(long self, String name, String value);
+    private final native boolean N_HasArguments(long self);
+    private final native Vector<String> N_GetArguments(long self);
+    private final native void N_AppendArgument(long self, String argument);
 }

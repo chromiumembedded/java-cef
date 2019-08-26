@@ -9,109 +9,122 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_reset
- * Signature: ()V
+ * Method:    N_Reset
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1reset(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_cef_callback_CefCommandLine_1N_N_1Reset(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_getProgram
- * Signature: ()Ljava/lang/String;
+ * Method:    N_GetProgram
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getProgram(JNIEnv*, jobject);
+Java_org_cef_callback_CefCommandLine_1N_N_1GetProgram(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_setProgram
- * Signature: (Ljava/lang/String;)V
+ * Method:    N_SetProgram
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1setProgram(JNIEnv*,
+Java_org_cef_callback_CefCommandLine_1N_N_1SetProgram(JNIEnv*,
                                                       jobject,
+                                                      jlong,
                                                       jstring);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_hasSwitches
- * Signature: ()Z
+ * Method:    N_HasSwitches
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasSwitches(JNIEnv*, jobject);
+Java_org_cef_callback_CefCommandLine_1N_N_1HasSwitches(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_hasSwitch
- * Signature: (Ljava/lang/String;)Z
+ * Method:    N_HasSwitch
+ * Signature: (JLjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasSwitch(JNIEnv*, jobject, jstring);
+Java_org_cef_callback_CefCommandLine_1N_N_1HasSwitch(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jstring);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_getSwitchValue
- * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ * Method:    N_GetSwitchValue
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getSwitchValue(JNIEnv*,
+Java_org_cef_callback_CefCommandLine_1N_N_1GetSwitchValue(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jstring);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_getSwitches
- * Signature: ()Ljava/util/Map;
+ * Method:    N_GetSwitches
+ * Signature: (J)Ljava/util/Map;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getSwitches(JNIEnv*, jobject);
+Java_org_cef_callback_CefCommandLine_1N_N_1GetSwitches(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_appendSwitch
- * Signature: (Ljava/lang/String;)V
+ * Method:    N_AppendSwitch
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendSwitch(JNIEnv*,
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendSwitch(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jstring);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_appendSwitchWithValue
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Method:    N_AppendSwitchWithValue
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendSwitchWithValue(JNIEnv*,
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendSwitchWithValue(JNIEnv*,
                                                                  jobject,
+                                                                 jlong,
                                                                  jstring,
                                                                  jstring);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_hasArguments
- * Signature: ()Z
+ * Method:    N_HasArguments
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasArguments(JNIEnv*, jobject);
+Java_org_cef_callback_CefCommandLine_1N_N_1HasArguments(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_getArguments
- * Signature: ()Ljava/util/Vector;
+ * Method:    N_GetArguments
+ * Signature: (J)Ljava/util/Vector;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getArguments(JNIEnv*, jobject);
+Java_org_cef_callback_CefCommandLine_1N_N_1GetArguments(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_callback_CefCommandLine_N
- * Method:    N_appendArgument
- * Signature: (Ljava/lang/String;)V
+ * Method:    N_AppendArgument
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendArgument(JNIEnv*,
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendArgument(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jstring);
 
 #ifdef __cplusplus

@@ -4,79 +4,88 @@
 
 #include "CefCommandLine_N.h"
 #include "include/cef_command_line.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
-#include "util.h"
+
+namespace {
+
+CefRefPtr<CefCommandLine> GetSelf(jlong self) {
+  return reinterpret_cast<CefCommandLine*>(self);
+}
+
+}  // namespace
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1reset(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+Java_org_cef_callback_CefCommandLine_1N_N_1Reset(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return;
   commandLine->Reset();
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getProgram(JNIEnv* env,
-                                                      jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+Java_org_cef_callback_CefCommandLine_1N_N_1GetProgram(JNIEnv* env,
+                                                      jobject obj,
+                                                      jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return env->NewStringUTF("");
   return NewJNIString(env, commandLine->GetProgram());
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1setProgram(JNIEnv* env,
+Java_org_cef_callback_CefCommandLine_1N_N_1SetProgram(JNIEnv* env,
                                                       jobject obj,
+                                                      jlong self,
                                                       jstring program) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return;
   commandLine->SetProgram(GetJNIString(env, program));
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasSwitches(JNIEnv* env,
-                                                       jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+Java_org_cef_callback_CefCommandLine_1N_N_1HasSwitches(JNIEnv* env,
+                                                       jobject obj,
+                                                       jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return JNI_FALSE;
   return commandLine->HasSwitches() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasSwitch(JNIEnv* env,
+Java_org_cef_callback_CefCommandLine_1N_N_1HasSwitch(JNIEnv* env,
                                                      jobject obj,
+                                                     jlong self,
                                                      jstring name) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return JNI_FALSE;
   return commandLine->HasSwitch(GetJNIString(env, name)) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getSwitchValue(JNIEnv* env,
+Java_org_cef_callback_CefCommandLine_1N_N_1GetSwitchValue(JNIEnv* env,
                                                           jobject obj,
+                                                          jlong self,
                                                           jstring name) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return env->NewStringUTF("");
   return NewJNIString(env,
                       commandLine->GetSwitchValue(GetJNIString(env, name)));
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getSwitches(JNIEnv* env,
-                                                       jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
+Java_org_cef_callback_CefCommandLine_1N_N_1GetSwitches(JNIEnv* env,
+                                                       jobject obj,
+                                                       jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
   CefCommandLine::SwitchMap switches;
-  if (commandLine.get())
+  if (commandLine)
     commandLine->GetSwitches(switches);
 
   jobject hashMap = NewJNIObject(env, "java/util/HashMap");
@@ -85,61 +94,58 @@ Java_org_cef_callback_CefCommandLine_1N_N_1getSwitches(JNIEnv* env,
 
   for (CefCommandLine::SwitchMap::iterator iter = switches.begin();
        iter != switches.end(); ++iter) {
-    jstring jkey = NewJNIString(env, iter->first);
-    jstring jvalue = NewJNIString(env, iter->second);
-    jobject returnIgn = NULL;
+    ScopedJNIString jkey(env, iter->first);
+    ScopedJNIString jvalue(env, iter->second);
+    ScopedJNIObjectResult jresult(env);
     JNI_CALL_METHOD(env, hashMap, "put",
                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                    Object, returnIgn, jkey, jvalue);
-    env->DeleteLocalRef(returnIgn);
-    env->DeleteLocalRef(jkey);
-    env->DeleteLocalRef(jvalue);
+                    Object, jresult, jkey.get(), jvalue.get());
   }
   return hashMap;
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendSwitch(JNIEnv* env,
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendSwitch(JNIEnv* env,
                                                         jobject obj,
+                                                        jlong self,
                                                         jstring name) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return;
   commandLine->AppendSwitch(GetJNIString(env, name));
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendSwitchWithValue(
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendSwitchWithValue(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jstring name,
     jstring value) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return;
   commandLine->AppendSwitchWithValue(GetJNIString(env, name),
                                      GetJNIString(env, value));
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1hasArguments(JNIEnv* env,
-                                                        jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+Java_org_cef_callback_CefCommandLine_1N_N_1HasArguments(JNIEnv* env,
+                                                        jobject obj,
+                                                        jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return JNI_FALSE;
   return commandLine->HasArguments() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1getArguments(JNIEnv* env,
-                                                        jobject obj) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
+Java_org_cef_callback_CefCommandLine_1N_N_1GetArguments(JNIEnv* env,
+                                                        jobject obj,
+                                                        jlong self) {
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
   CefCommandLine::ArgumentList arguments;
-  if (commandLine.get())
+  if (commandLine)
     commandLine->GetArguments(arguments);
 
   jobject vector = NewJNIObject(env, "java/util/Vector");
@@ -148,23 +154,22 @@ Java_org_cef_callback_CefCommandLine_1N_N_1getArguments(JNIEnv* env,
 
   for (CefCommandLine::ArgumentList::iterator iter = arguments.begin();
        iter != arguments.end(); ++iter) {
-    jstring argument = NewJNIString(env, *iter);
+    ScopedJNIString jargument(env, *iter);
     jboolean succ = JNI_FALSE;
     JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/object;)Z", Boolean, succ,
-                    argument);
+                    jargument.get());
     UNUSED(succ);
-    env->DeleteLocalRef(argument);
   }
   return vector;
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefCommandLine_1N_N_1appendArgument(JNIEnv* env,
+Java_org_cef_callback_CefCommandLine_1N_N_1AppendArgument(JNIEnv* env,
                                                           jobject obj,
+                                                          jlong self,
                                                           jstring argument) {
-  CefRefPtr<CefCommandLine> commandLine =
-      GetCefFromJNIObject<CefCommandLine>(env, obj, "CefCommandLine");
-  if (!commandLine.get())
+  CefRefPtr<CefCommandLine> commandLine = GetSelf(self);
+  if (!commandLine)
     return;
   commandLine->AppendArgument(GetJNIString(env, argument));
 }
