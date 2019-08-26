@@ -5,11 +5,21 @@
 package org.cef.callback;
 
 /**
- * Callback interface used to asynchronously cancel a download.
+ * Callback interface used to asynchronously modify download status.
  */
 public interface CefDownloadItemCallback {
     /**
      * Call to cancel the download.
      */
     public void cancel();
+
+    /**
+     * Call to pause the download.
+     */
+    public void pause();
+
+    /**
+     * Call to resume the download.
+     */
+    public void resume();
 }

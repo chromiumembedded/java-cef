@@ -9,11 +9,43 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_callback_CefDownloadItemCallback_N
- * Method:    N_Cancel
- * Signature: ()V
+ * Method:    N_Dispose
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel(JNIEnv*, jobject);
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Dispose(JNIEnv*,
+                                                            jobject,
+                                                            jlong);
+
+/*
+ * Class:     org_cef_callback_CefDownloadItemCallback_N
+ * Method:    N_Cancel
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Cancel(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
+
+/*
+ * Class:     org_cef_callback_CefDownloadItemCallback_N
+ * Method:    N_Pause
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Pause(JNIEnv*,
+                                                          jobject,
+                                                          jlong);
+
+/*
+ * Class:     org_cef_callback_CefDownloadItemCallback_N
+ * Method:    N_Resume
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefDownloadItemCallback_1N_N_1Resume(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
 
 #ifdef __cplusplus
 }

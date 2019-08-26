@@ -9,11 +9,12 @@
 #include <jni.h>
 #include "include/cef_download_handler.h"
 
+#include "jni_scoped_helpers.h"
+
 // DownloadHandler implementation.
 class DownloadHandler : public CefDownloadHandler {
  public:
   DownloadHandler(JNIEnv* env, jobject handler);
-  virtual ~DownloadHandler();
 
   // CefDownloadHandler methods
   virtual void OnBeforeDownload(
@@ -28,7 +29,7 @@ class DownloadHandler : public CefDownloadHandler {
       CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DownloadHandler);

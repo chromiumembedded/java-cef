@@ -8,13 +8,44 @@ class CefDownloadItemCallback_N extends CefNativeAdapter implements CefDownloadI
     CefDownloadItemCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        try {
+            N_Dispose(getNativeRef(null));
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        super.finalize();
+    }
+
+    @Override
     public void cancel() {
         try {
-            N_Cancel();
+            N_Cancel(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Cancel();
+    @Override
+    public void pause() {
+        try {
+            N_Pause(getNativeRef(null));
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    @Override
+    public void resume() {
+        try {
+            N_Resume(getNativeRef(null));
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    private final native void N_Dispose(long self);
+    private final native void N_Cancel(long self);
+    private final native void N_Pause(long self);
+    private final native void N_Resume(long self);
 }
