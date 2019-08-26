@@ -8,13 +8,19 @@ class CefJSDialogCallback_N extends CefNativeAdapter implements CefJSDialogCallb
     CefJSDialogCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        Continue(false, "");
+        super.finalize();
+    }
+
+    @Override
     public void Continue(boolean success, String user_input) {
         try {
-            N_Continue(success, user_input);
+            N_Continue(getNativeRef(null), success, user_input);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Continue(boolean success, String user_input);
+    private final native void N_Continue(long self, boolean success, String user_input);
 }

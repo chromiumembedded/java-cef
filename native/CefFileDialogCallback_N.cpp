@@ -6,38 +6,45 @@
 #include "include/cef_dialog_handler.h"
 #include "jni_util.h"
 
+namespace {
+
+CefRefPtr<CefFileDialogCallback> GetSelf(jlong self) {
+  return reinterpret_cast<CefFileDialogCallback*>(self);
+}
+
+void ClearSelf(JNIEnv* env, jobject obj) {
+  // Clear the reference added in DialogHandler::OnFileDialog.
+  SetCefForJNIObject<CefFileDialogCallback>(env, obj, NULL,
+                                            "CefFileDialogCallback");
+}
+
+}  // namespace
+
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jint selectedAcceptFilter,
     jobject jFilePaths) {
-  CefRefPtr<CefFileDialogCallback> callback =
-      GetCefFromJNIObject<CefFileDialogCallback>(env, obj,
-                                                 "CefFileDialogCallback");
-  if (!callback.get())
+  CefRefPtr<CefFileDialogCallback> callback = GetSelf(self);
+  if (!callback)
     return;
 
   std::vector<CefString> filePaths;
   GetJNIStringVector(env, jFilePaths, filePaths);
   callback->Continue(selectedAcceptFilter, filePaths);
 
-  // Clear the reference added in DialogHandler::OnFileDialog.
-  SetCefForJNIObject<CefFileDialogCallback>(env, obj, NULL,
-                                            "CefFileDialogCallback");
+  ClearSelf(env, obj);
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefFileDialogCallback_1N_N_1Cancel(JNIEnv* env,
-                                                         jobject obj) {
-  CefRefPtr<CefFileDialogCallback> callback =
-      GetCefFromJNIObject<CefFileDialogCallback>(env, obj,
-                                                 "CefFileDialogCallback");
-  if (!callback.get())
+                                                         jobject obj,
+                                                         jlong self) {
+  CefRefPtr<CefFileDialogCallback> callback = GetSelf(self);
+  if (!callback)
     return;
   callback->Cancel();
-
-  // Clear the reference added in DialogHandler::OnFileDialog.
-  SetCefForJNIObject<CefFileDialogCallback>(env, obj, NULL,
-                                            "CefFileDialogCallback");
+  ClearSelf(env, obj);
 }

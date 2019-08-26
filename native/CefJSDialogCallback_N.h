@@ -10,11 +10,12 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefJSDialogCallback_N
  * Method:    N_Continue
- * Signature: (ZLjava/lang/String;)V
+ * Signature: (JZLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefJSDialogCallback_1N_N_1Continue(JNIEnv*,
                                                          jobject,
+                                                         jlong,
                                                          jboolean,
                                                          jstring);
 

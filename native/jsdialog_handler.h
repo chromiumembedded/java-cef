@@ -9,11 +9,12 @@
 #include <jni.h>
 #include "include/cef_jsdialog_handler.h"
 
+#include "jni_scoped_helpers.h"
+
 // JSDialogHandler implementation.
 class JSDialogHandler : public CefJSDialogHandler {
  public:
   JSDialogHandler(JNIEnv* env, jobject handler);
-  virtual ~JSDialogHandler();
 
   // CefJSDialogHandler methods
   virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser,
@@ -34,7 +35,7 @@ class JSDialogHandler : public CefJSDialogHandler {
   virtual void OnDialogClosed(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(JSDialogHandler);

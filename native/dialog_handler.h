@@ -9,11 +9,12 @@
 #include <jni.h>
 #include "include/cef_dialog_handler.h"
 
+#include "jni_scoped_helpers.h"
+
 // DialogHandler implementation.
 class DialogHandler : public CefDialogHandler {
  public:
   DialogHandler(JNIEnv* env, jobject handler);
-  virtual ~DialogHandler();
 
   // CefDialogHandler methods
   virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
@@ -25,7 +26,7 @@ class DialogHandler : public CefDialogHandler {
                             CefRefPtr<CefFileDialogCallback> callback) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(DialogHandler);
