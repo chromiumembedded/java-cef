@@ -142,7 +142,7 @@ import org.cef.handler.CefMessageRouterHandler;
  * 6. Notice that the success callback is executed in JavaScript.
  */
 public abstract class CefMessageRouter {
-    private final CefMessageRouterConfig routerConfig_;
+    private CefMessageRouterConfig routerConfig_ = null;
 
     /**
      * Used to configure the query router. If using multiple router pairs make
@@ -172,28 +172,40 @@ public abstract class CefMessageRouter {
     }
 
     // This CTOR can't be called directly. Call method create() instead.
-    CefMessageRouter(CefMessageRouterConfig routerConfig) {
-        routerConfig_ = routerConfig;
+    CefMessageRouter() {}
+
+    @Override
+    protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
     }
 
     /**
-     * Create a new router with the specified configuration.
-     *
-     * @param config router configuration
-     * @return
+     * Create a new router with the default configuration. The addHandler() method should be called
+     * to add a handler.
      */
     public static final CefMessageRouter create() {
         return CefMessageRouter.create(null, null);
     }
 
+    /**
+     * Create a new router with the specified configuration. The addHandler() method should be
+     * called to add a handler.
+     */
     public static final CefMessageRouter create(CefMessageRouterConfig config) {
         return CefMessageRouter.create(config, null);
     }
 
+    /**
+     * Create a new router with the specified handler and default configuration.
+     */
     public static final CefMessageRouter create(CefMessageRouterHandler handler) {
         return CefMessageRouter.create(null, handler);
     }
 
+    /**
+     * Create a new router with the specified handler and configuration.
+     */
     public static final CefMessageRouter create(
             CefMessageRouterConfig config, CefMessageRouterHandler handler) {
         CefMessageRouter router = CefMessageRouter_N.createNative(config);
@@ -202,60 +214,48 @@ public abstract class CefMessageRouter {
     }
 
     /**
-     * Must be called if the CefMessageRouter instance isn't used any more
+     * Must be called if the CefMessageRouter instance isn't used any more.
      */
     public abstract void dispose();
 
+    // Called from native code during handling of createNative().
+    void setMessageRouterConfig(CefMessageRouterConfig config) {
+        routerConfig_ = config;
+    }
+
+    // Called from native code during handling of CefClientHandler.[add|remove]MessageRouter().
     public final CefMessageRouterConfig getMessageRouterConfig() {
         return routerConfig_;
     }
 
     /**
-     * Add a new query handler. If |first| is true it will be added as the first
-     * handler, otherwise it will be added as the last handler. Returns true if
-     * the handler is added successfully or false if the handler has already been
-     * added. Must be called on the browser process UI thread. The Handler object
-     * must either outlive the router or be removed before deletion.
+     * Add a new query handler.
      *
-     * @param handler the according handler to be added
-     * @param first if If set to true it will be added as the first handler
-     * @return true if the handler is added successfully
+     * @param handler The handler to be added.
+     * @param first If true the handler will be added as the first handler, otherwise it will be
+     *         added as the last handler.
+     * @return True if the handler is added successfully.
      */
     public abstract boolean addHandler(CefMessageRouterHandler handler, boolean first);
 
     /**
-     * Remove an existing query handler. Any pending queries associated with the
-     * handler will be canceled. Handler.OnQueryCanceled will be called and the
-     * associated JavaScript onFailure callback will be executed with an error
-     * code of -1. Returns true if the handler is removed successfully or false
-     * if the handler is not found. Must be called on the browser process UI
-     * thread.
+     * Remove an existing query handler. Any pending queries associated with the handler will be
+     * canceled. onQueryCanceled will be called and the associated JavaScript onFailure callback
+     * will be executed with an error code of -1.
      *
-     * @param handler the according handler to be removed
-     * @return true if the handler is removed successfully
+     * @param handler The handler to be removed.
+     * @return True if the handler is removed successfully.
      */
     public abstract boolean removeHandler(CefMessageRouterHandler handler);
 
     /**
-     * Cancel all pending queries associated with either |browser| or |handler|.
-     * If both |browser| and |handler| are NULL all pending queries will be
-     * canceled. Handler::OnQueryCanceled will be called and the associated
-     * JavaScript onFailure callback will be executed in all cases with an error
+     * Cancel all pending queries associated with either |browser| or |handler|. If both |browser|
+     * and |handler| are NULL all pending queries will be canceled. onQueryCanceled will be called
+     * and the associated JavaScript onFailure callback will be executed in all cases with an error
      * code of -1.
      *
-     * @param browser may be empty
-     * @param handler may be empty
+     * @param browser The associated browser, or null.
+     * @param handler The associated handler, or null.
      */
     public abstract void cancelPending(CefBrowser browser, CefMessageRouterHandler handler);
-
-    /**
-     * Returns the number of queries currently pending for the specified |browser|
-     * and/or |handler|. Either or both values may be empty. Must be called on the
-     * browser process UI thread.
-     *
-     * @param browser may be empty
-     * @param handler may be empty
-     * @return the number of queries currently pending
-     */
-    public abstract int getPendingCount(CefBrowser browser, CefMessageRouterHandler handler);
 }

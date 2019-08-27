@@ -7,14 +7,16 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/wrapper/cef_message_router.h"
+
+#include "jni_scoped_helpers.h"
 
 // MessageRouterHandler implementation.
 class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler,
                              public CefBaseRefCounted {
  public:
   MessageRouterHandler(JNIEnv* env, jobject handler);
-  virtual ~MessageRouterHandler();
 
   // CefMessageRouterHandler methods
   virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
@@ -28,7 +30,7 @@ class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler,
                                int64 query_id) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(MessageRouterHandler);

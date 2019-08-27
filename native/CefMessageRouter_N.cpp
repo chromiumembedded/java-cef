@@ -8,130 +8,120 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_message_router.h"
 
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "message_router_handler.h"
 
-JNIEXPORT void JNICALL
+namespace {
+
+const char kCefClassName[] = "CefMessageRouter";
+
+CefRefPtr<CefMessageRouter> GetSelf(jlong self) {
+  return reinterpret_cast<CefMessageRouter*>(self);
+}
+
+CefRefPtr<MessageRouterHandler> GetHandler(JNIEnv* env,
+                                           jobject jrouterHandler,
+                                           bool allow_create) {
+  ScopedJNIObject<MessageRouterHandler> jrouterHandlerObj(
+      env, jrouterHandler, false /* should_delete */,
+      "CefMessageRouterHandler");
+  return allow_create ? jrouterHandlerObj.GetOrCreateCefObject()
+                      : jrouterHandlerObj.GetCefObject();
+}
+
+}  // namespace
+
+JNIEXPORT jobject JNICALL
 Java_org_cef_browser_CefMessageRouter_1N_N_1Create(JNIEnv* env,
-                                                   jobject obj,
+                                                   jclass cls,
                                                    jobject jrouterConfig) {
   CefMessageRouterConfig config = GetJNIMessageRouterConfig(env, jrouterConfig);
-
   CefRefPtr<CefMessageRouterBrowserSide> msgRouter =
       CefMessageRouterBrowserSide::Create(config);
-  if (!msgRouter.get())
-    return;
-  SetCefForJNIObject(env, obj, msgRouter.get(), "CefMessageRouter");
+  ScopedJNIMessageRouter jmsgRouter(env, msgRouter);
+
+  JNI_CALL_VOID_METHOD(
+      env, jmsgRouter, "setMessageRouterConfig",
+      "(Lorg/cef/browser/CefMessageRouter$CefMessageRouterConfig;)V",
+      jrouterConfig);
+
+  return jmsgRouter.Release();
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_browser_CefMessageRouter_1N_N_1Dispose(JNIEnv* env, jobject obj) {
+Java_org_cef_browser_CefMessageRouter_1N_N_1Dispose(JNIEnv* env,
+                                                    jobject obj,
+                                                    jlong self) {
   SetCefForJNIObject<CefMessageRouterBrowserSide>(env, obj, NULL,
-                                                  "CefMessageRouter");
+                                                  kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_cef_browser_CefMessageRouter_1N_N_1AddHandler(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jrouterHandler,
                                                        jboolean jfirst) {
-  CefRefPtr<CefMessageRouterBrowserSide> msgRouter =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, obj,
-                                                       "CefMessageRouter");
-  if (!msgRouter.get())
+  CefRefPtr<CefMessageRouter> msgRouter = GetSelf(self);
+  if (!msgRouter)
     return JNI_FALSE;
 
-  // get native reference or create a new one
   CefRefPtr<MessageRouterHandler> routerHandler =
-      GetCefFromJNIObject<MessageRouterHandler>(env, jrouterHandler,
-                                                "CefMessageRouterHandler");
-  if (!routerHandler.get()) {
-    routerHandler = new MessageRouterHandler(env, jrouterHandler);
-    SetCefForJNIObject(env, jrouterHandler, routerHandler.get(),
-                       "CefMessageRouterHandler");
-  }
+      GetHandler(env, jrouterHandler, true /* allow_create */);
 
-  bool result = false;
   if (CefCurrentlyOn(TID_UI)) {
-    result = msgRouter->AddHandler(routerHandler, (jfirst != JNI_FALSE));
+    msgRouter->AddHandler(routerHandler, (jfirst != JNI_FALSE));
   } else {
-    result = CefPostTask(
+    CefPostTask(
         TID_UI,
         base::Bind(base::IgnoreResult(&CefMessageRouterBrowserSide::AddHandler),
                    msgRouter.get(), routerHandler, (jfirst != JNI_FALSE)));
   }
-  return result ? JNI_TRUE : JNI_FALSE;
+  return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHandler(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jobject jrouterHandler) {
-  CefRefPtr<CefMessageRouterBrowserSide> msgRouter =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, obj,
-                                                       "CefMessageRouter");
-  if (!msgRouter.get())
+  CefRefPtr<CefMessageRouter> msgRouter = GetSelf(self);
+  if (!msgRouter)
     return JNI_FALSE;
 
   CefRefPtr<MessageRouterHandler> routerHandler =
-      GetCefFromJNIObject<MessageRouterHandler>(env, jrouterHandler,
-                                                "CefMessageRouterHandler");
-  if (!routerHandler.get())
+      GetHandler(env, jrouterHandler, false /* allow_create */);
+  if (!routerHandler)
     return JNI_FALSE;
 
-  bool result = false;
   if (CefCurrentlyOn(TID_UI)) {
-    result = msgRouter->RemoveHandler(routerHandler);
+    msgRouter->RemoveHandler(routerHandler);
   } else {
-    result = CefPostTask(
-        TID_UI, base::Bind(base::IgnoreResult(
+    CefPostTask(TID_UI,
+                base::Bind(base::IgnoreResult(
                                &CefMessageRouterBrowserSide::RemoveHandler),
                            msgRouter.get(), routerHandler));
   }
-  return result ? JNI_TRUE : JNI_FALSE;
+  return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_browser_CefMessageRouter_1N_N_1CancelPending(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jobject jbrowser,
     jobject jrouterHandler) {
-  CefRefPtr<CefMessageRouterBrowserSide> msgRouter =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, obj,
-                                                       "CefMessageRouter");
-  if (!msgRouter.get())
+  CefRefPtr<CefMessageRouter> msgRouter = GetSelf(self);
+  if (!msgRouter)
     return;
 
-  // browser and/or routerHandler may be null
-  CefRefPtr<CefBrowser> browser =
-      GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
+  // Browser and/or routerHandler may be null.
+  CefRefPtr<CefBrowser> browser = GetCefBrowser(env, jbrowser);
   CefRefPtr<MessageRouterHandler> routerHandler =
-      GetCefFromJNIObject<MessageRouterHandler>(env, jrouterHandler,
-                                                "CefMessageRouterHandler");
+      GetHandler(env, jrouterHandler, false /* allow_create */);
 
   msgRouter->CancelPending(browser, routerHandler);
-}
-
-JNIEXPORT jint JNICALL
-Java_org_cef_browser_CefMessageRouter_1N_N_1GetPendingCount(
-    JNIEnv* env,
-    jobject obj,
-    jobject jbrowser,
-    jobject jrouterHandler) {
-  CefRefPtr<CefMessageRouterBrowserSide> msgRouter =
-      GetCefFromJNIObject<CefMessageRouterBrowserSide>(env, obj,
-                                                       "CefMessageRouter");
-  if (!msgRouter.get())
-    return 0;
-
-  // browser and/or routerHandler may be null
-  CefRefPtr<CefBrowser> browser =
-      GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
-  CefRefPtr<MessageRouterHandler> routerHandler =
-      GetCefFromJNIObject<MessageRouterHandler>(env, jrouterHandler,
-                                                "CefMessageRouterHandler");
-
-  return msgRouter->GetPendingCount(browser, routerHandler);
 }

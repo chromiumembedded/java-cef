@@ -5,13 +5,18 @@
 package org.cef.callback;
 
 class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
-    // Constructor is called by native code.
     CefQueryCallback_N() {}
+
+    @Override
+    protected void finalize() throws Throwable {
+        failure(-1, "Unexpected call to CefQueryCallback_N::finalize()");
+        super.finalize();
+    }
 
     @Override
     public void success(String response) {
         try {
-            N_Success(response);
+            N_Success(getNativeRef(null), response);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -20,12 +25,12 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     @Override
     public void failure(int error_code, String error_message) {
         try {
-            N_Failure(error_code, error_message);
+            N_Failure(getNativeRef(null), error_code, error_message);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Success(String response);
-    private final native void N_Failure(int error_code, String error_message);
+    private final native void N_Success(long self, String response);
+    private final native void N_Failure(long self, int error_code, String error_message);
 }

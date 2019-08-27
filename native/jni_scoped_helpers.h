@@ -14,6 +14,7 @@
 #include "include/cef_print_settings.h"
 #include "include/cef_request.h"
 #include "include/cef_response.h"
+#include "include/wrapper/cef_message_router.h"
 
 #include "jni_util.h"
 
@@ -626,6 +627,14 @@ class ScopedJNIMenuModel : public ScopedJNIObject<CefMenuModel> {
  public:
   // |obj| must be non-NULL.
   ScopedJNIMenuModel(JNIEnv* env, CefRefPtr<CefMenuModel> obj);
+};
+
+// JNI CefMessageRouter object.
+using CefMessageRouter = CefMessageRouterBrowserSide;
+class ScopedJNIMessageRouter : public ScopedJNIObject<CefMessageRouter> {
+ public:
+  // If |obj| is NULL the SetHandle method should be used.
+  ScopedJNIMessageRouter(JNIEnv* env, CefRefPtr<CefMessageRouter> obj = NULL);
 };
 
 // JNI CefPrintSettings object.

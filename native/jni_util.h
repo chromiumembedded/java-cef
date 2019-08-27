@@ -100,8 +100,6 @@ void GetJNIStringArray(JNIEnv* env,
                        std::vector<CefString>& vals);
 
 CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig);
-CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
-                                                           jobject jRouter);
 
 // Create a new JNI error code.
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
@@ -224,6 +222,9 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj);
 // Get the Java browser counterpart.
 jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser>);
 
+// Get the existing CEF browser counterpart.
+CefRefPtr<CefBrowser> GetCefBrowser(JNIEnv* env, jobject jbrowser);
+
 // TODO: Remove this method once all callers are converted to scoped helpers.
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 
@@ -305,9 +306,9 @@ bool IsJNIEnumValue(JNIEnv* env,
     }                                                            \
   }
 
-#define JNI_GET_BROWSER_OR_RETURN(env, obj, ...)           \
-  GetCefFromJNIObject<CefBrowser>(env, obj, "CefBrowser"); \
-  if (!browser.get())                                      \
+#define JNI_GET_BROWSER_OR_RETURN(env, jbrowser, ...) \
+  GetCefBrowser(env, jbrowser);                       \
+  if (!browser.get())                                 \
     return __VA_ARGS__;
 
 // Type specialization helpers for SetCefForJNIObject.

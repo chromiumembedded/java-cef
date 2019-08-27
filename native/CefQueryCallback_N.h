@@ -10,19 +10,23 @@ extern "C" {
 /*
  * Class:     org_cef_callback_CefQueryCallback_N
  * Method:    N_Success
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefQueryCallback_1N_N_1Success(JNIEnv*, jobject, jstring);
+Java_org_cef_callback_CefQueryCallback_1N_N_1Success(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jstring);
 
 /*
  * Class:     org_cef_callback_CefQueryCallback_N
  * Method:    N_Failure
- * Signature: (ILjava/lang/String;)V
+ * Signature: (JILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_callback_CefQueryCallback_1N_N_1Failure(JNIEnv*,
                                                      jobject,
+                                                     jlong,
                                                      jint,
                                                      jstring);
 

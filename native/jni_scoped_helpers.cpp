@@ -44,8 +44,12 @@ ScopedJNIString::ScopedJNIString(JNIEnv* env, const CefString& str)
 
 ScopedJNIBrowser::ScopedJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> obj)
     : ScopedJNIBase<jobject>(env) {
-  // Will return NULL for browsers that represent native popup windows.
-  jhandle_ = GetJNIBrowser(env_, obj);
+  if (obj) {
+    // Will return NULL for browsers that represent native popup windows.
+    jhandle_ = GetJNIBrowser(env_, obj);
+  } else {
+    jhandle_ = NULL;
+  }
 }
 
 void ScopedJNIBrowser::SetHandle(jobject handle, bool should_delete) {
@@ -58,7 +62,7 @@ void ScopedJNIBrowser::SetHandle(jobject handle, bool should_delete) {
 CefRefPtr<CefBrowser> ScopedJNIBrowser::GetCefObject() const {
   if (!jhandle_)
     return NULL;
-  return GetCefFromJNIObject<CefBrowser>(env_, jhandle_, "CefBrowser");
+  return GetCefBrowser(env_, jhandle_);
 }
 
 ScopedJNIDragData::ScopedJNIDragData(JNIEnv* env, CefRefPtr<CefDragData> obj)
@@ -78,6 +82,13 @@ ScopedJNIMenuModel::ScopedJNIMenuModel(JNIEnv* env, CefRefPtr<CefMenuModel> obj)
                                     obj,
                                     "org/cef/callback/CefMenuModel_N",
                                     "CefMenuModel") {}
+
+ScopedJNIMessageRouter::ScopedJNIMessageRouter(JNIEnv* env,
+                                               CefRefPtr<CefMessageRouter> obj)
+    : ScopedJNIObject<CefMessageRouter>(env,
+                                        obj,
+                                        "org/cef/browser/CefMessageRouter_N",
+                                        "CefMessageRouter") {}
 
 ScopedJNIPrintSettings::ScopedJNIPrintSettings(JNIEnv* env,
                                                CefRefPtr<CefPrintSettings> obj)

@@ -17,13 +17,13 @@ import org.cef.callback.CefQueryCallback;
 public abstract class CefMessageRouterHandlerAdapter
         extends CefNativeAdapter implements CefMessageRouterHandler {
     @Override
-    public boolean onQuery(CefBrowser browser, CefFrame frame, long query_id, String request,
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long queryId, String request,
             boolean persistent, CefQueryCallback callback) {
         return false;
     }
 
     @Override
-    public void onQueryCanceled(CefBrowser browser, CefFrame frame, long query_id) {
+    public void onQueryCanceled(CefBrowser browser, CefFrame frame, long queryId) {
         return;
     }
 }

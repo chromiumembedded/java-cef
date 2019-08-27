@@ -296,15 +296,6 @@ CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig) {
   return config;
 }
 
-CefMessageRouterConfig GetJNIMessageRouterConfigFromRouter(JNIEnv* env,
-                                                           jobject jRouter) {
-  jobject jrouterConfig = NULL;
-  JNI_CALL_METHOD(env, jRouter, "getMessageRouterConfig",
-                  "()Lorg/cef/browser/CefMessageRouter$CefMessageRouterConfig;",
-                  Object, jrouterConfig);
-  return GetJNIMessageRouterConfig(env, jrouterConfig);
-}
-
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
   jobject jerrorCode = NULL;
   switch (errorCode) {
@@ -985,6 +976,10 @@ jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
   CefRefPtr<ClientHandler> client =
       (ClientHandler*)browser->GetHost()->GetClient().get();
   return client->getBrowser(env, browser);
+}
+
+CefRefPtr<CefBrowser> GetCefBrowser(JNIEnv* env, jobject jbrowser) {
+  return GetCefFromJNIObject<CefBrowser>(env, jbrowser, "CefBrowser");
 }
 
 jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {

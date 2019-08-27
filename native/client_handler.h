@@ -69,9 +69,11 @@ class ClientHandler : public CefClient {
   // The child browser window.
   std::map<int, jobject> browserMap_;
 
-  std::set<CefRefPtr<CefMessageRouterBrowserSide>> message_router_;
+  using MessageRouterSet = std::set<CefRefPtr<CefMessageRouterBrowserSide>>;
+  MessageRouterSet message_routers_;
 
-  base::Lock lock_;
+  // Protects access to |message_routers_|.
+  base::Lock message_router_lock_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(ClientHandler);
