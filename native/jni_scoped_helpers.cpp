@@ -79,6 +79,13 @@ ScopedJNIMenuModel::ScopedJNIMenuModel(JNIEnv* env, CefRefPtr<CefMenuModel> obj)
                                     "org/cef/callback/CefMenuModel_N",
                                     "CefMenuModel") {}
 
+ScopedJNIPrintSettings::ScopedJNIPrintSettings(JNIEnv* env,
+                                               CefRefPtr<CefPrintSettings> obj)
+    : ScopedJNIObject<CefPrintSettings>(env,
+                                        obj,
+                                        "org/cef/misc/CefPrintSettings_N",
+                                        "CefPrintSettings") {}
+
 ScopedJNIRequest::ScopedJNIRequest(JNIEnv* env, CefRefPtr<CefRequest> obj)
     : ScopedJNIObject<CefRequest>(env,
                                   obj,

@@ -2,18 +2,20 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef CEF_TESTS_CEFCLIENT_CONTEXT_MENU_HANDLER_H_
-#define CEF_TESTS_CEFCLIENT_CONTEXT_MENU_HANDLER_H_
+#ifndef JCEF_NATIVE_PRINT_HANDLER_H_
+#define JCEF_NATIVE_PRINT_HANDLER_H_
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_print_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // PrintHandler implementation.
 class PrintHandler : public CefPrintHandler {
  public:
   PrintHandler(JNIEnv* env, jobject handler);
-  virtual ~PrintHandler();
 
   // CefPrintHandler methods
   virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) OVERRIDE;
@@ -37,7 +39,7 @@ class PrintHandler : public CefPrintHandler {
   virtual CefSize GetPdfPaperSize(int device_units_per_inch) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(PrintHandler);

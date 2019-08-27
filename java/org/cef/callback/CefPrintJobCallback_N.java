@@ -8,13 +8,19 @@ class CefPrintJobCallback_N extends CefNativeAdapter implements CefPrintJobCallb
     CefPrintJobCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        Continue();
+        super.finalize();
+    }
+
+    @Override
     public void Continue() {
         try {
-            N_Continue();
+            N_Continue(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Continue();
+    private final native void N_Continue(long self);
 }

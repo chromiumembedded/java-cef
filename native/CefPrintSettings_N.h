@@ -9,63 +9,74 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
- * Method:    N_CefPrintSettings_CTOR
- * Signature: ()V
+ * Method:    N_Create
+ * Signature: ()Lorg/cef/misc/CefPrintSettings_N;
  */
-JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1CTOR(JNIEnv*,
-                                                                jobject);
+JNIEXPORT jobject JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1Create(JNIEnv*, jclass);
+
+/*
+ * Class:     org_cef_misc_CefPrintSettings_N
+ * Method:    N_Dispose
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1Dispose(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_IsValid
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_IsReadOnly
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_Copy
- * Signature: ()Lorg/cef/misc/CefPrintSettings;
+ * Signature: (J)Lorg/cef/misc/CefPrintSettings;
  */
-JNIEXPORT jobject JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv*, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetOrientation
- * Signature: (Z)V
+ * Signature: (JZ)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation(JNIEnv*,
                                                         jobject,
+                                                        jlong,
                                                         jboolean);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_IsLandscape
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetPrinterPrintableArea
- * Signature: (Ljava/awt/Dimension;Ljava/awt/Rectangle;Z)V
+ * Signature: (JLjava/awt/Dimension;Ljava/awt/Rectangle;Z)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea(JNIEnv*,
                                                                  jobject,
+                                                                 jlong,
                                                                  jobject,
                                                                  jobject,
                                                                  jboolean);
@@ -73,160 +84,169 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea(JNIEnv*,
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetDeviceName
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jstring);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetDeviceName
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetDPI
- * Signature: (I)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1SetDPI(JNIEnv*,
                                                                        jobject,
+                                                                       jlong,
                                                                        jint);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetDPI
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI(JNIEnv*,
-                                                                       jobject);
+                                                                       jobject,
+                                                                       jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetPageRanges
- * Signature: (Ljava/util/Vector;)V
+ * Signature: (JLjava/util/Vector;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jobject);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetPageRangesCount
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount(JNIEnv*,
+                                                            jobject,
+                                                            jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetPageRanges
- * Signature: (Ljava/util/Vector;)V
+ * Signature: (JLjava/util/Vector;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jobject);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetSelectionOnly
- * Signature: (Z)V
+ * Signature: (JZ)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly(JNIEnv*,
                                                           jobject,
+                                                          jlong,
                                                           jboolean);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_IsSelectionOnly
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly(JNIEnv*,
+                                                         jobject,
+                                                         jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetCollate
- * Signature: (Z)V
+ * Signature: (JZ)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate(JNIEnv*, jobject, jboolean);
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate(JNIEnv*,
+                                                    jobject,
+                                                    jlong,
+                                                    jboolean);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_WillCollate
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetColorModel
- * Signature: (Lorg/cef/misc/CefPrintSettings/ColorModel;)V
+ * Signature: (JLorg/cef/misc/CefPrintSettings/ColorModel;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jobject);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetColorModel
- * Signature: ()Lorg/cef/misc/CefPrintSettings/ColorModel;
+ * Signature: (J)Lorg/cef/misc/CefPrintSettings/ColorModel;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetCopies
- * Signature: (I)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies(JNIEnv*, jobject, jint);
+Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jint);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetCopies
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv*, jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetDuplexMode
- * Signature: (Lorg/cef/misc/CefPrintSettings/DuplexMode;)V
+ * Signature: (JLorg/cef/misc/CefPrintSettings/DuplexMode;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode(JNIEnv*,
                                                        jobject,
+                                                       jlong,
                                                        jobject);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_GetDuplexMode
- * Signature: ()Lorg/cef/misc/CefPrintSettings/DuplexMode;
+ * Signature: (J)Lorg/cef/misc/CefPrintSettings/DuplexMode;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_misc_CefPrintSettings_N
- * Method:    N_CefPrintSettings_DTOR
- * Signature: ()V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1DTOR(JNIEnv*,
-                                                                jobject);
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode(JNIEnv*, jobject, jlong);
 
 #ifdef __cplusplus
 }

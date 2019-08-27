@@ -11,6 +11,7 @@
 #include "include/cef_drag_data.h"
 #include "include/cef_frame.h"
 #include "include/cef_menu_model.h"
+#include "include/cef_print_settings.h"
 #include "include/cef_request.h"
 #include "include/cef_response.h"
 
@@ -625,6 +626,13 @@ class ScopedJNIMenuModel : public ScopedJNIObject<CefMenuModel> {
  public:
   // |obj| must be non-NULL.
   ScopedJNIMenuModel(JNIEnv* env, CefRefPtr<CefMenuModel> obj);
+};
+
+// JNI CefPrintSettings object.
+class ScopedJNIPrintSettings : public ScopedJNIObject<CefPrintSettings> {
+ public:
+  // If |obj| is NULL the SetHandle method should be used.
+  ScopedJNIPrintSettings(JNIEnv* env, CefRefPtr<CefPrintSettings> obj = NULL);
 };
 
 // JNI CefRequest object.

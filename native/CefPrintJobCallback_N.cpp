@@ -7,17 +7,27 @@
 
 #include "include/cef_print_handler.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue(JNIEnv* env,
-                                                         jobject obj) {
-  CefRefPtr<CefPrintJobCallback> callback =
-      GetCefFromJNIObject<CefPrintJobCallback>(env, obj, "CefPrintJobCallback");
-  if (!callback.get())
-    return;
+namespace {
 
-  callback->Continue();
+CefRefPtr<CefPrintJobCallback> GetSelf(jlong self) {
+  return reinterpret_cast<CefPrintJobCallback*>(self);
+}
 
-  // Clear the reference added in PrintHandler::OnPrintJob.
+void ClearSelf(JNIEnv* env, jobject obj) {
+  // Clear the reference added in PrintJobHandler::OnPrintJob.
   SetCefForJNIObject<CefPrintJobCallback>(env, obj, NULL,
                                           "CefPrintJobCallback");
+}
+
+}  // namespace
+
+JNIEXPORT void JNICALL
+Java_org_cef_callback_CefPrintJobCallback_1N_N_1Continue(JNIEnv* env,
+                                                         jobject obj,
+                                                         jlong self) {
+  CefRefPtr<CefPrintJobCallback> callback = GetSelf(self);
+  if (!callback)
+    return;
+  callback->Continue();
+  ClearSelf(env, obj);
 }

@@ -52,12 +52,23 @@ public abstract class CefPrintSettings {
     // This CTOR can't be called directly. Call method create() instead.
     CefPrintSettings() {}
 
+    @Override
+    protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
+    }
+
     /**
      * Create a new CefPrintSettings object.
      */
     public static final CefPrintSettings create() {
         return CefPrintSettings_N.createNative();
     }
+
+    /**
+     * Removes the native reference from an unused object.
+     */
+    public abstract void dispose();
 
     /**
      * Returns true if this object is valid. Do not call any other methods if this

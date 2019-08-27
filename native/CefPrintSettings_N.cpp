@@ -3,70 +3,85 @@
 // can be found in the LICENSE file.
 
 #include "CefPrintSettings_N.h"
-#include "jni_util.h"
 
 #include "include/cef_print_handler.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1CTOR(JNIEnv* env,
-                                                                jobject obj) {
+#include "jni_scoped_helpers.h"
+#include "jni_util.h"
+
+namespace {
+
+const char kCefClassName[] = "CefPrintSettings";
+
+CefRefPtr<CefPrintSettings> GetSelf(jlong self) {
+  return reinterpret_cast<CefPrintSettings*>(self);
+}
+
+}  // namespace
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1Create(JNIEnv* env, jclass cls) {
   CefRefPtr<CefPrintSettings> settings = CefPrintSettings::Create();
-  if (!settings.get())
-    return;
-  SetCefForJNIObject(env, obj, settings.get(), "CefPrintSettings");
+  ScopedJNIPrintSettings jsettings(env, settings);
+  return jsettings.Release();
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_misc_CefPrintSettings_1N_N_1Dispose(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  SetCefForJNIObject<CefPrintSettings>(env, obj, NULL, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsValid(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return JNI_FALSE;
   return settings->IsValid() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv* env,
+                                                    jobject obj,
+                                                    jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return JNI_FALSE;
   return settings->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv* env,
+                                              jobject obj,
+                                              jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return NULL;
 
-  jobject jresult = NewJNIObject(env, "org/cef/misc/CefPrintSettings_N");
-  if (!jresult)
-    return NULL;
-
-  CefRefPtr<CefPrintSettings> copy_of_settings = settings->Copy();
-  if (!copy_of_settings)
-    return NULL;
-  SetCefForJNIObject(env, jresult, copy_of_settings.get(), "CefPrintSettings");
-  return jresult;
+  CefRefPtr<CefPrintSettings> copyData = settings->Copy();
+  ScopedJNIPrintSettings jcopyData(env, copyData);
+  return jcopyData.Release();
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation(JNIEnv* env,
                                                         jobject obj,
+                                                        jlong self,
                                                         jboolean jlandscape) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetOrientation(jlandscape != JNI_FALSE);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1IsLandscape(JNIEnv* env,
+                                                     jobject obj,
+                                                     jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return JNI_FALSE;
   return settings->IsLandscape() ? JNI_TRUE : JNI_FALSE;
@@ -76,11 +91,11 @@ JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jobject jphysical_size_device_units,
     jobject jprintable_area_device_units,
     jboolean jlandscape_needs_flip) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
 
@@ -93,9 +108,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetPrinterPrintableArea(
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jstring jname) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetDeviceName(GetJNIString(env, jname));
@@ -103,9 +118,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetDeviceName(JNIEnv* env,
 
 JNIEXPORT jstring JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv* env,
-                                                       jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+                                                       jobject obj,
+                                                       jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return NULL;
   return NewJNIString(env, settings->GetDeviceName());
@@ -114,18 +129,19 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetDPI(JNIEnv* env,
                                                 jobject obj,
+                                                jlong self,
                                                 jint jdpi) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetDPI((int)jdpi);
 }
 
 JNIEXPORT jint JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI(JNIEnv* env,
+                                                jobject obj,
+                                                jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return 0;
   return (jint)settings->GetDPI();
@@ -134,9 +150,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetDPI(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jrangeVector) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings || !jrangeVector)
     return;
 
@@ -144,22 +160,21 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetPageRanges(JNIEnv* env,
   jint jsize = 0;
   JNI_CALL_METHOD(env, jrangeVector, "size", "()I", Int, jsize);
   for (jint index = 0; index < jsize; index++) {
-    jobject range = NULL;
+    ScopedJNIObjectResult jresult(env);
     JNI_CALL_METHOD(env, jrangeVector, "get", "(I)Ljava/lang/Object;", Object,
-                    range, index);
-    if (!range)
+                    jresult, index);
+    if (!jresult)
       continue;
-    rangeList.push_back(GetJNIPageRange(env, range));
-    env->DeleteLocalRef(range);
+    rangeList.push_back(GetJNIPageRange(env, jresult));
   }
   settings->SetPageRanges(rangeList);
 }
 
 JNIEXPORT jint JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount(JNIEnv* env,
-                                                            jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+                                                            jobject obj,
+                                                            jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return 0;
   return (jint)settings->GetPageRangesCount();
@@ -168,9 +183,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRangesCount(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jrangeVector) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings || !jrangeVector)
     return;
 
@@ -179,10 +194,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetPageRanges(JNIEnv* env,
 
   CefPrintSettings::PageRangeList::size_type i = 0;
   for (i = 0; i < rangeList.size(); ++i) {
-    jobject range = NewJNIPageRange(env, rangeList.at(i));
+    ScopedJNIObjectLocal jrange(env, NewJNIPageRange(env, rangeList.at(i)));
     JNI_CALL_VOID_METHOD(env, jrangeVector, "addElement",
-                         "(Ljava/lang/Object;)V", range);
-    env->DeleteLocalRef(range);
+                         "(Ljava/lang/Object;)V", jrange.get());
   }
 }
 
@@ -190,9 +204,9 @@ JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly(
     JNIEnv* env,
     jobject obj,
+    jlong self,
     jboolean jselection_only) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetSelectionOnly(jselection_only != JNI_FALSE);
@@ -200,9 +214,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetSelectionOnly(
 
 JNIEXPORT jboolean JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly(JNIEnv* env,
-                                                         jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+                                                         jobject obj,
+                                                         jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return JNI_FALSE;
   return settings->IsSelectionOnly() ? JNI_TRUE : JNI_FALSE;
@@ -211,18 +225,19 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1IsSelectionOnly(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetCollate(JNIEnv* env,
                                                     jobject obj,
+                                                    jlong self,
                                                     jboolean jcollate) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetCollate(jcollate != JNI_FALSE);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv* env,
+                                                     jobject obj,
+                                                     jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return JNI_FALSE;
   return settings->WillCollate() ? JNI_TRUE : JNI_FALSE;
@@ -231,9 +246,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1WillCollate(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jcolor_model) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   CefPrintSettings::ColorModel mode;
@@ -325,11 +340,12 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetColorModel(JNIEnv* env,
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel(JNIEnv* env,
-                                                       jobject obj) {
+                                                       jobject obj,
+                                                       jlong self) {
   jobject result = GetJNIEnumValue(
       env, "org/cef/misc/CefPrintSettings$ColorModel", "COLOR_MODEL_UNKNOWN");
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return result;
 
@@ -384,18 +400,19 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetColorModel(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetCopies(JNIEnv* env,
                                                    jobject obj,
+                                                   jlong self,
                                                    jint jcopies) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   settings->SetCopies((int)jcopies);
 }
 
 JNIEXPORT jint JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv* env,
+                                                   jobject obj,
+                                                   jlong self) {
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return 0;
   return (jint)settings->GetCopies();
@@ -404,9 +421,9 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetCopies(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode(JNIEnv* env,
                                                        jobject obj,
+                                                       jlong self,
                                                        jobject jduplex_mode) {
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return;
   CefPrintSettings::DuplexMode mode;
@@ -430,11 +447,12 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1SetDuplexMode(JNIEnv* env,
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode(JNIEnv* env,
-                                                       jobject obj) {
+                                                       jobject obj,
+                                                       jlong self) {
   jobject result = GetJNIEnumValue(
       env, "org/cef/misc/CefPrintSettings$DuplexMode", "DUPLEX_MODE_UNKNOWN");
-  CefRefPtr<CefPrintSettings> settings =
-      GetCefFromJNIObject<CefPrintSettings>(env, obj, "CefPrintSettings");
+
+  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
     return result;
 
@@ -450,10 +468,4 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetDuplexMode(JNIEnv* env,
                DUPLEX_MODE_UNKNOWN, result);
   }
   return result;
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1CefPrintSettings_1DTOR(JNIEnv* env,
-                                                                jobject obj) {
-  SetCefForJNIObject<CefPrintSettings>(env, obj, NULL, "CefPrintSettings");
 }

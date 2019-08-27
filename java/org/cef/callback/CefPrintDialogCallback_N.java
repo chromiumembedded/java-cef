@@ -10,9 +10,15 @@ class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialo
     CefPrintDialogCallback_N() {}
 
     @Override
+    protected void finalize() throws Throwable {
+        cancel();
+        super.finalize();
+    }
+
+    @Override
     public void Continue(CefPrintSettings settings) {
         try {
-            N_Continue(settings);
+            N_Continue(getNativeRef(null), settings);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -21,12 +27,12 @@ class CefPrintDialogCallback_N extends CefNativeAdapter implements CefPrintDialo
     @Override
     public void cancel() {
         try {
-            N_Cancel();
+            N_Cancel(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_Continue(CefPrintSettings settings);
-    private final native void N_Cancel();
+    private final native void N_Continue(long self, CefPrintSettings settings);
+    private final native void N_Cancel(long self);
 }
