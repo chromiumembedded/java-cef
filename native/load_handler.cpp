@@ -8,14 +8,7 @@
 #include "jni_util.h"
 #include "util.h"
 
-LoadHandler::LoadHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
-
-LoadHandler::~LoadHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+LoadHandler::LoadHandler(JNIEnv* env, jobject handler) : handle_(env, handler) {}
 
 void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                        bool isLoading,
@@ -24,13 +17,14 @@ void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onLoadingStateChange",
-      "(Lorg/cef/browser/CefBrowser;ZZZ)V", jbrowser,
-      (isLoading ? JNI_TRUE : JNI_FALSE), (canGoBack ? JNI_TRUE : JNI_FALSE),
-      (canGoForward ? JNI_TRUE : JNI_FALSE));
-  env->DeleteLocalRef(jbrowser);
+
+  ScopedJNIBrowser jbrowser(env, browser);
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onLoadingStateChange",
+                       "(Lorg/cef/browser/CefBrowser;ZZZ)V", jbrowser.get(),
+                       (isLoading ? JNI_TRUE : JNI_FALSE),
+                       (canGoBack ? JNI_TRUE : JNI_FALSE),
+                       (canGoForward ? JNI_TRUE : JNI_FALSE));
 }
 
 // TODO(jcef): Expose the |transition_type| argument.
@@ -41,21 +35,16 @@ void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
-  jobject jtransitionType = NewJNITransitionType(env, transition_type);
-  if (!jtransitionType)
-    return;
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIObjectLocal jtransitionType(
+      env, NewJNITransitionType(env, transition_type));
 
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onLoadStart",
+  JNI_CALL_VOID_METHOD(env, handle_, "onLoadStart",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                        "CefFrame;Lorg/cef/network/CefRequest$TransitionType;)V",
-                       jbrowser, jframe, jtransitionType);
-
-  if (jframe)
-    env->DeleteLocalRef(jframe);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jtransitionType);
+                       jbrowser.get(), jframe.get(), jtransitionType.get());
 }
 
 void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
@@ -65,17 +54,14 @@ void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jbrowser = GetJNIBrowser(browser);
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
 
   JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onLoadEnd",
+      env, handle_, "onLoadEnd",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;I)V",
-      jbrowser, jframe, httpStatusCode);
-
-  if (jframe)
-    env->DeleteLocalRef(jframe);
-  env->DeleteLocalRef(jbrowser);
+      jbrowser.get(), jframe.get(), httpStatusCode);
 }
 
 void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
@@ -87,23 +73,17 @@ void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
   if (!env)
     return;
 
-  jobject jframe = GetJNIFrame(env, frame);
-  jobject jerrorText = NewJNIString(env, errorText);
-  jobject jfailedUrl = NewJNIString(env, failedUrl);
-  jobject jbrowser = GetJNIBrowser(browser);
-  jobject jErrorCode = NewJNIErrorCode(env, errorCode);
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIObjectLocal jErrorCode(env, NewJNIErrorCode(env, errorCode));
+  ScopedJNIString jerrorText(env, errorText);
+  ScopedJNIString jfailedUrl(env, failedUrl);
 
   JNI_CALL_VOID_METHOD(
-      env, jhandler_, "onLoadError",
+      env, handle_, "onLoadError",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/cef/handler/"
       "CefLoadHandler$ErrorCode;Ljava/lang/String;Ljava/lang/String;)V",
-      jbrowser, jframe, jErrorCode,
-      jerrorText, jfailedUrl);
-
-  env->DeleteLocalRef(jfailedUrl);
-  env->DeleteLocalRef(jerrorText);
-  if (jframe)
-    env->DeleteLocalRef(jframe);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jErrorCode);
+      jbrowser.get(), jframe.get(), jErrorCode.get(), jerrorText.get(),
+      jfailedUrl.get());
 }

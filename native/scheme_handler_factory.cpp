@@ -7,14 +7,8 @@
 #include "jni_util.h"
 #include "resource_handler.h"
 
-SchemeHandlerFactory::SchemeHandlerFactory(JNIEnv* env, jobject jfactory) {
-  jfactory_ = env->NewGlobalRef(jfactory);
-}
-
-SchemeHandlerFactory::~SchemeHandlerFactory() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jfactory_);
-}
+SchemeHandlerFactory::SchemeHandlerFactory(JNIEnv* env, jobject jfactory)
+    : handle_(env, jfactory) {}
 
 CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
     CefRefPtr<CefBrowser> browser,
@@ -25,33 +19,22 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
   if (!env)
     return NULL;
 
-  jobject jRequest = NewJNIObject(env, "org/cef/network/CefRequest_N");
-  if (jRequest != NULL)
-    SetCefForJNIObject(env, jRequest, request.get(), "CefRequest");
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIString jschemeName(env, scheme_name);
+  ScopedJNIRequest jrequest(env, request);
+  jrequest.SetTemporary();
+  ScopedJNIObjectResult jresult(env);
 
-  jobject jResourceHandler = NULL;
-  jobject jframe = GetJNIFrame(env, frame);
-  jstring jscheme_name = NewJNIString(env, scheme_name);
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_METHOD(env, jfactory_, "create",
+  JNI_CALL_METHOD(env, handle_, "create",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                   "CefFrame;Ljava/lang/String;Lorg/cef/"
                   "network/CefRequest;)Lorg/cef/handler/CefResourceHandler;",
-                  Object, jResourceHandler, jbrowser, jframe,
-                  jscheme_name, jRequest);
+                  Object, jresult, jbrowser.get(), jframe.get(),
+                  jschemeName.get(), jrequest.get());
 
-  if (jRequest != NULL)
-    SetCefForJNIObject<CefRequest>(env, jRequest, NULL, "CefRequest");
-
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jframe);
-  env->DeleteLocalRef(jscheme_name);
-  env->DeleteLocalRef(jRequest);
-
-  if (!jResourceHandler)
-    return NULL;
-  CefRefPtr<CefResourceHandler> result =
-      new ResourceHandler(env, jResourceHandler);
-  env->DeleteLocalRef(jResourceHandler);
-  return result;
+  if (jresult)
+    return new ResourceHandler(env, jresult);
+  return NULL;
 }

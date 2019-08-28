@@ -5,7 +5,6 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCallback;
-import org.cef.callback.CefNativeAdapter;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefCookie;
@@ -17,8 +16,7 @@ import org.cef.network.CefResponse;
  * The methods in this class are empty.
  * This class exists as convenience for creating handler objects.
  */
-public abstract class CefResourceHandlerAdapter
-        extends CefNativeAdapter implements CefResourceHandler {
+public abstract class CefResourceHandlerAdapter implements CefResourceHandler {
     @Override
     public boolean processRequest(CefRequest request, CefCallback callback) {
         return false;

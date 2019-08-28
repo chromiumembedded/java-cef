@@ -12,21 +12,27 @@ import org.cef.callback.CefNativeAdapter;
  * The visibility of this class is "package".
  */
 class CefFrame_N extends CefNativeAdapter implements CefFrame {
+    CefFrame_N() {}
+
     @Override
     protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
+    }
+
+    @Override
+    public void dispose() {
         try {
-            N_CefFrame_DTOR();
+            N_Dispose(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
-        } finally {
-            super.finalize();
         }
     }
 
     @Override
     public long getIdentifier() {
         try {
-            return N_GetIdentifier();
+            return N_GetIdentifier(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return -1;
@@ -36,7 +42,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public String getURL() {
         try {
-            return N_GetURL();
+            return N_GetURL(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return null;
@@ -46,7 +52,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public String getName() {
         try {
-            return N_GetName();
+            return N_GetName(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return null;
@@ -56,7 +62,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public boolean isMain() {
         try {
-            return N_IsMain();
+            return N_IsMain(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return false;
@@ -66,7 +72,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public boolean isValid() {
         try {
-            return N_IsValid();
+            return N_IsValid(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return false;
@@ -76,7 +82,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public boolean isFocused() {
         try {
-            return N_IsFocused();
+            return N_IsFocused(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return false;
@@ -86,7 +92,7 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public CefFrame getParent() {
         try {
-            return N_GetParent();
+            return N_GetParent(getNativeRef(null));
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return null;
@@ -96,19 +102,19 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     @Override
     public void executeJavaScript(String code, String url, int line) {
         try {
-            N_ExecuteJavaScript(code, url, line);
+            N_ExecuteJavaScript(getNativeRef(null), code, url, line);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_CefFrame_DTOR();
-    private final native int N_GetIdentifier();
-    private final native String N_GetURL();
-    private final native String N_GetName();
-    private final native boolean N_IsMain();
-    private final native boolean N_IsValid();
-    private final native boolean N_IsFocused();
-    private final native CefFrame N_GetParent();
-    private final native void N_ExecuteJavaScript(String code, String url, int line);
+    private final native void N_Dispose(long self);
+    private final native long N_GetIdentifier(long self);
+    private final native String N_GetURL(long self);
+    private final native String N_GetName(long self);
+    private final native boolean N_IsMain(long self);
+    private final native boolean N_IsValid(long self);
+    private final native boolean N_IsFocused(long self);
+    private final native CefFrame N_GetParent(long self);
+    private final native void N_ExecuteJavaScript(long self, String code, String url, int line);
 }

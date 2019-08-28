@@ -992,18 +992,6 @@ jobject GetJNIBrowser(CefRefPtr<CefBrowser> browser) {
   return jbrowser;
 }
 
-jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame> frame) {
-  if (!frame)
-    return NULL;
-
-  if (!frame.get())
-    return NULL;
-
-  jobject jframe = NewJNIObject(env, "org/cef/browser/CefFrame_N");
-  SetCefForJNIObject<CefFrame>(env, jframe, frame.get(), "CefFrame");
-  return jframe;
-}
-
 jobject NewJNITransitionType(JNIEnv* env,
                              CefRequest::TransitionType transitionType) {
   jobject result = NULL;

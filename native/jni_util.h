@@ -228,9 +228,6 @@ CefRefPtr<CefBrowser> GetCefBrowser(JNIEnv* env, jobject jbrowser);
 // TODO: Remove this method once all callers are converted to scoped helpers.
 jobject GetJNIBrowser(CefRefPtr<CefBrowser>);
 
-// TODO: Remove this method once all callers are converted to scoped helpers.
-jobject GetJNIFrame(JNIEnv* env, CefRefPtr<CefFrame>);
-
 jobject NewJNITransitionType(JNIEnv* env,
                              CefRequest::TransitionType transitionType);
 

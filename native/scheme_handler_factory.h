@@ -7,23 +7,24 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_scheme.h"
+
+#include "jni_scoped_helpers.h"
 
 // StringVisitor implementation.
 class SchemeHandlerFactory : public CefSchemeHandlerFactory {
  public:
   SchemeHandlerFactory(JNIEnv* env, jobject jfactory);
-  virtual ~SchemeHandlerFactory();
 
   // CefSchemeHandlerFactory methods
-  virtual CefRefPtr<CefResourceHandler> Create(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      const CefString& scheme_name,
-      CefRefPtr<CefRequest> request) OVERRIDE;
+  CefRefPtr<CefResourceHandler> Create(CefRefPtr<CefBrowser> browser,
+                                       CefRefPtr<CefFrame> frame,
+                                       const CefString& scheme_name,
+                                       CefRefPtr<CefRequest> request) OVERRIDE;
 
  protected:
-  jobject jfactory_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(SchemeHandlerFactory);

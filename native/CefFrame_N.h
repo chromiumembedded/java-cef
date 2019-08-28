@@ -7,82 +7,88 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /*
  * Class:     org_cef_browser_CefFrame_N
- * Method:    N_CefFrame_1DTOR
- * Signature: ()V
+ * Method:    N_Dispose
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL
-Java_org_cef_browser_CefFrame_1N_N_1CefFrame_1DTOR(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Dispose(JNIEnv*,
+                                                                   jobject,
+                                                                   jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_GetIdentifier
- * Signature: ()I
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL
-Java_org_cef_browser_CefFrame_1N_N_1GetIdentifier(JNIEnv*, jobject);
+Java_org_cef_browser_CefFrame_1N_N_1GetIdentifier(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_GetURL
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_cef_browser_CefFrame_1N_N_1GetURL(JNIEnv*,
-                                                                     jobject);
+                                                                     jobject,
+                                                                     jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_GetName
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_cef_browser_CefFrame_1N_N_1GetName(JNIEnv*,
-                                                                      jobject);
+                                                                      jobject,
+                                                                      jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_IsMain
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefFrame_1N_N_1IsMain(JNIEnv*,
-                                                                      jobject);
+                                                                      jobject,
+                                                                      jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_IsValid
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_cef_browser_CefFrame_1N_N_1IsValid(JNIEnv*,
-                                                                       jobject);
+                                                                       jobject,
+                                                                       jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_IsFocused
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_browser_CefFrame_1N_N_1IsFocused(JNIEnv*, jobject);
+Java_org_cef_browser_CefFrame_1N_N_1IsFocused(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_GetParent
- * Signature: (Lorg/cef/browser/CefFrame_N;)Z
+ * Signature: (J)Lorg/cef/browser/CefFrame;
  */
-JNIEXPORT jobject JNICALL
-Java_org_cef_browser_CefFrame_1N_N_1GetParent(JNIEnv*, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_browser_CefFrame_1N_N_1GetParent(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
 
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_ExecuteJavaScript
- * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;I)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_browser_CefFrame_1N_N_1ExecuteJavaScript(JNIEnv* env,
-                                                      jobject obj,
-                                                      jstring code,
-                                                      jstring url,
-                                                      jint line);
+Java_org_cef_browser_CefFrame_1N_N_1ExecuteJavaScript(JNIEnv*,
+                                                      jobject,
+                                                      jlong,
+                                                      jstring,
+                                                      jstring,
+                                                      jint);
 
 #ifdef __cplusplus
 }

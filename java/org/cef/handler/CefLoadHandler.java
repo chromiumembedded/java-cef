@@ -4,11 +4,12 @@
 
 package org.cef.handler;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.network.CefRequest.TransitionType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implement this interface to handle events related to browser load status.
@@ -92,7 +93,7 @@ public interface CefLoadHandler {
         /**
          * Gets the underlying native chrome embedded framework error code value
          * as an integer.
-         * @return The error code as an integer
+         * @return The error code as an integer.
          */
         public int getCode() {
             return code;
@@ -101,8 +102,8 @@ public interface CefLoadHandler {
         /**
          * Finds the ErrorCode by the native chrome embedded framework integer-based
          * error code value.
-         * @param code The integer-based raw error code
-         * @return The Java enum mapped to that error code or null if none was found
+         * @param code The integer-based raw error code.
+         * @return The Java enum mapped to that error code or null if none was found.
          */
         static public ErrorCode findByCode(int code) {
             return CODES.get(code);
@@ -110,12 +111,11 @@ public interface CefLoadHandler {
     }
 
     /**
-     * Called when the loading state has changed. This callback will be executed
-     * twice -- once when loading is initiated either programmatically or by user
-     * action, and once when loading is terminated due to completion, cancellation
-     * of failure.
+     * Called when the loading state has changed. This callback will be executed twice -- once when
+     * loading is initiated either programmatically or by user action, and once when loading is
+     * terminated due to completion, cancellation of failure.
      *
-     * @param browser The affected browser.
+     * @param browser The corresponding browser.
      * @param isLoading true if it is loading.
      * @param canGoBack true if you can navigate back.
      * @param canGoForward true if you can navigate forward.
@@ -124,28 +124,28 @@ public interface CefLoadHandler {
             CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward);
 
     /**
-     * Called when the browser begins loading a frame. The frameIdentifer value will
-     * never be empty. Multiple frames may be loading at the same time. Sub-frames may
-     * start or continue loading after the main frame load has ended. This method
-     * may not be called for a particular frame if the load request for that frame
-     * fails. For notification of overall browser load status use
-     * OnLoadingStateChange instead.
+     * Called when the browser begins loading a frame. The frameIdentifer value will never be empty.
+     * Multiple frames may be loading at the same time. Sub-frames may start or continue loading
+     * after the main frame load has ended. This method may not be called for a particular frame if
+     * the load request for that frame fails. For notification of overall browser load status use
+     * onLoadingStateChange instead.
      *
-     * @param browser The affected browser.
-     * @param frame The loading frame.
-     * @param transitionType The transition type
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within the scope of this
+     *         method.
+     * @param transitionType The transition type.
      */
     public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType);
 
     /**
-     * Called when the browser is done loading a frame. The frameIdentifer value will
-     * never be empty. Multiple frames may be loading at the same time. Sub-frames may
-     * start or continue loading after the main frame load has ended. This method
-     * will always be called for all frames irrespective of whether the request
-     * completes successfully.
+     * Called when the browser is done loading a frame. The frameIdentifer value will never be
+     * empty. Multiple frames may be loading at the same time. Sub-frames may start or continue
+     * loading after the main frame load has ended. This method will always be called for all frames
+     * irrespective of whether the request completes successfully.
      *
-     * @param browser The affected browser.
-     * @param frame The loading frame.
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within the scope of this
+     *         method.
      * @param httpStatusCode The status code of the load.
      */
     public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode);
@@ -153,8 +153,9 @@ public interface CefLoadHandler {
     /**
      * Called when the resource load for a navigation fails or is canceled.
      *
-     * @param browser The affected browser.
-     * @param frame The loading frame.
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within the scope of this
+     *         method.
      * @param errorCode The error code number.
      * @param errorText The error text.
      * @param failedUrl The URL that failed to load.

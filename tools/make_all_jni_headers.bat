@@ -17,6 +17,7 @@ call compile.bat %1
 
 call make_jni_header.bat %1 org.cef.CefApp
 call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
+call make_jni_header.bat %1 org.cef.browser.CefFrame_N
 call make_jni_header.bat %1 org.cef.browser.CefMessageRouter_N
 call make_jni_header.bat %1 org.cef.browser.CefRequestContext_N
 call make_jni_header.bat %1 org.cef.callback.CefAuthCallback_N

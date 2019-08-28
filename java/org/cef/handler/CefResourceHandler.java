@@ -5,7 +5,6 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCallback;
-import org.cef.callback.CefNative;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefCookie;
@@ -16,7 +15,7 @@ import org.cef.network.CefResponse;
  * Implement this interface to handle custom resource requests. The methods of
  * this class will always be called on the IO thread.
  */
-public interface CefResourceHandler extends CefNative {
+public interface CefResourceHandler {
     /**
      * Begin processing the request.
      * @param request The request itself. Cannot be modified in this callback. Instance only valid

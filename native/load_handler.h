@@ -7,36 +7,35 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_load_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // LoadHandler implementation.
 class LoadHandler : public CefLoadHandler {
  public:
   LoadHandler(JNIEnv* env, jobject handler);
-  virtual ~LoadHandler();
 
   // CefLoadHandler methods
-  virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
-                                    bool isLoading,
-                                    bool canGoBack,
-                                    bool canGoForward) OVERRIDE;
-
-  virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
-                           TransitionType transition_type) OVERRIDE;
-
-  virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                         CefRefPtr<CefFrame> frame,
-                         int httpStatusCode) OVERRIDE;
-
-  virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
-                           ErrorCode errorCode,
-                           const CefString& errorText,
-                           const CefString& failedUrl) OVERRIDE;
+  void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                            bool isLoading,
+                            bool canGoBack,
+                            bool canGoForward) OVERRIDE;
+  void OnLoadStart(CefRefPtr<CefBrowser> browser,
+                   CefRefPtr<CefFrame> frame,
+                   TransitionType transition_type) OVERRIDE;
+  void OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                 CefRefPtr<CefFrame> frame,
+                 int httpStatusCode) OVERRIDE;
+  void OnLoadError(CefRefPtr<CefBrowser> browser,
+                   CefRefPtr<CefFrame> frame,
+                   ErrorCode errorCode,
+                   const CefString& errorText,
+                   const CefString& failedUrl) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(LoadHandler);

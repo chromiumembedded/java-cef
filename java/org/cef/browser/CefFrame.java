@@ -9,6 +9,11 @@ package org.cef.browser;
  */
 public interface CefFrame {
     /**
+     * Removes the native reference from an unused object.
+     */
+    void dispose();
+
+    /**
      * Returns the globally unique identifier for this frame or < 0 if the
      * underlying frame does not yet exist.
      * @return The frame identifier
