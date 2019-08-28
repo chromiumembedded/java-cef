@@ -8,20 +8,8 @@ import org.cef.callback.CefNative;
 import org.cef.callback.CefWebPluginInfoVisitor;
 import org.cef.callback.CefWebPluginUnstableCallback;
 
-class CefWebPluginManager_N extends CefWebPluginManager implements CefNative {
-    // Used internally to store a pointer to the CEF object.
-    private long N_CefHandle = 0;
+class CefWebPluginManager_N extends CefWebPluginManager {
     private static CefWebPluginManager_N instance = null;
-
-    @Override
-    public void setNativeRef(String identifer, long nativeRef) {
-        N_CefHandle = nativeRef;
-    }
-
-    @Override
-    public long getNativeRef(String identifer) {
-        return N_CefHandle;
-    }
 
     CefWebPluginManager_N() {
         super();

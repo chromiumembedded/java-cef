@@ -7,13 +7,15 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_web_plugin.h"
+
+#include "jni_scoped_helpers.h"
 
 // WebPluginInfoVisitor implementation.
 class WebPluginInfoVisitor : public CefWebPluginInfoVisitor {
  public:
   WebPluginInfoVisitor(JNIEnv* env, jobject jvisitor);
-  virtual ~WebPluginInfoVisitor();
 
   // WebPluginInfoVisitor methods
   virtual bool Visit(CefRefPtr<CefWebPluginInfo> info,
@@ -21,7 +23,7 @@ class WebPluginInfoVisitor : public CefWebPluginInfoVisitor {
                      int total) OVERRIDE;
 
  protected:
-  jobject jvisitor_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(WebPluginInfoVisitor);

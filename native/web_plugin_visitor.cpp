@@ -7,14 +7,8 @@
 #include "jni_util.h"
 #include "util.h"
 
-WebPluginInfoVisitor::WebPluginInfoVisitor(JNIEnv* env, jobject jvisitor) {
-  jvisitor_ = env->NewGlobalRef(jvisitor);
-}
-
-WebPluginInfoVisitor::~WebPluginInfoVisitor() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jvisitor_);
-}
+WebPluginInfoVisitor::WebPluginInfoVisitor(JNIEnv* env, jobject jvisitor)
+    : handle_(env, jvisitor) {}
 
 bool WebPluginInfoVisitor::Visit(CefRefPtr<CefWebPluginInfo> info,
                                  int count,
@@ -23,17 +17,14 @@ bool WebPluginInfoVisitor::Visit(CefRefPtr<CefWebPluginInfo> info,
   if (!env)
     return false;
 
-  jobject jinfo = NewJNIObject(env, "org/cef/network/CefWebPluginInfo_N");
-  if (!jinfo)
-    return false;
-  SetCefForJNIObject(env, jinfo, info.get(), "CefWebPluginInfo");
+  ScopedJNIObject<CefWebPluginInfo> jinfo(
+      env, info, "org/cef/network/CefWebPluginInfo_N", "CefWebPluginInfo");
+  jinfo.SetTemporary();
 
   jboolean jresult = JNI_FALSE;
-  JNI_CALL_METHOD(env, jvisitor_, "visit",
+  JNI_CALL_METHOD(env, handle_, "visit",
                   "(Lorg/cef/network/CefWebPluginInfo;II)Z", Boolean, jresult,
-                  jinfo, (jint)count, (jint)total);
+                  jinfo.get(), (jint)count, (jint)total);
 
-  SetCefForJNIObject<CefWebPluginInfo>(env, jinfo, NULL, "CefWebPluginInfo");
-  env->DeleteLocalRef(jinfo);
   return jresult != JNI_FALSE;
 }

@@ -11,7 +11,7 @@ import org.cef.callback.CefWebPluginUnstableCallback;
  * Class used to manage web plugins.
  */
 public abstract class CefWebPluginManager {
-    // This CTOR can't be called directly. Call method create() instead.
+    // This CTOR can't be called directly. Call method getGlobalManager() instead.
     CefWebPluginManager() {}
 
     /**
@@ -22,35 +22,39 @@ public abstract class CefWebPluginManager {
     }
 
     /**
-     * Visit web plugin information. Can be called on any thread in the browser
-     * process.
+     * Visit web plugin information. Can be called on any thread in the browser process.
+     *
      * @param visitor Called with plugin information when available.
      */
     public abstract void visitPlugins(CefWebPluginInfoVisitor visitor);
 
     /**
-     * Cause the plugin list to refresh the next time it is accessed regardless
-     * of whether it has already been loaded. Can be called on any thread in the
-     * browser process.
+     * Cause the plugin list to refresh the next time it is accessed regardless of whether it has
+     * already been loaded. Can be called on any thread in the browser process.
      */
     public abstract void refreshPlugins();
 
     /**
-     * Unregister an internal plugin. This may be undone the next time
-     * CefRefreshWebPlugins() is called. Can be called on any thread in the browser
-     * process.
+     * Unregister an internal plugin. This may be undone the next time refreshPlugins() is called.
+     * Can be called on any thread in the browser process.
+     *
+     * @param path Plugin file path (DLL/bundle/library).
      */
     public abstract void unregisterInternalPlugin(String path);
 
     /**
-     * Register a plugin crash. Can be called on any thread in the browser process
-     * but will be executed on the IO thread.
+     * Register a plugin crash. Can be called on any thread in the browser process but will be
+     * executed on the IO thread.
+     *
+     * @param path Plugin file path (DLL/bundle/library).
      */
     public abstract void registerPluginCrash(String path);
 
     /**
-     * Query if a plugin is unstable. Can be called on any thread in the browser
-     * process.
+     * Query if a plugin is unstable. Can be called on any thread in the browser process.
+     *
+     * @param path Plugin file path (DLL/bundle/library).
+     * @param callback Called when plugin information is available.
      */
     public abstract void isWebPluginUnstable(String path, CefWebPluginUnstableCallback callback);
 }

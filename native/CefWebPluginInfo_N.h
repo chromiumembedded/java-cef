@@ -10,34 +10,36 @@ extern "C" {
 /*
  * Class:     org_cef_network_CefWebPluginInfo_N
  * Method:    N_GetName
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefWebPluginInfo_1N_N_1GetName(JNIEnv*, jobject);
+Java_org_cef_network_CefWebPluginInfo_1N_N_1GetName(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefWebPluginInfo_N
  * Method:    N_GetPath
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefWebPluginInfo_1N_N_1GetPath(JNIEnv*, jobject);
+Java_org_cef_network_CefWebPluginInfo_1N_N_1GetPath(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefWebPluginInfo_N
  * Method:    N_GetVersion
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefWebPluginInfo_1N_N_1GetVersion(JNIEnv*, jobject);
+Java_org_cef_network_CefWebPluginInfo_1N_N_1GetVersion(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefWebPluginInfo_N
  * Method:    N_GetDescription
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefWebPluginInfo_1N_N_1GetDescription(JNIEnv*, jobject);
+Java_org_cef_network_CefWebPluginInfo_1N_N_1GetDescription(JNIEnv*,
+                                                           jobject,
+                                                           jlong);
 
 #ifdef __cplusplus
 }
