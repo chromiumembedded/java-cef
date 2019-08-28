@@ -608,6 +608,13 @@ class ScopedJNIBrowser : public ScopedJNIBase<jobject> {
   CefRefPtr<CefBrowser> GetCefObject() const;
 };
 
+// JNI CefAuthCallback object.
+class ScopedJNIAuthCallback : public ScopedJNIObject<CefAuthCallback> {
+ public:
+  // If |obj| is NULL the SetHandle method should be used.
+  ScopedJNIAuthCallback(JNIEnv* env, CefRefPtr<CefAuthCallback> obj = NULL);
+};
+
 // JNI CefDragData object.
 class ScopedJNIDragData : public ScopedJNIObject<CefDragData> {
  public:
@@ -635,6 +642,21 @@ class ScopedJNIMessageRouter : public ScopedJNIObject<CefMessageRouter> {
  public:
   // If |obj| is NULL the SetHandle method should be used.
   ScopedJNIMessageRouter(JNIEnv* env, CefRefPtr<CefMessageRouter> obj = NULL);
+};
+
+// JNI CefPostData object.
+class ScopedJNIPostData : public ScopedJNIObject<CefPostData> {
+ public:
+  // If |obj| is NULL the SetHandle method should be used.
+  ScopedJNIPostData(JNIEnv* env, CefRefPtr<CefPostData> obj = NULL);
+};
+
+// JNI CefPostDataElement object.
+class ScopedJNIPostDataElement : public ScopedJNIObject<CefPostDataElement> {
+ public:
+  // If |obj| is NULL the SetHandle method should be used.
+  ScopedJNIPostDataElement(JNIEnv* env,
+                           CefRefPtr<CefPostDataElement> obj = NULL);
 };
 
 // JNI CefPrintSettings object.

@@ -848,11 +848,62 @@ void GetJNIStringVector(JNIEnv* env,
   JNI_CALL_METHOD(env, jvector, "size", "()I", Int, jsize);
 
   for (jint index = 0; index < jsize; index++) {
-    jobject str = NULL;
-    JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, str,
+    ScopedJNIObjectResult jstr(env);
+    JNI_CALL_METHOD(env, jvector, "get", "(I)Ljava/lang/Object;", Object, jstr,
                     index);
-    vals.push_back(GetJNIString(env, (jstring)str));
-    env->DeleteLocalRef(str);
+    vals.push_back(GetJNIString(env, (jstring)jstr.get()));
+  }
+}
+
+void GetJNIStringMultiMap(JNIEnv* env,
+                          jobject jheaderMap,
+                          std::multimap<CefString, CefString>& vals) {
+  if (!jheaderMap)
+    return;
+
+  // public abstract java.util.Set<java.util.Map$Entry<K, V>> entrySet();
+  ScopedJNIObjectResult jentrySet(env);
+  JNI_CALL_METHOD(env, jheaderMap, "entrySet", "()Ljava/util/Set;", Object,
+                  jentrySet);
+  if (!jentrySet)
+    return;
+
+  // public abstract java.lang.Object[] toArray();
+  ScopedJNIObjectResult jentrySetValues(env);
+  JNI_CALL_METHOD(env, jentrySet, "toArray", "()[Ljava/lang/Object;", Object,
+                  jentrySetValues);
+  if (!jentrySetValues)
+    return;
+
+  CefResponse::HeaderMap headerMap;
+  jint length = env->GetArrayLength((jobjectArray)jentrySetValues.get());
+  for (jint i = 0; i < length; i++) {
+    ScopedJNIObjectLocal jmapEntry(
+        env,
+        env->GetObjectArrayElement((jobjectArray)jentrySetValues.get(), i));
+    if (!jmapEntry)
+      return;
+    ScopedJNIObjectResult jkey(env);
+    ScopedJNIObjectResult jvalue(env);
+    JNI_CALL_METHOD(env, jmapEntry, "getKey", "()Ljava/lang/Object;", Object,
+                    jkey);
+    JNI_CALL_METHOD(env, jmapEntry, "getValue", "()Ljava/lang/Object;", Object,
+                    jvalue);
+    vals.insert(std::make_pair(GetJNIString(env, (jstring)jkey.get()),
+                               GetJNIString(env, (jstring)jvalue.get())));
+  }
+}
+void SetJNIStringMultiMap(JNIEnv* env,
+                          jobject jheaderMap,
+                          const std::multimap<CefString, CefString>& vals) {
+  for (CefResponse::HeaderMap::const_iterator it = vals.begin();
+       it != vals.end(); ++it) {
+    ScopedJNIString jkey(env, it->first);
+    ScopedJNIString jvalue(env, it->second);
+    ScopedJNIObjectResult jresult(env);
+    JNI_CALL_METHOD(env, jheaderMap, "put",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    Object, jresult, jkey.get(), jvalue.get());
   }
 }
 

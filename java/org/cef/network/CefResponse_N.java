@@ -4,9 +4,10 @@
 
 package org.cef.network;
 
-import java.util.Map;
 import org.cef.callback.CefNative;
 import org.cef.handler.CefLoadHandler.ErrorCode;
+
+import java.util.Map;
 
 class CefResponse_N extends CefResponse implements CefNative {
     // Used internally to store a pointer to the CEF object.
@@ -26,32 +27,28 @@ class CefResponse_N extends CefResponse implements CefNative {
         super();
     }
 
-    public static final CefResponse createNative() {
-        CefResponse_N result = new CefResponse_N();
+    public static CefResponse createNative() {
         try {
-            result.N_CefResponse_CTOR();
+            return CefResponse_N.N_Create();
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+            return null;
         }
-        if (result.N_CefHandle == 0) return null;
-        return result;
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void dispose() {
         try {
-            N_CefResponse_DTOR();
+            N_Dispose(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
-        } finally {
-            super.finalize();
         }
     }
 
     @Override
     public boolean isReadOnly() {
         try {
-            return N_IsReadOnly();
+            return N_IsReadOnly(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -61,7 +58,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public ErrorCode getError() {
         try {
-            return N_GetError();
+            return N_GetError(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -71,7 +68,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void setError(ErrorCode errorCode) {
         try {
-            N_SetError(errorCode);
+            N_SetError(N_CefHandle, errorCode);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -80,7 +77,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public int getStatus() {
         try {
-            return N_GetStatus();
+            return N_GetStatus(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -90,7 +87,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void setStatus(int status) {
         try {
-            N_SetStatus(status);
+            N_SetStatus(N_CefHandle, status);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -99,7 +96,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public String getStatusText() {
         try {
-            return N_GetStatusText();
+            return N_GetStatusText(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -109,7 +106,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void setStatusText(String statusText) {
         try {
-            N_SetStatusText(statusText);
+            N_SetStatusText(N_CefHandle, statusText);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -118,7 +115,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public String getMimeType() {
         try {
-            return N_GetMimeType();
+            return N_GetMimeType(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -128,7 +125,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void setMimeType(String mimeType) {
         try {
-            N_SetMimeType(mimeType);
+            N_SetMimeType(N_CefHandle, mimeType);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -137,7 +134,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public String getHeader(String name) {
         try {
-            return N_GetHeader(name);
+            return N_GetHeader(N_CefHandle, name);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -147,7 +144,7 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void getHeaderMap(Map<String, String> headerMap) {
         try {
-            N_GetHeaderMap(headerMap);
+            N_GetHeaderMap(N_CefHandle, headerMap);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -156,24 +153,24 @@ class CefResponse_N extends CefResponse implements CefNative {
     @Override
     public void setHeaderMap(Map<String, String> headerMap) {
         try {
-            N_SetHeaderMap(headerMap);
+            N_SetHeaderMap(N_CefHandle, headerMap);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_CefResponse_CTOR();
-    private final native boolean N_IsReadOnly();
-    private final native ErrorCode N_GetError();
-    private final native void N_SetError(ErrorCode errorCode);
-    private final native int N_GetStatus();
-    private final native void N_SetStatus(int status);
-    private final native String N_GetStatusText();
-    private final native void N_SetStatusText(String statusText);
-    private final native String N_GetMimeType();
-    private final native void N_SetMimeType(String mimeType);
-    private final native String N_GetHeader(String name);
-    private final native void N_GetHeaderMap(Map<String, String> headerMap);
-    private final native void N_SetHeaderMap(Map<String, String> headerMap);
-    private final native void N_CefResponse_DTOR();
+    private final native static CefResponse_N N_Create();
+    private final native void N_Dispose(long self);
+    private final native boolean N_IsReadOnly(long self);
+    private final native ErrorCode N_GetError(long self);
+    private final native void N_SetError(long self, ErrorCode errorCode);
+    private final native int N_GetStatus(long self);
+    private final native void N_SetStatus(long self, int status);
+    private final native String N_GetStatusText(long self);
+    private final native void N_SetStatusText(long self, String statusText);
+    private final native String N_GetMimeType(long self);
+    private final native void N_SetMimeType(long self, String mimeType);
+    private final native String N_GetHeader(long self, String name);
+    private final native void N_GetHeaderMap(long self, Map<String, String> headerMap);
+    private final native void N_SetHeaderMap(long self, Map<String, String> headerMap);
 }

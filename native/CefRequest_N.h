@@ -9,129 +9,154 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_network_CefRequest_N
- * Method:    N_CefRequest_CTOR
- * Signature: ()V
+ * Method:    N_Create
+ * Signature: ()Lorg/cef/network/CefRequest_N;
  */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1CefRequest_1CTOR(JNIEnv*, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_network_CefRequest_1N_N_1Create(JNIEnv*,
+                                                                       jclass);
+
+/*
+ * Class:     org_cef_network_CefRequest_N
+ * Method:    N_Dispose
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1Dispose(JNIEnv*,
+                                                                     jobject,
+                                                                     jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetIdentifier
- * Signature: ()J
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_IsReadOnly
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefRequest_1N_N_1IsReadOnly(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1IsReadOnly(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetURL
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_cef_network_CefRequest_1N_N_1GetURL(JNIEnv*,
-                                                                       jobject);
+                                                                       jobject,
+                                                                       jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetURL
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1SetURL(JNIEnv*,
                                                                     jobject,
+                                                                    jlong,
                                                                     jstring);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetMethod
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetMethod
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1SetMethod(JNIEnv*,
                                                                        jobject,
+                                                                       jlong,
                                                                        jstring);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetReferrer
- * Signature: (Ljava/lang/String;Lorg/cef/network/CefRequest/ReferrerPolicy;)V
+ * Signature: (JLjava/lang/String;Lorg/cef/network/CefRequest/ReferrerPolicy;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv*,
                                                   jobject,
+                                                  jlong,
                                                   jstring,
                                                   jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetReferrerURL
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetReferrerPolicy
- * Signature: ()Lorg/cef/network/CefRequest/ReferrerPolicy;
+ * Signature: (J)Lorg/cef/network/CefRequest/ReferrerPolicy;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetPostData
- * Signature: ()Lorg/cef/network/CefPostData;
+ * Signature: (J)Lorg/cef/network/CefPostData;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetPostData(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetPostData(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetPostData
- * Signature: (Lorg/cef/network/CefPostData;)V
+ * Signature: (JLorg/cef/network/CefPostData;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1SetPostData(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefRequest_1N_N_1SetPostData(JNIEnv*,
+                                                  jobject,
+                                                  jlong,
+                                                  jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetHeaderMap
- * Signature: (Ljava/util/Map;)V
+ * Signature: (JLjava/util/Map;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetHeaderMap(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetHeaderMap(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetHeaderMap
- * Signature: (Ljava/util/Map;)V
+ * Signature: (JLjava/util/Map;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1SetHeaderMap(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefRequest_1N_N_1SetHeaderMap(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jobject);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_Set
  * Signature:
- * (Ljava/lang/String;Ljava/lang/String;Lorg/cef/network/CefPostData;Ljava/util/Map;)V
+ * (JLjava/lang/String;Ljava/lang/String;Lorg/cef/network/CefPostData;Ljava/util/Map;)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1Set(JNIEnv*,
                                                                  jobject,
+                                                                 jlong,
                                                                  jstring,
                                                                  jstring,
                                                                  jobject,
@@ -140,61 +165,60 @@ JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1Set(JNIEnv*,
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetFlags
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_org_cef_network_CefRequest_1N_N_1GetFlags(JNIEnv*,
-                                                                      jobject);
+                                                                      jobject,
+                                                                      jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetFlags
- * Signature: (I)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_org_cef_network_CefRequest_1N_N_1SetFlags(JNIEnv*,
                                                                       jobject,
+                                                                      jlong,
                                                                       jint);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetFirstPartyForCookies
- * Signature: ()Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetFirstPartyForCookies(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetFirstPartyForCookies(JNIEnv*,
+                                                              jobject,
+                                                              jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_SetFirstPartyForCookies
- * Signature: (Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetFirstPartyForCookies(JNIEnv*,
                                                               jobject,
+                                                              jlong,
                                                               jstring);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetResourceType
- * Signature: ()Lorg/cef/network/CefRequest/ResourceType;
+ * Signature: (J)Lorg/cef/network/CefRequest/ResourceType;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefRequest_N
  * Method:    N_GetTransitionType
- * Signature: ()Lorg/cef/network/CefRequest/TransitionType;
+ * Signature: (J)Lorg/cef/network/CefRequest/TransitionType;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_network_CefRequest_N
- * Method:    N_CefRequest_DTOR
- * Signature: ()V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1CefRequest_1DTOR(JNIEnv*, jobject);
+Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv*,
+                                                        jobject,
+                                                        jlong);
 
 #ifdef __cplusplus
 }

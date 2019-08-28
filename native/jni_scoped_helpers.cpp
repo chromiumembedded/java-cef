@@ -65,6 +65,13 @@ CefRefPtr<CefBrowser> ScopedJNIBrowser::GetCefObject() const {
   return GetCefBrowser(env_, jhandle_);
 }
 
+ScopedJNIAuthCallback::ScopedJNIAuthCallback(JNIEnv* env,
+                                             CefRefPtr<CefAuthCallback> obj)
+    : ScopedJNIObject<CefAuthCallback>(env,
+                                       obj,
+                                       "org/cef/callback/CefAuthCallback_N",
+                                       "CefAuthCallback") {}
+
 ScopedJNIDragData::ScopedJNIDragData(JNIEnv* env, CefRefPtr<CefDragData> obj)
     : ScopedJNIObject<CefDragData>(env,
                                    obj,
@@ -89,6 +96,21 @@ ScopedJNIMessageRouter::ScopedJNIMessageRouter(JNIEnv* env,
                                         obj,
                                         "org/cef/browser/CefMessageRouter_N",
                                         "CefMessageRouter") {}
+
+ScopedJNIPostData::ScopedJNIPostData(JNIEnv* env, CefRefPtr<CefPostData> obj)
+    : ScopedJNIObject<CefPostData>(env,
+                                   obj,
+                                   "org/cef/network/CefPostData_N",
+                                   "CefPostData") {}
+
+ScopedJNIPostDataElement::ScopedJNIPostDataElement(
+    JNIEnv* env,
+    CefRefPtr<CefPostDataElement> obj)
+    : ScopedJNIObject<CefPostDataElement>(
+          env,
+          obj,
+          "org/cef/network/CefPostDataElement_N",
+          "CefPostDataElement") {}
 
 ScopedJNIPrintSettings::ScopedJNIPrintSettings(JNIEnv* env,
                                                CefRefPtr<CefPrintSettings> obj)

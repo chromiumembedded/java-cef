@@ -35,7 +35,9 @@ public abstract class CefRequest {
         RT_FAVICON, //!< Favicon.
         RT_XHR, //!< XMLHttpRequest.
         RT_PING, //!< A request for a <ping>
-        RT_SERVICE_WORKER //!< Main resource of a service worker.
+        RT_SERVICE_WORKER, //!< Main resource of a service worker.
+        RT_CSP_REPORT, //!< A report of Content Security Policy violations.
+        RT_PLUGIN_RESOURCE, //!< A resource that a plugin requested.
     }
 
     /**
@@ -318,12 +320,23 @@ public abstract class CefRequest {
     // This CTOR can't be called directly. Call method create() instead.
     CefRequest() {}
 
+    @Override
+    protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
+    }
+
     /**
      * Create a new CefRequest object.
      */
     public static final CefRequest create() {
         return CefRequest_N.createNative();
     }
+
+    /**
+     * Removes the native reference from an unused object.
+     */
+    public abstract void dispose();
 
     /**
      * Returns the globally unique identifier for this request or 0 if not

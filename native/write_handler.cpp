@@ -34,7 +34,6 @@ size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
     rv = 0;
   }
   offset_ += (rv * size);
-  env->ReleaseByteArrayElements(jbyteArray, (jbyte*)ptr, JNI_ABORT);
   env->DeleteLocalRef(jbyteArray);
   END_ENV(env)
 

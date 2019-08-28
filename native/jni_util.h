@@ -125,6 +125,16 @@ void GetJNIStringVector(JNIEnv* env,
                         jobject jvector,
                         std::vector<CefString>& vals);
 
+// |jheaderMap| is expected to be a Map<String, String>.
+void GetJNIStringMultiMap(JNIEnv* env,
+                          jobject jheaderMap,
+                          std::multimap<CefString, CefString>& vals);
+
+// |jheaderMap| is expected to be a Map<String, String>.
+void SetJNIStringMultiMap(JNIEnv* env,
+                          jobject jheaderMap,
+                          const std::multimap<CefString, CefString>& vals);
+
 bool GetJNIFieldString(JNIEnv* env,
                        jclass cls,
                        jobject obj,

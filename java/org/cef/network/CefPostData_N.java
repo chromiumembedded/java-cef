@@ -4,8 +4,9 @@
 
 package org.cef.network;
 
-import java.util.Vector;
 import org.cef.callback.CefNative;
+
+import java.util.Vector;
 
 /**
  *
@@ -28,32 +29,28 @@ class CefPostData_N extends CefPostData implements CefNative {
         super();
     }
 
-    public static final CefPostData createNative() {
-        CefPostData_N result = new CefPostData_N();
+    public static CefPostData createNative() {
         try {
-            result.N_CefPostData_CTOR();
+            return CefPostData_N.N_Create();
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
+            return null;
         }
-        if (result.N_CefHandle == 0) return null;
-        return result;
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void dispose() {
         try {
-            N_CefPostData_DTOR();
+            N_Dispose(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
-        } finally {
-            super.finalize();
         }
     }
 
     @Override
     public boolean isReadOnly() {
         try {
-            return N_IsReadOnly();
+            return N_IsReadOnly(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -63,7 +60,7 @@ class CefPostData_N extends CefPostData implements CefNative {
     @Override
     public int getElementCount() {
         try {
-            return N_GetElementCount();
+            return N_GetElementCount(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -73,7 +70,7 @@ class CefPostData_N extends CefPostData implements CefNative {
     @Override
     public void getElements(Vector<CefPostDataElement> elements) {
         try {
-            N_GetElements(elements);
+            N_GetElements(N_CefHandle, elements);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -82,7 +79,7 @@ class CefPostData_N extends CefPostData implements CefNative {
     @Override
     public boolean removeElement(CefPostDataElement element) {
         try {
-            return N_RemoveElement(element);
+            return N_RemoveElement(N_CefHandle, element);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -92,7 +89,7 @@ class CefPostData_N extends CefPostData implements CefNative {
     @Override
     public boolean addElement(CefPostDataElement element) {
         try {
-            return N_AddElement(element);
+            return N_AddElement(N_CefHandle, element);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -102,18 +99,18 @@ class CefPostData_N extends CefPostData implements CefNative {
     @Override
     public void removeElements() {
         try {
-            N_RemoveElements();
+            N_RemoveElements(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_CefPostData_CTOR();
-    private final native boolean N_IsReadOnly();
-    private final native int N_GetElementCount();
-    private final native void N_GetElements(Vector<CefPostDataElement> elements);
-    private final native boolean N_RemoveElement(CefPostDataElement element);
-    private final native boolean N_AddElement(CefPostDataElement element);
-    private final native void N_RemoveElements();
-    private final native void N_CefPostData_DTOR();
+    private final native static CefPostData_N N_Create();
+    private final native void N_Dispose(long self);
+    private final native boolean N_IsReadOnly(long self);
+    private final native int N_GetElementCount(long self);
+    private final native void N_GetElements(long self, Vector<CefPostDataElement> elements);
+    private final native boolean N_RemoveElement(long self, CefPostDataElement element);
+    private final native boolean N_AddElement(long self, CefPostDataElement element);
+    private final native void N_RemoveElements(long self);
 }

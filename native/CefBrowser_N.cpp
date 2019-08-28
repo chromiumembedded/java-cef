@@ -1233,9 +1233,10 @@ Java_org_cef_browser_CefBrowser_1N_N_1LoadRequest(JNIEnv* env,
                                                   jobject obj,
                                                   jobject jrequest) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
-  if (!request.get())
+  ScopedJNIRequest requestObj(env);
+  requestObj.SetHandle(jrequest, false /* should_delete */);
+  CefRefPtr<CefRequest> request = requestObj.GetCefObject();
+  if (!request)
     return;
   browser->GetMainFrame()->LoadRequest(request);
 }

@@ -12,6 +12,8 @@
 
 #include "include/cef_urlrequest.h"
 
+#include "jni_scoped_helpers.h"
+
 // CefURLRequestClient implementation.
 class URLRequestClient : public CefURLRequestClient {
  private:
@@ -46,8 +48,8 @@ class URLRequestClient : public CefURLRequestClient {
                                   CefRefPtr<CefAuthCallback> callback) OVERRIDE;
 
  protected:
-  jobject jURLRequestClient_;
-  jobject jURLRequest_;
+  ScopedJNIObjectGlobal request_handle_;
+  ScopedJNIObjectGlobal client_handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(URLRequestClient);

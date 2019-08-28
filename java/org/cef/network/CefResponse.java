@@ -4,11 +4,12 @@
 
 package org.cef.network;
 
+import org.cef.handler.CefLoadHandler.ErrorCode;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
-import org.cef.handler.CefLoadHandler.ErrorCode;
+import java.util.Set;
 
 /**
  * Class used to represent a web response. The methods of this class may be
@@ -18,12 +19,23 @@ public abstract class CefResponse {
     // This CTOR can't be called directly. Call method create() instead.
     CefResponse() {}
 
+    @Override
+    protected void finalize() throws Throwable {
+        dispose();
+        super.finalize();
+    }
+
     /**
      * Create a new CefRequest object.
      */
     public static final CefResponse create() {
         return CefResponse_N.createNative();
     }
+
+    /**
+     * Removes the native reference from an unused object.
+     */
+    public abstract void dispose();
 
     /**
      * Returns true if this object is read-only.

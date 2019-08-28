@@ -12,16 +12,6 @@
 
 namespace {
 
-// JNI CefAuthCallback object.
-class ScopedJNIAuthCallback : public ScopedJNIObject<CefAuthCallback> {
- public:
-  ScopedJNIAuthCallback(JNIEnv* env, CefRefPtr<CefAuthCallback> obj)
-      : ScopedJNIObject<CefAuthCallback>(env,
-                                         obj,
-                                         "org/cef/callback/CefAuthCallback_N",
-                                         "CefAuthCallback") {}
-};
-
 // JNI CefRequestCallback object.
 class ScopedJNIRequestCallback : public ScopedJNIObject<CefRequestCallback> {
  public:

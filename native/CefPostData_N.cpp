@@ -3,22 +3,41 @@
 // can be found in the LICENSE file.
 
 #include "CefPostData_N.h"
+
 #include "include/cef_request.h"
+
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1CefPostData_1CTOR(JNIEnv* env,
-                                                         jobject obj) {
+namespace {
+
+const char kCefClassName[] = "CefPostData";
+
+CefRefPtr<CefPostData> GetSelf(jlong self) {
+  return reinterpret_cast<CefPostData*>(self);
+}
+
+}  // namespace
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefPostData_1N_N_1Create(JNIEnv* env, jclass cls) {
   CefRefPtr<CefPostData> postData = CefPostData::Create();
-  if (!postData.get())
-    return;
-  SetCefForJNIObject(env, obj, postData.get(), "CefPostData");
+  ScopedJNIPostData jpostData(env, postData);
+  return jpostData.Release();
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefPostData_1N_N_1Dispose(JNIEnv* env,
+                                               jobject obj,
+                                               jlong self) {
+  SetCefForJNIObject<CefPostData>(env, obj, NULL, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefPostData_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+Java_org_cef_network_CefPostData_1N_N_1IsReadOnly(JNIEnv* env,
+                                                  jobject obj,
+                                                  jlong self) {
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return JNI_FALSE;
   return postData->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
@@ -26,9 +45,9 @@ Java_org_cef_network_CefPostData_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
 
 JNIEXPORT jint JNICALL
 Java_org_cef_network_CefPostData_1N_N_1GetElementCount(JNIEnv* env,
-                                                       jobject obj) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+                                                       jobject obj,
+                                                       jlong self) {
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return 0;
   return (jint)postData->GetElementCount();
@@ -37,9 +56,9 @@ Java_org_cef_network_CefPostData_1N_N_1GetElementCount(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefPostData_1N_N_1GetElements(JNIEnv* env,
                                                    jobject obj,
+                                                   jlong self,
                                                    jobject jelements) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return;
   CefPostData::ElementVector elements;
@@ -47,36 +66,26 @@ Java_org_cef_network_CefPostData_1N_N_1GetElements(JNIEnv* env,
 
   CefPostData::ElementVector::const_iterator iter;
   for (iter = elements.begin(); iter != elements.end(); ++iter) {
-    CefRefPtr<CefPostDataElement> dataElement = *iter;
-    if (!dataElement.get())
-      continue;
-
-    jobject jdataElement =
-        NewJNIObject(env, "org/cef/network/CefPostDataElement_N");
-    if (!jdataElement)
-      continue;
-
-    SetCefForJNIObject(env, jdataElement, dataElement.get(),
-                       "CefPostDataElement");
+    ScopedJNIPostDataElement jdataElement(env, *iter);
     JNI_CALL_VOID_METHOD(env, jelements, "addElement", "(Ljava/lang/Object;)V",
-                         jdataElement);
-    env->DeleteLocalRef(jdataElement);
+                         jdataElement.get());
   }
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefPostData_1N_N_1RemoveElement(JNIEnv* env,
                                                      jobject obj,
+                                                     jlong self,
                                                      jobject jelement) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return JNI_FALSE;
 
-  CefRefPtr<CefPostDataElement> dataElement =
-      GetCefFromJNIObject<CefPostDataElement>(env, jelement,
-                                              "CefPostDataElement");
-  if (!dataElement.get())
+  ScopedJNIPostDataElement dataElementObj(env);
+  dataElementObj.SetHandle(jelement, false /* should_delete */);
+
+  CefRefPtr<CefPostDataElement> dataElement = dataElementObj.GetCefObject();
+  if (!dataElement)
     return JNI_FALSE;
 
   return postData->RemoveElement(dataElement) ? JNI_TRUE : JNI_FALSE;
@@ -85,16 +94,17 @@ Java_org_cef_network_CefPostData_1N_N_1RemoveElement(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefPostData_1N_N_1AddElement(JNIEnv* env,
                                                   jobject obj,
+                                                  jlong self,
                                                   jobject jelement) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return JNI_FALSE;
 
-  CefRefPtr<CefPostDataElement> dataElement =
-      GetCefFromJNIObject<CefPostDataElement>(env, jelement,
-                                              "CefPostDataElement");
-  if (!dataElement.get())
+  ScopedJNIPostDataElement dataElementObj(env);
+  dataElementObj.SetHandle(jelement, false /* should_delete */);
+
+  CefRefPtr<CefPostDataElement> dataElement = dataElementObj.GetCefObject();
+  if (!dataElement)
     return JNI_FALSE;
 
   return postData->AddElement(dataElement) ? JNI_TRUE : JNI_FALSE;
@@ -102,16 +112,10 @@ Java_org_cef_network_CefPostData_1N_N_1AddElement(JNIEnv* env,
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefPostData_1N_N_1RemoveElements(JNIEnv* env,
-                                                      jobject obj) {
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, obj, "CefPostData");
+                                                      jobject obj,
+                                                      jlong self) {
+  CefRefPtr<CefPostData> postData = GetSelf(self);
   if (!postData)
     return;
   postData->RemoveElements();
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1CefPostData_1DTOR(JNIEnv* env,
-                                                         jobject obj) {
-  SetCefForJNIObject<CefPostData>(env, obj, NULL, "CefPostData");
 }

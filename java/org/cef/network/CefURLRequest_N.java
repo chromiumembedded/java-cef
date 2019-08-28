@@ -4,8 +4,8 @@
 
 package org.cef.network;
 
-import org.cef.callback.CefURLRequestClient;
 import org.cef.callback.CefNative;
+import org.cef.callback.CefURLRequestClient;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 
 class CefURLRequest_N extends CefURLRequest implements CefNative {
@@ -34,7 +34,7 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
         // keep a reference to the request and client objects.
         CefURLRequest_N result = new CefURLRequest_N(request, client);
         try {
-            result.N_CefURLRequest_CTOR(request, client);
+            result.N_Create(request, client);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -43,9 +43,9 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
     }
 
     @Override
-    public void finalize() {
+    public void dispose() {
         try {
-            N_CefURLRequest_DTOR();
+            N_Dispose(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -64,7 +64,7 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
     @Override
     public Status getRequestStatus() {
         try {
-            return N_GetRequestStatus();
+            return N_GetRequestStatus(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -74,7 +74,7 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
     @Override
     public ErrorCode getRequestError() {
         try {
-            return N_GetRequestError();
+            return N_GetRequestError(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -84,7 +84,7 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
     @Override
     public CefResponse getResponse() {
         try {
-            return N_GetResponse();
+            return N_GetResponse(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -94,16 +94,16 @@ class CefURLRequest_N extends CefURLRequest implements CefNative {
     @Override
     public void cancel() {
         try {
-            N_Cancel();
+            N_Cancel(N_CefHandle);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
     }
 
-    private final native void N_CefURLRequest_CTOR(CefRequest request, CefURLRequestClient client);
-    private final native Status N_GetRequestStatus();
-    private final native ErrorCode N_GetRequestError();
-    private final native CefResponse N_GetResponse();
-    private final native void N_Cancel();
-    private final native void N_CefURLRequest_DTOR();
+    private final native void N_Create(CefRequest request, CefURLRequestClient client);
+    private final native void N_Dispose(long self);
+    private final native Status N_GetRequestStatus(long self);
+    private final native ErrorCode N_GetRequestError(long self);
+    private final native CefResponse N_GetResponse(long self);
+    private final native void N_Cancel(long self);
 }

@@ -9,55 +9,60 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_CefURLRequest_CTOR
+ * Method:    N_Create
  * Signature:
  * (Lorg/cef/network/CefRequest;Lorg/cef/callback/CefURLRequestClient;)V
  */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1CTOR(JNIEnv*,
-                                                             jobject,
-                                                             jobject,
-                                                             jobject);
-
-/*
- * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_GetRequestStatus
- * Signature: ()Lorg/cef/network/CefURLRequest/Status;
- */
-JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_GetRequestError
- * Signature: ()Lorg/cef/handler/CefLoadHandler/ErrorCode;
- */
-JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1GetRequestError(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_GetResponse
- * Signature: ()Lorg/cef/network/CefResponse;
- */
-JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1GetResponse(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_Cancel
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1Cancel(JNIEnv*,
+JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1Create(JNIEnv*,
+                                                                       jobject,
+                                                                       jobject,
                                                                        jobject);
 
 /*
  * Class:     org_cef_network_CefURLRequest_N
- * Method:    N_CefURLRequest_DTOR
- * Signature: ()V
+ * Method:    N_Dispose
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1DTOR(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1Dispose(JNIEnv*,
+                                                                        jobject,
+                                                                        jlong);
+
+/*
+ * Class:     org_cef_network_CefURLRequest_N
+ * Method:    N_GetRequestStatus
+ * Signature: (J)Lorg/cef/network/CefURLRequest/Status;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv*,
+                                                          jobject,
+                                                          jlong);
+
+/*
+ * Class:     org_cef_network_CefURLRequest_N
+ * Method:    N_GetRequestError
+ * Signature: (J)Lorg/cef/handler/CefLoadHandler/ErrorCode;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefURLRequest_1N_N_1GetRequestError(JNIEnv*,
+                                                         jobject,
+                                                         jlong);
+
+/*
+ * Class:     org_cef_network_CefURLRequest_N
+ * Method:    N_GetResponse
+ * Signature: (J)Lorg/cef/network/CefResponse;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefURLRequest_1N_N_1GetResponse(JNIEnv*, jobject, jlong);
+
+/*
+ * Class:     org_cef_network_CefURLRequest_N
+ * Method:    N_Cancel
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_network_CefURLRequest_1N_N_1Cancel(JNIEnv*,
+                                                                       jobject,
+                                                                       jlong);
 
 #ifdef __cplusplus
 }

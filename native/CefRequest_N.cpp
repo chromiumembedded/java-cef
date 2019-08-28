@@ -4,40 +4,59 @@
 
 #include "CefRequest_N.h"
 #include "include/cef_request.h"
+
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
-#include "util.h"
+
+namespace {
+
+const char kCefClassName[] = "CefRequest";
+
+CefRefPtr<CefRequest> GetSelf(jlong self) {
+  return reinterpret_cast<CefRequest*>(self);
+}
+
+}  // namespace
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_network_CefRequest_1N_N_1Create(JNIEnv* env, jclass cls) {
+  CefRefPtr<CefRequest> request = CefRequest::Create();
+  ScopedJNIRequest jrequest(env, request);
+  return jrequest.Release();
+}
 
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1CefRequest_1CTOR(JNIEnv* env,
-                                                       jobject obj) {
-  CefRefPtr<CefRequest> request = CefRequest::Create();
-  if (!request.get())
-    return;
-  SetCefForJNIObject(env, obj, request.get(), "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1Dispose(JNIEnv* env,
+                                              jobject obj,
+                                              jlong self) {
+  SetCefForJNIObject<CefRequest>(env, obj, NULL, kCefClassName);
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetIdentifier(JNIEnv* env,
+                                                    jobject obj,
+                                                    jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return 0;
   return (jlong)request->GetIdentifier();
 }
 
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefRequest_1N_N_1IsReadOnly(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1IsReadOnly(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return JNI_FALSE;
   return request->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetURL(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetURL(JNIEnv* env,
+                                             jobject obj,
+                                             jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
   return NewJNIString(env, request->GetURL());
@@ -46,9 +65,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetURL(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetURL(JNIEnv* env,
                                              jobject obj,
+                                             jlong self,
                                              jstring jurl) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
   request->SetURL(GetJNIString(env, jurl));
@@ -57,10 +76,10 @@ Java_org_cef_network_CefRequest_1N_N_1SetURL(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv* env,
                                                   jobject obj,
+                                                  jlong self,
                                                   jstring jurl,
                                                   jobject jpolicy) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
 
@@ -116,9 +135,10 @@ Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv* env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv* env,
+                                                     jobject obj,
+                                                     jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
 
@@ -127,9 +147,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv* env, jobject obj) {
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv* env,
-                                                        jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+                                                        jobject obj,
+                                                        jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
 
@@ -160,15 +180,17 @@ Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv* env,
           result);
       JNI_CASE(env, "org/cef/network/CefRequest$ReferrerPolicy",
                REFERRER_POLICY_NO_REFERRER, result);
-      // REFERRER_POLICY_LAST_VALUE equals REFERRER_POLICY_NO_REFERRER as of CEF 3683
+      // REFERRER_POLICY_LAST_VALUE equals REFERRER_POLICY_NO_REFERRER as of CEF
+      // 3683
   }
   return result;
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv* env,
+                                                jobject obj,
+                                                jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
   return NewJNIString(env, request->GetMethod());
@@ -177,135 +199,99 @@ Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetMethod(JNIEnv* env,
                                                 jobject obj,
+                                                jlong self,
                                                 jstring jmethod) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
   request->SetMethod(GetJNIString(env, jmethod));
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetPostData(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetPostData(JNIEnv* env,
+                                                  jobject obj,
+                                                  jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
   CefRefPtr<CefPostData> postData = request->GetPostData();
   if (!postData.get())
     return NULL;
-
-  jobject jpostData = NewJNIObject(env, "org/cef/network/CefPostData_N");
-  if (!jpostData)
-    return NULL;
-  SetCefForJNIObject(env, jpostData, postData.get(), "CefPostData");
-  return jpostData;
+  ScopedJNIPostData jpostData(env, postData);
+  return jpostData.Release();
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetPostData(JNIEnv* env,
                                                   jobject obj,
+                                                  jlong self,
                                                   jobject jpostData) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
-  CefRefPtr<CefPostData> postData =
-      GetCefFromJNIObject<CefPostData>(env, jpostData, "CefPostData");
-  if (!postData.get())
-    return;
-  request->SetPostData(postData);
+  ScopedJNIPostData postDataObj(env);
+  if (jpostData) {
+    postDataObj.SetHandle(jpostData, false /* should_delete */);
+  }
+  request->SetPostData(postDataObj.GetCefObject());
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetHeaderMap(JNIEnv* env,
                                                    jobject obj,
+                                                   jlong self,
                                                    jobject jheaderMap) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
   CefRequest::HeaderMap headerMap;
   request->GetHeaderMap(headerMap);
-
-  for (CefRequest::HeaderMap::iterator iter = headerMap.begin();
-       iter != headerMap.end(); ++iter) {
-    jstring jkey = NewJNIString(env, iter->first);
-    jstring jvalue = NewJNIString(env, iter->second);
-    jobject returnIgn = NULL;
-    JNI_CALL_METHOD(env, jheaderMap, "put",
-                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                    Object, returnIgn, jkey, jvalue);
-    env->DeleteLocalRef(returnIgn);
-    env->DeleteLocalRef(jkey);
-    env->DeleteLocalRef(jvalue);
-  }
+  SetJNIStringMultiMap(env, jheaderMap, headerMap);
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetHeaderMap(JNIEnv* env,
                                                    jobject obj,
+                                                   jlong self,
                                                    jobject jheaderMap) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
-  if (!request || !jheaderMap)
+  CefRefPtr<CefRequest> request = GetSelf(self);
+  if (!request)
     return;
-
-  // public abstract java.util.Set<java.util.Map$Entry<K, V>> entrySet();
-  jobject entrySet = NULL;
-  JNI_CALL_METHOD(env, jheaderMap, "entrySet", "()Ljava/util/Set;", Object,
-                  entrySet);
-  if (!entrySet)
-    return;
-
-  // public abstract java.lang.Object[] toArray();
-  jobject entrySetValues = NULL;
-  JNI_CALL_METHOD(env, entrySet, "toArray", "()[Ljava/lang/Object;", Object,
-                  entrySetValues);
-  env->DeleteLocalRef(entrySet);
-  if (!entrySetValues)
-    return;
-
   CefRequest::HeaderMap headerMap;
-  jint length = env->GetArrayLength((jobjectArray)entrySetValues);
-  for (jint i = 0; i < length; i++) {
-    jobject mapEntry =
-        env->GetObjectArrayElement((jobjectArray)entrySetValues, i);
-    if (!mapEntry)
-      return;
-    jobject key = NULL;
-    jobject value = NULL;
-    JNI_CALL_METHOD(env, mapEntry, "getKey", "()Ljava/lang/Object;", Object,
-                    key);
-    JNI_CALL_METHOD(env, mapEntry, "getValue", "()Ljava/lang/Object;", Object,
-                    value);
-    headerMap.insert(std::make_pair(GetJNIString(env, (jstring)key),
-                                    GetJNIString(env, (jstring)value)));
-    env->DeleteLocalRef(key);
-    env->DeleteLocalRef(value);
-    env->DeleteLocalRef(mapEntry);
-  }
-  env->DeleteLocalRef(entrySetValues);
+  GetJNIStringMultiMap(env, jheaderMap, headerMap);
   request->SetHeaderMap(headerMap);
 }
 
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1Set(JNIEnv* env,
                                           jobject obj,
+                                          jlong self,
                                           jstring jurl,
                                           jstring jmethod,
                                           jobject jpostData,
                                           jobject jheaderMap) {
-  Java_org_cef_network_CefRequest_1N_N_1SetURL(env, obj, jurl);
-  Java_org_cef_network_CefRequest_1N_N_1SetMethod(env, obj, jmethod);
-  Java_org_cef_network_CefRequest_1N_N_1SetPostData(env, obj, jpostData);
-  Java_org_cef_network_CefRequest_1N_N_1SetHeaderMap(env, obj, jheaderMap);
+  CefRefPtr<CefRequest> request = GetSelf(self);
+  if (!request)
+    return;
+
+  CefRequest::HeaderMap headerMap;
+  GetJNIStringMultiMap(env, jheaderMap, headerMap);
+  request->SetHeaderMap(headerMap);
+
+  ScopedJNIPostData postDataObj(env);
+  if (jpostData) {
+    postDataObj.SetHandle(jpostData, false /* should_delete */);
+  }
+
+  request->Set(GetJNIString(env, jurl), GetJNIString(env, jmethod),
+               postDataObj.GetCefObject(), headerMap);
 }
 
 JNIEXPORT jint JNICALL
-Java_org_cef_network_CefRequest_1N_N_1GetFlags(JNIEnv* env, jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+Java_org_cef_network_CefRequest_1N_N_1GetFlags(JNIEnv* env,
+                                               jobject obj,
+                                               jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return 0;
   return request->GetFlags();
@@ -314,9 +300,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetFlags(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetFlags(JNIEnv* env,
                                                jobject obj,
+                                               jlong self,
                                                jint jflags) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
   request->SetFlags((int)jflags);
@@ -324,9 +310,9 @@ Java_org_cef_network_CefRequest_1N_N_1SetFlags(JNIEnv* env,
 
 JNIEXPORT jstring JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetFirstPartyForCookies(JNIEnv* env,
-                                                              jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+                                                              jobject obj,
+                                                              jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
   return NewJNIString(env, request->GetFirstPartyForCookies());
@@ -335,9 +321,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetFirstPartyForCookies(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1SetFirstPartyForCookies(JNIEnv* env,
                                                               jobject obj,
+                                                              jlong self,
                                                               jstring jcookie) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return;
   request->SetFirstPartyForCookies(GetJNIString(env, jcookie));
@@ -345,9 +331,9 @@ Java_org_cef_network_CefRequest_1N_N_1SetFirstPartyForCookies(JNIEnv* env,
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv* env,
-                                                      jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+                                                      jobject obj,
+                                                      jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
 
@@ -364,41 +350,35 @@ Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv* env,
     JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_IMAGE, result);
     JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_FONT_RESOURCE,
              result);
-    default:
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_SUB_RESOURCE,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_OBJECT,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_MEDIA,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_WORKER,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_SHARED_WORKER,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_PREFETCH,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_FAVICON,
-               result);
-      JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_XHR, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_SUB_RESOURCE,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_OBJECT, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_MEDIA, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_WORKER, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_SHARED_WORKER,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_PREFETCH,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_FAVICON,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_XHR, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_PING, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_SERVICE_WORKER,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_CSP_REPORT,
+             result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_PLUGIN_RESOURCE,
+             result);
   }
   return result;
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv* env,
-                                                        jobject obj) {
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, obj, "CefRequest");
+                                                        jobject obj,
+                                                        jlong self) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
-
-  CefRequest::TransitionType transitionType = request->GetTransitionType();
-
-  return NewJNITransitionType(env, transitionType);
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefRequest_1N_N_1CefRequest_1DTOR(JNIEnv* env,
-                                                       jobject obj) {
-  SetCefForJNIObject<CefRequest>(env, obj, NULL, "CefRequest");
+  return NewJNITransitionType(env, request->GetTransitionType());
 }

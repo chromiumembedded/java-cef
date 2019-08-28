@@ -9,67 +9,77 @@ extern "C" {
 #endif
 /*
  * Class:     org_cef_network_CefPostData_N
- * Method:    N_CefPostData_CTOR
- * Signature: ()V
+ * Method:    N_Create
+ * Signature: ()Lorg/cef/network/CefPostData_N;
  */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1CefPostData_1CTOR(JNIEnv*, jobject);
+JNIEXPORT jobject JNICALL Java_org_cef_network_CefPostData_1N_N_1Create(JNIEnv*,
+                                                                        jclass);
+
+/*
+ * Class:     org_cef_network_CefPostData_N
+ * Method:    N_Dispose
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_network_CefPostData_1N_N_1Dispose(JNIEnv*,
+                                                                      jobject,
+                                                                      jlong);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_IsReadOnly
- * Signature: ()Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefPostData_1N_N_1IsReadOnly(JNIEnv*, jobject);
+Java_org_cef_network_CefPostData_1N_N_1IsReadOnly(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_GetElementCount
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_cef_network_CefPostData_1N_N_1GetElementCount(JNIEnv*, jobject);
+Java_org_cef_network_CefPostData_1N_N_1GetElementCount(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_GetElements
- * Signature: (Ljava/util/Vector;)V
+ * Signature: (JLjava/util/Vector;)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1GetElements(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefPostData_1N_N_1GetElements(JNIEnv*,
+                                                   jobject,
+                                                   jlong,
+                                                   jobject);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_RemoveElement
- * Signature: (Lorg/cef/network/CefPostDataElement;)Z
+ * Signature: (JLorg/cef/network/CefPostDataElement;)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefPostData_1N_N_1RemoveElement(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefPostData_1N_N_1RemoveElement(JNIEnv*,
+                                                     jobject,
+                                                     jlong,
+                                                     jobject);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_AddElement
- * Signature: (Lorg/cef/network/CefPostDataElement;)Z
+ * Signature: (JLorg/cef/network/CefPostDataElement;)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_cef_network_CefPostData_1N_N_1AddElement(JNIEnv*, jobject, jobject);
+Java_org_cef_network_CefPostData_1N_N_1AddElement(JNIEnv*,
+                                                  jobject,
+                                                  jlong,
+                                                  jobject);
 
 /*
  * Class:     org_cef_network_CefPostData_N
  * Method:    N_RemoveElements
- * Signature: ()V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1RemoveElements(JNIEnv*, jobject);
-
-/*
- * Class:     org_cef_network_CefPostData_N
- * Method:    N_CefPostData_DTOR
- * Signature: ()V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefPostData_1N_N_1CefPostData_1DTOR(JNIEnv*, jobject);
+Java_org_cef_network_CefPostData_1N_N_1RemoveElements(JNIEnv*, jobject, jlong);
 
 #ifdef __cplusplus
 }

@@ -9,51 +9,50 @@
 #include "include/cef_urlrequest.h"
 
 #include "critical_wait.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "url_request_client.h"
 
 namespace {
 class URLRequest : public CefTask {
  public:
-  explicit URLRequest(CefThreadId threadId,
-                      CefRefPtr<CefRequest> request,
-                      CefRefPtr<URLRequestClient> client)
+  URLRequest(CefThreadId threadId,
+             CefRefPtr<CefRequest> request,
+             CefRefPtr<URLRequestClient> client)
       : threadId_(threadId),
         request_(request),
         client_(client),
         waitCond_(&lock_) {}
 
-  virtual ~URLRequest() {}
-
   bool Create() {
-    if (!urlRequest_.get())
+    if (!urlRequest_)
       Dispatch(REQ_CREATE);
     return (urlRequest_.get() != NULL);
   }
 
   CefURLRequest::Status GetRequestStatus() {
-    if (!urlRequest_.get())
+    if (!urlRequest_)
       return UR_UNKNOWN;
     Dispatch(REQ_STATUS);
     return status_;
   }
 
   CefURLRequest::ErrorCode GetRequestError() {
-    if (!urlRequest_.get())
+    if (!urlRequest_)
       return ERR_FAILED;
     Dispatch(REQ_ERROR);
     return error_;
   }
 
   CefRefPtr<CefResponse> GetResponse() {
-    if (!urlRequest_.get())
+    if (!urlRequest_)
       return NULL;
     Dispatch(REQ_RESPONSE);
     return response_;
   }
 
   void Cancel() {
-    if (!urlRequest_.get())
+    if (!urlRequest_)
       return;
     Dispatch(REQ_CANCEL);
   }
@@ -121,31 +120,47 @@ class URLRequest : public CefTask {
   IMPLEMENT_REFCOUNTING(URLRequest);
 };
 
+const char kCefClassName[] = "CefURLRequest";
+
+CefRefPtr<URLRequest> GetSelf(jlong self) {
+  return reinterpret_cast<URLRequest*>(self);
+}
+
 }  // namespace
 
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1CTOR(
-    JNIEnv* env,
-    jobject obj,
-    jobject jrequest,
-    jobject jRequestClient) {
+Java_org_cef_network_CefURLRequest_1N_N_1Create(JNIEnv* env,
+                                                jobject obj,
+                                                jobject jrequest,
+                                                jobject jRequestClient) {
+  ScopedJNIRequest requestObj(env);
+  requestObj.SetHandle(jrequest, false /* should_delete */);
+  CefRefPtr<CefRequest> request = requestObj.GetCefObject();
+  if (!request)
+    return;
+
   CefRefPtr<URLRequestClient> client =
       URLRequestClient::Create(env, jRequestClient, obj);
-  CefRefPtr<CefRequest> request =
-      GetCefFromJNIObject<CefRequest>(env, jrequest, "CefRequest");
 
   CefRefPtr<URLRequest> urlRequest = new URLRequest(TID_UI, request, client);
   if (!urlRequest->Create())
     return;
-  SetCefForJNIObject(env, obj, urlRequest.get(), "CefURLRequest");
+  SetCefForJNIObject(env, obj, urlRequest.get(), kCefClassName);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefURLRequest_1N_N_1Dispose(JNIEnv* env,
+                                                 jobject obj,
+                                                 jlong self) {
+  SetCefForJNIObject<URLRequest>(env, obj, NULL, kCefClassName);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv* env,
-                                                          jobject obj) {
-  CefRefPtr<URLRequest> urlRequest =
-      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
-  if (!urlRequest.get())
+                                                          jobject obj,
+                                                          jlong self) {
+  CefRefPtr<URLRequest> urlRequest = GetSelf(self);
+  if (!urlRequest)
     return NULL;
 
   return NewJNIURLRequestStatus(env, urlRequest->GetRequestStatus());
@@ -153,41 +168,37 @@ Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv* env,
 
 JNIEXPORT jobject JNICALL
 Java_org_cef_network_CefURLRequest_1N_N_1GetRequestError(JNIEnv* env,
-                                                         jobject obj) {
-  CefRefPtr<URLRequest> urlRequest =
-      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
-  if (!urlRequest.get())
-    return NewJNIErrorCode(env, ERR_FAILED);
-  return NewJNIErrorCode(env, urlRequest->GetRequestError());
+                                                         jobject obj,
+                                                         jlong self) {
+  CefRefPtr<URLRequest> urlRequest = GetSelf(self);
+  cef_errorcode_t err = ERR_FAILED;
+  if (urlRequest)
+    err = urlRequest->GetRequestError();
+  return NewJNIErrorCode(env, err);
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1GetResponse(JNIEnv* env, jobject obj) {
-  CefRefPtr<URLRequest> urlRequest =
-      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
-  if (!urlRequest.get())
+Java_org_cef_network_CefURLRequest_1N_N_1GetResponse(JNIEnv* env,
+                                                     jobject obj,
+                                                     jlong self) {
+  CefRefPtr<URLRequest> urlRequest = GetSelf(self);
+  if (!urlRequest)
     return NULL;
 
   CefRefPtr<CefResponse> response = urlRequest->GetResponse();
-  if (!response.get())
+  if (!response)
     return NULL;
 
-  jobject jresponse = NewJNIObject(env, "org/cef/network/CefResponse_N");
-  SetCefForJNIObject<CefResponse>(env, jresponse, response, "CefResponse");
-  return jresponse;
+  ScopedJNIResponse jresponse(env, response);
+  return jresponse.Release();
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1Cancel(JNIEnv* env, jobject obj) {
-  CefRefPtr<URLRequest> urlRequest =
-      GetCefFromJNIObject<URLRequest>(env, obj, "CefURLRequest");
-  if (!urlRequest.get())
+Java_org_cef_network_CefURLRequest_1N_N_1Cancel(JNIEnv* env,
+                                                jobject obj,
+                                                jlong self) {
+  CefRefPtr<URLRequest> urlRequest = GetSelf(self);
+  if (!urlRequest)
     return;
   urlRequest->Cancel();
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefURLRequest_1N_N_1CefURLRequest_1DTOR(JNIEnv* env,
-                                                             jobject obj) {
-  SetCefForJNIObject<URLRequest>(env, obj, NULL, "CefURLRequest");
 }
