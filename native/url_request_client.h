@@ -48,8 +48,8 @@ class URLRequestClient : public CefURLRequestClient {
                                   CefRefPtr<CefAuthCallback> callback) OVERRIDE;
 
  protected:
-  ScopedJNIObjectGlobal request_handle_;
   ScopedJNIObjectGlobal client_handle_;
+  ScopedJNIObjectGlobal request_handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(URLRequestClient);
