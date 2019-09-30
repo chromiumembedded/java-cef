@@ -19,6 +19,7 @@
       <include name="jogl-all.jar"/>
       <include name="jogl-all-natives-macosx-universal.jar"/>
     </fileset>
+    <fileset dir="third_party/junit" includes="junit*.jar"/>
   </path>
     
   <target name="compile">
@@ -70,6 +71,7 @@
         <include name="jogl-all.jar" />
         <include name="jogl-all-natives-macosx-universal.jar" />
       </classpath>
+      <classpath dir="third_party/junit" includes="junit*.jar"/>
       <option value="-Djava.library.path=$APP_ROOT/Contents/Java/:$APP_ROOT/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries" />
     </bundleapp>
   </target>
