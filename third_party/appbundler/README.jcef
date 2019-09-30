@@ -1,19 +1,15 @@
 Name: Java Application Bundler 
 Short Name: appbundler
-URL: https://java.net/projects/appbundler
-Version: 1.0
+URL: https://github.com/TheInfiniteKind/appbundler/
+Version: 1.0 (commit 96d579d8)
 License: GPL-2.0
 
 Description:
 Packages a Java application as Mac app bundle.
 
-See https://java.net/projects/appbundler/pages/Home 
-and http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/packagingAppsForMac.html 
-for related documentation.
+See the project URL for related documentation.
 
 Local Modifications:
-Updated to use the fork from https://bitbucket.org/infinitekind/appbundler/ built at revision f715a34bff95 as follows:
-
-1. Download the source code as a zip archive and extract.
+1. Clone the repo using Git.
 2. Run `ant` from the top-level directory.
 3. Copy the resulting /appbundler/bin/appbundler-1.0ea.jar file to this directory.
