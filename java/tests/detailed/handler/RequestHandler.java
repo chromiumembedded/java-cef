@@ -141,7 +141,7 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
     }
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+    public boolean getAuthCredentials(CefBrowser browser, String origin_url, boolean isProxy,
             String host, int port, String realm, String scheme, CefAuthCallback callback) {
         SwingUtilities.invokeLater(new PasswordDialog(owner_, callback));
         return true;

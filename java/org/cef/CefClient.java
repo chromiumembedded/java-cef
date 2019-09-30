@@ -730,11 +730,11 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+    public boolean getAuthCredentials(CefBrowser browser, String origin_url, boolean isProxy,
             String host, int port, String realm, String scheme, CefAuthCallback callback) {
         if (requestHandler_ != null && browser != null)
             return requestHandler_.getAuthCredentials(
-                    browser, frame, isProxy, host, port, realm, scheme, callback);
+                    browser, origin_url, isProxy, host, port, realm, scheme, callback);
         return false;
     }
 

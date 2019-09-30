@@ -97,7 +97,7 @@ CefRefPtr<CefResourceRequestHandler> RequestHandler::GetResourceRequestHandler(
 }
 
 bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
-                                        CefRefPtr<CefFrame> frame,
+                                        const CefString& origin_url,
                                         bool isProxy,
                                         const CefString& host,
                                         int port,
@@ -109,22 +109,21 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
     return false;
 
   ScopedJNIBrowser jbrowser(env, browser);
-  ScopedJNIFrame jframe(env, frame);
-  jframe.SetTemporary();
+  ScopedJNIString joriginUrl(env, origin_url);
   ScopedJNIString jhost(env, host);
   ScopedJNIString jrealm(env, host);
   ScopedJNIString jscheme(env, host);
   ScopedJNIAuthCallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
-  JNI_CALL_METHOD(env, handle_, "getAuthCredentials",
-                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
-                  "CefFrame;ZLjava/lang/String;"
-                  "ILjava/lang/String;Ljava/lang/String;"
-                  "Lorg/cef/callback/CefAuthCallback;)Z",
-                  Boolean, jresult, jbrowser.get(), jframe.get(),
-                  (isProxy ? JNI_TRUE : JNI_FALSE), jhost.get(), port,
-                  jrealm.get(), jscheme.get(), jcallback.get());
+  JNI_CALL_METHOD(
+      env, handle_, "getAuthCredentials",
+      "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;ZLjava/lang/String;"
+      "ILjava/lang/String;Ljava/lang/String;"
+      "Lorg/cef/callback/CefAuthCallback;)Z",
+      Boolean, jresult, jbrowser.get(), joriginUrl.get(),
+      (isProxy ? JNI_TRUE : JNI_FALSE), jhost.get(), port, jrealm.get(),
+      jscheme.get(), jcallback.get());
 
   if (jresult == JNI_FALSE) {
     // If the Java method returns "false" the callback won't be used and

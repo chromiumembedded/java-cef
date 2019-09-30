@@ -33,7 +33,7 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
-    public boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy,
+    public boolean getAuthCredentials(CefBrowser browser, String origin_url, boolean isProxy,
             String host, int port, String realm, String scheme, CefAuthCallback callback) {
         return false;
     }

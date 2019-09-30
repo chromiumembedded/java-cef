@@ -294,33 +294,22 @@ if(OS_MACOSX)
     cmake_policy(SET CMP0068 NEW)
   endif()
 
-  # Output paths for the app bundles.
+  # Output path for the main app bundle.
   set(JCEF_APP "${CEF_TARGET_OUT_DIR}/${JCEF_APP_NAME}.app")
-  set(JCEF_HELPER_APP "${CEF_TARGET_OUT_DIR}/${JCEF_HELPER_OUTPUT_NAME}.app")
 
   # Variable referenced from Info.plist files.
+  set(EXECUTABLE_NAME "${JCEF_APP_NAME}")
   set(PRODUCT_NAME "${JCEF_APP_NAME}")
-
-  # Helper executable target.
-  add_executable(${JCEF_HELPER_TARGET} MACOSX_BUNDLE ${JCEF_HELPER_SRCS})
-  SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_HELPER_TARGET})
-  add_dependencies(${JCEF_HELPER_TARGET} libcef_dll_wrapper)
-  target_link_libraries(${JCEF_HELPER_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS})
-  set_target_properties(${JCEF_HELPER_TARGET} PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/jcef-Info.plist
-    OUTPUT_NAME ${JCEF_HELPER_OUTPUT_NAME}
-    )
 
   if(USE_SANDBOX)
     # Logical target used to link the cef_sandbox library.
     ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-    target_link_libraries(${JCEF_HELPER_TARGET} cef_sandbox_lib)
   endif()
 
   # JCEF library target.
   add_library(${JCEF_TARGET} SHARED ${JCEF_RESOURCES_SRCS} ${JCEF_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_TARGET})
-  add_dependencies(${JCEF_TARGET} libcef_dll_wrapper "${JCEF_HELPER_TARGET}")
+  add_dependencies(${JCEF_TARGET} libcef_dll_wrapper)
   target_link_libraries(${JCEF_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS}  ${JNI_LIBRARIES})
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
@@ -344,10 +333,6 @@ if(OS_MACOSX)
             -Dout.id=org.jcef.jcef
             -Dout.mainclass=tests.detailed.MainFrame
             bundle
-    # Copy the helper app bundle into the main app bundle.
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${JCEF_HELPER_APP}"
-            "${JCEF_APP}/Contents/Frameworks/${JCEF_HELPER_OUTPUT_NAME}.app"
     # Copy the CEF framework into the main app bundle.
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
@@ -358,6 +343,57 @@ if(OS_MACOSX)
             "${JCEF_TARGET_LIBRARY_APP_PATH}"
     VERBATIM
     )
+
+  # Create the multiple Helper app bundle targets.
+  foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
+    # Convert to a list and extract the suffix values.
+    string(REPLACE ":" ";" _suffix_list ${_suffix_list})
+    list(GET _suffix_list 0 _name_suffix)
+    list(GET _suffix_list 1 _target_suffix)
+    list(GET _suffix_list 2 _plist_suffix)
+
+    # Define Helper target and output names.
+    set(_helper_target "${JCEF_HELPER_TARGET}${_target_suffix}")
+    set(_helper_output_name "${JCEF_HELPER_OUTPUT_NAME}${_name_suffix}")
+
+    # Create Helper-specific variants of the helper-Info.plist file. Do this
+    # manually because the configure_file command (which is executed as part of
+    # MACOSX_BUNDLE_INFO_PLIST) uses global env variables and would insert the
+    # wrong values with multiple targets.
+    set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/jcef-Info${_target_suffix}.plist")
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/resources/jcef-Info.plist" _plist_contents)
+    string(REPLACE "\${EXECUTABLE_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+    string(REPLACE "\${PRODUCT_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+    string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
+    file(WRITE ${_helper_info_plist} ${_plist_contents})
+
+    # Create Helper executable target.
+    add_executable(${_helper_target} MACOSX_BUNDLE ${JCEF_HELPER_SRCS})
+    SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
+    add_dependencies(${_helper_target} libcef_dll_wrapper)
+    target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+    set_target_properties(${_helper_target} PROPERTIES
+      MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
+      OUTPUT_NAME ${_helper_output_name}
+      )
+
+    if(USE_SANDBOX)
+      target_link_libraries(${_helper_target} cef_sandbox_lib)
+    endif()
+
+    # Add the Helper as a dependency of the main executable target.
+    add_dependencies(${JCEF_TARGET} "${_helper_target}")
+
+    # Copy the Helper app bundle into the Frameworks directory.
+    add_custom_command(
+      TARGET ${JCEF_TARGET}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${CEF_TARGET_OUT_DIR}/${_helper_output_name}.app"
+              "${JCEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+      VERBATIM
+      )
+  endforeach()
 endif()
 
 

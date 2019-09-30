@@ -73,8 +73,7 @@ public interface CefRequestHandler {
      * Called on the IO thread when the browser needs credentials from the user.
      *
      * @param browser The corresponding browser.
-     * @param frame The frame generating the event. Instance only valid within the scope of this
-     *         method.
+     * @param origin_url The origin making this authentication request.
      * @param isProxy True if the host is a proxy server.
      * @param host Hostname.
      * @param port Port number.
@@ -84,7 +83,7 @@ public interface CefRequestHandler {
      *         available.
      * @return True to continue the request (callback must be executed) or false to cancel.
      */
-    boolean getAuthCredentials(CefBrowser browser, CefFrame frame, boolean isProxy, String host,
+    boolean getAuthCredentials(CefBrowser browser, String origin_url, boolean isProxy, String host,
             int port, String realm, String scheme, CefAuthCallback callback);
 
     /**

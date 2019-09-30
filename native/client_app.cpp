@@ -59,9 +59,13 @@ void ClientApp::OnBeforeCommandLineProcessing(
         "/../Frameworks/Chromium Embedded Framework.framework/"
         "Resources/en.lproj/locale.pak");
     command_line->AppendSwitchWithValue("locale_pak", locale_path);
+
     // If windowed rendering is used, we need the browser window as CALayer
     // due Java7 is CALayer based instead of NSLayer based.
     command_line->AppendSwitch("use-core-animation");
+
+    // Skip keychain prompt on startup.
+    command_line->AppendSwitch("use-mock-keychain");
 #endif  // defined(OS_MACOSX)
 
     if (cache_path_.empty() &&

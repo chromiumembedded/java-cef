@@ -32,7 +32,7 @@ class RequestHandler : public CefRequestHandler {
       const CefString& request_initiator,
       bool& disable_default_handling) OVERRIDE;
   bool GetAuthCredentials(CefRefPtr<CefBrowser> browser,
-                          CefRefPtr<CefFrame> frame,
+                          const CefString& origin_url,
                           bool isProxy,
                           const CefString& host,
                           int port,

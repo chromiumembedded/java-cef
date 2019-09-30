@@ -443,8 +443,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_MSG_TOO_BIG,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_SESSION_ALREADY_EXISTS, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_WS_PROTOCOL_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_ADDRESS_IN_USE, jerrorCode);
@@ -494,8 +492,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_READ_IF_READY_NOT_IMPLEMENTED, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SSL_VERSION_INTERFERENCE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_NO_BUFFER_SPACE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
