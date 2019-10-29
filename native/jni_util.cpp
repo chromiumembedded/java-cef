@@ -357,8 +357,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_BLOCKED_BY_RESPONSE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_BLOCKED_BY_XSS_AUDITOR, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CLEARTEXT_NOT_PERMITTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONNECTION_CLOSED, jerrorCode);
@@ -455,8 +453,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CLIENT_AUTH_CERT_TYPE_UNSUPPORTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_ORIGIN_BOUND_CERT_GENERATION_TYPE_MISMATCH, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_SSL_DECRYPT_ERROR_ALERT, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_WS_THROTTLE_QUEUE_TOO_LARGE, jerrorCode);
@@ -534,6 +530,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_CERTIFICATE_TRANSPARENCY_REQUIRED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERT_SYMANTEC_LEGACY, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_QUIC_CERT_ROOT_NOT_KNOWN, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_END,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_URL,
@@ -563,8 +561,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_RESPONSE_HEADERS_TOO_BIG, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_PAC_STATUS_NOT_OK, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PAC_SCRIPT_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_REQUEST_RANGE_NOT_SATISFIABLE, jerrorCode);
@@ -583,7 +579,7 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_NO_SUPPORTED_PROXIES, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_PROTOCOL_ERROR, jerrorCode);
+               ERR_HTTP2_PROTOCOL_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_INVALID_AUTH_CREDENTIALS, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -603,7 +599,7 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_INCOMPLETE_SPDY_HEADERS, jerrorCode);
+               ERR_INCOMPLETE_HTTP2_HEADERS, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PAC_NOT_IN_DHCP, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -611,9 +607,9 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_SERVER_REFUSED_STREAM, jerrorCode);
+               ERR_HTTP2_SERVER_REFUSED_STREAM, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_PING_FAILED, jerrorCode);
+               ERR_HTTP2_PING_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONTENT_LENGTH_MISMATCH, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -625,13 +621,13 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_QUIC_HANDSHAKE_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_INADEQUATE_TRANSPORT_SECURITY, jerrorCode);
+               ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_FLOW_CONTROL_ERROR, jerrorCode);
+               ERR_HTTP2_FLOW_CONTROL_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_FRAME_SIZE_ERROR, jerrorCode);
+               ERR_HTTP2_FRAME_SIZE_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_COMPRESSION_ERROR, jerrorCode);
+               ERR_HTTP2_COMPRESSION_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PROXY_AUTH_REQUESTED_WITH_NO_CONNECTION, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -645,19 +641,21 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONTENT_DECODING_INIT_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_RST_STREAM_NO_ERROR_RECEIVED, jerrorCode);
+               ERR_HTTP2_RST_STREAM_NO_ERROR_RECEIVED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_PUSHED_STREAM_NOT_AVAILABLE, jerrorCode);
+               ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER, jerrorCode);
+               ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_TOO_MANY_RETRIES, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_STREAM_CLOSED, jerrorCode);
+               ERR_HTTP2_STREAM_CLOSED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_CLIENT_REFUSED_STREAM, jerrorCode);
+               ERR_HTTP2_CLIENT_REFUSED_STREAM, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SPDY_PUSHED_RESPONSE_DOES_NOT_MATCH, jerrorCode);
+               ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_HTTP_RESPONSE_CODE_FAILURE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CACHE_MISS,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",

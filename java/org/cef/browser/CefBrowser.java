@@ -4,10 +4,6 @@
 
 package org.cef.browser;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.util.Vector;
-
 import org.cef.CefClient;
 import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
@@ -17,6 +13,10 @@ import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
+
+import java.awt.Component;
+import java.awt.Point;
+import java.util.Vector;
 
 /**
  * Interface representing a browser.
@@ -201,17 +201,6 @@ public interface CefBrowser {
      * @param url The URL to load.
      */
     public void loadURL(String url);
-
-    /**
-     * Load the contents of val with the specified dummy url.
-     * url should have a standard scheme (for example, http scheme) or
-     * behaviors like link clicks and web security restrictions may not
-     * behave as expected.
-     *
-     * @param val Content to be displayed.
-     * @param url dummy url to be used for.
-     */
-    public void loadString(String val, String url);
 
     /**
      * Execute a string of JavaScript code in this frame. The url

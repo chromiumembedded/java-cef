@@ -151,6 +151,25 @@ class CefRequest_N extends CefRequest implements CefNative {
     }
 
     @Override
+    public String getHeaderByName(String name) {
+        try {
+            return N_GetHeaderByName(N_CefHandle, name);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void setHeaderByName(String name, String value, boolean overwrite) {
+        try {
+            N_SetHeaderByName(N_CefHandle, name, value, overwrite);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    @Override
     public void getHeaderMap(Map<String, String> headerMap) {
         try {
             N_GetHeaderMap(N_CefHandle, headerMap);
@@ -249,6 +268,9 @@ class CefRequest_N extends CefRequest implements CefNative {
     private final native ReferrerPolicy N_GetReferrerPolicy(long self);
     private final native CefPostData N_GetPostData(long self);
     private final native void N_SetPostData(long self, CefPostData postData);
+    private final native String N_GetHeaderByName(long self, String name);
+    private final native void N_SetHeaderByName(
+            long self, String name, String value, boolean overwrite);
     private final native void N_GetHeaderMap(long self, Map<String, String> headerMap);
     private final native void N_SetHeaderMap(long self, Map<String, String> headerMap);
     private final native void N_Set(long self, String url, String method, CefPostData postData,

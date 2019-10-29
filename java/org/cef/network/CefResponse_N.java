@@ -132,13 +132,22 @@ class CefResponse_N extends CefResponse implements CefNative {
     }
 
     @Override
-    public String getHeader(String name) {
+    public String getHeaderByName(String name) {
         try {
-            return N_GetHeader(N_CefHandle, name);
+            return N_GetHeaderByName(N_CefHandle, name);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void setHeaderByName(String name, String value, boolean overwrite) {
+        try {
+            N_SetHeaderByName(N_CefHandle, name, value, overwrite);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
     }
 
     @Override
@@ -170,7 +179,9 @@ class CefResponse_N extends CefResponse implements CefNative {
     private final native void N_SetStatusText(long self, String statusText);
     private final native String N_GetMimeType(long self);
     private final native void N_SetMimeType(long self, String mimeType);
-    private final native String N_GetHeader(long self, String name);
+    private final native String N_GetHeaderByName(long self, String name);
+    private final native void N_SetHeaderByName(
+            long self, String name, String value, boolean overwrite);
     private final native void N_GetHeaderMap(long self, Map<String, String> headerMap);
     private final native void N_SetHeaderMap(long self, Map<String, String> headerMap);
 }

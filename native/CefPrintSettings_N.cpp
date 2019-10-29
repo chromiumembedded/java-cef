@@ -53,19 +53,6 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv* env,
   return settings->IsReadOnly() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv* env,
-                                              jobject obj,
-                                              jlong self) {
-  CefRefPtr<CefPrintSettings> settings = GetSelf(self);
-  if (!settings)
-    return NULL;
-
-  CefRefPtr<CefPrintSettings> copyData = settings->Copy();
-  ScopedJNIPrintSettings jcopyData(env, copyData);
-  return jcopyData.Release();
-}
-
 JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1SetOrientation(JNIEnv* env,
                                                         jobject obj,

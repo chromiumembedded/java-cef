@@ -1250,16 +1250,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1LoadURL(JNIEnv* env,
 }
 
 JNIEXPORT void JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1LoadString(JNIEnv* env,
-                                                 jobject obj,
-                                                 jstring val,
-                                                 jstring url) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetMainFrame()->LoadString(GetJNIString(env, val),
-                                      GetJNIString(env, url));
-}
-
-JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1ExecuteJavaScript(JNIEnv* env,
                                                         jobject obj,
                                                         jstring code,

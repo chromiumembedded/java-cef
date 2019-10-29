@@ -238,17 +238,6 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1LoadURL(JNIEnv*,
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
- * Method:    N_LoadString
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1LoadString(JNIEnv*,
-                                                 jobject,
-                                                 jstring,
-                                                 jstring);
-
-/*
- * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_ExecuteJavaScript
  * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
  */

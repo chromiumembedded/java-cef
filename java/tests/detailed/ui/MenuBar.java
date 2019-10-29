@@ -53,6 +53,7 @@ import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
 import tests.detailed.dialog.UrlRequestDialog;
 import tests.detailed.dialog.WebPluginManagerDialog;
+import tests.detailed.util.DataUri;
 
 @SuppressWarnings("serial")
 public class MenuBar extends JMenuBar {
@@ -300,8 +301,8 @@ public class MenuBar extends JMenuBar {
         testShowText.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                browser_.loadString("<html><body><h1>Hello World</h1></body></html>",
-                        control_pane_.getAddress());
+                browser_.loadURL(DataUri.create(
+                        "text/html", "<html><body><h1>Hello World</h1></body></html>"));
             }
         });
         testMenu.add(testShowText);
@@ -327,7 +328,7 @@ public class MenuBar extends JMenuBar {
                 form += "<p>See implementation of <u>tests.RequestHandler.onBeforeResourceLoad(CefBrowser, CefRequest)</u> for details</p>";
                 form += "</form>";
                 form += "</body></html>";
-                browser_.loadString(form, control_pane_.getAddress());
+                browser_.loadURL(DataUri.create("text/html", form));
             }
         });
         testMenu.add(showForm);

@@ -42,15 +42,6 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1IsReadOnly(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_misc_CefPrintSettings_N
- * Method:    N_Copy
- * Signature: (J)Lorg/cef/misc/CefPrintSettings;
- */
-JNIEXPORT jobject JNICALL Java_org_cef_misc_CefPrintSettings_1N_N_1Copy(JNIEnv*,
-                                                                        jobject,
-                                                                        jlong);
-
-/*
- * Class:     org_cef_misc_CefPrintSettings_N
  * Method:    N_SetOrientation
  * Signature: (JZ)V
  */

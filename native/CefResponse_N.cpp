@@ -131,14 +131,29 @@ Java_org_cef_network_CefResponse_1N_N_1SetMimeType(JNIEnv* env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefResponse_1N_N_1GetHeader(JNIEnv* env,
-                                                 jobject obj,
-                                                 jlong self,
-                                                 jstring jheader) {
+Java_org_cef_network_CefResponse_1N_N_1GetHeaderByName(JNIEnv* env,
+                                                       jobject obj,
+                                                       jlong self,
+                                                       jstring jname) {
   CefRefPtr<CefResponse> response = GetSelf(self);
   if (!response)
     return NULL;
-  return NewJNIString(env, response->GetHeader(GetJNIString(env, jheader)));
+  return NewJNIString(env, response->GetHeaderByName(GetJNIString(env, jname)));
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefResponse_1N_N_1SetHeaderByName(JNIEnv* env,
+                                                       jobject obj,
+                                                       jlong self,
+                                                       jstring jname,
+                                                       jstring jvalue,
+                                                       jboolean joverride) {
+  CefRefPtr<CefResponse> response = GetSelf(self);
+  if (!response)
+    return;
+  return response->SetHeaderByName(GetJNIString(env, jname),
+                                   GetJNIString(env, jvalue),
+                                   joverride != JNI_FALSE);
 }
 
 JNIEXPORT void JNICALL

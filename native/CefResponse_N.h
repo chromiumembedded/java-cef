@@ -109,14 +109,27 @@ Java_org_cef_network_CefResponse_1N_N_1SetMimeType(JNIEnv*,
 
 /*
  * Class:     org_cef_network_CefResponse_N
- * Method:    N_GetHeader
+ * Method:    N_GetHeaderByName
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_org_cef_network_CefResponse_1N_N_1GetHeader(JNIEnv*,
-                                                 jobject,
-                                                 jlong,
-                                                 jstring);
+Java_org_cef_network_CefResponse_1N_N_1GetHeaderByName(JNIEnv*,
+                                                       jobject,
+                                                       jlong,
+                                                       jstring);
+
+/*
+ * Class:     org_cef_network_CefResponse_N
+ * Method:    N_SetHeaderByName
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Z)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefResponse_1N_N_1SetHeaderByName(JNIEnv*,
+                                                       jobject,
+                                                       jlong,
+                                                       jstring,
+                                                       jstring,
+                                                       jboolean);
 
 /*
  * Class:     org_cef_network_CefResponse_N

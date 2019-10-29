@@ -83,11 +83,6 @@ public abstract class CefPrintSettings {
     public abstract boolean isReadOnly();
 
     /**
-     * Returns a writable copy of this object.
-     */
-    public abstract CefPrintSettings copy();
-
-    /**
      * Set the page orientation.
      */
     public abstract void setOrientation(boolean landscape);

@@ -67,16 +67,6 @@ class CefPrintSettings_N extends CefPrintSettings implements CefNative {
     }
 
     @Override
-    public CefPrintSettings copy() {
-        try {
-            return N_Copy(N_CefHandle);
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
     public void setOrientation(boolean landscape) {
         try {
             N_SetOrientation(N_CefHandle, landscape);
@@ -271,7 +261,6 @@ class CefPrintSettings_N extends CefPrintSettings implements CefNative {
     private final native void N_Dispose(long self);
     private final native boolean N_IsValid(long self);
     private final native boolean N_IsReadOnly(long self);
-    private final native CefPrintSettings N_Copy(long self);
     private final native void N_SetOrientation(long self, boolean landscape);
     private final native boolean N_IsLandscape(long self);
     private final native void N_SetPrinterPrintableArea(long self,

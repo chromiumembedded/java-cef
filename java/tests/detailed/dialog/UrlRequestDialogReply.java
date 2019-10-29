@@ -158,7 +158,7 @@ public class UrlRequestDialogReply extends JDialog implements CefURLRequestClien
     public void onRequestComplete(CefURLRequest request) {
         String updateStr = "onRequestCompleted\n\n";
         CefResponse response = request.getResponse();
-        boolean isText = response.getHeader("Content-Type").startsWith("text");
+        boolean isText = response.getHeaderByName("Content-Type").startsWith("text");
         updateStr += response.toString();
         updateStatus(updateStr, isText);
     }

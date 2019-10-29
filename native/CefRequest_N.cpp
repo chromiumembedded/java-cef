@@ -236,6 +236,32 @@ Java_org_cef_network_CefRequest_1N_N_1SetPostData(JNIEnv* env,
   request->SetPostData(postDataObj.GetCefObject());
 }
 
+JNIEXPORT jstring JNICALL
+Java_org_cef_network_CefRequest_1N_N_1GetHeaderByName(JNIEnv* env,
+                                                      jobject obj,
+                                                      jlong self,
+                                                      jstring jname) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
+  if (!request)
+    return NULL;
+  return NewJNIString(env, request->GetHeaderByName(GetJNIString(env, jname)));
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefRequest_1N_N_1SetHeaderByName(JNIEnv* env,
+                                                      jobject obj,
+                                                      jlong self,
+                                                      jstring jname,
+                                                      jstring jvalue,
+                                                      jboolean joverride) {
+  CefRefPtr<CefRequest> request = GetSelf(self);
+  if (!request)
+    return;
+  return request->SetHeaderByName(GetJNIString(env, jname),
+                                  GetJNIString(env, jvalue),
+                                  joverride != JNI_FALSE);
+}
+
 JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1GetHeaderMap(JNIEnv* env,
                                                    jobject obj,
