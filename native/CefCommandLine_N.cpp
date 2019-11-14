@@ -156,7 +156,7 @@ Java_org_cef_callback_CefCommandLine_1N_N_1GetArguments(JNIEnv* env,
        iter != arguments.end(); ++iter) {
     ScopedJNIString jargument(env, *iter);
     jboolean succ = JNI_FALSE;
-    JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/object;)Z", Boolean, succ,
+    JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/Object;)Z", Boolean, succ,
                     jargument.get());
     UNUSED(succ);
   }
