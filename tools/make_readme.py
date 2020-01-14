@@ -2,6 +2,8 @@
 # reserved. Use of this source code is governed by a BSD-style license that
 # can be found in the LICENSE file.
 
+from __future__ import absolute_import
+from __future__ import print_function
 from date_util import *
 from file_util import *
 from optparse import OptionParser
@@ -109,7 +111,7 @@ output_dir = options.outputdir
 platform = options.platform
 if (platform != 'linux32' and platform != 'linux64' and
     platform != 'macosx64' and platform != 'win32' and platform != 'win64'):
-  print 'Unsupported target \"' + platform + '\"'
+  print('Unsupported target \"' + platform + '\"')
   sys.exit(1)
 
 # script directory
@@ -130,8 +132,8 @@ jcef_commit_number = git.get_commit_number(jcef_dir)
 jcef_commit_hash = git.get_hash(jcef_dir)
 jcef_url = git.get_url(jcef_dir)
 jcef_ver = '%s.%s.%s.%s+g%s' % (args['CEF_MAJOR'], args['CEF_MINOR'],
-                             args['CEF_PATCH'], jcef_commit_number,
-                             jcef_commit_hash[:7])
+                                args['CEF_PATCH'], jcef_commit_number,
+                                jcef_commit_hash[:7])
 
 date = get_date()
 

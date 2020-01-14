@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from file_util import read_file
 
 
@@ -9,8 +10,8 @@ def read_readme_file(file, args):
     if len(parts) != 2:
       continue
     if parts[0].startswith('CEF Version'):
-      args['CEF_VER'] = parts[1].strip();
-      subparts = parts[1].split('+');
+      args['CEF_VER'] = parts[1].strip()
+      subparts = parts[1].split('+')
       if len(subparts) != 3:
         raise Exception('Failed to parse CEF Version: %s' % parts[1])
       verparts = subparts[0].strip().split('.')

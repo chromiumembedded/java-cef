@@ -2,6 +2,7 @@
 # reserved. Use of this source code is governed by a BSD-style license that
 # can be found in the LICENSE file.
 
+from __future__ import absolute_import
 from date_util import *
 from file_util import *
 import git_util as git
@@ -72,8 +73,9 @@ def write_svn_header(header):
   args = {}
   read_readme_file(os.path.join(options.cefpath, 'README.txt'), args)
 
-  version = '%s.%s.%s.%s+g%s' % (args['CEF_MAJOR'], args['CEF_MINOR'], args['CEF_PATCH'],
-                              commit_number, commit_hash[:7])
+  version = '%s.%s.%s.%s+g%s' % (args['CEF_MAJOR'], args['CEF_MINOR'],
+                                 args['CEF_PATCH'], commit_number,
+                                 commit_hash[:7])
 
   newcontents = '// Copyright (c) '+year+' The Chromium Embedded Framework Authors. All rights\n'+\
                 '// reserved. Use of this source code is governed by a BSD-style license that\n'+\
