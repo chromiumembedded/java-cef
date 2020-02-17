@@ -140,14 +140,14 @@ public class CefApp extends CefAppHandlerAdapter {
         super(args);
         if (settings != null) settings_ = settings.clone();
         if (OS.isWindows()) {
-            System.loadLibrary("jawt");
-            System.loadLibrary("chrome_elf");
-            System.loadLibrary("libcef");
+            SystemBootstrap.loadLibrary("jawt");
+            SystemBootstrap.loadLibrary("chrome_elf");
+            SystemBootstrap.loadLibrary("libcef");
 
             // Other platforms load this library in CefApp.startup().
-            System.loadLibrary("jcef");
+            SystemBootstrap.loadLibrary("jcef");
         } else if (OS.isLinux()) {
-            System.loadLibrary("cef");
+            SystemBootstrap.loadLibrary("cef");
         }
         if (appHandler_ == null) {
             appHandler_ = this;
@@ -520,7 +520,7 @@ public class CefApp extends CefAppHandlerAdapter {
      */
     public static final boolean startup() {
         if (OS.isLinux() || OS.isMacintosh()) {
-            System.loadLibrary("jcef");
+            SystemBootstrap.loadLibrary("jcef");
             return N_Startup();
         }
         return true;
