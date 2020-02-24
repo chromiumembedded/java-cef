@@ -52,7 +52,7 @@ public class TestSetupExtension
         context.getRoot().getStore(GLOBAL).put("jcef_test_setup", this);
 
         // Perform startup initialization on platforms that require it.
-        if (!CefApp.startup()) {
+        if (!CefApp.startup(null)) {
             System.out.println("Startup initialization failed!");
             return;
         }

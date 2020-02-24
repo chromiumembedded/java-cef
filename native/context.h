@@ -23,20 +23,12 @@ class Context {
   static void Create();
   static void Destroy();
 
-#if defined(OS_MACOSX)
-  void set_library_loader(CefScopedLibraryLoader* library_loader) {
-    DCHECK(!library_loader_);
-    library_loader_.reset(library_loader);
-  }
-#endif
-
   // Returns the singleton instance of this object.
   static Context* GetInstance();
 
   bool PreInitialize(JNIEnv* env, jobject c);
   bool Initialize(JNIEnv* env,
                   jobject c,
-                  jstring argPathToJavaDLL,
                   jobject appHandler,
                   jobject jsettings);
   void OnContextInitialized();
@@ -51,10 +43,6 @@ class Context {
   base::ThreadChecker thread_checker_;
 
   scoped_ptr<TempWindow> temp_window_;
-
-#if defined(OS_MACOSX)
-  scoped_ptr<CefScopedLibraryLoader> library_loader_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };

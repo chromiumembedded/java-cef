@@ -18,12 +18,10 @@ std::set<std::string>& GetTempFilesSet() {
 
 }  // namespace
 
-ClientApp::ClientApp(const std::string& module_dir,
-                     const std::string& cache_path,
+ClientApp::ClientApp(const std::string& cache_path,
                      JNIEnv* env,
                      const jobject app_handler)
-    : module_dir_(module_dir),
-      cache_path_(cache_path),
+    : cache_path_(cache_path),
       handle_(env, app_handler),
       process_handler_(new BrowserProcessHandler(env, app_handler)) {}
 
@@ -52,14 +50,6 @@ void ClientApp::OnBeforeCommandLineProcessing(
 
   if (process_type.empty()) {
 #if defined(OS_MACOSX)
-    // Specify a path for the locale.pak file because CEF will fail to locate
-    // it based on the app bundle structure.
-    const std::string& locale_path = util_mac::GetAbsPath(
-        module_dir_ +
-        "/../Frameworks/Chromium Embedded Framework.framework/"
-        "Resources/en.lproj/locale.pak");
-    command_line->AppendSwitchWithValue("locale_pak", locale_path);
-
     // If windowed rendering is used, we need the browser window as CALayer
     // due Java7 is CALayer based instead of NSLayer based.
     command_line->AppendSwitch("use-core-animation");

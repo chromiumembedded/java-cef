@@ -10,9 +10,11 @@ extern "C" {
 /*
  * Class:     org_cef_CefApp
  * Method:    N_Startup
- * Signature: ()Z
+ * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Startup(JNIEnv*, jclass);
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Startup(JNIEnv*,
+                                                          jclass,
+                                                          jstring);
 
 /*
  * Class:     org_cef_CefApp
@@ -25,11 +27,12 @@ JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1PreInitialize(JNIEnv*,
 /*
  * Class:     org_cef_CefApp
  * Method:    N_Initialize
- * Signature:
- * (Ljava/lang/String;Lorg/cef/handler/CefAppHandler;Lorg/cef/CefSettings;)Z
+ * Signature: (Lorg/cef/handler/CefAppHandler;Lorg/cef/CefSettings;)Z
  */
-JNIEXPORT jboolean JNICALL
-Java_org_cef_CefApp_N_1Initialize(JNIEnv*, jobject, jstring, jobject, jobject);
+JNIEXPORT jboolean JNICALL Java_org_cef_CefApp_N_1Initialize(JNIEnv*,
+                                                             jobject,
+                                                             jobject,
+                                                             jobject);
 
 /*
  * Class:     org_cef_CefApp

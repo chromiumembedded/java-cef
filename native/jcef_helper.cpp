@@ -172,16 +172,39 @@ int main(int argc, char* argv[]) {
     return 1;
 #endif  // defined(CEF_USE_SANDBOX)
 
+  // Check for the path on the command-line.
+  std::string framework_path;
+  const std::string switchPrefix = "--framework-dir-path=";
+  for (int i = 0; i < argc; ++i) {
+    std::string arg = argv[i];
+    if (arg.find(switchPrefix) == 0) {
+      framework_path = arg.substr(switchPrefix.length());
+      break;
+    }
+  }
+
   // Load the CEF framework library at runtime instead of linking directly
   // as required by the macOS sandbox implementation.
   CefScopedLibraryLoader library_loader;
-  if (!library_loader.LoadInHelper())
+  if (!framework_path.empty()) {
+    framework_path += "/Chromium Embedded Framework";
+    if (!cef_load_library(framework_path.c_str()))
+      return 1;
+  } else if (!library_loader.LoadInHelper()) {
     return 1;
+  }
 #endif  // defined(OS_MACOSX)
 
   CefMainArgs main_args(argc, argv);
 #endif  // !defined(OS_WIN)
 
   CefRefPtr<CefHelperApp> app = new CefHelperApp();
-  return CefExecuteProcess(main_args, app.get(), NULL);
+  const int result = CefExecuteProcess(main_args, app.get(), NULL);
+
+#if defined(OS_MACOSX)
+  if (!framework_path.empty())
+    cef_unload_library();
+#endif
+
+  return result;
 }

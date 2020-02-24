@@ -66,7 +66,6 @@ bool Context::PreInitialize(JNIEnv* env, jobject c) {
 
 bool Context::Initialize(JNIEnv* env,
                          jobject c,
-                         jstring argPathToJavaDLL,
                          jobject appHandler,
                          jobject jsettings) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -76,8 +75,6 @@ bool Context::Initialize(JNIEnv* env,
 #else
   CefMainArgs main_args(0, NULL);
 #endif
-
-  const std::string& module_dir = GetJNIString(env, argPathToJavaDLL);
 
   CefSettings settings = GetJNISettings(env, jsettings);
 
@@ -117,8 +114,8 @@ bool Context::Initialize(JNIEnv* env,
   // DoMessageLoopWork.
   settings.external_message_pump = external_message_pump_;
 
-  CefRefPtr<ClientApp> client_app(new ClientApp(
-      module_dir, CefString(&settings.cache_path), env, appHandler));
+  CefRefPtr<ClientApp> client_app(
+      new ClientApp(CefString(&settings.cache_path), env, appHandler));
   bool res = false;
 
 #if defined(OS_POSIX)
@@ -193,4 +190,8 @@ Context::Context() : external_message_pump_(true) {
 Context::~Context() {
   DCHECK(thread_checker_.CalledOnValidThread());
   g_context = NULL;
+
+#if defined(OS_MACOSX)
+  cef_unload_library();
+#endif
 }

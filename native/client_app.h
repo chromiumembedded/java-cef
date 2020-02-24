@@ -16,8 +16,7 @@
 // ClientApp implementation.
 class ClientApp : public CefApp {
  public:
-  ClientApp(const std::string& module_dir,
-            const std::string& cache_path,
+  ClientApp(const std::string& cache_path,
             JNIEnv* env,
             const jobject app_handler);
 
@@ -39,7 +38,6 @@ class ClientApp : public CefApp {
   static void eraseTempFiles();
 
  protected:
-  const std::string module_dir_;
   const std::string cache_path_;
   ScopedJNIObjectGlobal handle_;
   CefRefPtr<BrowserProcessHandler> process_handler_;
