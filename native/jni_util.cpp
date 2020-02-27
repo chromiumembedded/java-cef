@@ -747,7 +747,7 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_DNS_SORT_ERROR, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_DNS_HTTP_FAILED, jerrorCode);
+               ERR_DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED, jerrorCode);
   }
   return jerrorCode;
 }

@@ -239,7 +239,7 @@ public interface CefLoadHandler {
         ERR_DNS_CACHE_MISS(-804),
         ERR_DNS_SEARCH_EMPTY(-805),
         ERR_DNS_SORT_ERROR(-806),
-        ERR_DNS_HTTP_FAILED(-807);
+        ERR_DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED(-808);
 
         static private final Map<Integer, ErrorCode> CODES = new HashMap<>();
         static {
