@@ -415,8 +415,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PROXY_AUTH_REQUESTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_SSL_WEAK_SERVER_EPHEMERAL_DH_KEY, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PROXY_CONNECTION_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_MANDATORY_PROXY_CONFIGURATION_FAILED, jerrorCode);
@@ -531,7 +529,9 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERT_SYMANTEC_LEGACY, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_QUIC_CERT_ROOT_NOT_KNOWN, jerrorCode);
+               ERR_CERT_KNOWN_INTERCEPTION_BLOCKED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_SSL_OBSOLETE_VERSION, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_END,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_INVALID_URL,
@@ -656,6 +656,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_HTTP_RESPONSE_CODE_FAILURE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_QUIC_CERT_ROOT_NOT_KNOWN, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CACHE_MISS,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -692,6 +694,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_ADD_USER_CERT_FAILED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_INVALID_SIGNED_EXCHANGE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INVALID_WEB_BUNDLE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FTP_FAILED,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -1366,13 +1370,10 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
     }
   }
 
-  GetJNIFieldDouble(env, cls, obj, "margin_top", &settings.margin_top);
-
-  GetJNIFieldDouble(env, cls, obj, "margin_bottom", &settings.margin_bottom);
-
-  GetJNIFieldDouble(env, cls, obj, "margin_right", &settings.margin_right);
-
-  GetJNIFieldDouble(env, cls, obj, "margin_left", &settings.margin_left);
+  GetJNIFieldInt(env, cls, obj, "margin_top", &settings.margin_top);
+  GetJNIFieldInt(env, cls, obj, "margin_bottom", &settings.margin_bottom);
+  GetJNIFieldInt(env, cls, obj, "margin_right", &settings.margin_right);
+  GetJNIFieldInt(env, cls, obj, "margin_left", &settings.margin_left);
 
   return settings;
 }

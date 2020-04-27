@@ -8,7 +8,6 @@ package org.cef.misc;
  * PDF print settings for browser.printToPDF()
  */
 public class CefPdfPrintSettings {
-    
     public enum MarginType {
         // Default margins.
         DEFAULT,
@@ -22,13 +21,13 @@ public class CefPdfPrintSettings {
         // Custom margins using the values from CefPdfPrintSettings
         CUSTOM
     }
-    
+
     /**
      * Set to true to print headers and footers or false to not print
      * headers and footers.
      */
     public boolean header_footer_enabled;
-    
+
     /**
      * Page title to display in the header. Only used if header_footer_enabled
      * is set to true.
@@ -51,43 +50,43 @@ public class CefPdfPrintSettings {
      * background graphics.
      */
     public boolean backgrounds_enabled;
-    
+
     /**
      * Output page size in microns (1 millimeter = 1000 microns). If either of these
      * values is less than or equal to zero then the default paper size will be
-     * used as returned by the print_handler.  A4 is 210 × 297 mm which would
-     * be 210000 x 297000 microns.  US Letter is 215.9 × 279.4 mm which would 
+     * used as returned by the print_handler.  A4 is 210 x 297 mm which would
+     * be 210000 x 297000 microns.  US Letter is 215.9 x 279.4 mm which would
      * be 215900 x 279400 microns.
      */
     public int page_width;
     public int page_height;
-    
+
     /**
      * Set to true to print the selection only or false to print all.
      */
     public boolean selection_only;
-    
+
     /**
      * The percentage to scale the PDF by before printing (e.g. 50 is 50%).
      * If this value is less than or equal to zero the default value of 100
      * will be used.
      */
     public int scale_factor;
-    
+
     /**
-     * Margins in millimeters. Only used if |margin_type| is set to
+     * Margins in points. Only used if |margin_type| is set to
      * PDF_PRINT_MARGIN_CUSTOM.
      */
-    public double margin_top;
-    public double margin_right;
-    public double margin_bottom;
-    public double margin_left;
+    public int margin_top;
+    public int margin_right;
+    public int margin_bottom;
+    public int margin_left;
 
     /**
      * Margin type.
      */
     public MarginType margin_type;
-    
+
     public CefPdfPrintSettings() {}
 
     @Override
