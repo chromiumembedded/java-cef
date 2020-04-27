@@ -4,6 +4,8 @@
 
 #include "message_router_handler.h"
 
+#include "jni_util.h"
+
 namespace {
 
 using CefQueryCallback = CefMessageRouterBrowserSide::Callback;

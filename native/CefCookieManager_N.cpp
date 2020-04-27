@@ -11,6 +11,7 @@
 
 #include "completion_callback.h"
 #include "cookie_visitor.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {
@@ -20,6 +21,39 @@ const char kCefClassName[] = "CefCookieManager";
 CefRefPtr<CefCookieManager> GetSelf(jlong self) {
   return reinterpret_cast<CefCookieManager*>(self);
 }
+
+CefCookie GetJNICookie(JNIEnv* env, jobject jcookie) {
+  CefCookie cookie;
+
+  ScopedJNIClass cls(env, "org/cef/network/CefCookie");
+  if (!cls)
+    return cookie;
+
+  CefString name(&cookie.name);
+  CefString value(&cookie.value);
+  CefString domain(&cookie.domain);
+  CefString path(&cookie.path);
+  CefTime creation, lastAccess, expires;
+
+  GetJNIFieldString(env, cls, jcookie, "name", &name);
+  GetJNIFieldString(env, cls, jcookie, "value", &value);
+  GetJNIFieldString(env, cls, jcookie, "domain", &domain);
+  GetJNIFieldString(env, cls, jcookie, "path", &path);
+  GetJNIFieldBoolean(env, cls, jcookie, "secure", &cookie.secure);
+  GetJNIFieldBoolean(env, cls, jcookie, "httponly", &cookie.httponly);
+  GetJNIFieldDate(env, cls, jcookie, "creation", &creation);
+  cookie.creation = creation;
+  GetJNIFieldDate(env, cls, jcookie, "lastAccess", &lastAccess);
+  cookie.last_access = lastAccess;
+  GetJNIFieldBoolean(env, cls, jcookie, "hasExpires", &cookie.has_expires);
+  if (cookie.has_expires) {
+    GetJNIFieldDate(env, cls, jcookie, "expires", &expires);
+    cookie.expires = expires;
+  }
+
+  return cookie;
+}
+
 }  // namespace
 
 JNIEXPORT jobject JNICALL
@@ -31,12 +65,12 @@ Java_org_cef_network_CefCookieManager_1N_N_1GetGlobalManager(JNIEnv* env,
   if (!manager)
     return NULL;
 
-  jobject jManager = NewJNIObject(env, cls);
+  ScopedJNIObjectLocal jManager(env, NewJNIObject(env, cls));
   if (!jManager)
     return NULL;
 
   SetCefForJNIObject(env, jManager, manager.get(), kCefClassName);
-  return jManager;
+  return jManager.Release();
 }
 
 JNIEXPORT void JNICALL

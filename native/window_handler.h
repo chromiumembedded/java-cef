@@ -7,15 +7,16 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_base.h"
 #include "include/cef_browser.h"
-#include "util.h"
+
+#include "jni_scoped_helpers.h"
 
 // WindowHandler implementation.
 class WindowHandler : public CefBaseRefCounted {
  public:
   WindowHandler(JNIEnv* env, jobject handler);
-  virtual ~WindowHandler();
 
   // WindowHandler methods
   bool GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
@@ -28,7 +29,7 @@ class WindowHandler : public CefBaseRefCounted {
                     int button);
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(WindowHandler);

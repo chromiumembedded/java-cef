@@ -76,7 +76,7 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
 static int getMouseEvent(const char* evtName) {
   int value = 0;
   BEGIN_ENV(env)
-  jclass jcls = FindClass(env, "java/awt/event/MouseEvent");
+  ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
   GetJNIFieldStaticInt(env, jcls, evtName, &value);
   END_ENV(env)
   return value;
@@ -90,7 +90,7 @@ static int getModifiers(BOOLEAN forceShift) {
   int button2 = 0;
   int button3 = 0;
   BEGIN_ENV(env)
-  jclass jcls = FindClass(env, "java/awt/event/InputEvent");
+  ScopedJNIClass jcls(env, "java/awt/event/InputEvent");
   if ((GetKeyState(VK_MENU) & 0x8000) != 0)
     GetJNIFieldStaticInt(env, jcls, "ALT_DOWN_MASK", &alt);
   if ((GetKeyState(VK_CONTROL) & 0x8000) != 0)
@@ -110,7 +110,7 @@ static int getModifiers(BOOLEAN forceShift) {
 static int getMouseButton(WPARAM wParam) {
   int mouseButton = 0;
   BEGIN_ENV(env)
-  jclass jcls = FindClass(env, "java/awt/event/MouseEvent");
+  ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
   switch (wParam) {
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:

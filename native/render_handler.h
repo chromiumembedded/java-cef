@@ -7,13 +7,15 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_render_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // RenderHandler implementation.
 class RenderHandler : public CefRenderHandler {
  public:
   RenderHandler(JNIEnv* env, jobject handler);
-  virtual ~RenderHandler();
 
   // CefRenderHandler methods
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser,
@@ -54,7 +56,7 @@ class RenderHandler : public CefRenderHandler {
                       int& screenY);
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RenderHandler);

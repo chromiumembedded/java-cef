@@ -4,7 +4,7 @@
 
 #include "CefCallback_N.h"
 #include "include/cef_callback.h"
-#include "jni_util.h"
+#include "jni_scoped_helpers.h"
 
 namespace {
 

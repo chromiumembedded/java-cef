@@ -5,39 +5,30 @@
 #include "window_handler.h"
 
 #include "jni_util.h"
-#include "util.h"
 
-WindowHandler::WindowHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
-
-WindowHandler::~WindowHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+WindowHandler::WindowHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
 bool WindowHandler::GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
 
-  jobject jbrowser = GetJNIBrowser(browser);
-  bool result = GetRect(jbrowser, rect);
-  env->DeleteLocalRef(jbrowser);
-  return result;
+  ScopedJNIBrowser jbrowser(env, browser);
+  return GetRect(jbrowser, rect);
 }
 
 bool WindowHandler::GetRect(jobject browser, CefRect& rect) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return false;
-  jobject jreturn = NULL;
-  JNI_CALL_METHOD(env, jhandler_, "getRect",
+
+  ScopedJNIObjectResult jreturn(env);
+  JNI_CALL_METHOD(env, handle_, "getRect",
                   "(Lorg/cef/browser/CefBrowser;)Ljava/awt/Rectangle;", Object,
                   jreturn, browser);
   if (jreturn) {
     rect = GetJNIRect(env, jreturn);
-    env->DeleteLocalRef(jreturn);
     return true;
   }
   return false;
@@ -52,10 +43,10 @@ void WindowHandler::OnMouseEvent(CefRefPtr<CefBrowser> browser,
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onMouseEvent",
-                       "(Lorg/cef/browser/CefBrowser;IIIII)V",
-                       jbrowser, (jint)mouseEvent, (jint)absX,
-                       (jint)absY, (jint)modifier, (jint)button);
-  env->DeleteLocalRef(jbrowser);
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  JNI_CALL_VOID_METHOD(env, handle_, "onMouseEvent",
+                       "(Lorg/cef/browser/CefBrowser;IIIII)V", jbrowser.get(),
+                       (jint)mouseEvent, (jint)absX, (jint)absY, (jint)modifier,
+                       (jint)button);
 }

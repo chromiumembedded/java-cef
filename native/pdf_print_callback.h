@@ -7,19 +7,21 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_browser.h"
+
+#include "jni_scoped_helpers.h"
 
 // PdfPrintCallback implementation.
 class PdfPrintCallback : public CefPdfPrintCallback {
  public:
   PdfPrintCallback(JNIEnv* env, jobject jcallback);
-  virtual ~PdfPrintCallback();
 
   // PdfPrintCallback methods
   virtual void OnPdfPrintFinished(const CefString& path, bool ok) OVERRIDE;
 
  protected:
-  jobject jcallback_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(PdfPrintCallback);

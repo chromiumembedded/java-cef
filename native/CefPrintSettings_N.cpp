@@ -17,6 +17,40 @@ CefRefPtr<CefPrintSettings> GetSelf(jlong self) {
   return reinterpret_cast<CefPrintSettings*>(self);
 }
 
+// Retrieve the CefPageRange equivalent of a org.cef.misc.CefPageRange
+CefRange GetJNIPageRange(JNIEnv* env, jobject obj) {
+  CefRange range;
+
+  ScopedJNIClass cls(env, "org/cef/misc/CefPageRange");
+  if (!cls)
+    return range;
+
+  int from, to;
+  if (GetJNIFieldInt(env, cls, obj, "from", &from) &&
+      GetJNIFieldInt(env, cls, obj, "to", &to)) {
+    range.Set(from, to);
+  }
+  return range;
+}
+
+// Create a new org.cef.misc.CefPageRange
+jobject NewJNIPageRange(JNIEnv* env, const CefRange& range) {
+  ScopedJNIClass cls(env, "org/cef/misc/CefPageRange");
+  if (!cls)
+    return NULL;
+
+  ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
+  if (!obj)
+    return NULL;
+
+  if (SetJNIFieldInt(env, cls, obj, "from", range.from) &&
+      SetJNIFieldInt(env, cls, obj, "to", range.to)) {
+    return obj.Release();
+  }
+
+  return NULL;
+}
+
 }  // namespace
 
 JNIEXPORT jobject JNICALL

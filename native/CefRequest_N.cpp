@@ -406,5 +406,6 @@ Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv* env,
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
     return NULL;
-  return NewJNITransitionType(env, request->GetTransitionType());
+  ScopedJNITransitionType type(env, request->GetTransitionType());
+  return type.Release();
 }

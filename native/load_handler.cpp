@@ -8,7 +8,8 @@
 #include "jni_util.h"
 #include "util.h"
 
-LoadHandler::LoadHandler(JNIEnv* env, jobject handler) : handle_(env, handler) {}
+LoadHandler::LoadHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
 void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                        bool isLoading,
@@ -38,8 +39,7 @@ void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
   jframe.SetTemporary();
-  ScopedJNIObjectLocal jtransitionType(
-      env, NewJNITransitionType(env, transition_type));
+  ScopedJNITransitionType jtransitionType(env, transition_type);
 
   JNI_CALL_VOID_METHOD(env, handle_, "onLoadStart",
                        "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"

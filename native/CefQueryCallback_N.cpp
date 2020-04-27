@@ -4,6 +4,7 @@
 
 #include "CefQueryCallback_N.h"
 #include "include/wrapper/cef_message_router.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {

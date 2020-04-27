@@ -92,18 +92,19 @@ CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
 #if defined(OS_MACOSX)
 bool ClientApp::HandleTerminate() {
   BEGIN_ENV(env)
-  jclass cls = FindClass(env, "org/cef/CefApp");
-  if (!cls) {
+  ScopedJNIClass jcls(env, "org/cef/CefApp");
+  if (!jcls) {
     return false;
   }
 
   jmethodID methodId =
-      env->GetStaticMethodID(cls, "getInstance", "()Lorg/cef/CefApp;");
+      env->GetStaticMethodID(jcls, "getInstance", "()Lorg/cef/CefApp;");
   if (!methodId) {
     return false;
   }
 
-  jobject jcefApp = env->CallStaticObjectMethod(cls, methodId);
+  ScopedJNIObjectLocal jcefApp(env,
+                               env->CallStaticObjectMethod(jcls, methodId));
   if (!jcefApp) {
     return false;
   }

@@ -4,21 +4,16 @@
 
 #include "completion_callback.h"
 
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "util.h"
 
-CompletionCallback::CompletionCallback(JNIEnv* env, jobject jhandler) {
-  jhandler_ = env->NewGlobalRef(jhandler);
-}
-
-CompletionCallback::~CompletionCallback() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
+CompletionCallback::CompletionCallback(JNIEnv* env, jobject jhandler)
+    : handle_(env, jhandler) {}
 
 void CompletionCallback::OnComplete() {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  JNI_CALL_VOID_METHOD(env, jhandler_, "onComplete", "()V");
+  JNI_CALL_VOID_METHOD(env, handle_, "onComplete", "()V");
 }

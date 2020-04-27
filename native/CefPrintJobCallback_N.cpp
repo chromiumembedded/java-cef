@@ -3,7 +3,7 @@
 // can be found in the LICENSE file.
 
 #include "CefPrintJobCallback_N.h"
-#include "jni_util.h"
+#include "jni_scoped_helpers.h"
 
 #include "include/cef_print_handler.h"
 

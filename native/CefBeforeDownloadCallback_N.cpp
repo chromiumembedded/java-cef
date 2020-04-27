@@ -4,6 +4,7 @@
 
 #include "CefBeforeDownloadCallback_N.h"
 #include "include/cef_download_handler.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {

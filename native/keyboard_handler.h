@@ -7,13 +7,15 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_keyboard_handler.h"
+
+#include "jni_scoped_helpers.h"
 
 // KeyboardHandler implementation.
 class KeyboardHandler : public CefKeyboardHandler {
  public:
   KeyboardHandler(JNIEnv* env, jobject handler);
-  virtual ~KeyboardHandler();
 
   // CefKeyboardHandler methods
   virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
@@ -26,7 +28,7 @@ class KeyboardHandler : public CefKeyboardHandler {
                           CefEventHandle os_event) OVERRIDE;
 
  protected:
-  jobject jhandler_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(KeyboardHandler);

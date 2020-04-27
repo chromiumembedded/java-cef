@@ -23,7 +23,7 @@ bool CookieAccessFilter::CanSendCookie(CefRefPtr<CefBrowser> browser,
   jframe.SetTemporary();
   ScopedJNIRequest jrequest(env, request);
   jrequest.SetTemporary();
-  ScopedJNIObjectLocal jcookie(env, NewJNICookie(env, cookie));
+  ScopedJNICookie jcookie(env, cookie);
   jboolean result = JNI_TRUE;
 
   JNI_CALL_METHOD(env, handle_, "canSendCookie",
@@ -51,7 +51,7 @@ bool CookieAccessFilter::CanSaveCookie(CefRefPtr<CefBrowser> browser,
   jrequest.SetTemporary();
   ScopedJNIResponse jresponse(env, response);
   jresponse.SetTemporary();
-  ScopedJNIObjectLocal jcookie(env, NewJNICookie(env, cookie));
+  ScopedJNICookie jcookie(env, cookie);
   jboolean result = JNI_TRUE;
 
   JNI_CALL_METHOD(

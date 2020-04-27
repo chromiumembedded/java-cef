@@ -4,6 +4,141 @@
 
 #include "jni_scoped_helpers.h"
 
+#include "client_handler.h"
+#include "jni_util.h"
+
+namespace {
+
+// Returns a class with the given fully qualified |class_name| (with '/' as
+// separator).
+jclass FindClass(JNIEnv* env, const char* class_name) {
+  jobject classLoader = GetJavaClassLoader();
+  ASSERT(classLoader);
+
+  std::string classNameSeparatedByDots(class_name);
+  std::replace(classNameSeparatedByDots.begin(), classNameSeparatedByDots.end(),
+               '/', '.');
+
+  ScopedJNIString classNameJString(env, classNameSeparatedByDots);
+  jobject result = NULL;
+
+  JNI_CALL_METHOD(env, classLoader, "loadClass",
+                  "(Ljava/lang/String;)Ljava/lang/Class;", Object, result,
+                  classNameJString.get());
+
+  return static_cast<jclass>(result);
+}
+
+jobject NewJNIBoolRef(JNIEnv* env, bool initValue) {
+  ScopedJNIObjectLocal jboolRef(env, "org/cef/misc/BoolRef");
+  if (!jboolRef)
+    return NULL;
+  SetJNIBoolRef(env, jboolRef, initValue);
+  return jboolRef.Release();
+}
+
+jobject NewJNIIntRef(JNIEnv* env, int initValue) {
+  ScopedJNIObjectLocal jintRef(env, "org/cef/misc/IntRef");
+  if (!jintRef)
+    return NULL;
+  SetJNIIntRef(env, jintRef, initValue);
+  return jintRef.Release();
+}
+
+jobject NewJNIStringRef(JNIEnv* env, const CefString& initValue) {
+  ScopedJNIObjectLocal jstringRef(env, "org/cef/misc/StringRef");
+  if (!jstringRef)
+    return NULL;
+  SetJNIStringRef(env, jstringRef, initValue);
+  return jstringRef.Release();
+}
+
+jobject NewJNIDate(JNIEnv* env, const CefTime& time) {
+  ScopedJNIObjectLocal jdate(env, "java/util/Date");
+  if (!jdate)
+    return NULL;
+  double timestamp = time.GetDoubleT() * 1000;
+  JNI_CALL_VOID_METHOD(env, jdate, "setTime", "(J)V", (jlong)timestamp);
+  return jdate.Release();
+}
+
+jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
+  ScopedJNIString name(env, CefString(&cookie.name));
+  ScopedJNIString value(env, CefString(&cookie.value));
+  ScopedJNIString domain(env, CefString(&cookie.domain));
+  ScopedJNIString path(env, CefString(&cookie.path));
+  const bool hasExpires = (cookie.has_expires != 0);
+  ScopedJNIObjectLocal expires(
+      env, hasExpires ? NewJNIDate(env, cookie.expires) : NULL);
+  ScopedJNIDate creation(env, cookie.creation);
+  ScopedJNIDate last_access(env, cookie.last_access);
+
+  return NewJNIObject(env, "org/cef/network/CefCookie",
+                      "(Ljava/lang/String;Ljava/lang/String;"
+                      "Ljava/lang/String;Ljava/lang/String;"
+                      "ZZLjava/util/Date;Ljava/util/Date;"
+                      "ZLjava/util/Date;)V",
+                      name.get(), value.get(), domain.get(), path.get(),
+                      (cookie.secure != 0 ? JNI_TRUE : JNI_FALSE),
+                      (cookie.httponly != 0 ? JNI_TRUE : JNI_FALSE),
+                      creation.get(), last_access.get(),
+                      (hasExpires ? JNI_TRUE : JNI_FALSE), expires.get());
+}
+
+jobject NewJNITransitionType(JNIEnv* env,
+                             CefRequest::TransitionType transitionType) {
+  ScopedJNIObjectResult result(env);
+  switch (transitionType & TT_SOURCE_MASK) {
+    default:
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_LINK,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_EXPLICIT,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
+               TT_AUTO_SUBFRAME, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType",
+               TT_MANUAL_SUBFRAME, result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_FORM_SUBMIT,
+               result);
+      JNI_CASE(env, "org/cef/network/CefRequest$TransitionType", TT_RELOAD,
+               result);
+  }
+
+  if (result) {
+    const int qualifiers = (transitionType & TT_QUALIFIER_MASK);
+    JNI_CALL_VOID_METHOD(env, result, "addQualifiers", "(I)V", qualifiers);
+  }
+
+  return result.Release();
+}
+
+jobject NewJNIURLRequestStatus(
+    JNIEnv* env,
+    CefResourceRequestHandler::URLRequestStatus status) {
+  ScopedJNIObjectResult result(env);
+  switch (status) {
+    default:
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_UNKNOWN, result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_SUCCESS, result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_IO_PENDING,
+               result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_CANCELED,
+               result);
+      JNI_CASE(env, "org/cef/network/CefURLRequest$Status", UR_FAILED, result);
+  }
+  return result.Release();
+}
+
+jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
+  if (!browser)
+    return NULL;
+  CefRefPtr<ClientHandler> client =
+      (ClientHandler*)browser->GetHost()->GetClient().get();
+  return client->getBrowser(env, browser);
+}
+
+}  // namespace
+
 ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle)
     : jhandle_(NULL) {
   if (handle) {
@@ -33,13 +168,66 @@ ScopedJNIObjectLocal::ScopedJNIObjectLocal(JNIEnv* env, jobject handle)
   jhandle_ = handle;
 }
 
+ScopedJNIObjectLocal::ScopedJNIObjectLocal(JNIEnv* env, const char* class_name)
+    : ScopedJNIObjectLocal(env, NewJNIObject(env, class_name)) {}
+
 ScopedJNIObjectResult::ScopedJNIObjectResult(JNIEnv* env)
     : ScopedJNIBase<jobject>(env) {}
 
-ScopedJNIString::ScopedJNIString(JNIEnv* env, const CefString& str)
+ScopedJNIClass::ScopedJNIClass(JNIEnv* env, const char* class_name)
+    : ScopedJNIClass(env, FindClass(env, class_name)) {}
+
+ScopedJNIClass::ScopedJNIClass(JNIEnv* env, const jclass& cls)
+    : ScopedJNIBase<jclass>(env) {
+  jhandle_ = cls;
+}
+
+ScopedJNIString::ScopedJNIString(JNIEnv* env, const std::string& str)
     : ScopedJNIBase<jstring>(env) {
   jhandle_ = NewJNIString(env, str);
   DCHECK(jhandle_);
+}
+
+ScopedJNIDate::ScopedJNIDate(JNIEnv* env, const CefTime& time)
+    : ScopedJNIBase<jobject>(env) {
+  jhandle_ = NewJNIDate(env, time);
+  DCHECK(jhandle_);
+}
+
+ScopedJNICookie::ScopedJNICookie(JNIEnv* env, const CefCookie& cookie)
+    : ScopedJNIBase<jobject>(env) {
+  jhandle_ = NewJNICookie(env, cookie);
+  DCHECK(jhandle_);
+}
+
+ScopedJNITransitionType::ScopedJNITransitionType(
+    JNIEnv* env,
+    CefRequest::TransitionType transitionType)
+    : ScopedJNIBase<jobject>(env) {
+  jhandle_ = NewJNITransitionType(env, transitionType);
+  DCHECK(jhandle_);
+}
+
+ScopedJNIURLRequestStatus::ScopedJNIURLRequestStatus(
+    JNIEnv* env,
+    CefResourceRequestHandler::URLRequestStatus status)
+    : ScopedJNIBase<jobject>(env) {
+  jhandle_ = NewJNIURLRequestStatus(env, status);
+  DCHECK(jhandle_);
+}
+
+ScopedJNIStringResult::ScopedJNIStringResult(JNIEnv* env)
+    : ScopedJNIBase<jstring>(env) {}
+
+ScopedJNIStringResult::ScopedJNIStringResult(JNIEnv* env, const jstring& str)
+    : ScopedJNIStringResult(env) {
+  jhandle_ = str;
+}
+
+CefString ScopedJNIStringResult::GetCefString() const {
+  if (!jhandle_)
+    return CefString();
+  return GetJNIString(env_, jhandle_);
 }
 
 ScopedJNIBrowser::ScopedJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> obj)
@@ -62,7 +250,7 @@ void ScopedJNIBrowser::SetHandle(jobject handle, bool should_delete) {
 CefRefPtr<CefBrowser> ScopedJNIBrowser::GetCefObject() const {
   if (!jhandle_)
     return NULL;
-  return GetCefBrowser(env_, jhandle_);
+  return GetJNIBrowser(env_, jhandle_);
 }
 
 ScopedJNIAuthCallback::ScopedJNIAuthCallback(JNIEnv* env,

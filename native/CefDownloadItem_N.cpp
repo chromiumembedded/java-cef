@@ -4,6 +4,7 @@
 
 #include "CefDownloadItem_N.h"
 #include "include/cef_download_item.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {
@@ -101,8 +102,8 @@ Java_org_cef_callback_CefDownloadItem_1N_N_1GetStartTime(JNIEnv* env,
   CefRefPtr<CefDownloadItem> downloadItem = GetSelf(self);
   if (!downloadItem)
     return NULL;
-  CefTime start = downloadItem->GetStartTime();
-  return NewJNIDate(env, start);
+  ScopedJNIDate jdate(env, downloadItem->GetStartTime());
+  return jdate.Release();
 }
 
 JNIEXPORT jobject JNICALL
@@ -112,8 +113,8 @@ Java_org_cef_callback_CefDownloadItem_1N_N_1GetEndTime(JNIEnv* env,
   CefRefPtr<CefDownloadItem> downloadItem = GetSelf(self);
   if (!downloadItem)
     return NULL;
-  CefTime end = downloadItem->GetEndTime();
-  return NewJNIDate(env, end);
+  ScopedJNIDate jdate(env, downloadItem->GetEndTime());
+  return jdate.Release();
 }
 
 JNIEXPORT jstring JNICALL

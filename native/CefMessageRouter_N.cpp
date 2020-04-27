@@ -119,7 +119,7 @@ Java_org_cef_browser_CefMessageRouter_1N_N_1CancelPending(
     return;
 
   // Browser and/or routerHandler may be null.
-  CefRefPtr<CefBrowser> browser = GetCefBrowser(env, jbrowser);
+  CefRefPtr<CefBrowser> browser = GetJNIBrowser(env, jbrowser);
   CefRefPtr<MessageRouterHandler> routerHandler =
       GetHandler(env, jrouterHandler, false /* allow_create */);
 

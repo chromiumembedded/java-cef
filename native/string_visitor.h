@@ -7,19 +7,21 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_string_visitor.h"
+
+#include "jni_scoped_helpers.h"
 
 // StringVisitor implementation.
 class StringVisitor : public CefStringVisitor {
  public:
   StringVisitor(JNIEnv* env, jobject jvisitor);
-  virtual ~StringVisitor();
 
   // StringVisitor methods
   virtual void Visit(const CefString& string) OVERRIDE;
 
  protected:
-  jobject jvisitor_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(StringVisitor);

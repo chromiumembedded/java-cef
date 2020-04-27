@@ -2,21 +2,23 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef JCEF_NATIVE_SCOPED_HELPERS_H_
-#define JCEF_NATIVE_SCOPED_HELPERS_H_
+#ifndef JCEF_NATIVE_JNI_SCOPED_HELPERS_H_
+#define JCEF_NATIVE_JNI_SCOPED_HELPERS_H_
 
 #include <jni.h>
 
+#include <string>
+
+#include "include/cef_auth_callback.h"
 #include "include/cef_browser.h"
 #include "include/cef_drag_data.h"
 #include "include/cef_frame.h"
 #include "include/cef_menu_model.h"
 #include "include/cef_print_settings.h"
 #include "include/cef_request.h"
+#include "include/cef_resource_request_handler.h"
 #include "include/cef_response.h"
 #include "include/wrapper/cef_message_router.h"
-
-#include "jni_util.h"
 
 //
 // --------
@@ -410,6 +412,42 @@
 //   }
 //
 
+// Type specialization helpers for SetCefForJNIObject.
+struct SetCefForJNIObjectHelper {
+  static inline void AddRef(CefBaseScoped* obj) {}
+  static inline void Release(CefBaseScoped* obj) {}
+
+  template <class T>
+  static inline T* Get(CefRawPtr<T> obj) {
+    return obj;
+  }
+
+  static inline void AddRef(CefBaseRefCounted* obj) { obj->AddRef(); }
+  static inline void Release(CefBaseRefCounted* obj) { obj->Release(); }
+
+  template <class T>
+  static inline T* Get(CefRefPtr<T> obj) {
+    return obj.get();
+  }
+
+  // For ref-counted implementations that don't derive from CefBaseRefCounted.
+  template <class T>
+  static inline void AddRef(base::RefCountedThreadSafe<T>* obj) {
+    obj->AddRef();
+  }
+  template <class T>
+  static inline void Release(base::RefCountedThreadSafe<T>* obj) {
+    obj->Release();
+  }
+};
+
+// Forward declarations required by the below template types.
+jobject NewJNIObject(JNIEnv* env, const char* class_name);
+template <class T>
+bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName);
+template <class T>
+T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName);
+
 // Used by the native counterpart of JCEF objects to hold a global JNI handle.
 class ScopedJNIObjectGlobal {
  public:
@@ -468,6 +506,9 @@ class ScopedJNIObjectLocal : public ScopedJNIBase<jobject> {
  public:
   // A local reference to |handle| should already exist.
   ScopedJNIObjectLocal(JNIEnv* env, jobject handle);
+
+  // Create a new instance of the specified |class_name|.
+  ScopedJNIObjectLocal(JNIEnv* env, const char* class_name);
 };
 
 // Used for later assignment of a handle whose lifespan will then be managed.
@@ -588,10 +629,63 @@ class ScopedJNIObject : public ScopedJNIBase<jobject> {
   bool created_handle_;
 };
 
+// JNI class. Finding |class_name| may fail.
+class ScopedJNIClass : public ScopedJNIBase<jclass> {
+ public:
+  ScopedJNIClass(JNIEnv* env, const char* class_name);
+  ScopedJNIClass(JNIEnv* env, const jclass& cls);
+};
+
 // JNI string.
 class ScopedJNIString : public ScopedJNIBase<jstring> {
  public:
-  ScopedJNIString(JNIEnv* env, const CefString& str);
+  ScopedJNIString(JNIEnv* env, const std::string& str);
+};
+
+// JNI date.
+class ScopedJNIDate : public ScopedJNIBase<jobject> {
+ public:
+  ScopedJNIDate(JNIEnv* env, const CefTime& time);
+};
+
+// JNI cookie.
+class ScopedJNICookie : public ScopedJNIBase<jobject> {
+ public:
+  ScopedJNICookie(JNIEnv* env, const CefCookie& cookie);
+};
+
+// JNI TransitionType.
+class ScopedJNITransitionType : public ScopedJNIBase<jobject> {
+ public:
+  ScopedJNITransitionType(JNIEnv* env,
+                          CefRequest::TransitionType transitionType);
+};
+
+// JNI URLRequestStatus.
+class ScopedJNIURLRequestStatus : public ScopedJNIBase<jobject> {
+ public:
+  ScopedJNIURLRequestStatus(JNIEnv* env,
+                            CefResourceRequestHandler::URLRequestStatus status);
+};
+
+// Used for assignment of a handle whose lifespan will then be managed.
+class ScopedJNIStringResult : public ScopedJNIBase<jstring> {
+ public:
+  explicit ScopedJNIStringResult(JNIEnv* env);
+  ScopedJNIStringResult(JNIEnv* env, const jstring& str);
+
+  jstring& operator=(const jstring& str) {
+    DCHECK(!jhandle_);
+    jhandle_ = str;
+    return jhandle_;
+  }
+
+  jobject& operator=(const jobject& obj) {
+    return (jobject&)operator=((jstring)obj);
+  }
+
+  // Get the associated CEF string.
+  CefString GetCefString() const;
 };
 
 // JNI CefBrowser object. This is a special case where the CefBrowser object
@@ -707,4 +801,90 @@ class ScopedJNIStringRef : public ScopedJNIBase<jobject> {
   operator CefString() const;
 };
 
-#endif  // JCEF_NATIVE_SCOPED_HELPERS_H_
+// Helper macros to call a method on the java side.
+#define JNI_CALL_METHOD(env, obj, method, sig, type, storeIn, ...)        \
+  {                                                                       \
+    if (env && obj) {                                                     \
+      ScopedJNIClass _cls(env, env->GetObjectClass(obj));                 \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig);          \
+      if (_methodId != NULL) {                                            \
+        storeIn = env->Call##type##Method(obj, _methodId, ##__VA_ARGS__); \
+      }                                                                   \
+      if (env->ExceptionOccurred()) {                                     \
+        env->ExceptionDescribe();                                         \
+        env->ExceptionClear();                                            \
+      }                                                                   \
+    }                                                                     \
+  }
+
+#define JNI_CALL_VOID_METHOD_EX(env, obj, method, sig, ...)      \
+  {                                                              \
+    if (env && obj) {                                            \
+      ScopedJNIClass _cls(env, env->GetObjectClass(obj));        \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+      if (_methodId != NULL) {                                   \
+        env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__);      \
+      }                                                          \
+    }                                                            \
+  }
+
+#define JNI_CALL_VOID_METHOD(env, obj, method, sig, ...)         \
+  {                                                              \
+    if (env && obj) {                                            \
+      ScopedJNIClass _cls(env, env->GetObjectClass(obj));        \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig); \
+      if (_methodId != NULL) {                                   \
+        env->CallVoidMethod(obj, _methodId, ##__VA_ARGS__);      \
+      }                                                          \
+      if (env->ExceptionOccurred()) {                            \
+        env->ExceptionDescribe();                                \
+        env->ExceptionClear();                                   \
+      }                                                          \
+    }                                                            \
+  }
+
+// Set the CEF base object for an existing JNI object. A reference will be
+// added to the base object. If a previous base object existed a reference
+// will be removed from that object.
+template <class T>
+bool SetCefForJNIObject(JNIEnv* env,
+                        jobject obj,
+                        T* base,
+                        const char* varName) {
+  if (!obj)
+    return false;
+
+  ScopedJNIString identifer(env, varName);
+  jlong previousValue = 0;
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
+                  previousValue, identifer.get());
+  if (previousValue != 0) {
+    // Remove a reference from the previous base object.
+    SetCefForJNIObjectHelper::Release(reinterpret_cast<T*>(previousValue));
+  }
+
+  JNI_CALL_VOID_METHOD(env, obj, "setNativeRef", "(Ljava/lang/String;J)V",
+                       identifer.get(), (jlong)base);
+  if (base) {
+    // Add a reference to the new base object.
+    SetCefForJNIObjectHelper::AddRef(base);
+  }
+  return true;
+}
+
+// Retrieve the CEF base object from an existing JNI object.
+template <class T>
+T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName) {
+  if (!obj)
+    return NULL;
+
+  ScopedJNIString identifer(env, varName);
+  jlong previousValue = 0;
+  JNI_CALL_METHOD(env, obj, "getNativeRef", "(Ljava/lang/String;)J", Long,
+                  previousValue, identifer.get());
+  if (previousValue != 0)
+    return reinterpret_cast<T*>(previousValue);
+  return NULL;
+}
+
+#endif  // JCEF_NATIVE_JNI_SCOPED_HELPERS_H_

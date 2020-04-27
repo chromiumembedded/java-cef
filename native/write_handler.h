@@ -11,6 +11,8 @@
 #include "include/base/cef_lock.h"
 #include "include/cef_stream.h"
 
+#include "jni_scoped_helpers.h"
+
 // WriteHandler implementation.
 class WriteHandler : public CefWriteHandler {
  public:
@@ -25,8 +27,8 @@ class WriteHandler : public CefWriteHandler {
   virtual bool MayBlock() OVERRIDE;
 
  protected:
-  jobject jOutputStream_;
-  size_t offset_;
+  ScopedJNIObjectGlobal handle_;
+  size_t offset_ = 0;
 
   base::Lock lock_;
 

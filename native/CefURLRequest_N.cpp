@@ -163,7 +163,8 @@ Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv* env,
   if (!urlRequest)
     return NULL;
 
-  return NewJNIURLRequestStatus(env, urlRequest->GetRequestStatus());
+  ScopedJNIURLRequestStatus status(env, urlRequest->GetRequestStatus());
+  return status.Release();
 }
 
 JNIEXPORT jobject JNICALL

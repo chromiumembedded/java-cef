@@ -4,6 +4,7 @@
 
 #include "CefFileDialogCallback_N.h"
 #include "include/cef_dialog_handler.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {

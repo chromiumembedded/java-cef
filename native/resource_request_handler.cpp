@@ -167,7 +167,7 @@ void ResourceRequestHandler::OnResourceLoadComplete(
   jrequest.SetTemporary();
   ScopedJNIResponse jresponse(env, response);
   jresponse.SetTemporary();
-  ScopedJNIObjectLocal jstatus(env, NewJNIURLRequestStatus(env, status));
+  ScopedJNIURLRequestStatus jstatus(env, status);
 
   JNI_CALL_VOID_METHOD(
       env, handle_, "onResourceLoadComplete",

@@ -8,17 +8,10 @@
 #include "jni_util.h"
 #include "util.h"
 
-KeyboardHandler::KeyboardHandler(JNIEnv* env, jobject handler) {
-  jhandler_ = env->NewGlobalRef(handler);
-}
+namespace {
 
-KeyboardHandler::~KeyboardHandler() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jhandler_);
-}
-
-jobject getjEvent(JNIEnv* env, const CefKeyEvent& event) {
-  jobject jkeyEventType = NULL;
+jobject NewJNIKeyEvent(JNIEnv* env, const CefKeyEvent& event) {
+  ScopedJNIObjectResult jkeyEventType(env);
   switch (event.type) {
     default:
       JNI_CASE(env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType",
@@ -31,15 +24,19 @@ jobject getjEvent(JNIEnv* env, const CefKeyEvent& event) {
                KEYEVENT_CHAR, jkeyEventType);
   }
 
-  jobject jevent = NewJNIObject(
+  return NewJNIObject(
       env, "org/cef/handler/CefKeyboardHandler$CefKeyEvent",
       "(Lorg/cef/handler/CefKeyboardHandler$CefKeyEvent$EventType;IIIZCCZ)V",
-      jkeyEventType, event.modifiers, event.windows_key_code,
+      jkeyEventType.get(), event.modifiers, event.windows_key_code,
       event.native_key_code, (event.is_system_key != 0 ? JNI_TRUE : JNI_FALSE),
       event.character, event.unmodified_character,
       (event.focus_on_editable_field != 0 ? JNI_TRUE : JNI_FALSE));
-  return jevent;
 }
+
+}  // namespace
+
+KeyboardHandler::KeyboardHandler(JNIEnv* env, jobject handler)
+    : handle_(env, handler) {}
 
 bool KeyboardHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                                     const CefKeyEvent& event,
@@ -49,27 +46,23 @@ bool KeyboardHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
-  jobject jevent = getjEvent(env, event);
+  ScopedJNIObjectLocal jevent(env, NewJNIKeyEvent(env, event));
   if (!jevent)
     return false;
 
-  jobject jboolRef = NewJNIBoolRef(env, *is_keyboard_shortcut);
-  if (!jboolRef) {
-    env->DeleteLocalRef(jevent);
+  ScopedJNIBoolRef jboolRef(env, *is_keyboard_shortcut);
+  if (!jboolRef)
     return false;
-  }
 
   jboolean jresult = JNI_FALSE;
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_METHOD(env, jhandler_, "onPreKeyEvent",
+  ScopedJNIBrowser jbrowser(env, browser);
+  JNI_CALL_METHOD(env, handle_, "onPreKeyEvent",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
                   "CefKeyboardHandler$CefKeyEvent;Lorg/cef/misc/BoolRef;)Z",
-                  Boolean, jresult, jbrowser, jevent, jboolRef);
+                  Boolean, jresult, jbrowser.get(), jevent.get(),
+                  jboolRef.get());
 
-  *is_keyboard_shortcut = GetJNIBoolRef(env, jboolRef);
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jevent);
-  env->DeleteLocalRef(jboolRef);
+  *is_keyboard_shortcut = jboolRef;
   return (jresult != JNI_FALSE);
 }
 
@@ -80,18 +73,16 @@ bool KeyboardHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
-  jobject jevent = getjEvent(env, event);
+  ScopedJNIObjectLocal jevent(env, NewJNIKeyEvent(env, event));
   if (!jevent)
     return false;
 
   jboolean jresult = JNI_FALSE;
-  jobject jbrowser = GetJNIBrowser(browser);
-  JNI_CALL_METHOD(env, jhandler_, "onKeyEvent",
+  ScopedJNIBrowser jbrowser(env, browser);
+  JNI_CALL_METHOD(env, handle_, "onKeyEvent",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
                   "CefKeyboardHandler$CefKeyEvent;)Z",
-                  Boolean, jresult, jbrowser, jevent);
+                  Boolean, jresult, jbrowser.get(), jevent.get());
 
-  env->DeleteLocalRef(jbrowser);
-  env->DeleteLocalRef(jevent);
   return (jresult != JNI_FALSE);
 }

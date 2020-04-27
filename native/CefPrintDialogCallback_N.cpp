@@ -4,7 +4,7 @@
 
 #include "CefPrintDialogCallback_N.h"
 #include "include/cef_print_handler.h"
-#include "jni_util.h"
+#include "jni_scoped_helpers.h"
 
 namespace {
 

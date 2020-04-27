@@ -14,12 +14,12 @@ Java_org_cef_browser_CefRequestContext_1N_N_1GetGlobalContext(JNIEnv* env,
   if (!context.get())
     return NULL;
 
-  jobject jContext = NewJNIObject(env, cls);
+  ScopedJNIObjectLocal jContext(env, NewJNIObject(env, cls));
   if (!jContext)
     return NULL;
 
   SetCefForJNIObject(env, jContext, context.get(), "CefRequestContext");
-  return jContext;
+  return jContext.Release();
 }
 
 JNIEXPORT jobject JNICALL
@@ -38,12 +38,12 @@ Java_org_cef_browser_CefRequestContext_1N_N_1CreateContext(JNIEnv* env,
   if (!context.get())
     return NULL;
 
-  jobject jContext = NewJNIObject(env, cls);
+  ScopedJNIObjectLocal jContext(env, NewJNIObject(env, cls));
   if (!jContext)
     return NULL;
 
   SetCefForJNIObject(env, jContext, context.get(), "CefRequestContext");
-  return jContext;
+  return jContext.Release();
 }
 
 JNIEXPORT jboolean JNICALL

@@ -7,13 +7,15 @@
 #pragma once
 
 #include <jni.h>
+
 #include "include/cef_browser.h"
+
+#include "jni_scoped_helpers.h"
 
 // RunFileDialogCallback implementation.
 class RunFileDialogCallback : public CefRunFileDialogCallback {
  public:
   RunFileDialogCallback(JNIEnv* env, jobject jcallback);
-  virtual ~RunFileDialogCallback();
 
   // RunFileDialogCallback methods
   virtual void OnFileDialogDismissed(
@@ -21,7 +23,7 @@ class RunFileDialogCallback : public CefRunFileDialogCallback {
       const std::vector<CefString>& file_paths) OVERRIDE;
 
  protected:
-  jobject jcallback_;
+  ScopedJNIObjectGlobal handle_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RunFileDialogCallback);

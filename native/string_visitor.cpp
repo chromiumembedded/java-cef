@@ -4,24 +4,19 @@
 
 #include "string_visitor.h"
 
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "util.h"
 
-StringVisitor::StringVisitor(JNIEnv* env, jobject jvisitor) {
-  jvisitor_ = env->NewGlobalRef(jvisitor);
-}
-
-StringVisitor::~StringVisitor() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jvisitor_);
-}
+StringVisitor::StringVisitor(JNIEnv* env, jobject jvisitor)
+    : handle_(env, jvisitor) {}
 
 void StringVisitor::Visit(const CefString& string) {
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jstring j_string = NewJNIString(env, string);
-  JNI_CALL_VOID_METHOD(env, jvisitor_, "visit", "(Ljava/lang/String;)V",
-                       j_string);
-  env->DeleteLocalRef(j_string);
+
+  ScopedJNIString jstring(env, string);
+  JNI_CALL_VOID_METHOD(env, handle_, "visit", "(Ljava/lang/String;)V",
+                       jstring.get());
 }

@@ -4,6 +4,7 @@
 
 #include "CefAuthCallback_N.h"
 #include "include/cef_request_handler.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
 namespace {

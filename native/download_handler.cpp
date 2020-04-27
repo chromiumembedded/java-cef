@@ -4,6 +4,8 @@
 
 #include "download_handler.h"
 
+#include "jni_util.h"
+
 namespace {
 
 // JNI CefDownloadItem object.

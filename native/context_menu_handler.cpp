@@ -4,6 +4,8 @@
 
 #include "context_menu_handler.h"
 
+#include "jni_util.h"
+
 namespace {
 
 // JNI CefContextMenuParams object.

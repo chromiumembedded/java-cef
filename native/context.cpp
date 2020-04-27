@@ -21,6 +21,105 @@ namespace {
 
 Context* g_context = NULL;
 
+CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
+  CefString tmp;
+  CefSettings settings;
+  if (!obj)
+    return settings;
+
+  ScopedJNIClass cls(env, "org/cef/CefSettings");
+  if (!cls)
+    return settings;
+
+  if (GetJNIFieldString(env, cls, obj, "browser_subprocess_path", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.browser_subprocess_path) = tmp;
+    tmp.clear();
+  }
+  GetJNIFieldBoolean(env, cls, obj, "windowless_rendering_enabled",
+                     &settings.windowless_rendering_enabled);
+  GetJNIFieldBoolean(env, cls, obj, "command_line_args_disabled",
+                     &settings.command_line_args_disabled);
+  if (GetJNIFieldString(env, cls, obj, "cache_path", &tmp) && !tmp.empty()) {
+    CefString(&settings.cache_path) = tmp;
+    tmp.clear();
+  }
+  GetJNIFieldBoolean(env, cls, obj, "persist_session_cookies",
+                     &settings.persist_session_cookies);
+  if (GetJNIFieldString(env, cls, obj, "user_agent", &tmp) && !tmp.empty()) {
+    CefString(&settings.user_agent) = tmp;
+    tmp.clear();
+  }
+  if (GetJNIFieldString(env, cls, obj, "product_version", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.product_version) = tmp;
+    tmp.clear();
+  }
+  if (GetJNIFieldString(env, cls, obj, "locale", &tmp) && !tmp.empty()) {
+    CefString(&settings.locale) = tmp;
+    tmp.clear();
+  }
+  if (GetJNIFieldString(env, cls, obj, "log_file", &tmp) && !tmp.empty()) {
+    CefString(&settings.log_file) = tmp;
+    tmp.clear();
+  }
+  jobject obj_sev = NULL;
+  if (GetJNIFieldObject(env, cls, obj, "log_severity", &obj_sev,
+                        "Lorg/cef/CefSettings$LogSeverity;")) {
+    ScopedJNIObjectLocal severity(env, obj_sev);
+    if (IsJNIEnumValue(env, severity, "org/cef/CefSettings$LogSeverity",
+                       "LOGSEVERITY_VERBOSE")) {
+      settings.log_severity = LOGSEVERITY_VERBOSE;
+    } else if (IsJNIEnumValue(env, severity, "org/cef/CefSettings$LogSeverity",
+                              "LOGSEVERITY_INFO")) {
+      settings.log_severity = LOGSEVERITY_INFO;
+    } else if (IsJNIEnumValue(env, severity, "org/cef/CefSettings$LogSeverity",
+                              "LOGSEVERITY_WARNING")) {
+      settings.log_severity = LOGSEVERITY_WARNING;
+    } else if (IsJNIEnumValue(env, severity, "org/cef/CefSettings$LogSeverity",
+                              "LOGSEVERITY_ERROR")) {
+      settings.log_severity = LOGSEVERITY_ERROR;
+    } else if (IsJNIEnumValue(env, severity, "org/cef/CefSettings$LogSeverity",
+                              "LOGSEVERITY_DISABLE")) {
+      settings.log_severity = LOGSEVERITY_DISABLE;
+    } else {
+      settings.log_severity = LOGSEVERITY_DEFAULT;
+    }
+  }
+  if (GetJNIFieldString(env, cls, obj, "javascript_flags", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.javascript_flags) = tmp;
+    tmp.clear();
+  }
+  if (GetJNIFieldString(env, cls, obj, "resources_dir_path", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.resources_dir_path) = tmp;
+    tmp.clear();
+  }
+  if (GetJNIFieldString(env, cls, obj, "locales_dir_path", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.locales_dir_path) = tmp;
+    tmp.clear();
+  }
+  GetJNIFieldBoolean(env, cls, obj, "pack_loading_disabled",
+                     &settings.pack_loading_disabled);
+  GetJNIFieldInt(env, cls, obj, "remote_debugging_port",
+                 &settings.remote_debugging_port);
+  GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
+                 &settings.uncaught_exception_stack_size);
+  GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
+                     &settings.ignore_certificate_errors);
+  jobject obj_col = NULL;
+  if (GetJNIFieldObject(env, cls, obj, "background_color", &obj_col,
+                        "Lorg/cef/CefSettings$ColorType;")) {
+    ScopedJNIObjectLocal color_type(env, obj_col);
+    jlong jcolor = 0;
+    JNI_CALL_METHOD(env, color_type, "getColor", "()J", Long, jcolor);
+    settings.background_color = (cef_color_t)jcolor;
+  }
+  return settings;
+}
+
 }  // namespace
 
 // static
@@ -50,16 +149,14 @@ bool Context::PreInitialize(JNIEnv* env, jobject c) {
     return JNI_FALSE;
   SetJVM(jvm);
 
-  jobject javaClass = env->GetObjectClass(c);
-  jobject javaClassLoader = NULL;
+  ScopedJNIClass javaClass(env, env->GetObjectClass(c));
+  ScopedJNIObjectResult javaClassLoader(env);
   JNI_CALL_METHOD(env, javaClass, "getClassLoader", "()Ljava/lang/ClassLoader;",
                   Object, javaClassLoader);
-  env->DeleteLocalRef(javaClass);
   ASSERT(javaClassLoader);
   if (!javaClassLoader)
     return false;
   SetJavaClassLoader(env, javaClassLoader);
-  env->DeleteLocalRef(javaClassLoader);
 
   return true;
 }

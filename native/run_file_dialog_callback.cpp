@@ -4,30 +4,22 @@
 
 #include "run_file_dialog_callback.h"
 
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "util.h"
 
-RunFileDialogCallback::RunFileDialogCallback(JNIEnv* env, jobject jcallback) {
-  jcallback_ = env->NewGlobalRef(jcallback);
-}
-
-RunFileDialogCallback::~RunFileDialogCallback() {
-  JNIEnv* env = GetJNIEnv();
-  env->DeleteGlobalRef(jcallback_);
-}
+RunFileDialogCallback::RunFileDialogCallback(JNIEnv* env, jobject jcallback)
+    : handle_(env, jcallback) {}
 
 void RunFileDialogCallback::OnFileDialogDismissed(
     int selected_accept_filter,
     const std::vector<CefString>& file_paths) {
-  if (!jcallback_)
-    return;
-
   JNIEnv* env = GetJNIEnv();
   if (!env)
     return;
-  jobject jfile_paths = NewJNIStringVector(env, file_paths);
-  JNI_CALL_VOID_METHOD(env, jcallback_, "onFileDialogDismissed",
+
+  ScopedJNIObjectLocal jfilePaths(env, NewJNIStringVector(env, file_paths));
+  JNI_CALL_VOID_METHOD(env, handle_, "onFileDialogDismissed",
                        "(ILjava/util/Vector;)V", selected_accept_filter,
-                       jfile_paths);
-  env->DeleteLocalRef(jfile_paths);
+                       jfilePaths.get());
 }

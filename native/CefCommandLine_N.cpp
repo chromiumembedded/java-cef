@@ -87,21 +87,7 @@ Java_org_cef_callback_CefCommandLine_1N_N_1GetSwitches(JNIEnv* env,
   CefCommandLine::SwitchMap switches;
   if (commandLine)
     commandLine->GetSwitches(switches);
-
-  jobject hashMap = NewJNIObject(env, "java/util/HashMap");
-  if (!hashMap)
-    return NULL;
-
-  for (CefCommandLine::SwitchMap::iterator iter = switches.begin();
-       iter != switches.end(); ++iter) {
-    ScopedJNIString jkey(env, iter->first);
-    ScopedJNIString jvalue(env, iter->second);
-    ScopedJNIObjectResult jresult(env);
-    JNI_CALL_METHOD(env, hashMap, "put",
-                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                    Object, jresult, jkey.get(), jvalue.get());
-  }
-  return hashMap;
+  return NewJNIStringMap(env, switches);
 }
 
 JNIEXPORT void JNICALL
@@ -147,20 +133,7 @@ Java_org_cef_callback_CefCommandLine_1N_N_1GetArguments(JNIEnv* env,
   CefCommandLine::ArgumentList arguments;
   if (commandLine)
     commandLine->GetArguments(arguments);
-
-  jobject vector = NewJNIObject(env, "java/util/Vector");
-  if (!vector)
-    return NULL;
-
-  for (CefCommandLine::ArgumentList::iterator iter = arguments.begin();
-       iter != arguments.end(); ++iter) {
-    ScopedJNIString jargument(env, *iter);
-    jboolean succ = JNI_FALSE;
-    JNI_CALL_METHOD(env, vector, "add", "(Ljava/lang/Object;)Z", Boolean, succ,
-                    jargument.get());
-    UNUSED(succ);
-  }
-  return vector;
+  return NewJNIStringVector(env, arguments);
 }
 
 JNIEXPORT void JNICALL
