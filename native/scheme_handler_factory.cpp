@@ -15,7 +15,7 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
     CefRefPtr<CefFrame> frame,
     const CefString& scheme_name,
     CefRefPtr<CefRequest> request) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return NULL;
 

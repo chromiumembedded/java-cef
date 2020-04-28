@@ -12,7 +12,7 @@ CompletionCallback::CompletionCallback(JNIEnv* env, jobject jhandler)
     : handle_(env, jhandler) {}
 
 void CompletionCallback::OnComplete() {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
   JNI_CALL_VOID_METHOD(env, handle_, "onComplete", "()V");

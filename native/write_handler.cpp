@@ -11,17 +11,23 @@ WriteHandler::WriteHandler(JNIEnv* env, jobject jOutputStream)
     : handle_(env, jOutputStream) {}
 
 WriteHandler::~WriteHandler() {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   if (handle_) {
     JNI_CALL_VOID_METHOD(env, handle_, "close", "()V");
   }
-  END_ENV(env)
 }
 
 size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
   base::AutoLock lock_scope(lock_);
   size_t rv = n;
-  BEGIN_ENV(env)
+
+  ScopedJNIEnv env;
+  if (!env)
+    return rv;
+
   jbyteArray jbyteArray = env->NewByteArray((jsize)(size * n));
   env->SetByteArrayRegion(jbyteArray, 0, (jsize)(size * n), (const jbyte*)ptr);
 
@@ -32,7 +38,6 @@ size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
   }
   offset_ += (rv * size);
   env->DeleteLocalRef(jbyteArray);
-  END_ENV(env)
 
   return rv;
 }
@@ -47,9 +52,10 @@ int64 WriteHandler::Tell() {
 }
 
 int WriteHandler::Flush() {
-  BEGIN_ENV(env)
-  JNI_CALL_VOID_METHOD(env, handle_, "flush", "()V");
-  END_ENV(env)
+  ScopedJNIEnv env;
+  if (env) {
+    JNI_CALL_VOID_METHOD(env, handle_, "flush", "()V");
+  }
   return 0;
 }
 

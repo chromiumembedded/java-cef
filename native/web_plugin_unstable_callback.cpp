@@ -13,7 +13,7 @@ WebPluginUnstableCallback::WebPluginUnstableCallback(JNIEnv* env,
 
 void WebPluginUnstableCallback::IsUnstable(const CefString& path,
                                            bool unstable) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

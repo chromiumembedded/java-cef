@@ -26,7 +26,7 @@ ResourceHandler::ResourceHandler(JNIEnv* env, jobject handler)
 
 bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
                                      CefRefPtr<CefCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -52,7 +52,7 @@ bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
 void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
                                          int64& response_length,
                                          CefString& redirectUrl) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -75,7 +75,7 @@ bool ResourceHandler::ReadResponse(void* data_out,
                                    int bytes_to_read,
                                    int& bytes_read,
                                    CefRefPtr<CefCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -109,7 +109,7 @@ bool ResourceHandler::ReadResponse(void* data_out,
 }
 
 void ResourceHandler::Cancel() {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
   JNI_CALL_VOID_METHOD(env, handle_, "cancel", "()V");

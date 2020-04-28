@@ -32,45 +32,56 @@ CefRefPtr<URLRequestClient> URLRequestClient::Create(JNIEnv* env,
 }
 
 URLRequestClient::~URLRequestClient() {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   SetCefForJNIObject<URLRequestClient>(env, client_handle_, NULL,
                                        kCefClassName);
-  END_ENV(env)
 }
 
 // TODO(jcef): Solve jurlReques instead of using NULL
 void URLRequestClient::OnRequestComplete(CefRefPtr<CefURLRequest> request) {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   JNI_CALL_VOID_METHOD(env, client_handle_, "onRequestComplete",
                        "(Lorg/cef/network/CefURLRequest;)V",
                        request_handle_.get());
-  END_ENV(env)
 }
 
 void URLRequestClient::OnUploadProgress(CefRefPtr<CefURLRequest> request,
                                         int64 current,
                                         int64 total) {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   JNI_CALL_VOID_METHOD(env, client_handle_, "onUploadProgress",
                        "(Lorg/cef/network/CefURLRequest;II)V",
                        request_handle_.get(), (jint)current, (jint)total);
-  END_ENV(env)
 }
 
 void URLRequestClient::OnDownloadProgress(CefRefPtr<CefURLRequest> request,
                                           int64 current,
                                           int64 total) {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   JNI_CALL_VOID_METHOD(env, client_handle_, "onDownloadProgress",
                        "(Lorg/cef/network/CefURLRequest;II)V",
                        request_handle_.get(), (jint)current, (jint)total);
-  END_ENV(env)
 }
 
 void URLRequestClient::OnDownloadData(CefRefPtr<CefURLRequest> request,
                                       const void* data,
                                       size_t data_length) {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   jbyteArray jbyteArray = env->NewByteArray((jsize)data_length);
   env->SetByteArrayRegion(jbyteArray, 0, (jsize)data_length,
                           (const jbyte*)data);
@@ -80,7 +91,6 @@ void URLRequestClient::OnDownloadData(CefRefPtr<CefURLRequest> request,
                        request_handle_.get(), jbyteArray, (jint)data_length);
 
   env->DeleteLocalRef(jbyteArray);
-  END_ENV(env)
 }
 
 bool URLRequestClient::GetAuthCredentials(bool isProxy,
@@ -91,7 +101,9 @@ bool URLRequestClient::GetAuthCredentials(bool isProxy,
                                           CefRefPtr<CefAuthCallback> callback) {
   jboolean jresult = JNI_FALSE;
 
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return false;
 
   ScopedJNIString jhost(env, host);
   ScopedJNIString jrealm(env, realm);
@@ -110,8 +122,6 @@ bool URLRequestClient::GetAuthCredentials(bool isProxy,
     // the reference can therefore be removed.
     jcallback.SetTemporary();
   }
-
-  END_ENV(env)
 
   return (jresult != JNI_FALSE);
 }

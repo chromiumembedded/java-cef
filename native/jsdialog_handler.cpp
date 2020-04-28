@@ -33,7 +33,7 @@ bool JSDialogHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
                                  const CefString& default_prompt_text,
                                  CefRefPtr<CefJSDialogCallback> callback,
                                  bool& suppress_message) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -83,7 +83,7 @@ bool JSDialogHandler::OnBeforeUnloadDialog(
     const CefString& message_text,
     bool is_reload,
     CefRefPtr<CefJSDialogCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -109,7 +109,7 @@ bool JSDialogHandler::OnBeforeUnloadDialog(
 }
 
 void JSDialogHandler::OnResetDialogState(CefRefPtr<CefBrowser> browser) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -120,7 +120,7 @@ void JSDialogHandler::OnResetDialogState(CefRefPtr<CefBrowser> browser) {
 }
 
 void JSDialogHandler::OnDialogClosed(CefRefPtr<CefBrowser> browser) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

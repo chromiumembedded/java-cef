@@ -12,7 +12,7 @@ StringVisitor::StringVisitor(JNIEnv* env, jobject jvisitor)
     : handle_(env, jvisitor) {}
 
 void StringVisitor::Visit(const CefString& string) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

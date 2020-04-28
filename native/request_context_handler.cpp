@@ -32,7 +32,7 @@ bool RequestContextHandler::OnBeforePluginLoad(
     const CefString& top_origin_url,
     CefRefPtr<CefWebPluginInfo> plugin_info,
     PluginPolicy* plugin_policy) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -77,7 +77,7 @@ RequestContextHandler::GetResourceRequestHandler(
     bool is_download,
     const CefString& request_initiator,
     bool& disable_default_handling) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return NULL;
 

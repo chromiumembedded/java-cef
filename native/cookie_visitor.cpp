@@ -15,7 +15,7 @@ bool CookieVisitor::Visit(const CefCookie& cookie,
                           int count,
                           int total,
                           bool& deleteCookie) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 

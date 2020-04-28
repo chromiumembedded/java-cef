@@ -14,7 +14,7 @@ FocusHandler::FocusHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
 void FocusHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -26,7 +26,7 @@ void FocusHandler::OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) {
 
 bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
                               FocusSource source) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -49,7 +49,7 @@ bool FocusHandler::OnSetFocus(CefRefPtr<CefBrowser> browser,
 }
 
 void FocusHandler::OnGotFocus(CefRefPtr<CefBrowser> browser) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

@@ -32,7 +32,9 @@ void ClientApp::OnBeforeCommandLineProcessing(
   // the commandline processing to it before we append the essential
   // switches "locale_pak" and "use-core-animation".
   if (handle_ && process_type.empty()) {
-    BEGIN_ENV(env)
+    ScopedJNIEnv env;
+    if (!env)
+      return;
 
     ScopedJNIString jprocessType(env, process_type);
     ScopedJNIObject<CefCommandLine> jcommandLine(
@@ -44,8 +46,6 @@ void ClientApp::OnBeforeCommandLineProcessing(
         env, handle_, "onBeforeCommandLineProcessing",
         "(Ljava/lang/String;Lorg/cef/callback/CefCommandLine;)V",
         jprocessType.get(), jcommandLine.get());
-
-    END_ENV(env)
   }
 
   if (process_type.empty()) {
@@ -71,7 +71,9 @@ void ClientApp::OnRegisterCustomSchemes(
   if (!handle_)
     return;
 
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
 
   ScopedJNIObject<CefSchemeRegistrar, CefRawPtr<CefSchemeRegistrar>> jregistrar(
       env, registrar, "org/cef/callback/CefSchemeRegistrar_N",
@@ -81,8 +83,6 @@ void ClientApp::OnRegisterCustomSchemes(
   JNI_CALL_VOID_METHOD(env, handle_, "onRegisterCustomSchemes",
                        "(Lorg/cef/callback/CefSchemeRegistrar;)V",
                        jregistrar.get());
-
-  END_ENV(env)
 }
 
 CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
@@ -91,7 +91,10 @@ CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
 
 #if defined(OS_MACOSX)
 bool ClientApp::HandleTerminate() {
-  BEGIN_ENV(env)
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
   ScopedJNIClass jcls(env, "org/cef/CefApp");
   if (!jcls) {
     return false;
@@ -110,7 +113,6 @@ bool ClientApp::HandleTerminate() {
   }
 
   JNI_CALL_VOID_METHOD(env, jcefApp, "handleBeforeTerminate", "()V");
-  END_ENV(env)
   return true;
 }
 #endif  // defined(OS_MACOSX)

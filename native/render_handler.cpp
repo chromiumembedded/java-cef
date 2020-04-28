@@ -68,7 +68,7 @@ jobject NewJNIPoint(JNIEnv* env, int x, int y) {
 }
 
 int GetCursorId(cef_cursor_type_t type) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return 0;
 
@@ -130,7 +130,7 @@ RenderHandler::RenderHandler(JNIEnv* env, jobject handler)
 
 bool RenderHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,
                                       CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -140,7 +140,7 @@ bool RenderHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,
 }
 
 void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -155,7 +155,7 @@ bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
                                    int viewY,
                                    int& screenX,
                                    int& screenY) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -164,7 +164,7 @@ bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
 }
 
 void RenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -176,7 +176,7 @@ void RenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
 
 void RenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
                                 const CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -196,7 +196,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                             const void* buffer,
                             int width,
                             int height) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -218,7 +218,7 @@ void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
                                    CefCursorHandle cursor,
                                    CursorType type,
                                    const CefCursorInfo& custom_cursor_info) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -234,7 +234,7 @@ bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
                                   DragOperationsMask allowed_ops,
                                   int x,
                                   int y) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -253,7 +253,7 @@ bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
 
 void RenderHandler::UpdateDragCursor(CefRefPtr<CefBrowser> browser,
                                      DragOperation operation) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -264,7 +264,7 @@ void RenderHandler::UpdateDragCursor(CefRefPtr<CefBrowser> browser,
 }
 
 bool RenderHandler::GetViewRect(jobject browser, CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -284,7 +284,7 @@ bool RenderHandler::GetScreenPoint(jobject browser,
                                    int viewY,
                                    int& screenX,
                                    int& screenY) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 

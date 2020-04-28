@@ -12,7 +12,7 @@ DisplayHandler::DisplayHandler(JNIEnv* env, jobject handler)
 void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefFrame> frame,
                                      const CefString& url) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -29,7 +29,7 @@ void DisplayHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
 
 void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
                                    const CefString& title) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -42,7 +42,7 @@ void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
 }
 
 bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -59,7 +59,7 @@ bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) {
 
 void DisplayHandler::OnStatusMessage(CefRefPtr<CefBrowser> browser,
                                      const CefString& value) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -76,7 +76,7 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                       const CefString& message,
                                       const CefString& source,
                                       int line) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 

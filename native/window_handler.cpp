@@ -10,7 +10,7 @@ WindowHandler::WindowHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
 bool WindowHandler::GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -19,7 +19,7 @@ bool WindowHandler::GetRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
 }
 
 bool WindowHandler::GetRect(jobject browser, CefRect& rect) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -40,7 +40,7 @@ void WindowHandler::OnMouseEvent(CefRefPtr<CefBrowser> browser,
                                  int absY,
                                  int modifier,
                                  int button) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

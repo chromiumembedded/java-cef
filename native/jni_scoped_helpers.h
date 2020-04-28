@@ -386,7 +386,7 @@
 //       : handle_(env, handler) {}
 //
 //   void SomeHandler::DoSomething() {
-//     JNIEnv* env = GetJNIEnv();
+//     ScopedJNIEnv env;
 //     if (!env)
 //       return;
 //     JNI_CALL_VOID_METHOD(env, handle_, "doSomething", "()V");
@@ -395,7 +395,7 @@
 // C++ implementation of the SourceHandler::GetSomeHandler method:
 //
 //   CefRefPtr<CefSomeHandler> SourceHandler::GetSomeHandler() {
-//     JNIEnv* env = GetJNIEnv();
+//     ScopedJNIEnv env;
 //     if (!env)
 //       return NULL;
 //
@@ -448,12 +448,51 @@ bool SetCefForJNIObject(JNIEnv* env, jobject obj, T* base, const char* varName);
 template <class T>
 T* GetCefFromJNIObject(JNIEnv* env, jobject obj, const char* varName);
 
+class ScopedJNIEnv {
+ public:
+  static const int kDefaultLocalCapacity;
+
+  // Retrieve the JNIEnv for the current thread or attach the VM to the current
+  // thread if necessary.
+  // If |local_capacity| > 0 a local frame will be created with the specified
+  // maximum number of local references. Otherwise, no local frame will be
+  // created.
+  ScopedJNIEnv(jint local_capacity = kDefaultLocalCapacity);
+
+  // Like above, but using an already known JNIEnv.
+  ScopedJNIEnv(JNIEnv* env, jint local_capacity = kDefaultLocalCapacity);
+
+  ~ScopedJNIEnv();
+
+  // If a local frame was created, export |result| to the previous local
+  // reference frame on destruction.
+  void set_export_result(jobject* result) { export_result_ = result; }
+
+  // Explicit return.
+  JNIEnv* get() const { return jenv_; }
+
+  // Implicit cast works in most cases.
+  operator JNIEnv*() const { return jenv_; }
+
+  // Pointer override for forwarding calls to the JNIEnv.
+  JNIEnv* operator->() const {
+    DCHECK(jenv_);
+    return jenv_;
+  }
+
+ private:
+  JNIEnv* jenv_;
+  jint local_capacity_;
+  bool should_detach_ = false;
+  jobject* export_result_ = nullptr;
+};
+
 // Used by the native counterpart of JCEF objects to hold a global JNI handle.
 class ScopedJNIObjectGlobal {
  public:
   // Creates a global reference to |handle|.
   ScopedJNIObjectGlobal(JNIEnv* env, jobject handle);
-  virtual ~ScopedJNIObjectGlobal();
+  ~ScopedJNIObjectGlobal();
 
   // Explicit return.
   jobject get() const;

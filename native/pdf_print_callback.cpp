@@ -12,7 +12,7 @@ PdfPrintCallback::PdfPrintCallback(JNIEnv* env, jobject jcallback)
     : handle_(env, jcallback) {}
 
 void PdfPrintCallback::OnPdfPrintFinished(const CefString& path, bool ok) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

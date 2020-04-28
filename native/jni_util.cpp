@@ -22,43 +22,8 @@ void SetJVM(JavaVM* jvm) {
   g_jvm = jvm;
 }
 
-JNIEnv* GetJNIEnv() {
-  JNIEnv* env = NULL;
-  if (g_jvm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED &&
-      g_jvm->AttachCurrentThreadAsDaemon((void**)&env, NULL) != JNI_OK) {
-    return NULL;
-  }
-  return env;
-}
-
-// Determines whether the current thread is already attached to the VM,
-// and tells the caller if it needs to later DetachCurrentThread.
-//
-// CALL THIS ONCE WITHIN A FUNCTION SCOPE and use a local boolean
-// for mustDetach; if you do not, the first call might attach, setting
-// mustDetach to true, but the second will misleadingly set mustDetach
-// to false, leaving a dangling JNIEnv.
-jint GetJNIEnv(JNIEnv** env, bool* mustDetach) {
-  jint getEnvErr = JNI_OK;
-  *mustDetach = false;
-  if (g_jvm) {
-    getEnvErr = g_jvm->GetEnv((void**)env, JNI_VERSION_1_4);
-    if (getEnvErr == JNI_EDETACHED) {
-      getEnvErr = g_jvm->AttachCurrentThreadAsDaemon((void**)env, NULL);
-      if (getEnvErr == JNI_OK) {
-        *mustDetach = true;
-      }
-    }
-  }
-  return getEnvErr;
-}
-
-void DetachFromThread(bool* mustDetach) {
-  if (!g_jvm) {
-    return;
-  }
-  if (*mustDetach)
-    g_jvm->DetachCurrentThread();
+JavaVM* GetJVM() {
+  return g_jvm;
 }
 
 void SetJavaClassLoader(JNIEnv* env, jobject javaClassLoader) {

@@ -38,7 +38,7 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
       (ClientHandler*)browser->GetHost()->GetClient().get();
   client->OnBeforeBrowse(browser, frame);
 
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -67,7 +67,7 @@ CefRefPtr<CefResourceRequestHandler> RequestHandler::GetResourceRequestHandler(
     bool is_download,
     const CefString& request_initiator,
     bool& disable_default_handling) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return NULL;
 
@@ -104,7 +104,7 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
                                         const CefString& realm,
                                         const CefString& scheme,
                                         CefRefPtr<CefAuthCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -138,7 +138,7 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                     const CefString& origin_url,
                                     int64 new_size,
                                     CefRefPtr<CefRequestCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -168,7 +168,7 @@ bool RequestHandler::OnCertificateError(
     const CefString& request_url,
     CefRefPtr<CefSSLInfo> ssl_info,
     CefRefPtr<CefRequestCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -196,7 +196,7 @@ bool RequestHandler::OnCertificateError(
 
 void RequestHandler::OnPluginCrashed(CefRefPtr<CefBrowser> browser,
                                      const CefString& plugin_path) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -215,7 +215,7 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
       (ClientHandler*)browser->GetHost()->GetClient().get();
   client->OnRenderProcessTerminated(browser);
 
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

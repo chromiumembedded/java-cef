@@ -9,6 +9,37 @@
 
 namespace {
 
+// Retrieves the JNIEnv for the current thread. Attaches the VM to the current
+// thread if necessary. Sets |mustDetach| to true if DetachJNIEnv must be
+// called.
+jint GetJNIEnv(JNIEnv** env, bool* mustDetach) {
+  *env = nullptr;
+  *mustDetach = false;
+
+  JavaVM* jvm = GetJVM();
+  if (!jvm)
+    return JNI_ERR;
+
+  jint result = jvm->GetEnv((void**)env, JNI_VERSION_1_6);
+  if (result == JNI_EDETACHED) {
+    result = jvm->AttachCurrentThreadAsDaemon((void**)env, NULL);
+    if (result == JNI_OK) {
+      *mustDetach = true;
+    }
+  }
+
+  return result;
+}
+
+// Detaches the current thread from the VM. Should only be called if
+// |mustDetach| was set to true by GetJNIEnv.
+void DetachJNIEnv() {
+  JavaVM* jvm = GetJVM();
+  if (jvm) {
+    jvm->DetachCurrentThread();
+  }
+}
+
 // Returns a class with the given fully qualified |class_name| (with '/' as
 // separator).
 jclass FindClass(JNIEnv* env, const char* class_name) {
@@ -139,6 +170,45 @@ jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
 
 }  // namespace
 
+// static
+const int ScopedJNIEnv::kDefaultLocalCapacity = 1024;
+
+ScopedJNIEnv::ScopedJNIEnv(jint local_capacity)
+    : ScopedJNIEnv(nullptr, local_capacity) {}
+
+ScopedJNIEnv::ScopedJNIEnv(JNIEnv* env, jint local_capacity)
+    : jenv_(env), local_capacity_(local_capacity) {
+  if (!jenv_) {
+    if (GetJNIEnv(&jenv_, &should_detach_) != JNI_OK || !jenv_) {
+      NOTREACHED() << "Failed to retrieve JNIEnv";
+      return;
+    }
+  }
+  if (local_capacity_ > 0) {
+    if (jenv_->EnsureLocalCapacity(local_capacity_) != JNI_OK ||
+        jenv_->PushLocalFrame(local_capacity_) != JNI_OK) {
+      LOG(WARNING) << "Failed to create local frame with capacity "
+                   << local_capacity_;
+      local_capacity_ = 0;
+    }
+  }
+}
+
+ScopedJNIEnv::~ScopedJNIEnv() {
+  if (!jenv_)
+    return;
+  if (local_capacity_ > 0) {
+    if (export_result_) {
+      *export_result_ = jenv_->PopLocalFrame(*export_result_);
+    } else {
+      jenv_->PopLocalFrame(NULL);
+    }
+  }
+  if (should_detach_) {
+    DetachJNIEnv();
+  }
+}
+
 ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle)
     : jhandle_(NULL) {
   if (handle) {
@@ -149,9 +219,9 @@ ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle)
 
 ScopedJNIObjectGlobal::~ScopedJNIObjectGlobal() {
   if (jhandle_) {
-    BEGIN_ENV(env);
-    env->DeleteGlobalRef(jhandle_);
-    END_ENV(env);
+    ScopedJNIEnv env;
+    if (env)
+      env->DeleteGlobalRef(jhandle_);
   }
 }
 

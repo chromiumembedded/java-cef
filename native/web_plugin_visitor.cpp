@@ -13,7 +13,7 @@ WebPluginInfoVisitor::WebPluginInfoVisitor(JNIEnv* env, jobject jvisitor)
 bool WebPluginInfoVisitor::Visit(CefRefPtr<CefWebPluginInfo> info,
                                  int count,
                                  int total) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 

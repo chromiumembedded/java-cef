@@ -74,22 +74,28 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
 #ifdef USING_JAVA
 
 static int getMouseEvent(const char* evtName) {
+  ScopedJNIEnv env;
+  if (!env)
+    return 0;
+
   int value = 0;
-  BEGIN_ENV(env)
   ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
   GetJNIFieldStaticInt(env, jcls, evtName, &value);
-  END_ENV(env)
   return value;
 }
 
 static int getModifiers(BOOLEAN forceShift) {
+  ScopedJNIEnv env;
+  if (!env)
+    return 0;
+
   int alt = 0;
   int ctrl = 0;
   int shift = 0;
   int button1 = 0;
   int button2 = 0;
   int button3 = 0;
-  BEGIN_ENV(env)
+
   ScopedJNIClass jcls(env, "java/awt/event/InputEvent");
   if ((GetKeyState(VK_MENU) & 0x8000) != 0)
     GetJNIFieldStaticInt(env, jcls, "ALT_DOWN_MASK", &alt);
@@ -103,13 +109,16 @@ static int getModifiers(BOOLEAN forceShift) {
     GetJNIFieldStaticInt(env, jcls, "BUTTON2_DOWN_MASK", &button2);
   if ((GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0)
     GetJNIFieldStaticInt(env, jcls, "BUTTON3_DOWN_MASK", &button3);
-  END_ENV(env)
+
   return (alt | ctrl | shift | button1 | button2 | button3);
 }
 
 static int getMouseButton(WPARAM wParam) {
+  ScopedJNIEnv env;
+  if (!env)
+    return 0;
+
   int mouseButton = 0;
-  BEGIN_ENV(env)
   ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
   switch (wParam) {
     case WM_LBUTTONDOWN:
@@ -131,7 +140,7 @@ static int getMouseButton(WPARAM wParam) {
       GetJNIFieldStaticInt(env, jcls, "NOBUTTON", &mouseButton);
       break;
   }
-  END_ENV(env)
+
   return mouseButton;
 }
 

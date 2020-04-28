@@ -34,7 +34,7 @@ bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
                                  const std::vector<CefString>& accept_filters,
                                  int selected_accept_filter,
                                  CefRefPtr<CefFileDialogCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 

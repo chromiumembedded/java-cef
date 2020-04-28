@@ -15,7 +15,7 @@ void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                        bool isLoading,
                                        bool canGoBack,
                                        bool canGoForward) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -32,7 +32,7 @@ void LoadHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
 void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               TransitionType transition_type) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -50,7 +50,7 @@ void LoadHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
 void LoadHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             int httpStatusCode) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -69,7 +69,7 @@ void LoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                               ErrorCode errorCode,
                               const CefString& errorText,
                               const CefString& failedUrl) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

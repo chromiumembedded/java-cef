@@ -16,7 +16,7 @@ CefRefPtr<CefCookieAccessFilter> ResourceRequestHandler::GetCookieAccessFilter(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return NULL;
 
@@ -46,7 +46,7 @@ ResourceRequestHandler::OnBeforeResourceLoad(
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request,
     CefRefPtr<CefRequestCallback> callback) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return RV_CONTINUE;
 
@@ -70,7 +70,7 @@ CefRefPtr<CefResourceHandler> ResourceRequestHandler::GetResourceHandler(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return NULL;
 
@@ -98,7 +98,7 @@ void ResourceRequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,
                                                 CefRefPtr<CefRequest> request,
                                                 CefRefPtr<CefResponse> response,
                                                 CefString& new_url) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -127,7 +127,7 @@ bool ResourceRequestHandler::OnResourceResponse(
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request,
     CefRefPtr<CefResponse> response) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
@@ -156,7 +156,7 @@ void ResourceRequestHandler::OnResourceLoadComplete(
     CefRefPtr<CefResponse> response,
     CefResourceRequestHandler::URLRequestStatus status,
     int64 received_content_length) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
@@ -182,7 +182,7 @@ void ResourceRequestHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                                  CefRefPtr<CefFrame> frame,
                                                  CefRefPtr<CefRequest> request,
                                                  bool& allow_os_execution) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 

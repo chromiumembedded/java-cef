@@ -75,8 +75,11 @@ CefRefPtr<T> ClientHandler::GetHandler(const char* class_name) {
   ss << "()Lorg/cef/handler/" << className << ";";
   methodSig = ss.str();
 
+  ScopedJNIEnv env;
+  if (!env)
+    return nullptr;
+
   CefRefPtr<T> result = NULL;
-  BEGIN_ENV(env)
   ScopedJNIObjectResult jresult(env);
   JNI_CALL_METHOD(env, handle_, methodName.c_str(), methodSig.c_str(), Object,
                   jresult);
@@ -85,7 +88,7 @@ CefRefPtr<T> ClientHandler::GetHandler(const char* class_name) {
                                 true /* should_delete */, className.c_str());
     result = jhandler.GetOrCreateCefObject();
   }
-  END_ENV(env)
+
   return result;
 }
 

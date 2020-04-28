@@ -14,7 +14,7 @@ RunFileDialogCallback::RunFileDialogCallback(JNIEnv* env, jobject jcallback)
 void RunFileDialogCallback::OnFileDialogDismissed(
     int selected_accept_filter,
     const std::vector<CefString>& file_paths) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return;
 
