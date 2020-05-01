@@ -93,7 +93,7 @@ CefRefPtr<CefBrowserProcessHandler> ClientApp::GetBrowserProcessHandler() {
 bool ClientApp::HandleTerminate() {
   ScopedJNIEnv env;
   if (!env)
-    return;
+    return false;
 
   ScopedJNIClass jcls(env, "org/cef/CefApp");
   if (!jcls) {
