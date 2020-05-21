@@ -4,11 +4,11 @@
 
 package org.cef.browser;
 
+import com.jogamp.opengl.GL2;
+
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-
-import com.jogamp.opengl.GL2;
 
 class CefRenderer {
     private boolean transparent_;
@@ -53,7 +53,7 @@ class CefRenderer {
 
         // Create the texture.
         gl2.glGenTextures(1, texture_id_, 0);
-        assert(texture_id_[0] != 0);
+        assert (texture_id_[0] != 0);
 
         gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
         gl2.glTexParameteri(gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_MIN_FILTER, gl2.GL_NEAREST);
@@ -63,13 +63,14 @@ class CefRenderer {
 
     protected void cleanup(GL2 gl2) {
         if (texture_id_[0] != 0) gl2.glDeleteTextures(1, texture_id_, 0);
+        view_width_ = view_height_ = 0;
     }
 
     @SuppressWarnings("static-access")
     protected void render(GL2 gl2) {
         if (use_draw_pixels_ || view_width_ == 0 || view_height_ == 0) return;
 
-        assert(initialized_context_ != null);
+        assert (initialized_context_ != null);
 
         final float[] vertex_data = {// tu,   tv,     x,     y,    z
                 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
@@ -114,7 +115,7 @@ class CefRenderer {
         gl2.glEnable(gl2.GL_TEXTURE_2D);
 
         // Draw the facets with the texture.
-        assert(texture_id_[0] != 0);
+        assert (texture_id_[0] != 0);
         gl2.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
         gl2.glInterleavedArrays(gl2.GL_T2F_V3F, 0, vertices);
@@ -178,7 +179,7 @@ class CefRenderer {
         // Enable 2D textures.
         gl2.glEnable(gl2.GL_TEXTURE_2D);
 
-        assert(texture_id_[0] != 0);
+        assert (texture_id_[0] != 0);
         gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
 
         if (!popup) {

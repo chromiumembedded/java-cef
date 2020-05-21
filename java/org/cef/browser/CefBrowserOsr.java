@@ -109,6 +109,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
             }
         };
 
+        // The GLContext will be re-initialized when changing displays, resulting in calls to
+        // dispose/init/reshape.
         canvas_.addGLEventListener(new GLEventListener() {
             @Override
             public void reshape(
@@ -251,7 +253,11 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
             return;
         }
 
-        context.makeCurrent();
+        // This result can occur due to GLContext re-initialization when changing displays.
+        if (context.makeCurrent() == GLContext.CONTEXT_NOT_CURRENT) {
+            return;
+        }
+
         renderer_.onPaint(canvas_.getGL().getGL2(), popup, dirtyRects, buffer, width, height);
         context.release();
         SwingUtilities.invokeLater(new Runnable() {
