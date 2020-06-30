@@ -4,12 +4,18 @@
 
 package org.cef.browser;
 
+import org.cef.CefClient;
+import org.cef.OS;
+import org.cef.handler.CefWindowHandler;
+import org.cef.handler.CefWindowHandlerAdapter;
+
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -33,11 +39,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 
-import org.cef.CefClient;
-import org.cef.OS;
-import org.cef.handler.CefWindowHandler;
-import org.cef.handler.CefWindowHandlerAdapter;
-
 /**
  * This class represents a windowed rendered browser.
  * The visibility of this class is "package". To create a new
@@ -49,14 +50,14 @@ class CefBrowserWr extends CefBrowser_N {
     private Rectangle content_rect_ = new Rectangle(0, 0, 0, 0);
     private long window_handle_ = 0;
     private boolean justCreated_ = false;
+    private double scaleFactor_ = 1.0;
     private Timer delayedUpdate_ = new Timer(100, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (isClosed())
-                        return;
+                    if (isClosed()) return;
 
                     boolean hasCreatedUI = createBrowserIfRequired(true);
 
@@ -149,7 +150,7 @@ class CefBrowserWr extends CefBrowser_N {
                     if (currTime > nextClick[idx]) {
                         nextClick[idx] = currTime
                                 + (Integer) Toolkit.getDefaultToolkit().getDesktopProperty(
-                                          "awt.multiClickInterval");
+                                        "awt.multiClickInterval");
                         clickCnt[idx] = 1;
                     } else {
                         clickCnt[idx]++;
@@ -186,7 +187,7 @@ class CefBrowserWr extends CefBrowser_N {
             @Override
             public void setBounds(int x, int y, int width, int height) {
                 super.setBounds(x, y, width, height);
-                wasResized(width, height);
+                wasResized((int) (width * scaleFactor_), (int) (height * scaleFactor_));
             }
 
             @Override
@@ -197,7 +198,7 @@ class CefBrowserWr extends CefBrowser_N {
             @Override
             public void setSize(int width, int height) {
                 super.setSize(width, height);
-                wasResized(width, height);
+                wasResized((int) (width * scaleFactor_), (int) (height * scaleFactor_));
             }
 
             @Override
@@ -215,6 +216,9 @@ class CefBrowserWr extends CefBrowser_N {
                 // we're setting up a delayedUpdate timer which is reset each time
                 // paint is called. This prevents the us of sending the UI update too
                 // often.
+                if (g instanceof Graphics2D) {
+                    scaleFactor_ = ((Graphics2D) g).getTransform().getScaleX();
+                }
                 doUpdate();
                 delayedUpdate_.restart();
             }
@@ -344,7 +348,10 @@ class CefBrowserWr extends CefBrowser_N {
     private void doUpdate() {
         if (isClosed()) return;
 
-        Rectangle clipping = ((JPanel) component_).getVisibleRect();
+        Rectangle vr = ((JPanel) component_).getVisibleRect();
+        Rectangle clipping = new Rectangle((int) (vr.getX() * scaleFactor_),
+                (int) (vr.getY() * scaleFactor_), (int) (vr.getWidth() * scaleFactor_),
+                (int) (vr.getHeight() * scaleFactor_));
 
         if (OS.isMacintosh()) {
             Container parent = component_.getParent();
@@ -369,7 +376,11 @@ class CefBrowserWr extends CefBrowser_N {
             }
         } else {
             synchronized (content_rect_) {
-                content_rect_ = component_.getBounds();
+                Rectangle bounds = component_.getBounds();
+                content_rect_ = new Rectangle((int) (bounds.getX() * scaleFactor_),
+                        (int) (bounds.getY() * scaleFactor_),
+                        (int) (bounds.getWidth() * scaleFactor_),
+                        (int) (bounds.getHeight() * scaleFactor_));
                 updateUI(clipping, content_rect_);
             }
         }
