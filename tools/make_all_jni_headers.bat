@@ -3,8 +3,8 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
-set RC=
 setlocal
+set RC=
 
 if "%1" == "" (
 echo ERROR: Please specify a target platform: win32 or win64
