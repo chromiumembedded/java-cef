@@ -402,15 +402,26 @@ public class CefApp extends CefAppHandlerAdapter {
                         }
                     } else if (OS.isWindows()) {
                         if (settings.browser_subprocess_path == null) {
-                            settings.browser_subprocess_path = library_path + "\\jcef_helper.exe";
+                            Path path = Paths.get(library_path, "jcef_helper.exe");
+                            settings.browser_subprocess_path =
+                                    path.normalize().toAbsolutePath().toString();
                         }
                     } else if (OS.isLinux()) {
-                        if (settings.browser_subprocess_path == null)
-                            settings.browser_subprocess_path = library_path + "/jcef_helper";
-                        if (settings.resources_dir_path == null)
-                            settings.resources_dir_path = library_path;
-                        if (settings.locales_dir_path == null)
-                            settings.locales_dir_path = library_path + "/locales";
+                        if (settings.browser_subprocess_path == null) {
+                            Path path = Paths.get(library_path, "jcef_helper");
+                            settings.browser_subprocess_path =
+                                    path.normalize().toAbsolutePath().toString();
+                        }
+                        if (settings.resources_dir_path == null) {
+                            Path path = Paths.get(library_path);
+                            settings.resources_dir_path =
+                                    path.normalize().toAbsolutePath().toString();
+                        }
+                        if (settings.locales_dir_path == null) {
+                            Path path = Paths.get(library_path, "locales");
+                            settings.locales_dir_path =
+                                    path.normalize().toAbsolutePath().toString();
+                        }
                     }
 
                     if (N_Initialize(appHandler_, settings)) setState(CefAppState.INITIALIZED);
