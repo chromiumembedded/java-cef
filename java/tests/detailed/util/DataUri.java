@@ -4,14 +4,12 @@
 
 package tests.detailed.util;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
  * Utility class for creating data: URIs that can be passed to CefBrowser.loadURL.
  */
 public class DataUri {
     public static String create(String mimeType, String contents) {
         return "data:" + mimeType + ";base64,"
-                + DatatypeConverter.printBase64Binary(contents.getBytes());
+                + java.util.Base64.getEncoder().encodeToString(contents.getBytes());
     }
 };

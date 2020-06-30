@@ -4,14 +4,16 @@
 
 package org.cef.browser.mac;
 
+import org.cef.browser.CefBrowserWindow;
+
 import java.awt.Component;
 import java.awt.peer.ComponentPeer;
+
+import sun.awt.AWTAccessor;
 import sun.lwawt.LWComponentPeer;
 import sun.lwawt.PlatformWindow;
 import sun.lwawt.macosx.CFRetainedResource;
 import sun.lwawt.macosx.CPlatformWindow;
-
-import org.cef.browser.CefBrowserWindow;
 
 public class CefBrowserWindowMac implements CefBrowserWindow {
     @Override
@@ -22,8 +24,7 @@ public class CefBrowserWindowMac implements CefBrowserWindow {
                 comp = comp.getParent();
                 continue;
             }
-            @SuppressWarnings("deprecation")
-            ComponentPeer peer = comp.getPeer();
+            ComponentPeer peer = AWTAccessor.getComponentAccessor().getPeer(comp);
             if (peer instanceof LWComponentPeer) {
                 @SuppressWarnings("rawtypes")
                 PlatformWindow pWindow = ((LWComponentPeer) peer).getPlatformWindow();
