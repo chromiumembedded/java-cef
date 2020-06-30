@@ -3,8 +3,9 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
+
 cd ..
 
 if "%1" == "" (
@@ -51,11 +52,11 @@ goto loop1
 java -cp %CLS_PATH% -Djava.library.path=%LIB_PATH% tests.%RUN_TYPE%.MainFrame %RESTVAR%
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%

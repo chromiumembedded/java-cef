@@ -3,8 +3,8 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
 
 if "%1" == "" (
 echo ERROR: Please specify a target platform: win32 or win64
@@ -48,11 +48,11 @@ call make_jni_header.bat %1 org.cef.network.CefWebPluginInfo_N
 call make_jni_header.bat %1 org.cef.network.CefWebPluginManager_N
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%

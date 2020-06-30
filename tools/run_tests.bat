@@ -3,8 +3,9 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
+
 cd ..
 
 if "%1" == "" (
@@ -52,11 +53,11 @@ set PATH="%JAVA_HOME%\bin"
 java -Djava.library.path=%LIB_PATH% -jar .\third_party\junit\junit-platform-console-standalone-1.4.2.jar -cp %OUT_PATH% --disable-ansi-colors --select-package tests.junittests %RESTVAR%
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%

@@ -3,8 +3,9 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
+
 cd ..
 
 if "%1" == "" (
@@ -90,11 +91,11 @@ xcopy /sfy %JOGAMP_PATH%\*.LICENSE.txt %DISTRIB_PATH%
 xcopy /sfy %TOOLS_DISTRIB_PATH%\* %DISTRIB_PATH% /exclude:.\tools\distrib\EXCLUDE_FILES.txt
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%

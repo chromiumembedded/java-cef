@@ -3,8 +3,8 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
 cd ..
 
 if "%1" == "" (
@@ -24,11 +24,11 @@ xcopy /sfy .\java\tests\detailed\handler\*.html %OUT_PATH%\tests\detailed\handle
 xcopy /sfy .\java\tests\detailed\handler\*.png %OUT_PATH%\tests\detailed\handler\
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%

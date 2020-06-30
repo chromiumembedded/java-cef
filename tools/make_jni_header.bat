@@ -3,8 +3,9 @@
 :: reserved. Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file.
 
+set RETURNCODE=
 setlocal
-set RC=
+
 cd ..
 
 if "%1" == "" (
@@ -34,11 +35,11 @@ for /F "tokens=1,* delims=." %%F in (%TMP%) DO (
 call javah.exe -force -classpath %CLS_PATH% -o %OUT_PATH%/%CLS_NAME%.h %2
 
 :end
-endlocal & set RC=%ERRORLEVEL%
+endlocal & set RETURNCODE=%ERRORLEVEL%
 goto omega
 
 :returncode
-exit /B %RC%
+exit /B %RETURNCODE%
 
 :omega
-call :returncode %RC%
+call :returncode %RETURNCODE%
