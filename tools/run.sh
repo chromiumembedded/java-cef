@@ -25,7 +25,12 @@ else
     export RUN_TYPE="$3"
 
     # Necessary for jcef_helper to find libcef.so.
-    export LD_LIBRARY_PATH=$LIB_PATH
+    if [ -n "$LD_LIBRARY_PATH" ]; then
+      LD_LIBRARY_PATH=$LIB_PATH:${LD_LIBRARY_PATH}
+    else
+      LD_LIBRARY_PATH=$LIB_PATH
+    fi
+    export LD_LIBRARY_PATH
 
     # Remove the first three params ($1, $2 and $3) and pass the rest to java.
     shift

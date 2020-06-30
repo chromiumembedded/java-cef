@@ -7,7 +7,12 @@
 export LIB_PATH=$(readlink -f "./bin/lib/linux32")
 
 # Necessary for jcef_helper to find libcef.so.
-export LD_LIBRARY_PATH=$LIB_PATH
+if [ -n "$LD_LIBRARY_PATH" ]; then
+  LD_LIBRARY_PATH=$LIB_PATH:${LD_LIBRARY_PATH}
+else
+  LD_LIBRARY_PATH=$LIB_PATH
+fi
+export LD_LIBRARY_PATH
 
 # Preload libcef.so to avoid crashes.
 LD_PRELOAD=$LIB_PATH/libcef.so java -cp "./bin:./bin/*" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame "$@"
