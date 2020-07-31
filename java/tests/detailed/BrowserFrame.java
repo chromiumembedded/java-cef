@@ -14,7 +14,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
 
 public class BrowserFrame extends JFrame {
-    private boolean isClosed_ = false;
+    private volatile boolean isClosed_ = false;
     private CefBrowser browser_ = null;
     private static int browserCount_ = 0;
     private Runnable afterParentChangedAction_ = null;
