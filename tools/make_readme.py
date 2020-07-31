@@ -67,7 +67,7 @@ def create_readme():
 
   data = data.replace('$PLATFORM$', platform_str)
 
-  write_file(os.path.join(output_dir, 'README.txt'), data)
+  write_file(os.path.join(output_dir, 'README.txt'), data.encode('utf-8'))
   if not options.quiet:
     sys.stdout.write('Creating README.TXT file.\n')
 
