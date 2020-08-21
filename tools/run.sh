@@ -15,7 +15,7 @@ else
   else
     export OUT_PATH="./out/$1"
 
-    export LIB_PATH=$(readlink -f "./jcef_build/native/$2")
+    export LIB_PATH="$(readlink -f ./jcef_build/native/$2)"
     if [ ! -d "$LIB_PATH" ]; then
       echo "ERROR: Native build output path does not exist"
       exit 1
@@ -26,9 +26,9 @@ else
 
     # Necessary for jcef_helper to find libcef.so.
     if [ -n "$LD_LIBRARY_PATH" ]; then
-      LD_LIBRARY_PATH=$LIB_PATH:${LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH="$LIB_PATH:${LD_LIBRARY_PATH}"
     else
-      LD_LIBRARY_PATH=$LIB_PATH
+      LD_LIBRARY_PATH="$LIB_PATH"
     fi
     export LD_LIBRARY_PATH
 
@@ -37,7 +37,7 @@ else
     shift
     shift
 
-    LD_PRELOAD=$LIB_PATH/libcef.so java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.$RUN_TYPE.MainFrame "$@"
+    LD_PRELOAD=libcef.so java -cp "$CLS_PATH" -Djava.library.path=$LIB_PATH tests.$RUN_TYPE.MainFrame "$@"
   fi
 fi
 
