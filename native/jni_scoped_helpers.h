@@ -882,6 +882,21 @@ class ScopedJNIStringRef : public ScopedJNIBase<jobject> {
     }                                                            \
   }
 
+#define JNI_CALL_BOOLEAN_METHOD(out, env, obj, method, sig, ...)     \
+  {                                                                  \
+    if (env && obj) {                                                \
+      ScopedJNIClass _cls(env, env->GetObjectClass(obj));            \
+      jmethodID _methodId = env->GetMethodID(_cls, method, sig);     \
+      if (_methodId != NULL) {                                       \
+        out = env->CallBooleanMethod(obj, _methodId, ##__VA_ARGS__); \
+      }                                                              \
+      if (env->ExceptionOccurred()) {                                \
+        env->ExceptionDescribe();                                    \
+        env->ExceptionClear();                                       \
+      }                                                              \
+    }                                                                \
+  }
+
 // Set the CEF base object for an existing JNI object. A reference will be
 // added to the base object. If a previous base object existed a reference
 // will be removed from that object.

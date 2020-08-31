@@ -125,6 +125,12 @@ bool GetJNIFieldInt(JNIEnv* env,
                     const char* field_name,
                     int* value);
 
+bool GetJNIFieldDouble(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       double* value);
+
 // Retrieve the long value stored in the |field_name| field of |cls|.
 bool GetJNIFieldLong(JNIEnv* env,
                      jclass cls,
@@ -138,6 +144,16 @@ bool SetJNIFieldInt(JNIEnv* env,
                     jobject obj,
                     const char* field_name,
                     int value);
+bool SetJNIFieldDouble(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       double value);
+bool SetJNIFieldBoolean(JNIEnv* env,
+                        jclass cls,
+                        jobject obj,
+                        const char* field_name,
+                        int value);
 
 // Retrieve the static int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldStaticInt(JNIEnv* env,

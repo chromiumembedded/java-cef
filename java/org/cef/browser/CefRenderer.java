@@ -30,6 +30,10 @@ class CefRenderer {
         return transparent_;
     }
 
+    protected int getTextureID() {
+        return texture_id_[0];
+    }
+
     @SuppressWarnings("static-access")
     protected void initialize(GL2 gl2) {
         if (initialized_context_ == gl2) return;

@@ -30,7 +30,9 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -413,5 +415,10 @@ class CefBrowserWr extends CefBrowser_N {
         }
 
         return false;
+    }
+
+    @Override
+    public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution) {
+        throw new UnsupportedOperationException("Unsupported for windowed rendering");
     }
 }

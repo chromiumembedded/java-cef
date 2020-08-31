@@ -16,7 +16,9 @@ import org.cef.network.CefRequest;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Vector;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Interface representing a browser.
@@ -357,4 +359,27 @@ public interface CefBrowser {
      * @param word replace selected word with this word.
      */
     public void replaceMisspelling(String word);
+
+    /**
+     * Captures a screenshot-like image of the currently displayed content and returns it.
+     * <p>
+     * If executed on the AWT Event Thread, this returns an immediately resolved {@link
+     * java.util.concurrent.CompletableFuture}. If executed from another thread, the {@link
+     * java.util.concurrent.CompletableFuture} returned is resolved as soon as the screenshot 
+     * has been taken (which must happen on the event thread).
+     * <p>
+     * The generated screenshot can either be returned as-is, containing all natively-rendered
+     * pixels, or it can be scaled to match the logical width and height of the window.
+     * This distinction is only relevant in case of differing logical and physical resolutions
+     * (for example with HiDPI/Retina displays, which have a scaling factor of for example 2
+     * between the logical width of a window (ex. 400px) and the actual number of pixels in
+     * each row (ex. 800px with a scaling factor of 2)).
+     *
+     * @param nativeResolution whether to return an image at full native resolution (true)
+     *      or a scaled-down version whose width and height are equal to the logical size
+     *      of the screenshotted browser window
+     * @return the screenshot image
+     * @throws UnsupportedOperationException if not supported
+     */
+    public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution);
 }

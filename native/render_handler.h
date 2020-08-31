@@ -22,6 +22,10 @@ class RenderHandler : public CefRenderHandler {
                                  CefRect& rect) OVERRIDE;
   virtual void GetViewRect(CefRefPtr<CefBrowser> browser,
                            CefRect& rect) OVERRIDE;
+
+  virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser,
+                             CefScreenInfo& screen_info) OVERRIDE;
+
   virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser,
                               int viewX,
                               int viewY,

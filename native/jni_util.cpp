@@ -874,6 +874,34 @@ bool SetJNIFieldInt(JNIEnv* env,
   return false;
 }
 
+bool SetJNIFieldDouble(JNIEnv* env,
+                       jclass cls,
+                       jobject obj,
+                       const char* field_name,
+                       double value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "D");
+  if (field) {
+    env->SetDoubleField(obj, field, value);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
+bool SetJNIFieldBoolean(JNIEnv* env,
+                        jclass cls,
+                        jobject obj,
+                        const char* field_name,
+                        int value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "Z");
+  if (field) {
+    env->SetBooleanField(obj, field, value == 0 ? 0 : 1);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 bool GetJNIFieldStaticInt(JNIEnv* env,
                           jclass cls,
                           const char* field_name,

@@ -29,6 +29,81 @@ jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
   return NULL;
 }
 
+jobject NewJNIScreenInfo(JNIEnv* env, CefScreenInfo& screenInfo) {
+  ScopedJNIClass cls(env, "org/cef/handler/CefScreenInfo");
+  if (!cls) {
+    return NULL;
+  }
+
+  ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
+  if (!obj) {
+    return NULL;
+  }
+
+  if (SetJNIFieldDouble(env, cls, obj, "device_scale_factor",
+                        (double)screenInfo.device_scale_factor) &&
+      SetJNIFieldInt(env, cls, obj, "depth", screenInfo.depth) &&
+      SetJNIFieldInt(env, cls, obj, "depth_per_component",
+                     screenInfo.depth_per_component) &&
+      SetJNIFieldBoolean(env, cls, obj, "is_monochrome",
+                         screenInfo.is_monochrome) &&
+      SetJNIFieldInt(env, cls, obj, "x", screenInfo.rect.x) &&
+      SetJNIFieldInt(env, cls, obj, "y", screenInfo.rect.y) &&
+      SetJNIFieldInt(env, cls, obj, "width", screenInfo.rect.width) &&
+      SetJNIFieldInt(env, cls, obj, "height", screenInfo.rect.height) &&
+      SetJNIFieldInt(env, cls, obj, "available_x",
+                     screenInfo.available_rect.x) &&
+      SetJNIFieldInt(env, cls, obj, "available_y",
+                     screenInfo.available_rect.y) &&
+      SetJNIFieldInt(env, cls, obj, "available_width",
+                     screenInfo.available_rect.width) &&
+      SetJNIFieldInt(env, cls, obj, "available_height",
+                     screenInfo.available_rect.height)) {
+    return obj.Release();
+  }
+
+  return NULL;
+}
+
+bool GetJNIScreenInfo(JNIEnv* env, jobject jScreenInfo, CefScreenInfo& dest) {
+  ScopedJNIClass cls(env, "org/cef/handler/CefScreenInfo");
+  if (!cls) {
+    return false;
+  }
+
+  ScopedJNIObjectLocal obj(env, jScreenInfo);
+  if (!obj) {
+    return false;
+  }
+  double tmp;
+  if (!GetJNIFieldDouble(env, cls, obj, "device_scale_factor", &tmp)) {
+    return false;
+  }
+  dest.device_scale_factor = (float)tmp;
+
+  if (GetJNIFieldInt(env, cls, obj, "depth", &(dest.depth)) &&
+      GetJNIFieldInt(env, cls, obj, "depth_per_component",
+                     &(dest.depth_per_component)) &&
+      GetJNIFieldBoolean(env, cls, obj, "is_monochrome",
+                         &(dest.is_monochrome)) &&
+      GetJNIFieldInt(env, cls, obj, "x", &(dest.rect.x)) &&
+      GetJNIFieldInt(env, cls, obj, "y", &(dest.rect.y)) &&
+      GetJNIFieldInt(env, cls, obj, "width", &(dest.rect.width)) &&
+      GetJNIFieldInt(env, cls, obj, "height", &(dest.rect.height)) &&
+      GetJNIFieldInt(env, cls, obj, "available_x", &(dest.available_rect.x)) &&
+      GetJNIFieldInt(env, cls, obj, "available_y", &(dest.available_rect.y)) &&
+      GetJNIFieldInt(env, cls, obj, "available_width",
+                     &(dest.available_rect.width)) &&
+      GetJNIFieldInt(env, cls, obj, "available_height",
+                     &(dest.available_rect.height))
+
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // create a new array of java.awt.Rectangle.
 jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals) {
   if (vals.empty())
@@ -148,6 +223,44 @@ void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
   if (!GetViewRect(jbrowser, rect)) {
     rect = CefRect(0, 0, 1, 1);
   }
+}
+
+///
+// Called to allow the client to fill in the CefScreenInfo object with
+// appropriate values. Return true if the |screen_info| structure has been
+// modified.
+//
+// If the screen info rectangle is left empty the rectangle from GetViewRect
+// will be used. If the rectangle is still empty or invalid popups may not be
+// drawn correctly.
+///
+/*--cef()--*/
+bool RenderHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser,
+                                  CefScreenInfo& screen_info) {
+  ScopedJNIEnv env;
+  if (!env) {
+    return false;
+  }
+
+  ScopedJNIObjectLocal jScreenInfo(env, NewJNIScreenInfo(env, screen_info));
+  if (!jScreenInfo) {
+    return false;
+  }
+  ScopedJNIBrowser jbrowser(env, browser);
+  jboolean jresult = 0;
+
+  JNI_CALL_BOOLEAN_METHOD(
+      jresult, env, jbrowser.get(), "getScreenInfo",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefScreenInfo;)Z",
+      jbrowser.get(), jScreenInfo.get());
+
+  if (jresult) {
+    if (GetJNIScreenInfo(env, jScreenInfo.get(), screen_info)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool RenderHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
