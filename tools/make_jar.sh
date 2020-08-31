@@ -6,8 +6,8 @@
 if [ -z "$1" ]; then
   echo "ERROR: Please specify a build target: linux32 or linux64"
 else
-  cd ../out/$1
-  jar -cf jcef.jar org/cef/*.class org/cef/browser/*.class org/cef/callback/*.class org/cef/handler/*.class org/cef/misc/*.class org/cef/network/*.class
-  jar -cf jcef-tests.jar tests/detailed/*.class tests/detailed/dialog/*.class tests/detailed/handler/* tests/detailed/ui/*.class
-  cd ../../tools
+  DIR="$( cd "$( dirname "$0" )" && cd .. && pwd )"
+  OUT_DIR="${DIR}/out/$1"
+  jar -cf "${OUT_DIR}"/jcef.jar -C "${OUT_DIR}" org
+  jar -cf "${OUT_DIR}"/jcef-tests.jar -C "${OUT_DIR}" tests
 fi

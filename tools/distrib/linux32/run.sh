@@ -3,8 +3,15 @@
 # reserved. Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file.
 
-# Determine the absolute path to the library directory.
-export LIB_PATH="$(readlink -f './bin/lib/linux32')"
+# Determine the absolute path to the current directory.
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+LIB_PATH="$DIR/bin/lib/linux32"
+
+if [ -z "$1" ]; then
+  EXAMPLE="detailed"
+else
+  EXAMPLE="$1"
+fi
 
 # Necessary for jcef_helper to find libcef.so.
 if [ -n "$LD_LIBRARY_PATH" ]; then
@@ -15,4 +22,4 @@ fi
 export LD_LIBRARY_PATH
 
 # Preload libcef.so to avoid crashes.
-LD_PRELOAD=libcef.so java -cp "./bin:./bin/*" -Djava.library.path=$LIB_PATH tests.detailed.MainFrame "$@"
+LD_PRELOAD=libcef.so java -cp "${DIR}/bin:${DIR}/bin/*" -Djava.library.path="$LIB_PATH" tests.${EXAMPLE}.MainFrame "$@"
