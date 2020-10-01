@@ -67,6 +67,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private CefRenderer renderer_;
     private GLCanvas canvas_;
     private long window_handle_ = 0;
+    private boolean justCreated_ = false;
     private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
     private Point screenPoint_ = new Point(0, 0);
     private double scaleFactor_ = 1.0;
@@ -88,6 +89,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public void createImmediately() {
+        justCreated_ = true;
         // Create the browser immediately.
         createBrowserIfRequired(false);
     }
@@ -128,6 +130,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         GLCapabilities glcapabilities = new GLCapabilities(glprofile);
         canvas_ = new GLCanvas(glcapabilities) {
             private Method scaleFactorAccessor = null;
+            private boolean removed_ = true;
 
             @Override
             public void paint(Graphics g) {
@@ -176,6 +179,26 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 }
                 super.paint(g);
             }
+
+            @Override
+            public void addNotify() {
+                super.addNotify();
+                if (removed_) {
+                    notifyAfterParentChanged();
+                    removed_ = false;
+                }
+            }
+
+            @Override
+            public void removeNotify() {
+                if (!removed_) {
+                    if (!isClosed()) {
+                        notifyAfterParentChanged();
+                    }
+                    removed_ = true;
+                }
+                super.removeNotify();
+            }
         };
 
         // The GLContext will be re-initialized when changing displays, resulting in calls to
@@ -188,8 +211,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 int newHeight = height;
                 if (OS.isMacintosh()) {
                     // HiDPI display scale correction support code
-                    // For some reason this does seem to be necessary on MacOS only. 
-                    // If doing this correction on Windows, the browser content would be too 
+                    // For some reason this does seem to be necessary on MacOS only.
+                    // If doing this correction on Windows, the browser content would be too
                     // small and in the lower left corner of the canvas only.
                     newWidth = (int) (width / scaleFactor_);
                     newHeight = (int) (height / scaleFactor_);
@@ -380,10 +403,17 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 createBrowser(getClient(), windowHandle, getUrl(), true, isTransparent_, null,
                         getRequestContext());
             }
-        } else {
-            // OSR windows cannot be reparented after creation.
+        } else if (hasParent && justCreated_) {
+            notifyAfterParentChanged();
             setFocus(true);
+            justCreated_ = false;
         }
+    }
+
+    private void notifyAfterParentChanged() {
+        // With OSR there is no native window to reparent but we still need to send the
+        // notification.
+        getClient().onAfterParentChanged(this);
     }
 
     @Override
