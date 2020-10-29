@@ -720,6 +720,15 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
+            boolean user_gesture) {
+        if (isDisposed_) return true;
+        if (requestHandler_ != null && browser != null)
+            return requestHandler_.onOpenURLFromTab(browser, frame, target_url, user_gesture);
+        return false;
+    }
+
+    @Override
     public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame,
             CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator,
             BoolRef disableDefaultHandling) {

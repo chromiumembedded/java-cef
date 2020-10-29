@@ -23,6 +23,11 @@ class RequestHandler : public CefRequestHandler {
                       CefRefPtr<CefRequest> request,
                       bool user_gesture,
                       bool is_redirect) OVERRIDE;
+  bool OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefFrame> frame,
+                        const CefString& target_url,
+                        WindowOpenDisposition target_disposition,
+                        bool user_gesture) OVERRIDE;
   CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,

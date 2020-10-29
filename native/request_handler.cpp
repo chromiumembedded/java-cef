@@ -59,6 +59,30 @@ bool RequestHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   return (jresult != JNI_FALSE);
 }
 
+bool RequestHandler::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      const CefString& target_url,
+                                      WindowOpenDisposition target_disposition,
+                                      bool user_gesture) {
+  JNIEnv* env = GetJNIEnv();
+  if (!env)
+    return false;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIString jtargetUrl(env, target_url);
+  jboolean jresult = JNI_FALSE;
+
+  JNI_CALL_METHOD(env, handle_, "onOpenURLFromTab",
+                  "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
+                  "Ljava/lang/String;Z)Z",
+                  Boolean, jresult, jbrowser.get(), jframe.get(),
+                  jtargetUrl.get(), (user_gesture ? JNI_TRUE : JNI_FALSE));
+
+  return (jresult != JNI_FALSE);
+}
+
 CefRefPtr<CefResourceRequestHandler> RequestHandler::GetResourceRequestHandler(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
