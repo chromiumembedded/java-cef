@@ -2042,8 +2042,18 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
   if (CefCurrentlyOn(TID_UI)) {
     util::SetParent(browserHandle, parentHandle, callback);
   } else {
+#if defined(OS_LINUX)
+    CriticalLock lock;
+    CriticalWait waitCond(&lock);
+    lock.Lock();
+    CefPostTask(TID_UI, base::Bind(util::SetParentSync, browserHandle, parentHandle, &waitCond,
+                                   callback));
+    waitCond.Wait(1000);
+    lock.Unlock();
+#else
     CefPostTask(TID_UI, base::Bind(util::SetParent, browserHandle, parentHandle,
                                    callback));
+#endif
   }
 #endif
 }
