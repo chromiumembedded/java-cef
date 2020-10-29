@@ -114,3 +114,53 @@ Java_org_cef_browser_CefFrame_1N_N_1ExecuteJavaScript(JNIEnv* env,
   frame->ExecuteJavaScript(GetJNIString(env, code), GetJNIString(env, url),
                            line);
 }
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Undo(JNIEnv* env,
+                                                                jobject obj,
+                                                                jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->Undo();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Redo(JNIEnv* env,
+                                                                jobject obj,
+                                                                jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->Redo();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Cut(JNIEnv* env,
+                                                               jobject obj,
+                                                               jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->Cut();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Copy(JNIEnv* env,
+                                                                jobject obj,
+                                                                jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->Copy();
+}
+
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Paste(JNIEnv* env,
+                                                                 jobject obj,
+                                                                 jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->Paste();
+}

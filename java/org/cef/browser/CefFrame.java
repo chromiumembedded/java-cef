@@ -73,4 +73,29 @@ public interface CefFrame {
      * @param line The base line number to use for error reporting.
      */
     public void executeJavaScript(String code, String url, int line);
+
+    /**
+     * Execute undo in this frame.
+     */
+    public void undo();
+
+    /**
+     * Execute redo in this frame.
+     */
+    public void redo();
+
+    /**
+     * Execute cut in this frame.
+     */
+    public void cut();
+
+    /**
+     * Execute copy in this frame.
+     */
+    public void copy();
+
+    /**
+     * Execute paste in this frame.
+     */
+    public void paste();
 }
