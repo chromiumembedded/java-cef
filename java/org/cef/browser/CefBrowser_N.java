@@ -38,13 +38,13 @@ import javax.swing.SwingUtilities;
  * CefBrowser instance, please use CefBrowserFactory.
  */
 abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
-    private boolean isPending_ = false;
-    private CefClient client_;
-    private String url_;
-    private CefRequestContext request_context_;
-    private CefBrowser_N parent_ = null;
-    private Point inspectAt_ = null;
-    private CefBrowser_N devTools_ = null;
+    private volatile boolean isPending_ = false;
+    private final CefClient client_;
+    private final String url_;
+    private final CefRequestContext request_context_;
+    private volatile CefBrowser_N parent_ = null;
+    private volatile Point inspectAt_ = null;
+    private volatile CefBrowser_N devTools_ = null;
     private boolean closeAllowed_ = false;
     private volatile boolean isClosed_ = false;
     private volatile boolean isClosing_ = false;
@@ -155,12 +155,19 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
             boolean osr, boolean transparent, Component canvas, CefRequestContext context) {
         if (getNativeRef("CefBrowser") == 0 && !isPending_) {
             try {
-                isPending_ = N_CreateBrowser(
+                N_CreateBrowser(
                         clientHandler, windowHandle, url, osr, transparent, canvas, context);
             } catch (UnsatisfiedLinkError err) {
                 err.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Called async from the (native) main UI thread.
+     */
+    private void notifyBrowserCreated() {
+        isPending_ = true;
     }
 
     /**
