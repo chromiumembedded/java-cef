@@ -246,7 +246,7 @@ public class MainFrame extends BrowserFrame {
 
         menuBar.addBookmark("Binding Test", "client://tests/binding_test.html");
         menuBar.addBookmark("Binding Test 2", "client://tests/binding_test2.html");
-        menuBar.addBookmark("Download Test", "http://opensource.spotify.com/cefbuilds/index.html");
+        menuBar.addBookmark("Download Test", "https://cef-builds.spotifycdn.com/index.html");
         menuBar.addBookmark("Login Test (username:pumpkin, password:pie)",
                 "http://www.colostate.edu/~ric/protect/your.html");
         menuBar.addBookmark("Certificate-error Test", "https://www.k2go.de");

@@ -5,7 +5,7 @@
 # Download the CEF binary distribution for |platform| and |version| to
 # |download_dir|. The |CEF_ROOT| variable will be set in global scope pointing
 # to the extracted location.
-# Visit http://opensource.spotify.com/cefbuilds/index.html for the list of
+# Visit https://cef-builds.spotifycdn.com/index.html for the list of
 # supported platforms and versions.
 
 function(DownloadCEF platform version download_dir)
@@ -21,7 +21,7 @@ function(DownloadCEF platform version download_dir)
     set(CEF_DOWNLOAD_FILENAME "${CEF_DISTRIBUTION}.tar.bz2")
     set(CEF_DOWNLOAD_PATH "${CEF_DOWNLOAD_DIR}/${CEF_DOWNLOAD_FILENAME}")
     if(NOT EXISTS "${CEF_DOWNLOAD_PATH}")
-      set(CEF_DOWNLOAD_URL "http://opensource.spotify.com/cefbuilds/${CEF_DOWNLOAD_FILENAME}")
+      set(CEF_DOWNLOAD_URL "https://cef-builds.spotifycdn.com/${CEF_DOWNLOAD_FILENAME}")
       string(REPLACE "+" "%2B" CEF_DOWNLOAD_URL_ESCAPED ${CEF_DOWNLOAD_URL})
 
       # Download the SHA1 hash for the binary distribution.
