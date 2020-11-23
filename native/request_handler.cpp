@@ -64,7 +64,7 @@ bool RequestHandler::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
                                       const CefString& target_url,
                                       WindowOpenDisposition target_disposition,
                                       bool user_gesture) {
-  JNIEnv* env = GetJNIEnv();
+  ScopedJNIEnv env;
   if (!env)
     return false;
 
