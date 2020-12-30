@@ -68,9 +68,10 @@ public interface CefRenderHandler {
     /**
      * Handle cursor changes.
      * @param browser The browser generating the event.
-     * @param cursor The new cursor.
+     * @param cursorType The new cursor type.
+     * @return true if the cursor change was handled.
      */
-    public void onCursorChange(CefBrowser browser, int cursor);
+    public boolean onCursorChange(CefBrowser browser, int cursorType);
 
     /**
      * Called when the user starts dragging content in the web view. Contextual

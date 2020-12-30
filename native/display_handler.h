@@ -31,6 +31,10 @@ class DisplayHandler : public CefDisplayHandler {
                         const CefString& message,
                         const CefString& source,
                         int line) OVERRIDE;
+  bool OnCursorChange(CefRefPtr<CefBrowser> browser,
+                      CefCursorHandle cursor,
+                      cef_cursor_type_t type,
+                      const CefCursorInfo& custom_cursor_info) OVERRIDE;
 
  protected:
   ScopedJNIObjectGlobal handle_;

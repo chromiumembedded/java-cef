@@ -320,6 +320,24 @@ public class CefClient extends CefClientHandler
         return false;
     }
 
+    @Override
+    public boolean onCursorChange(CefBrowser browser, int cursorType) {
+        if (browser == null) {
+            return false;
+        }
+
+        if (displayHandler_ != null && displayHandler_.onCursorChange(browser, cursorType)) {
+            return true;
+        }
+
+        CefRenderHandler realHandler = browser.getRenderHandler();
+        if (realHandler != null) {
+            return realHandler.onCursorChange(browser, cursorType);
+        }
+
+        return false;
+    }
+
     // CefDownloadHandler
 
     public CefClient addDownloadHandler(CefDownloadHandler handler) {
@@ -675,14 +693,6 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public void onCursorChange(CefBrowser browser, int cursorType) {
-        if (browser == null) return;
-
-        CefRenderHandler realHandler = browser.getRenderHandler();
-        if (realHandler != null) realHandler.onCursorChange(browser, cursorType);
-    }
-
-    @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
         if (browser == null) return false;
 
@@ -720,8 +730,8 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture) {
+    public boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture) {
         if (isDisposed_) return true;
         if (requestHandler_ != null && browser != null)
             return requestHandler_.onOpenURLFromTab(browser, frame, target_url, user_gesture);

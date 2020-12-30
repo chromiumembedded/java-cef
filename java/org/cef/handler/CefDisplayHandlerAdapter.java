@@ -4,9 +4,9 @@
 
 package org.cef.handler;
 
+import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
-import org.cef.CefSettings;
 
 /**
  * An abstract adapter class for receiving display events.
@@ -37,6 +37,11 @@ public abstract class CefDisplayHandlerAdapter implements CefDisplayHandler {
     @Override
     public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level,
             String message, String source, int line) {
+        return false;
+    }
+
+    @Override
+    public boolean onCursorChange(CefBrowser browser, int cursorType) {
         return false;
     }
 }

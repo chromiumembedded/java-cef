@@ -39,7 +39,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
  public:
   CefHelperApp() {}
 
-  virtual void OnRegisterCustomSchemes(
+  void OnRegisterCustomSchemes(
       CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE {
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
@@ -64,24 +64,29 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
     return this;
   }
 
-  virtual void OnRenderThreadCreated(
-      CefRefPtr<CefListValue> extra_info) OVERRIDE {
-    for (size_t idx = 0; idx < extra_info->GetSize(); idx++) {
-      CefRefPtr<CefDictionaryValue> dict = extra_info->GetDictionary((int)idx);
-      // Create the renderer-side router for query handling.
-      CefMessageRouterConfig config;
-      config.js_query_function = dict->GetString("js_query_function");
-      config.js_cancel_function = dict->GetString("js_cancel_function");
+  void OnBrowserCreated(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDictionaryValue> extra_info) OVERRIDE {
+    auto router_configs = extra_info->GetList("router_configs");
+    if (router_configs) {
+      // Configuration from BrowserProcessHandler::GetMessageRouterConfigs.
+      for (size_t idx = 0; idx < router_configs->GetSize(); idx++) {
+        CefRefPtr<CefDictionaryValue> dict =
+            router_configs->GetDictionary((int)idx);
+        // Create the renderer-side router for query handling.
+        CefMessageRouterConfig config;
+        config.js_query_function = dict->GetString("js_query_function");
+        config.js_cancel_function = dict->GetString("js_cancel_function");
 
-      CefRefPtr<CefMessageRouterRendererSide> router =
-          CefMessageRouterRendererSide::Create(config);
-      message_router_.insert(std::make_pair(config, router));
+        CefRefPtr<CefMessageRouterRendererSide> router =
+            CefMessageRouterRendererSide::Create(config);
+        message_router_.insert(std::make_pair(config, router));
+      }
     }
   }
 
-  virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame,
-                                CefRefPtr<CefV8Context> context) OVERRIDE {
+  void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefFrame> frame,
+                        CefRefPtr<CefV8Context> context) OVERRIDE {
     std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
     for (iter = message_router_.begin(); iter != message_router_.end();
@@ -90,9 +95,9 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
     }
   }
 
-  virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
-                                 CefRefPtr<CefFrame> frame,
-                                 CefRefPtr<CefV8Context> context) OVERRIDE {
+  void OnContextReleased(CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<CefFrame> frame,
+                         CefRefPtr<CefV8Context> context) OVERRIDE {
     std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
     for (iter = message_router_.begin(); iter != message_router_.end();
@@ -101,11 +106,10 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
     }
   }
 
-  virtual bool OnProcessMessageReceived(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      CefProcessId source_process,
-      CefRefPtr<CefProcessMessage> message) OVERRIDE {
+  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefProcessId source_process,
+                                CefRefPtr<CefProcessMessage> message) OVERRIDE {
     if (message->GetName() == "AddMessageRouter") {
       CefRefPtr<CefListValue> args = message->GetArgumentList();
       CefMessageRouterConfig config;

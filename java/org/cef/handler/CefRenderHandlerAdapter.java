@@ -18,11 +18,6 @@ import java.nio.ByteBuffer;
  */
 public abstract class CefRenderHandlerAdapter implements CefRenderHandler {
     @Override
-    public void onCursorChange(CefBrowser browser, int cursorIdentifer) {
-        return;
-    }
-
-    @Override
     public Rectangle getViewRect(CefBrowser browser) {
         return new Rectangle(0, 0, 0, 0);
     }
@@ -46,6 +41,11 @@ public abstract class CefRenderHandlerAdapter implements CefRenderHandler {
     @Override
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height) {}
+
+    @Override
+    public boolean onCursorChange(CefBrowser browser, int cursorType) {
+        return false;
+    }
 
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {

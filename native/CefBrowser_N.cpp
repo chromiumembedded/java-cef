@@ -9,6 +9,7 @@
 #include "include/cef_task.h"
 #include "include/wrapper/cef_closure_task.h"
 
+#include "browser_process_handler.h"
 #include "client_handler.h"
 #include "critical_wait.h"
 #include "jni_util.h"
@@ -1007,8 +1008,16 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     return;
   }
 
-  bool result = CefBrowserHost::CreateBrowser(windowInfo, clientHandler.get(),
-                                              strUrl, settings, NULL, context);
+  CefRefPtr<CefDictionaryValue> extra_info;
+  auto router_configs = BrowserProcessHandler::GetMessageRouterConfigs();
+  if (router_configs) {
+    // Send the message router config to CefHelperApp::OnBrowserCreated.
+    extra_info = CefDictionaryValue::Create();
+    extra_info->SetList("router_configs", router_configs);
+  }
+
+  bool result = CefBrowserHost::CreateBrowser(
+      windowInfo, clientHandler.get(), strUrl, settings, extra_info, context);
   if (!result) {
     lifeSpanHandler->unregisterJBrowser(globalRef);
     env->DeleteGlobalRef(globalRef);
@@ -2046,8 +2055,8 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
     CriticalLock lock;
     CriticalWait waitCond(&lock);
     lock.Lock();
-    CefPostTask(TID_UI, base::Bind(util::SetParentSync, browserHandle, parentHandle, &waitCond,
-                                   callback));
+    CefPostTask(TID_UI, base::Bind(util::SetParentSync, browserHandle,
+                                   parentHandle, &waitCond, callback));
     waitCond.Wait(1000);
     lock.Unlock();
 #else

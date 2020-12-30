@@ -11,8 +11,8 @@
 # CMake-generated project formats that have been tested with JCEF include:
 #
 # Linux:      Ninja, Unix Makefiles
-# Mac OS X:   Ninja, Xcode 5+
-# Windows:    Ninja, Visual Studio 2010+
+# MacOS:      Ninja, Xcode 8+ (x86_64) or Xcode 12.2+ (ARM64)
+# Windows:    Ninja, Visual Studio 2015+
 #
 # Ninja is a cross-platform open-source tool for running fast builds using
 # pre-installed platform toolchains (GNU, clang, Xcode or MSVC). It can be
@@ -27,20 +27,20 @@
 #
 # - Linux requirements:
 #   Currently supported distributions include Debian Wheezy, Ubuntu Precise, and
-#   related. Ubuntu 14.04 64-bit is recommended. Newer versions will likely also
+#   related. Ubuntu 18.04 64-bit is recommended. Newer versions will likely also
 #   work but may not have been tested.
 #   Required packages include:
 #     build-essential
-#     libgtk2.0-dev
 #
-# - Mac OS X requirements:
-#   Xcode 5 or newer building on Mac OS X 10.9 (Mavericks) or newer. Xcode 7.2
-#   and OS X 10.11 are recommended. The Xcode command-line tools must also be
-#   installed. Only 64-bit builds are supported on OS X.
+# - MacOS requirements:
+#   Xcode 8 or newer building on MacOS 10.11 (El Capitan) or newer for x86_64.
+#   Xcode 12.2 or newer building on MacOS 10.15.4 (Catalina) or newer for ARM64.
+#   Only 64-bit builds are supported. The Xcode command-line tools must also be
+#   installed.
 #
 # - Windows requirements:
-#   Visual Studio 2010 or newer building on Windows 7 or newer. Visual Studio
-#   2015 Update 2 and Windows 10 64-bit are recommended.
+#   Visual Studio 2015 Update 2 or newer building on Windows 7 or newer. Visual
+#   Studio 2019 and Windows 10 64-bit are recommended.
 #
 # BUILD EXAMPLES
 #
@@ -64,38 +64,43 @@
 #     > cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 #
-# To perform a Mac OS X build using a 64-bit CEF binary distribution:
+# To perform a MacOS build using a 64-bit CEF binary distribution:
 #   Using the Xcode IDE:
 #     > cmake -G "Xcode" -DPROJECT_ARCH="x86_64" ..
 #     Open jcef.xcodeproj in Xcode and select Product > Build.
-#
-#   Using Unix Makefiles:
-#     > cmake -G "Unix Makefiles" -DPROJECT_ARCH="x86_64" -DCMAKE_BUILD_TYPE=Debug ..
-#     > make -j4
 #
 #   Using Ninja:
 #     > cmake -G "Ninja" -DPROJECT_ARCH="x86_64" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 #
+# To perform a MacOS build using an ARM64 CEF binary distribution:
+#   Using the Xcode IDE:
+#     > cmake -G "Xcode" -DPROJECT_ARCH="arm64" ..
+#     Open jcef.xcodeproj in Xcode and select Product > Build.
+#
+#   Using Ninja:
+#     > cmake -G "Ninja" -DPROJECT_ARCH="arm64" -DCMAKE_BUILD_TYPE=Debug ..
+#     > ninja
+#
 # To perform a Windows build using a 32-bit CEF binary distribution:
-#   Using the Visual Studio 2015 IDE:
-#     > cmake -G "Visual Studio 14" ..
+#   Using the Visual Studio 2019 IDE:
+#     > cmake -G "Visual Studio 16" -A Win32 ..
 #     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
-#   Using Ninja with Visual Studio 2015 command-line tools:
+#   Using Ninja with Visual Studio 2019 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
-#     > "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+#     > "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars32.bat"
 #     > cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 #
 # To perform a Windows build using a 64-bit CEF binary distribution:
-#   Using the Visual Studio 2015 IDE:
-#     > cmake -G "Visual Studio 14 Win64" ..
+#   Using the Visual Studio 2019 IDE:
+#     > cmake -G "Visual Studio 16" -A x64 ..
 #     Open jcef.sln in Visual Studio and select Build > Build Solution.
 #
-#   Using Ninja with Visual Studio 2015 command-line tools:
+#   Using Ninja with Visual Studio 2019 command-line tools:
 #     (this path may be different depending on your Visual Studio installation)
-#     > "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
+#     > "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
 #     > cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
 #     > ninja
 
@@ -121,12 +126,16 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "84.3.8+gc8a556f+chromium-84.0.4147.105")
+  set(CEF_VERSION "87.1.12+g03f9336+chromium-87.0.4280.88")
 endif()
 
 # Determine the platform.
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-  set(CEF_PLATFORM "macosx64")
+  if("${PROJECT_ARCH}" STREQUAL "arm64")
+    set(CEF_PLATFORM "macosarm64")
+  else()
+    set(CEF_PLATFORM "macosx64")
+  endif()
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   if(CMAKE_SIZEOF_VOID_P MATCHES 8)
     set(CEF_PLATFORM "linux64")

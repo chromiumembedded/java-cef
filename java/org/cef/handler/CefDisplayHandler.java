@@ -4,9 +4,9 @@
 
 package org.cef.handler;
 
+import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
-import org.cef.CefSettings;
 
 /**
  * Implement this interface to handle events related to browser display state.
@@ -14,7 +14,7 @@ import org.cef.CefSettings;
  */
 public interface CefDisplayHandler {
     /**
-     * Handle address changes.
+     * Browser address changed.
      * @param browser The browser generating the event.
      * @param frame The frame generating the event.
      * @param url The new address.
@@ -22,32 +22,29 @@ public interface CefDisplayHandler {
     public void onAddressChange(CefBrowser browser, CefFrame frame, String url);
 
     /**
-     * Handle title changes.
+     * Browser title changed.
      * @param browser The browser generating the event.
      * @param title The new title.
      */
     public void onTitleChange(CefBrowser browser, String title);
 
     /**
-     * Called when the browser is about to display a tooltip.
-     *
+     * About to display a tooltip.
      * @param browser The browser generating the event.
      * @param text Contains the text that will be displayed in the tooltip.
-     * @return To handle the display of the tooltip yourself return true.
+     * @return true to handle the tooltip display yourself.
      */
     public boolean onTooltip(CefBrowser browser, String text);
 
     /**
-     * Called when the browser receives a status message.
-     *
+     * Received a status message.
      * @param browser The browser generating the event.
      * @param value Contains the text that will be displayed in the status message.
      */
     public void onStatusMessage(CefBrowser browser, String value);
 
     /**
-     * Called to display a console message.
-     *
+     * Display a console message.
      * @param browser The browser generating the event.
      * @param level
      * @param message
@@ -57,4 +54,12 @@ public interface CefDisplayHandler {
      */
     public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level,
             String message, String source, int line);
+
+    /**
+     * Handle cursor changes.
+     * @param browser The browser generating the event.
+     * @param cursorType The new cursor type.
+     * @return true if the cursor change was handled.
+     */
+    public boolean onCursorChange(CefBrowser browser, int cursorType);
 }

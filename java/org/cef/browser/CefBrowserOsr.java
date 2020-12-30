@@ -370,12 +370,15 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     @Override
-    public void onCursorChange(CefBrowser browser, final int cursorType) {
+    public boolean onCursorChange(CefBrowser browser, final int cursorType) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 canvas_.setCursor(new Cursor(cursorType));
             }
         });
+
+        // OSR always handles the cursor change.
+        return true;
     }
 
     @Override
