@@ -713,7 +713,7 @@
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
 									<groupId>com.enactor.chromium</groupId>
-									<artifactId>linux-binaries</artifactId>
+									<artifactId>linux-striped-binaries</artifactId>
 									<version>${project.version}</version>
 									<packaging>zip</packaging>
 								</configuration>
