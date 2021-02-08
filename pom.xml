@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.enactor.chromium</groupId>
+	<groupId>com.enactor.core.chromium</groupId>
 	<artifactId>java-cef</artifactId>
 	<version>1.0.0</version>
 	<name>Java Chromium Embedded Framework</name>
@@ -182,7 +182,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -196,7 +196,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all-natives-${distribution.arch}.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -211,7 +211,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -225,7 +225,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -239,7 +239,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt-natives-${distribution.arch}.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -284,7 +284,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -300,7 +300,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all-natives-${distribution.arch}.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -317,7 +317,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -333,7 +333,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -349,7 +349,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt-natives-${distribution.arch}.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -366,7 +366,7 @@
 									<file>${basedir}/target/chromium-binaries-windows.zip</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>windows-binaries</artifactId>
 									<version>${project.version}</version>
 									<packaging>zip</packaging>
@@ -496,7 +496,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -510,7 +510,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all-natives-${distribution.arch}.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -525,7 +525,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -539,7 +539,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -553,7 +553,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt-natives-${distribution.arch}.jar</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -614,7 +614,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -630,7 +630,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all-natives-${distribution.arch}.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jogl-all-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -647,7 +647,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -663,7 +663,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -679,7 +679,7 @@
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt-natives-${distribution.arch}.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>gluegen-rt-natives</artifactId>
 									<version>${project.version}</version>
 									<classifier>${distribution.arch}</classifier>
@@ -696,7 +696,7 @@
 									<file>${basedir}/target/chromium-binaries-linux.zip</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>linux-binaries</artifactId>
 									<version>${project.version}</version>
 									<packaging>zip</packaging>
@@ -712,7 +712,7 @@
 									<file>${basedir}/target/chromium-binaries-linux-striped.zip</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>linux-striped-binaries</artifactId>
 									<version>${project.version}</version>
 									<packaging>zip</packaging>
@@ -810,7 +810,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/jcef_build/native/Release/jcef.jar/</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -824,7 +824,7 @@
 								</goals>
 								<configuration>
 									<file>${basedir}/jcef_build/native/Release/jcef-tests.jar/</file>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>jcef-tests</artifactId>
 									<version>${project.version}</version>
 									<packaging>jar</packaging>
@@ -869,7 +869,7 @@
 									<file>${basedir}/target/chromium-binaries-mac.zip</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
-									<groupId>com.enactor.chromium</groupId>
+									<groupId>com.enactor.core.chromium</groupId>
 									<artifactId>mac-binaries</artifactId>
 									<version>${project.version}</version>
 									<packaging>zip</packaging>
