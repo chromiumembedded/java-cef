@@ -18,14 +18,14 @@ import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.util.List;
 
-class CefDropTargetListenerOsr implements DropTargetListener {
-    private CefBrowserOsr browser_;
+class CefDropTargetListener implements DropTargetListener {
+    private CefBrowser_N browser_;
     private CefDragData dragData_ = null;
     private int dragOperations_ = CefDragData.DragOperations.DRAG_OPERATION_COPY;
     private int dragModifiers_ = EventFlags.EVENTFLAG_NONE;
     private int acceptOperations_ = DnDConstants.ACTION_COPY;
 
-    CefDropTargetListenerOsr(CefBrowserOsr browser) {
+    CefDropTargetListener(CefBrowser_N browser) {
         browser_ = browser;
     }
 
@@ -106,8 +106,11 @@ class CefDropTargetListenerOsr implements DropTargetListener {
         DataFlavor[] flavors = transferable.getTransferDataFlavors();
         for (DataFlavor flavor : flavors) {
             try {
-                // TODO(JCEF): Add support for other flavor types.
-                if (flavor.isFlavorJavaFileListType()) {
+                if (flavor.isFlavorTextType()) {
+                    Object ob = transferable.getTransferData(flavor);
+                    if (!(ob instanceof String)) continue;
+                    dragData.setFragmentText((String) ob);
+                } else if (flavor.isFlavorJavaFileListType()) {
                     List<File> files = (List<File>) transferable.getTransferData(flavor);
                     for (File file : files) {
                         dragData.addFile(file.getPath(), file.getName());
