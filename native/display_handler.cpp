@@ -13,24 +13,35 @@ int GetCursorId(cef_cursor_type_t type) {
   if (!env)
     return 0;
 
-  ScopedJNIClass cls(env, "java/awt/Cursor");
-  if (!cls)
-    return 0;
-
-  JNI_STATIC_DEFINE_INT_RV(env, cls, CROSSHAIR_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, DEFAULT_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, E_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, HAND_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, MOVE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, N_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, NE_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, NW_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, S_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, SE_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, SW_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, TEXT_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, W_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, WAIT_CURSOR, 0);
+  const char* cursorClassName = "java/awt/Cursor";
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           CROSSHAIR_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           DEFAULT_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           E_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           HAND_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           MOVE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           N_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           NE_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           NW_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           S_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           SE_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           SW_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           TEXT_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           W_RESIZE_CURSOR, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
+                           WAIT_CURSOR, 0);
 
   switch (type) {
     case CT_CROSS:

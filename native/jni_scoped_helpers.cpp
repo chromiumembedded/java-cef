@@ -2,6 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#include <mutex>
+
 #include "jni_scoped_helpers.h"
 
 #include "client_handler.h"
@@ -40,15 +42,41 @@ void DetachJNIEnv() {
   }
 }
 
+// Using a simple cache to store global refs to loaded classes, since we
+// need to load the same classes over and over, which should neither change
+// on the JVM side nor be GCed...
+std::map<std::string, jobject> classCache_;
+std::mutex classCacheMutex_;
+// ...except if there's a change in the classloader to use by JCEF, in which
+// case the cache can be invalidated
+jobject classCacheClassLoader_;
+
 // Returns a class with the given fully qualified |class_name| (with '/' as
 // separator).
 jclass FindClass(JNIEnv* env, const char* class_name) {
-  jobject classLoader = GetJavaClassLoader();
-  ASSERT(classLoader);
-
   std::string classNameSeparatedByDots(class_name);
   std::replace(classNameSeparatedByDots.begin(), classNameSeparatedByDots.end(),
                '/', '.');
+
+  jobject classLoader = GetJavaClassLoader();
+  ASSERT(classLoader);
+
+  // std::map is not thread-safe with regard to concurrent reading and writing
+  std::lock_guard<std::mutex> guard(classCacheMutex_);
+
+  if (classLoader != classCacheClassLoader_) {
+    for (std::pair<const std::string, jobject>& entry : classCache_) {
+      env->DeleteGlobalRef(entry.second);
+    }
+    classCache_.clear();
+    classCacheClassLoader_ = classLoader;
+  }
+
+  std::map<std::string, jobject>::iterator it =
+      classCache_.find(classNameSeparatedByDots);
+  if (it != classCache_.end()) {
+    return static_cast<jclass>(env->NewLocalRef(it->second));
+  }
 
   ScopedJNIString classNameJString(env, classNameSeparatedByDots);
   jobject result = NULL;
@@ -56,6 +84,13 @@ jclass FindClass(JNIEnv* env, const char* class_name) {
   JNI_CALL_METHOD(env, classLoader, "loadClass",
                   "(Ljava/lang/String;)Ljava/lang/Class;", Object, result,
                   classNameJString.get());
+
+  // Make a global reference out of the local reference to allow for caching.
+  // This produces a non-garbage-collectable class, since this global ref is
+  // never released! However, for the classes that are requested by JCEF via
+  // this mechanism, that should be acceptable, because they aren't candidates
+  // to be GCed anyway.
+  classCache_[classNameSeparatedByDots] = env->NewGlobalRef(result);
 
   return static_cast<jclass>(result);
 }
