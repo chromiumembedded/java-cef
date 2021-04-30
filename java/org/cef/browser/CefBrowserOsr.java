@@ -416,9 +416,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 new StringSelection(dragData.getFragmentText()), new DragSourceAdapter() {
                     @Override
                     public void dragDropEnd(DragSourceDropEvent dsde) {
-                        if (dsde.getDropSuccess()) {
-                            dragSourceEndedAt(dsde.getLocation(), mask);
-                        }
+                        dragSourceEndedAt(dsde.getLocation(), mask);
                         dragSourceSystemDragEnded();
                     }
                 });
