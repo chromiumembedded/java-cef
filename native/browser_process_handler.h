@@ -33,7 +33,6 @@ class BrowserProcessHandler : public CefBrowserProcessHandler {
   virtual ~BrowserProcessHandler();
 
   void OnContextInitialized() OVERRIDE;
-  CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
   void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE;
 
   static CefRefPtr<CefListValue> GetMessageRouterConfigs();

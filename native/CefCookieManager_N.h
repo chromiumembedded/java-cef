@@ -25,18 +25,6 @@ Java_org_cef_network_CefCookieManager_1N_N_1Dispose(JNIEnv*, jobject, jlong);
 
 /*
  * Class:     org_cef_network_CefCookieManager_N
- * Method:    N_SetSupportedSchemes
- * Signature: (JLjava/util/Vector;Z)V
- */
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1SetSupportedSchemes(JNIEnv*,
-                                                                jobject,
-                                                                jlong,
-                                                                jobject,
-                                                                jboolean);
-
-/*
- * Class:     org_cef_network_CefCookieManager_N
  * Method:    N_VisitAllCookies
  * Signature: (JLorg/cef/callback/CefCookieVisitor;)Z
  */

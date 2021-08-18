@@ -36,7 +36,8 @@ class PrintHandler : public CefPrintHandler {
 
   virtual void OnPrintReset(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
-  virtual CefSize GetPdfPaperSize(int device_units_per_inch) OVERRIDE;
+  virtual CefSize GetPdfPaperSize(CefRefPtr<CefBrowser> browser,
+                                  int device_units_per_inch) OVERRIDE;
 
  protected:
   ScopedJNIObjectGlobal handle_;

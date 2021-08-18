@@ -116,6 +116,15 @@ Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler(
 }
 
 JNIEXPORT void JNICALL
+Java_org_cef_handler_CefClientHandler_N_1removePrintHandler(
+    JNIEnv* env,
+    jobject clientHandler,
+    jobject printHandler) {
+  SetCefForJNIObject<CefPrintHandler>(env, printHandler, NULL,
+                                      "CefPrintHandler");
+}
+
+JNIEXPORT void JNICALL
 Java_org_cef_handler_CefClientHandler_N_1removeMessageRouter(
     JNIEnv* env,
     jobject clientHandler,

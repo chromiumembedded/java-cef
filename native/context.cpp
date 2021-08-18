@@ -50,9 +50,9 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.user_agent) = tmp;
     tmp.clear();
   }
-  if (GetJNIFieldString(env, cls, obj, "product_version", &tmp) &&
+  if (GetJNIFieldString(env, cls, obj, "user_agent_product", &tmp) &&
       !tmp.empty()) {
-    CefString(&settings.product_version) = tmp;
+    CefString(&settings.user_agent_product) = tmp;
     tmp.clear();
   }
   if (GetJNIFieldString(env, cls, obj, "locale", &tmp) && !tmp.empty()) {
@@ -117,6 +117,14 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     JNI_CALL_METHOD(env, color_type, "getColor", "()J", Long, jcolor);
     settings.background_color = (cef_color_t)jcolor;
   }
+  if (GetJNIFieldString(env, cls, obj, "cookieable_schemes_list", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.cookieable_schemes_list) = tmp;
+    tmp.clear();
+  }
+  GetJNIFieldBoolean(env, cls, obj, "cookieable_schemes_exclude_defaults",
+                     &settings.cookieable_schemes_exclude_defaults);
+
   return settings;
 }
 

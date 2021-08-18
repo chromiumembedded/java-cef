@@ -56,15 +56,6 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
     }
 
     @Override
-    public void setSupportedSchemes(Vector<String> schemes, boolean includeDefaults) {
-        try {
-            N_SetSupportedSchemes(N_CefHandle, schemes, includeDefaults);
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-    }
-
-    @Override
     public boolean visitAllCookies(CefCookieVisitor visitor) {
         try {
             return N_VisitAllCookies(N_CefHandle, visitor);
@@ -116,8 +107,6 @@ class CefCookieManager_N extends CefCookieManager implements CefNative {
 
     private final static native CefCookieManager_N N_GetGlobalManager();
     private final native void N_Dispose(long self);
-    private final native void N_SetSupportedSchemes(
-            long self, Vector<String> schemes, boolean include_defaults);
     private final native boolean N_VisitAllCookies(long self, CefCookieVisitor visitor);
     private final native boolean N_VisitUrlCookies(
             long self, String url, boolean includeHttpOnly, CefCookieVisitor visitor);

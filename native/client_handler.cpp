@@ -23,6 +23,7 @@
 #include "life_span_handler.h"
 #include "load_handler.h"
 #include "message_router_handler.h"
+#include "print_handler.h"
 #include "render_handler.h"
 #include "request_handler.h"
 
@@ -130,6 +131,10 @@ CefRefPtr<CefLifeSpanHandler> ClientHandler::GetLifeSpanHandler() {
 
 CefRefPtr<CefLoadHandler> ClientHandler::GetLoadHandler() {
   return GetHandler<LoadHandler>("LoadHandler");
+}
+
+CefRefPtr<CefPrintHandler> ClientHandler::GetPrintHandler() {
+  return GetHandler<PrintHandler>("PrintHandler");
 }
 
 CefRefPtr<CefRenderHandler> ClientHandler::GetRenderHandler() {

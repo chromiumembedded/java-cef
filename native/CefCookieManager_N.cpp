@@ -80,23 +80,6 @@ Java_org_cef_network_CefCookieManager_1N_N_1Dispose(JNIEnv* env,
   SetCefForJNIObject<CefCookieManager>(env, obj, NULL, kCefClassName);
 }
 
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1SetSupportedSchemes(
-    JNIEnv* env,
-    jobject obj,
-    jlong self,
-    jobject jschemes,
-    jboolean includeDefaults) {
-  CefRefPtr<CefCookieManager> manager = GetSelf(self);
-  if (!manager)
-    return;
-
-  std::vector<CefString> schemes;
-  GetJNIStringVector(env, jschemes, schemes);
-  // TODO(JCEF): Expose the callback object.
-  manager->SetSupportedSchemes(schemes, includeDefaults != JNI_FALSE, NULL);
-}
-
 JNIEXPORT jboolean JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1VisitAllCookies(JNIEnv* env,
                                                             jobject obj,

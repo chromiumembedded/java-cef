@@ -38,25 +38,6 @@ void BrowserProcessHandler::OnContextInitialized() {
   JNI_CALL_VOID_METHOD(env, handle_, "onContextInitialized", "()V");
 }
 
-CefRefPtr<CefPrintHandler> BrowserProcessHandler::GetPrintHandler() {
-  CefRefPtr<CefPrintHandler> result;
-  ScopedJNIEnv env;
-  if (!env)
-    return nullptr;
-
-  ScopedJNIObjectResult jresult(env);
-  JNI_CALL_METHOD(env, handle_, "getPrintHandler",
-                  "()Lorg/cef/handler/CefPrintHandler;", Object, jresult);
-
-  if (jresult) {
-    ScopedJNIObject<PrintHandler> jprintHandler(
-        env, jresult.Release(), true /* should_delete */, "CefPrintHandler");
-    result = jprintHandler.GetOrCreateCefObject();
-  }
-
-  return result;
-}
-
 void BrowserProcessHandler::OnScheduleMessagePumpWork(int64 delay_ms) {
   if (!handle_)
     return;

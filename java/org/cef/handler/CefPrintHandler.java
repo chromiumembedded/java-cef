@@ -69,8 +69,9 @@ public interface CefPrintHandler extends CefNative {
     /**
      * Called to retrieve the page size when printToPDF is requested for a browser.
      *
+     * @param browser The corresponding browser.
      * @param deviceUnitsPerInch The DPI of the print. Use this to calculate the page size to use.
      * @return The page size in microns.
      */
-    Dimension getPdfPaperSize(int deviceUnitsPerInch);
+    Dimension getPdfPaperSize(CefBrowser browser, int deviceUnitsPerInch);
 }
