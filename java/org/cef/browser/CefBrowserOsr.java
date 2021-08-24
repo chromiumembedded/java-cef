@@ -466,8 +466,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution) {
-        int width = (int) (canvas_.getWidth() * scaleFactor_);
-        int height = (int) (canvas_.getHeight() * scaleFactor_);
+        int width = (int) Math.ceil(canvas_.getWidth() * scaleFactor_);
+        int height = (int) Math.ceil(canvas_.getHeight() * scaleFactor_);
 
         // In order to grab a screenshot of the browser window, we need to get the OpenGL internals
         // from the GLCanvas that displays the browser.
