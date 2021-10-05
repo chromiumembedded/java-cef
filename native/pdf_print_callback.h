@@ -18,7 +18,7 @@ class PdfPrintCallback : public CefPdfPrintCallback {
   PdfPrintCallback(JNIEnv* env, jobject jcallback);
 
   // PdfPrintCallback methods
-  virtual void OnPdfPrintFinished(const CefString& path, bool ok) OVERRIDE;
+  virtual void OnPdfPrintFinished(const CefString& path, bool ok) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

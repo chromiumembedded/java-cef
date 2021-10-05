@@ -151,7 +151,7 @@ bool DisplayHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
   if (!env)
     return false;
 
-  jobject jlevel = NULL;
+  jobject jlevel = nullptr;
   switch (level) {
     JNI_CASE(env, "org/cef/CefSettings$LogSeverity", LOGSEVERITY_VERBOSE,
              jlevel);

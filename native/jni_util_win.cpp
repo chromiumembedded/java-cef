@@ -23,7 +23,7 @@ HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
 
   // Get the drawing surface.
   ds = awt.GetDrawingSurface(env, canvas);
-  assert(ds != NULL);
+  assert(ds != nullptr);
 
   // Lock the drawing surface.
   // May fail during shutdown.
@@ -34,7 +34,7 @@ HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env) {
 
   // Get the drawing surface info.
   dsi = ds->GetDrawingSurfaceInfo(ds);
-  if (dsi == NULL) {
+  if (dsi == nullptr) {
     // Unlock the drawing surface
     ds->Unlock(ds);
     return 0;

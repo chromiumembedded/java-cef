@@ -19,34 +19,34 @@ class RenderHandler : public CefRenderHandler {
 
   // CefRenderHandler methods
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser,
-                                 CefRect& rect) OVERRIDE;
+                                 CefRect& rect) override;
   virtual void GetViewRect(CefRefPtr<CefBrowser> browser,
-                           CefRect& rect) OVERRIDE;
+                           CefRect& rect) override;
 
   virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser,
-                             CefScreenInfo& screen_info) OVERRIDE;
+                             CefScreenInfo& screen_info) override;
 
   virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser,
                               int viewX,
                               int viewY,
                               int& screenX,
-                              int& screenY) OVERRIDE;
-  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) OVERRIDE;
+                              int& screenY) override;
+  virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
   virtual void OnPopupSize(CefRefPtr<CefBrowser> browser,
-                           const CefRect& rect) OVERRIDE;
+                           const CefRect& rect) override;
   virtual void OnPaint(CefRefPtr<CefBrowser> browser,
                        PaintElementType type,
                        const RectList& dirtyRects,
                        const void* buffer,
                        int width,
-                       int height) OVERRIDE;
+                       int height) override;
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              DragOperationsMask allowed_ops,
                              int x,
-                             int y) OVERRIDE;
+                             int y) override;
   virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser,
-                                DragOperation operation) OVERRIDE;
+                                DragOperation operation) override;
 
   bool GetViewRect(jobject browser, CefRect& rect);
   bool GetScreenPoint(jobject browser,

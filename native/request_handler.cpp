@@ -93,7 +93,7 @@ CefRefPtr<CefResourceRequestHandler> RequestHandler::GetResourceRequestHandler(
     bool& disable_default_handling) {
   ScopedJNIEnv env;
   if (!env)
-    return NULL;
+    return nullptr;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
@@ -117,7 +117,7 @@ CefRefPtr<CefResourceRequestHandler> RequestHandler::GetResourceRequestHandler(
 
   if (jresult)
     return new ResourceRequestHandler(env, jresult);
-  return NULL;
+  return nullptr;
 }
 
 bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,

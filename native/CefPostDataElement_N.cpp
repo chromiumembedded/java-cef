@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_network_CefPostDataElement_1N_N_1Dispose(JNIEnv* env,
                                                       jobject obj,
                                                       jlong self) {
-  SetCefForJNIObject<CefPostDataElement>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<CefPostDataElement>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
@@ -74,7 +74,7 @@ Java_org_cef_network_CefPostDataElement_1N_N_1SetToBytes(JNIEnv* env,
   if (!dataElement)
     return;
 
-  jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
+  jbyte* jbyte = env->GetByteArrayElements(jbytes, nullptr);
   if (!jbyte)
     return;
   dataElement->SetToBytes(jsize, jbyte);
@@ -87,10 +87,10 @@ Java_org_cef_network_CefPostDataElement_1N_N_1GetType(JNIEnv* env,
                                                       jlong self) {
   CefRefPtr<CefPostDataElement> dataElement = GetSelf(self);
   if (!dataElement)
-    return NULL;
+    return nullptr;
 
   CefPostDataElement::Type type = dataElement->GetType();
-  jobject jtype = NULL;
+  jobject jtype = nullptr;
   switch (type) {
     JNI_CASE(env, "org/cef/network/CefPostDataElement$Type", PDE_TYPE_EMPTY,
              jtype);
@@ -108,7 +108,7 @@ Java_org_cef_network_CefPostDataElement_1N_N_1GetFile(JNIEnv* env,
                                                       jlong self) {
   CefRefPtr<CefPostDataElement> dataElement = GetSelf(self);
   if (!dataElement)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dataElement->GetFile());
 }
 
@@ -132,7 +132,7 @@ Java_org_cef_network_CefPostDataElement_1N_N_1GetBytes(JNIEnv* env,
   if (!dataElement)
     return 0;
 
-  jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
+  jbyte* jbyte = env->GetByteArrayElements(jbytes, nullptr);
   if (!jbyte)
     return 0;
   memset(jbyte, 0, jsize);

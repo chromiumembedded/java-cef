@@ -97,7 +97,7 @@ bool ResourceHandler::ReadResponse(void* data_out,
     jcallback.SetTemporary();
   }
 
-  jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
+  jbyte* jbyte = env->GetByteArrayElements(jbytes, nullptr);
   if (jbyte) {
     memmove(data_out, jbyte,
             (bytes_read < bytes_to_read ? bytes_read : bytes_to_read));

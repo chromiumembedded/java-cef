@@ -79,7 +79,7 @@ RequestContextHandler::GetResourceRequestHandler(
     bool& disable_default_handling) {
   ScopedJNIEnv env;
   if (!env)
-    return NULL;
+    return nullptr;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
@@ -103,5 +103,5 @@ RequestContextHandler::GetResourceRequestHandler(
 
   if (jresult)
     return new ResourceRequestHandler(env, jresult);
-  return NULL;
+  return nullptr;
 }

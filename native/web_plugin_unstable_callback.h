@@ -18,7 +18,7 @@ class WebPluginUnstableCallback : public CefWebPluginUnstableCallback {
   WebPluginUnstableCallback(JNIEnv* env, jobject jcallback);
 
   // WebPluginUnstableCallback methods
-  virtual void IsUnstable(const CefString& path, bool unstable) OVERRIDE;
+  virtual void IsUnstable(const CefString& path, bool unstable) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

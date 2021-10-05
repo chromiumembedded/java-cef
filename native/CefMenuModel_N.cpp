@@ -98,7 +98,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1AddSubMenu(JNIEnv* env,
                                                     jstring jlabel) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
   CefRefPtr<CefMenuModel> subMenu =
       menuModel->AddSubMenu(jcommand_id, GetJNIString(env, jlabel));
   ScopedJNIMenuModel jmenuModel(env, subMenu);
@@ -173,7 +173,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1InsertSubMenuAt(JNIEnv* env,
                                                          jstring jlabel) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
   CefRefPtr<CefMenuModel> subMenu = menuModel->InsertSubMenuAt(
       jindex, jcommand_id, GetJNIString(env, jlabel));
   ScopedJNIMenuModel jmenuModel(env, subMenu);
@@ -243,7 +243,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1GetLabel(JNIEnv* env,
                                                   jint jcommand_id) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuModel->GetLabel(jcommand_id));
 }
 
@@ -254,7 +254,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1GetLabelAt(JNIEnv* env,
                                                     jint jindex) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuModel->GetLabelAt(jindex));
 }
 
@@ -286,7 +286,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1SetLabelAt(JNIEnv* env,
 }
 
 jobject toJType(JNIEnv* env, CefMenuModel::MenuItemType type) {
-  jobject result = NULL;
+  jobject result = nullptr;
   switch (type) {
     JNI_CASE(env, "org/cef/callback/CefMenuModel$MenuItemType",
              MENUITEMTYPE_COMMAND, result);
@@ -380,7 +380,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenu(JNIEnv* env,
                                                     jint jcommand_id) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
 
   CefRefPtr<CefMenuModel> subMenu = menuModel->GetSubMenu(jcommand_id);
   ScopedJNIMenuModel jmenuModel(env, subMenu);
@@ -394,7 +394,7 @@ Java_org_cef_callback_CefMenuModel_1N_N_1GetSubMenuAt(JNIEnv* env,
                                                       jint jindex) {
   CefRefPtr<CefMenuModel> menuModel = GetSelf(self);
   if (!menuModel)
-    return NULL;
+    return nullptr;
 
   CefRefPtr<CefMenuModel> subMenu = menuModel->GetSubMenuAt(jindex);
   ScopedJNIMenuModel jmenuModel(env, subMenu);

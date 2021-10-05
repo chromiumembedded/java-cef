@@ -19,15 +19,15 @@ class ResourceHandler : public CefResourceHandler {
 
   // CefResourceHandler methods:
   bool ProcessRequest(CefRefPtr<CefRequest> request,
-                      CefRefPtr<CefCallback> callback) OVERRIDE;
+                      CefRefPtr<CefCallback> callback) override;
   void GetResponseHeaders(CefRefPtr<CefResponse> response,
                           int64& response_length,
-                          CefString& redirectUrl) OVERRIDE;
+                          CefString& redirectUrl) override;
   bool ReadResponse(void* data_out,
                     int bytes_to_read,
                     int& bytes_read,
-                    CefRefPtr<CefCallback> callback) OVERRIDE;
-  void Cancel() OVERRIDE;
+                    CefRefPtr<CefCallback> callback) override;
+  void Cancel() override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

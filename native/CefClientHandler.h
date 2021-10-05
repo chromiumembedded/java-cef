@@ -133,8 +133,8 @@ Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler(JNIEnv*,
  */
 JNIEXPORT void JNICALL
 Java_org_cef_handler_CefClientHandler_N_1removePrintHandler(JNIEnv*,
-                                                           jobject,
-                                                           jobject);
+                                                            jobject,
+                                                            jobject);
 
 /*
  * Class:     org_cef_handler_CefClientHandler

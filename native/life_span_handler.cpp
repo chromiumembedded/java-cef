@@ -102,7 +102,7 @@ void LifeSpanHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   // Clear the browser pointer member of the Java object. This will
   // release the browser reference that was added in
   // LifeSpanHandler::OnAfterCreated.
-  SetCefForJNIObject<CefBrowser>(env, jbrowser, NULL, "CefBrowser");
+  SetCefForJNIObject<CefBrowser>(env, jbrowser, nullptr, "CefBrowser");
 
   CefRefPtr<ClientHandler> client =
       (ClientHandler*)browser->GetHost()->GetClient().get();

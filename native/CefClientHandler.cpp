@@ -32,7 +32,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeContextMenuHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject contextMenuHandler) {
-  SetCefForJNIObject<CefContextMenuHandler>(env, contextMenuHandler, NULL,
+  SetCefForJNIObject<CefContextMenuHandler>(env, contextMenuHandler, nullptr,
                                             "CefContextMenuHandler");
 }
 
@@ -41,7 +41,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeDialogHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject dialogHandler) {
-  SetCefForJNIObject<CefDialogHandler>(env, dialogHandler, NULL,
+  SetCefForJNIObject<CefDialogHandler>(env, dialogHandler, nullptr,
                                        "CefDialogHandler");
 }
 
@@ -50,7 +50,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeDisplayHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject displayHandler) {
-  SetCefForJNIObject<CefDisplayHandler>(env, displayHandler, NULL,
+  SetCefForJNIObject<CefDisplayHandler>(env, displayHandler, nullptr,
                                         "CefDisplayHandler");
 }
 
@@ -59,7 +59,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeDownloadHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject downloadHandler) {
-  SetCefForJNIObject<CefDownloadHandler>(env, downloadHandler, NULL,
+  SetCefForJNIObject<CefDownloadHandler>(env, downloadHandler, nullptr,
                                          "CefDownloadHandler");
 }
 
@@ -68,7 +68,8 @@ Java_org_cef_handler_CefClientHandler_N_1removeDragHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject dragHandler) {
-  SetCefForJNIObject<CefDragHandler>(env, dragHandler, NULL, "CefDragHandler");
+  SetCefForJNIObject<CefDragHandler>(env, dragHandler, nullptr,
+                                     "CefDragHandler");
 }
 
 JNIEXPORT void JNICALL
@@ -76,7 +77,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeFocusHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject focusHandler) {
-  SetCefForJNIObject<CefFocusHandler>(env, focusHandler, NULL,
+  SetCefForJNIObject<CefFocusHandler>(env, focusHandler, nullptr,
                                       "CefFocusHandler");
 }
 
@@ -85,7 +86,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeJSDialogHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject jsdialogHandler) {
-  SetCefForJNIObject<CefJSDialogHandler>(env, jsdialogHandler, NULL,
+  SetCefForJNIObject<CefJSDialogHandler>(env, jsdialogHandler, nullptr,
                                          "CefJSDialogHandler");
 }
 
@@ -94,7 +95,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeKeyboardHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject keyboardHandler) {
-  SetCefForJNIObject<CefKeyboardHandler>(env, keyboardHandler, NULL,
+  SetCefForJNIObject<CefKeyboardHandler>(env, keyboardHandler, nullptr,
                                          "CefKeyboardHandler");
 }
 
@@ -103,7 +104,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeLifeSpanHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject lifeSpanHandler) {
-  SetCefForJNIObject<CefLifeSpanHandler>(env, lifeSpanHandler, NULL,
+  SetCefForJNIObject<CefLifeSpanHandler>(env, lifeSpanHandler, nullptr,
                                          "CefLifeSpanHandler");
 }
 
@@ -112,7 +113,8 @@ Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject loadHandler) {
-  SetCefForJNIObject<CefLoadHandler>(env, loadHandler, NULL, "CefLoadHandler");
+  SetCefForJNIObject<CefLoadHandler>(env, loadHandler, nullptr,
+                                     "CefLoadHandler");
 }
 
 JNIEXPORT void JNICALL
@@ -120,7 +122,7 @@ Java_org_cef_handler_CefClientHandler_N_1removePrintHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject printHandler) {
-  SetCefForJNIObject<CefPrintHandler>(env, printHandler, NULL,
+  SetCefForJNIObject<CefPrintHandler>(env, printHandler, nullptr,
                                       "CefPrintHandler");
 }
 
@@ -141,7 +143,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeRenderHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject renderHandler) {
-  SetCefForJNIObject<CefRenderHandler>(env, renderHandler, NULL,
+  SetCefForJNIObject<CefRenderHandler>(env, renderHandler, nullptr,
                                        "CefRenderHandler");
 }
 
@@ -150,7 +152,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeRequestHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject requestHandler) {
-  SetCefForJNIObject<CefRequestHandler>(env, requestHandler, NULL,
+  SetCefForJNIObject<CefRequestHandler>(env, requestHandler, nullptr,
                                         "CefRequestHandler");
 }
 
@@ -159,7 +161,8 @@ Java_org_cef_handler_CefClientHandler_N_1removeWindowHandler(
     JNIEnv* env,
     jobject clientHandler,
     jobject windowHandler) {
-  SetCefForJNIObject<WindowHandler>(env, windowHandler, NULL, "WindowHandler");
+  SetCefForJNIObject<WindowHandler>(env, windowHandler, nullptr,
+                                    "WindowHandler");
 }
 
 JNIEXPORT void JNICALL
@@ -167,6 +170,6 @@ Java_org_cef_handler_CefClientHandler_N_1CefClientHandler_1DTOR(
     JNIEnv* env,
     jobject clientHandler) {
   // delete reference to the native client handler
-  SetCefForJNIObject<ClientHandler>(env, clientHandler, NULL,
+  SetCefForJNIObject<ClientHandler>(env, clientHandler, nullptr,
                                     "CefClientHandler");
 }

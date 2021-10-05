@@ -4,7 +4,7 @@
 
 #include "CefMessageRouter_N.h"
 
-#include "include/base/cef_bind.h"
+#include "include/base/cef_callback.h"
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_message_router.h"
 
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_browser_CefMessageRouter_1N_N_1Dispose(JNIEnv* env,
                                                     jobject obj,
                                                     jlong self) {
-  SetCefForJNIObject<CefMessageRouterBrowserSide>(env, obj, NULL,
+  SetCefForJNIObject<CefMessageRouterBrowserSide>(env, obj, nullptr,
                                                   kCefClassName);
 }
 
@@ -71,12 +71,15 @@ Java_org_cef_browser_CefMessageRouter_1N_N_1AddHandler(JNIEnv* env,
       GetHandler(env, jrouterHandler, true /* allow_create */);
 
   if (CefCurrentlyOn(TID_UI)) {
-    msgRouter->AddHandler(routerHandler, (jfirst != JNI_FALSE));
+    msgRouter->AddHandler(routerHandler.get(), (jfirst != JNI_FALSE));
   } else {
-    CefPostTask(
-        TID_UI,
-        base::Bind(base::IgnoreResult(&CefMessageRouterBrowserSide::AddHandler),
-                   msgRouter.get(), routerHandler, (jfirst != JNI_FALSE)));
+    CefPostTask(TID_UI, base::BindOnce(
+                            [](CefRefPtr<CefMessageRouter> msgRouter,
+                               CefRefPtr<MessageRouterHandler> routerHandler,
+                               bool first) {
+                              msgRouter->AddHandler(routerHandler.get(), first);
+                            },
+                            msgRouter, routerHandler, (jfirst != JNI_FALSE)));
   }
   return JNI_TRUE;
 }
@@ -97,12 +100,14 @@ Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHandler(
     return JNI_FALSE;
 
   if (CefCurrentlyOn(TID_UI)) {
-    msgRouter->RemoveHandler(routerHandler);
+    msgRouter->RemoveHandler(routerHandler.get());
   } else {
-    CefPostTask(TID_UI,
-                base::Bind(base::IgnoreResult(
-                               &CefMessageRouterBrowserSide::RemoveHandler),
-                           msgRouter.get(), routerHandler));
+    CefPostTask(TID_UI, base::BindOnce(
+                            [](CefRefPtr<CefMessageRouter> msgRouter,
+                               CefRefPtr<MessageRouterHandler> routerHandler) {
+                              msgRouter->RemoveHandler(routerHandler.get());
+                            },
+                            msgRouter, routerHandler));
   }
   return JNI_TRUE;
 }
@@ -123,5 +128,5 @@ Java_org_cef_browser_CefMessageRouter_1N_N_1CancelPending(
   CefRefPtr<MessageRouterHandler> routerHandler =
       GetHandler(env, jrouterHandler, false /* allow_create */);
 
-  msgRouter->CancelPending(browser, routerHandler);
+  msgRouter->CancelPending(browser, routerHandler.get());
 }

@@ -22,7 +22,7 @@ class RequestContextHandler : public CefRequestContextHandler {
                           bool is_main_frame,
                           const CefString& top_origin_url,
                           CefRefPtr<CefWebPluginInfo> plugin_info,
-                          PluginPolicy* plugin_policy) OVERRIDE;
+                          PluginPolicy* plugin_policy) override;
 
   CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
       CefRefPtr<CefBrowser> browser,
@@ -31,7 +31,7 @@ class RequestContextHandler : public CefRequestContextHandler {
       bool is_navigation,
       bool is_download,
       const CefString& request_initiator,
-      bool& disable_default_handling) OVERRIDE;
+      bool& disable_default_handling) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

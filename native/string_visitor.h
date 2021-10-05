@@ -18,7 +18,7 @@ class StringVisitor : public CefStringVisitor {
   StringVisitor(JNIEnv* env, jobject jvisitor);
 
   // StringVisitor methods
-  virtual void Visit(const CefString& string) OVERRIDE;
+  virtual void Visit(const CefString& string) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

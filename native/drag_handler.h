@@ -20,7 +20,7 @@ class DragHandler : public CefDragHandler {
   // CefDragHandler methods
   bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                    CefRefPtr<CefDragData> dragData,
-                   CefDragHandler::DragOperationsMask mask) OVERRIDE;
+                   CefDragHandler::DragOperationsMask mask) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

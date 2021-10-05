@@ -13,11 +13,11 @@ namespace {
 jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
   ScopedJNIClass cls(env, "java/awt/Rectangle");
   if (!cls)
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
   if (!obj)
-    return NULL;
+    return nullptr;
 
   if (SetJNIFieldInt(env, cls, obj, "x", rect.x) &&
       SetJNIFieldInt(env, cls, obj, "y", rect.y) &&
@@ -26,18 +26,18 @@ jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
     return obj.Release();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 jobject NewJNIScreenInfo(JNIEnv* env, CefScreenInfo& screenInfo) {
   ScopedJNIClass cls(env, "org/cef/handler/CefScreenInfo");
   if (!cls) {
-    return NULL;
+    return nullptr;
   }
 
   ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
   if (!obj) {
-    return NULL;
+    return nullptr;
   }
 
   if (SetJNIFieldDouble(env, cls, obj, "device_scale_factor",
@@ -62,7 +62,7 @@ jobject NewJNIScreenInfo(JNIEnv* env, CefScreenInfo& screenInfo) {
     return obj.Release();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool GetJNIScreenInfo(JNIEnv* env, jobject jScreenInfo, CefScreenInfo& dest) {
@@ -107,14 +107,14 @@ bool GetJNIScreenInfo(JNIEnv* env, jobject jScreenInfo, CefScreenInfo& dest) {
 // create a new array of java.awt.Rectangle.
 jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals) {
   if (vals.empty())
-    return NULL;
+    return nullptr;
 
   ScopedJNIClass cls(env, "java/awt/Rectangle");
   if (!cls)
-    return NULL;
+    return nullptr;
 
   const jsize size = static_cast<jsize>(vals.size());
-  jobjectArray arr = env->NewObjectArray(size, cls, NULL);
+  jobjectArray arr = env->NewObjectArray(size, cls, nullptr);
 
   for (jsize i = 0; i < size; i++) {
     ScopedJNIObjectLocal rect_obj(env, NewJNIRect(env, vals[i]));
@@ -128,18 +128,18 @@ jobjectArray NewJNIRectArray(JNIEnv* env, const std::vector<CefRect>& vals) {
 jobject NewJNIPoint(JNIEnv* env, int x, int y) {
   ScopedJNIClass cls(env, "java/awt/Point");
   if (!cls)
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
   if (!obj)
-    return NULL;
+    return nullptr;
 
   if (SetJNIFieldInt(env, cls, obj, "x", x) &&
       SetJNIFieldInt(env, cls, obj, "y", y)) {
     return obj.Release();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace

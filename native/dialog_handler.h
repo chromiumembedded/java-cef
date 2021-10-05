@@ -23,7 +23,7 @@ class DialogHandler : public CefDialogHandler {
                             const CefString& default_file_path,
                             const std::vector<CefString>& accept_filters,
                             int selected_accept_filter,
-                            CefRefPtr<CefFileDialogCallback> callback) OVERRIDE;
+                            CefRefPtr<CefFileDialogCallback> callback) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

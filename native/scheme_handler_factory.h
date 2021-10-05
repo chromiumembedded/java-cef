@@ -21,7 +21,7 @@ class SchemeHandlerFactory : public CefSchemeHandlerFactory {
   CefRefPtr<CefResourceHandler> Create(CefRefPtr<CefBrowser> browser,
                                        CefRefPtr<CefFrame> frame,
                                        const CefString& scheme_name,
-                                       CefRefPtr<CefRequest> request) OVERRIDE;
+                                       CefRefPtr<CefRequest> request) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

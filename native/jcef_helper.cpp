@@ -40,7 +40,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
   CefHelperApp() {}
 
   void OnRegisterCustomSchemes(
-      CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE {
+      CefRawPtr<CefSchemeRegistrar> registrar) override {
     std::fstream fStream;
     std::string fName = util::GetTempFileName("scheme", true);
     char schemeName[512] = "";
@@ -60,12 +60,12 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
   }
 
   virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler()
-      OVERRIDE {
+      override {
     return this;
   }
 
   void OnBrowserCreated(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefDictionaryValue> extra_info) OVERRIDE {
+                        CefRefPtr<CefDictionaryValue> extra_info) override {
     auto router_configs = extra_info->GetList("router_configs");
     if (router_configs) {
       // Configuration from BrowserProcessHandler::GetMessageRouterConfigs.
@@ -86,7 +86,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
 
   void OnContextCreated(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefFrame> frame,
-                        CefRefPtr<CefV8Context> context) OVERRIDE {
+                        CefRefPtr<CefV8Context> context) override {
     std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
     for (iter = message_router_.begin(); iter != message_router_.end();
@@ -97,7 +97,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
 
   void OnContextReleased(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefFrame> frame,
-                         CefRefPtr<CefV8Context> context) OVERRIDE {
+                         CefRefPtr<CefV8Context> context) override {
     std::map<CefMessageRouterConfig, CefRefPtr<CefMessageRouterRendererSide>,
              cmpCfg>::iterator iter;
     for (iter = message_router_.begin(); iter != message_router_.end();
@@ -109,7 +109,7 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefProcessId source_process,
-                                CefRefPtr<CefProcessMessage> message) OVERRIDE {
+                                CefRefPtr<CefProcessMessage> message) override {
     if (message->GetName() == "AddMessageRouter") {
       CefRefPtr<CefListValue> args = message->GetArgumentList();
       CefMessageRouterConfig config;
@@ -203,7 +203,7 @@ int main(int argc, char* argv[]) {
 #endif  // !defined(OS_WIN)
 
   CefRefPtr<CefHelperApp> app = new CefHelperApp();
-  const int result = CefExecuteProcess(main_args, app.get(), NULL);
+  const int result = CefExecuteProcess(main_args, app.get(), nullptr);
 
 #if defined(OS_MACOSX)
   if (!framework_path.empty())

@@ -18,7 +18,7 @@ class CompletionCallback : public CefCompletionCallback {
   CompletionCallback(JNIEnv* env, jobject jhandler);
 
   // CompletionCallback methods
-  virtual void OnComplete() OVERRIDE;
+  virtual void OnComplete() override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

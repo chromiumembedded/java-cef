@@ -20,7 +20,7 @@ class WebPluginInfoVisitor : public CefWebPluginInfoVisitor {
   // WebPluginInfoVisitor methods
   virtual bool Visit(CefRefPtr<CefWebPluginInfo> info,
                      int count,
-                     int total) OVERRIDE;
+                     int total) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

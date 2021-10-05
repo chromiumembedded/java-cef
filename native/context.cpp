@@ -19,7 +19,7 @@
 
 namespace {
 
-Context* g_context = NULL;
+Context* g_context = nullptr;
 
 CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
   CefString tmp;
@@ -63,7 +63,7 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.log_file) = tmp;
     tmp.clear();
   }
-  jobject obj_sev = NULL;
+  jobject obj_sev = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "log_severity", &obj_sev,
                         "Lorg/cef/CefSettings$LogSeverity;")) {
     ScopedJNIObjectLocal severity(env, obj_sev);
@@ -109,7 +109,7 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
                  &settings.uncaught_exception_stack_size);
   GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
                      &settings.ignore_certificate_errors);
-  jobject obj_col = NULL;
+  jobject obj_col = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "background_color", &obj_col,
                         "Lorg/cef/CefSettings$ColorType;")) {
     ScopedJNIObjectLocal color_type(env, obj_col);
@@ -176,9 +176,9 @@ bool Context::Initialize(JNIEnv* env,
   DCHECK(thread_checker_.CalledOnValidThread());
 
 #if defined(OS_WIN)
-  CefMainArgs main_args(::GetModuleHandle(NULL));
+  CefMainArgs main_args(::GetModuleHandle(nullptr));
 #else
-  CefMainArgs main_args(0, NULL);
+  CefMainArgs main_args(0, nullptr);
 #endif
 
   CefSettings settings = GetJNISettings(env, jsettings);
@@ -233,7 +233,7 @@ bool Context::Initialize(JNIEnv* env,
   res = util_mac::CefInitializeOnMainThread(main_args, settings,
                                             client_app.get());
 #else
-  res = CefInitialize(main_args, settings, client_app.get(), NULL);
+  res = CefInitialize(main_args, settings, client_app.get(), nullptr);
 #endif
 
 #if defined(OS_POSIX)
@@ -294,7 +294,7 @@ Context::Context() : external_message_pump_(true) {
 
 Context::~Context() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  g_context = NULL;
+  g_context = nullptr;
 
 #if defined(OS_MACOSX)
   cef_unload_library();

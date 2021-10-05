@@ -80,7 +80,7 @@ CefRefPtr<T> ClientHandler::GetHandler(const char* class_name) {
   if (!env)
     return nullptr;
 
-  CefRefPtr<T> result = NULL;
+  CefRefPtr<T> result = nullptr;
   ScopedJNIObjectResult jresult(env);
   JNI_CALL_METHOD(env, handle_, methodName.c_str(), methodSig.c_str(), Object,
                   jresult);
@@ -271,7 +271,7 @@ void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) {
 }
 
 jobject ClientHandler::getBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
-  jobject jbrowser = NULL;
+  jobject jbrowser = nullptr;
   JNI_CALL_METHOD(env, handle_, "getBrowser", "(I)Lorg/cef/browser/CefBrowser;",
                   Object, jbrowser, browser->GetIdentifier());
   return jbrowser;
@@ -280,7 +280,7 @@ jobject ClientHandler::getBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
 ClientHandler::BrowserSet ClientHandler::GetAllBrowsers(JNIEnv* env) {
   BrowserSet result;
 
-  jobject jbrowsers = NULL;
+  jobject jbrowsers = nullptr;
   JNI_CALL_METHOD(env, handle_, "getAllBrowser", "()[Ljava/lang/Object;",
                   Object, jbrowsers);
   if (!jbrowsers)

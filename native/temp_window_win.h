@@ -6,7 +6,6 @@
 #define JCEF_NATIVE_TEMP_WINDOW_WIN_H_
 #pragma once
 
-#include "include/base/cef_scoped_ptr.h"
 #include "include/cef_base.h"
 
 // Represents a singleton hidden window that acts as a temporary parent for
@@ -19,8 +18,8 @@ class TempWindowWin {
  private:
   // A single instance will be created/owned by Context.
   friend class Context;
-  // Allow deletion via scoped_ptr only.
-  friend struct base::DefaultDeleter<TempWindowWin>;
+  // Allow deletion via std::unique_ptr only.
+  friend std::default_delete<TempWindowWin>;
 
   TempWindowWin();
   ~TempWindowWin();

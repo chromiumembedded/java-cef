@@ -17,7 +17,7 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
     CefRefPtr<CefRequest> request) {
   ScopedJNIEnv env;
   if (!env)
-    return NULL;
+    return nullptr;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
@@ -36,5 +36,5 @@ CefRefPtr<CefResourceHandler> SchemeHandlerFactory::Create(
 
   if (jresult)
     return new ResourceHandler(env, jresult);
-  return NULL;
+  return nullptr;
 }

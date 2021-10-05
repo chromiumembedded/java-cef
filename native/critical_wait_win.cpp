@@ -7,7 +7,7 @@
 // CriticalLock
 
 CriticalLock::CriticalLock() {
-  lock_ = CreateMutex(NULL, FALSE, NULL);
+  lock_ = CreateMutex(nullptr, FALSE, nullptr);
 }
 
 CriticalLock::~CriticalLock() {
@@ -25,7 +25,7 @@ void CriticalLock::Unlock() {
 // CriticalWait
 
 CriticalWait::CriticalWait(CriticalLock* lock) : lock_(lock) {
-  cond_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+  cond_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 CriticalWait::~CriticalWait() {

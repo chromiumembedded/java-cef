@@ -23,10 +23,10 @@ class ClientApp : public CefApp {
   // CefApp methods:
   void OnBeforeCommandLineProcessing(
       const CefString& process_type,
-      CefRefPtr<CefCommandLine> command_line) OVERRIDE;
+      CefRefPtr<CefCommandLine> command_line) override;
   void OnRegisterCustomSchemes(
-      CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
-  CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE;
+      CefRawPtr<CefSchemeRegistrar> registrar) override;
+  CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
 
 #if defined(OS_MACOSX)
   // Used to continue termination handling in Java.

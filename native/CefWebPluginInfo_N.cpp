@@ -21,7 +21,7 @@ Java_org_cef_network_CefWebPluginInfo_1N_N_1GetName(JNIEnv* env,
                                                     jlong self) {
   CefRefPtr<CefWebPluginInfo> info = GetSelf(self);
   if (!info)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, info->GetName());
 }
 
@@ -31,7 +31,7 @@ Java_org_cef_network_CefWebPluginInfo_1N_N_1GetPath(JNIEnv* env,
                                                     jlong self) {
   CefRefPtr<CefWebPluginInfo> info = GetSelf(self);
   if (!info)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, info->GetPath());
 }
 
@@ -41,7 +41,7 @@ Java_org_cef_network_CefWebPluginInfo_1N_N_1GetVersion(JNIEnv* env,
                                                        jlong self) {
   CefRefPtr<CefWebPluginInfo> info = GetSelf(self);
   if (!info)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, info->GetVersion());
 }
 
@@ -51,6 +51,6 @@ Java_org_cef_network_CefWebPluginInfo_1N_N_1GetDescription(JNIEnv* env,
                                                            jlong self) {
   CefRefPtr<CefWebPluginInfo> info = GetSelf(self);
   if (!info)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, info->GetDescription());
 }

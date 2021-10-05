@@ -312,12 +312,12 @@ CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
 
 void SetParent(CefWindowHandle browserHandle,
                CefWindowHandle parentHandle,
-               const base::Closure& callback) {
+               base::OnceClosure callback) {
   if (parentHandle == kNullWindowHandle)
     parentHandle = TempWindow::GetWindowHandle();
   if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
     ::SetParent(browserHandle, parentHandle);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void SetWindowBounds(CefWindowHandle browserHandle,

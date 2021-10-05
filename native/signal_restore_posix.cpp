@@ -26,13 +26,13 @@ void BackupSignalHandlers() {
   struct sigaction sigact;
   for (unsigned i = 0; i < arraysize(signals_to_restore); ++i) {
     memset(&sigact, 0, sizeof(sigact));
-    sigaction(signals_to_restore[i], NULL, &sigact);
+    sigaction(signals_to_restore[i], nullptr, &sigact);
     signal_handlers[i] = sigact;
   }
 }
 
 void RestoreSignalHandlers() {
   for (unsigned i = 0; i < arraysize(signals_to_restore); ++i) {
-    sigaction(signals_to_restore[i], &signal_handlers[i], NULL);
+    sigaction(signals_to_restore[i], &signal_handlers[i], nullptr);
   }
 }

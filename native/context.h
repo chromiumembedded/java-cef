@@ -9,7 +9,6 @@
 #include <jni.h>
 
 #include "include/base/cef_macros.h"
-#include "include/base/cef_scoped_ptr.h"
 #include "include/base/cef_thread_checker.h"
 
 #include "temp_window.h"
@@ -42,7 +41,7 @@ class Context {
   bool external_message_pump_;
   base::ThreadChecker thread_checker_;
 
-  scoped_ptr<TempWindow> temp_window_;
+  std::unique_ptr<TempWindow> temp_window_;
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };

@@ -15,7 +15,7 @@ CefRefPtr<CefAuthCallback> GetSelf(jlong self) {
 
 void ClearSelf(JNIEnv* env, jobject obj) {
   // Clear the reference added in RequestHandler::GetAuthCredentials.
-  SetCefForJNIObject<CefAuthCallback>(env, obj, NULL, "CefAuthCallback");
+  SetCefForJNIObject<CefAuthCallback>(env, obj, nullptr, "CefAuthCallback");
 }
 
 }  // namespace

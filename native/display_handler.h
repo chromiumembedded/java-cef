@@ -20,21 +20,21 @@ class DisplayHandler : public CefDisplayHandler {
   // CefDisplayHandler methods:
   void OnAddressChange(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
-                       const CefString& url) OVERRIDE;
+                       const CefString& url) override;
   void OnTitleChange(CefRefPtr<CefBrowser> browser,
-                     const CefString& title) OVERRIDE;
-  bool OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) OVERRIDE;
+                     const CefString& title) override;
+  bool OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) override;
   void OnStatusMessage(CefRefPtr<CefBrowser> browser,
-                       const CefString& value) OVERRIDE;
+                       const CefString& value) override;
   bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                         cef_log_severity_t level,
                         const CefString& message,
                         const CefString& source,
-                        int line) OVERRIDE;
+                        int line) override;
   bool OnCursorChange(CefRefPtr<CefBrowser> browser,
                       CefCursorHandle cursor,
                       cef_cursor_type_t type,
-                      const CefCursorInfo& custom_cursor_info) OVERRIDE;
+                      const CefCursorInfo& custom_cursor_info) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

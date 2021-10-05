@@ -24,10 +24,10 @@ class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler,
                        int64 query_id,
                        const CefString& request,
                        bool persistent,
-                       CefRefPtr<Callback> callback) OVERRIDE;
+                       CefRefPtr<Callback> callback) override;
   virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser,
                                CefRefPtr<CefFrame> frame,
-                               int64 query_id) OVERRIDE;
+                               int64 query_id) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

@@ -11,9 +11,9 @@
 
 namespace {
 
-JavaVM* g_jvm = NULL;
+JavaVM* g_jvm = nullptr;
 
-jobject g_javaClassLoader = NULL;
+jobject g_javaClassLoader = nullptr;
 
 }  // namespace
 
@@ -39,13 +39,13 @@ jobject NewJNIObject(JNIEnv* env, jclass cls) {
   jmethodID initID = env->GetMethodID(cls, "<init>", "()V");
   if (initID == 0) {
     env->ExceptionClear();
-    return NULL;
+    return nullptr;
   }
 
   jobject obj = env->NewObject(cls, initID);
-  if (obj == NULL) {
+  if (obj == nullptr) {
     env->ExceptionClear();
-    return NULL;
+    return nullptr;
   }
 
   return obj;
@@ -54,7 +54,7 @@ jobject NewJNIObject(JNIEnv* env, jclass cls) {
 jobject NewJNIObject(JNIEnv* env, const char* class_name) {
   ScopedJNIClass cls(env, class_name);
   if (!cls)
-    return NULL;
+    return nullptr;
 
   return NewJNIObject(env, cls);
 }
@@ -65,21 +65,21 @@ jobject NewJNIObject(JNIEnv* env,
                      ...) {
   ScopedJNIClass cls(env, class_name);
   if (!cls)
-    return NULL;
+    return nullptr;
 
   jmethodID initID = env->GetMethodID(cls, "<init>", sig);
   if (initID == 0) {
     env->ExceptionClear();
-    return NULL;
+    return nullptr;
   }
 
   va_list ap;
   va_start(ap, sig);
 
   jobject obj = env->NewObjectV(cls, initID, ap);
-  if (obj == NULL) {
+  if (obj == nullptr) {
     env->ExceptionClear();
-    return NULL;
+    return nullptr;
   }
 
   return obj;
@@ -125,9 +125,9 @@ jstring NewJNIString(JNIEnv* env, const std::string& str) {
 
 CefString GetJNIString(JNIEnv* env, jstring jstr) {
   CefString cef_str;
-  const char* chr = NULL;
+  const char* chr = nullptr;
   if (jstr)
-    chr = env->GetStringUTFChars(jstr, NULL);
+    chr = env->GetStringUTFChars(jstr, nullptr);
   if (chr)
     cef_str = chr;
   if (jstr)
@@ -138,14 +138,14 @@ CefString GetJNIString(JNIEnv* env, jstring jstr) {
 jobjectArray NewJNIStringArray(JNIEnv* env,
                                const std::vector<CefString>& vals) {
   if (vals.empty())
-    return NULL;
+    return nullptr;
 
   ScopedJNIClass cls(env, "java/lang/String");
   if (!cls)
-    return NULL;
+    return nullptr;
 
   const jsize size = static_cast<jsize>(vals.size());
-  jobjectArray arr = env->NewObjectArray(size, cls, NULL);
+  jobjectArray arr = env->NewObjectArray(size, cls, nullptr);
 
   for (jsize i = 0; i < size; i++) {
     ScopedJNIString str(env, vals[i]);
@@ -169,7 +169,7 @@ void GetJNIStringArray(JNIEnv* env,
 jobject NewJNIStringVector(JNIEnv* env, const std::vector<CefString>& vals) {
   ScopedJNIObjectLocal jvector(env, "java/util/Vector");
   if (!jvector)
-    return NULL;
+    return nullptr;
 
   std::vector<CefString>::const_iterator iter;
   for (iter = vals.begin(); iter != vals.end(); ++iter) {
@@ -205,7 +205,7 @@ jobject NewJNIStringMap(JNIEnv* env,
                         const std::map<CefString, CefString>& vals) {
   ScopedJNIObjectLocal jmap(env, "java/util/HashMap");
   if (!jmap)
-    return NULL;
+    return nullptr;
 
   for (auto iter = vals.begin(); iter != vals.end(); ++iter) {
     ScopedJNIString jkey(env, iter->first);
@@ -271,11 +271,11 @@ void SetJNIStringMultiMap(JNIEnv* env,
 CefMessageRouterConfig GetJNIMessageRouterConfig(JNIEnv* env, jobject jConfig) {
   CefMessageRouterConfig config;
 
-  if (jConfig == NULL)
+  if (jConfig == nullptr)
     return config;
   ScopedJNIClass cls(env,
                      "org/cef/browser/CefMessageRouter$CefMessageRouterConfig");
-  if (cls == NULL)
+  if (cls == nullptr)
     return config;
 
   GetJNIFieldString(env, cls, jConfig, "jsQueryFunction",
@@ -766,7 +766,7 @@ bool GetJNIFieldObject(JNIEnv* env,
   jfieldID field = env->GetFieldID(cls, field_name, object_type);
   if (field) {
     *value = env->GetObjectField(obj, field);
-    return *value != NULL;
+    return *value != nullptr;
   }
   env->ExceptionClear();
   return false;
@@ -777,7 +777,7 @@ bool GetJNIFieldString(JNIEnv* env,
                        jobject obj,
                        const char* field_name,
                        CefString* value) {
-  jobject fieldobj = NULL;
+  jobject fieldobj = nullptr;
   if (GetJNIFieldObject(env, cls, obj, field_name, &fieldobj,
                         "Ljava/lang/String;")) {
     ScopedJNIStringResult str(env, (jstring)fieldobj);
@@ -792,7 +792,7 @@ bool GetJNIFieldDate(JNIEnv* env,
                      jobject obj,
                      const char* field_name,
                      CefTime* value) {
-  jobject fieldobj = NULL;
+  jobject fieldobj = nullptr;
   if (GetJNIFieldObject(env, cls, obj, field_name, &fieldobj,
                         "Ljava/util/Date;")) {
     ScopedJNIObjectLocal jdate(env, fieldobj);
@@ -999,14 +999,14 @@ jobject GetJNIEnumValue(JNIEnv* env,
                         const char* enum_valname) {
   ScopedJNIClass cls(env, class_name);
   if (!cls)
-    return NULL;
+    return nullptr;
 
   std::string tmp;
   tmp.append("L").append(class_name).append(";");
 
   jfieldID fieldId = env->GetStaticFieldID(cls, enum_valname, tmp.c_str());
   if (!fieldId)
-    return NULL;
+    return nullptr;
 
   return env->GetStaticObjectField(cls, fieldId);
 }
