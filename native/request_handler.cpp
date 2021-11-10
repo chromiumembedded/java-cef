@@ -10,21 +10,6 @@
 #include "resource_request_handler.h"
 #include "util.h"
 
-namespace {
-
-// JNI CefRequestCallback object.
-class ScopedJNIRequestCallback : public ScopedJNIObject<CefRequestCallback> {
- public:
-  ScopedJNIRequestCallback(JNIEnv* env, CefRefPtr<CefRequestCallback> obj)
-      : ScopedJNIObject<CefRequestCallback>(
-            env,
-            obj,
-            "org/cef/callback/CefRequestCallback_N",
-            "CefRequestCallback") {}
-};
-
-}  // namespace
-
 RequestHandler::RequestHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
@@ -161,19 +146,19 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
 bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                     const CefString& origin_url,
                                     int64 new_size,
-                                    CefRefPtr<CefRequestCallback> callback) {
+                                    CefRefPtr<CefCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
     return false;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIString joriginUrl(env, origin_url);
-  ScopedJNIRequestCallback jcallback(env, callback);
+  ScopedJNICallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
   JNI_CALL_METHOD(env, handle_, "onQuotaRequest",
                   "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
-                  "JLorg/cef/callback/CefRequestCallback;)Z",
+                  "JLorg/cef/callback/CefCallback;)Z",
                   Boolean, jresult, jbrowser.get(), joriginUrl.get(),
                   (jlong)new_size, jcallback.get());
 
@@ -186,12 +171,11 @@ bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
   return (jresult != JNI_FALSE);
 }
 
-bool RequestHandler::OnCertificateError(
-    CefRefPtr<CefBrowser> browser,
-    cef_errorcode_t cert_error,
-    const CefString& request_url,
-    CefRefPtr<CefSSLInfo> ssl_info,
-    CefRefPtr<CefRequestCallback> callback) {
+bool RequestHandler::OnCertificateError(CefRefPtr<CefBrowser> browser,
+                                        cef_errorcode_t cert_error,
+                                        const CefString& request_url,
+                                        CefRefPtr<CefSSLInfo> ssl_info,
+                                        CefRefPtr<CefCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
     return false;
@@ -199,13 +183,13 @@ bool RequestHandler::OnCertificateError(
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIObjectLocal jcertError(env, NewJNIErrorCode(env, cert_error));
   ScopedJNIString jrequestUrl(env, request_url);
-  ScopedJNIRequestCallback jcallback(env, callback);
+  ScopedJNICallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
   JNI_CALL_METHOD(
       env, handle_, "onCertificateError",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/CefLoadHandler$ErrorCode;"
-      "Ljava/lang/String;Lorg/cef/callback/CefRequestCallback;)Z",
+      "Ljava/lang/String;Lorg/cef/callback/CefCallback;)Z",
       Boolean, jresult, jbrowser.get(), jcertError.get(), jrequestUrl.get(),
       jcallback.get());
 

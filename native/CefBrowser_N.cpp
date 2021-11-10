@@ -950,8 +950,7 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
       // Do not activate hidden browser windows on creation.
       windowInfo.ex_style |= WS_EX_NOACTIVATE;
     }
-    RECT winRect = {0, 0, rect.width, rect.height};
-    windowInfo.SetAsChild(parent, winRect);
+    windowInfo.SetAsChild(parent, rect);
 #elif defined(OS_MACOSX)
     NSWindow* parent = nullptr;
     if (windowHandle != 0) {
@@ -961,8 +960,7 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     }
     CefWindowHandle browserContentView =
         util_mac::CreateBrowserContentView(parent, rect);
-    windowInfo.SetAsChild(browserContentView, rect.x, rect.y, rect.width,
-                          rect.height);
+    windowInfo.SetAsChild(browserContentView, rect);
 #elif defined(OS_LINUX)
     CefWindowHandle parent = TempWindow::GetWindowHandle();
     if (objs->canvas != nullptr) {
@@ -1426,11 +1424,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetFocus(JNIEnv* env,
                                                jobject obj,
                                                jboolean enable) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  if (browser->GetHost()->IsWindowRenderingDisabled()) {
-    browser->GetHost()->SendFocusEvent(enable != JNI_FALSE);
-  } else {
-    browser->GetHost()->SetFocus(enable != JNI_FALSE);
-  }
+  browser->GetHost()->SetFocus(enable != JNI_FALSE);
 }
 
 JNIEXPORT void JNICALL

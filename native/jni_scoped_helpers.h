@@ -815,6 +815,13 @@ class ScopedJNIResponse : public ScopedJNIObject<CefResponse> {
   ScopedJNIResponse(JNIEnv* env, CefRefPtr<CefResponse> obj = nullptr);
 };
 
+// JNI CefCallback object.
+class ScopedJNICallback : public ScopedJNIObject<CefCallback> {
+ public:
+  // If |obj| is nullptr the SetHandle method should be used.
+  ScopedJNICallback(JNIEnv* env, CefRefPtr<CefCallback> obj = nullptr);
+};
+
 // JNI BoolRef object.
 class ScopedJNIBoolRef : public ScopedJNIBase<jobject> {
  public:

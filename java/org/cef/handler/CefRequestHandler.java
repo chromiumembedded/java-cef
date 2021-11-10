@@ -7,7 +7,7 @@ package org.cef.handler;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefRequestCallback;
+import org.cef.callback.CefCallback;
 import org.cef.misc.BoolRef;
 import org.cef.network.CefRequest;
 import org.cef.network.CefURLRequest;
@@ -110,12 +110,12 @@ public interface CefRequestHandler {
      * @param browser The corresponding browser.
      * @param origin_url Origin of the page making the request.
      * @param new_size Requested quota size in bytes.
-     * @param callback Call CefRequestCallback.Continue() either in this method or at a later time
+     * @param callback Call CefCallback.Continue() either in this method or at a later time
      *         to grant or deny the request.
      * @return True to handle the request (callback must be executed) or false to cancel.
      */
     boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback);
+            CefBrowser browser, String origin_url, long new_size, CefCallback callback);
 
     /**
      * Called on the UI thread to handle requests for URLs with an invalid SSL certificate. If
@@ -125,13 +125,13 @@ public interface CefRequestHandler {
      * @param browser The corresponding browser.
      * @param cert_error Error code describing the error.
      * @param request_url The requesting URL.
-     * @param callback Call CefRequestCallback.Continue() either in this method or at a later time
+     * @param callback Call CefCallback.Continue() either in this method or at a later time
      *         to continue or cancel the request. If null the error cannot be recovered from and the
      *         request will be canceled automatically.
      * @return True to handle the request (callback must be executed) or false to reject it.
      */
     boolean onCertificateError(CefBrowser browser, CefLoadHandler.ErrorCode cert_error,
-            String request_url, CefRequestCallback callback);
+            String request_url, CefCallback callback);
 
     /**
      * Called on the browser process UI thread when a plugin has crashed.

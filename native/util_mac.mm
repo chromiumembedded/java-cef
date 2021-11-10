@@ -541,7 +541,7 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
 void SetParent(CefWindowHandle handle,
                jlong parentHandle,
                base::OnceClosure callback) {
-  base::Closure* pCallback = new base::Closure(
+  base::RepeatingClosure* pCallback = new base::RepeatingClosure(
       base::BindRepeating([](base::OnceClosure& cb) { std::move(cb).Run(); },
                           OwnedRef(std::move(callback))));
   dispatch_async(dispatch_get_main_queue(), ^{

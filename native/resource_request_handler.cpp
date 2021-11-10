@@ -41,11 +41,10 @@ CefRefPtr<CefCookieAccessFilter> ResourceRequestHandler::GetCookieAccessFilter(
 
 // TODO(JCEF): Expose the |callback| parameter.
 ResourceRequestHandler::ReturnValue
-ResourceRequestHandler::OnBeforeResourceLoad(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefRefPtr<CefRequest> request,
-    CefRefPtr<CefRequestCallback> callback) {
+ResourceRequestHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                             CefRefPtr<CefFrame> frame,
+                                             CefRefPtr<CefRequest> request,
+                                             CefRefPtr<CefCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
     return RV_CONTINUE;

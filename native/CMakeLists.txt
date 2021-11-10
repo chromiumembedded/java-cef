@@ -56,8 +56,8 @@ set(JCEF_SRCS
   CefQueryCallback_N.h
   CefRequest_N.cpp
   CefRequest_N.h
-  CefRequestCallback_N.cpp
-  CefRequestCallback_N.h
+  CefCallback_N.cpp
+  CefCallback_N.h
   CefRequestContext_N.cpp
   CefRequestContext_N.h
   CefResponse_N.cpp

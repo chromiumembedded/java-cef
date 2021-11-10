@@ -107,8 +107,6 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
                  &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
                  &settings.uncaught_exception_stack_size);
-  GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
-                     &settings.ignore_certificate_errors);
   jobject obj_col = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "background_color", &obj_col,
                         "Lorg/cef/CefSettings$ColorType;")) {

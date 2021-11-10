@@ -11,6 +11,7 @@ import org.cef.browser.CefMessageRouter;
 import org.cef.browser.CefRequestContext;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
+import org.cef.callback.CefCallback;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefDownloadItemCallback;
@@ -20,7 +21,6 @@ import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
-import org.cef.callback.CefRequestCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -823,7 +823,7 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
+            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
         if (requestHandler_ != null && browser != null)
             return requestHandler_.onQuotaRequest(browser, origin_url, new_size, callback);
         return false;
@@ -831,7 +831,7 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,
-            CefRequestCallback callback) {
+            CefCallback callback) {
         if (requestHandler_ != null)
             return requestHandler_.onCertificateError(browser, cert_error, request_url, callback);
         return false;

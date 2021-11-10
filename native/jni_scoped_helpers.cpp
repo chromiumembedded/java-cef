@@ -425,6 +425,12 @@ ScopedJNIResponse::ScopedJNIResponse(JNIEnv* env, CefRefPtr<CefResponse> obj)
                                    "org/cef/network/CefResponse_N",
                                    "CefResponse") {}
 
+ScopedJNICallback::ScopedJNICallback(JNIEnv* env, CefRefPtr<CefCallback> obj)
+    : ScopedJNIObject<CefCallback>(env,
+                                   obj,
+                                   "org/cef/callback/CefCallback_N",
+                                   "CefCallback") {}
+
 ScopedJNIBoolRef::ScopedJNIBoolRef(JNIEnv* env, bool value)
     : ScopedJNIBase<jobject>(env) {
   jhandle_ = NewJNIBoolRef(env, value);

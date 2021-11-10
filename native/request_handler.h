@@ -47,12 +47,12 @@ class RequestHandler : public CefRequestHandler {
   bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                       const CefString& origin_url,
                       int64 new_size,
-                      CefRefPtr<CefRequestCallback> callback) override;
+                      CefRefPtr<CefCallback> callback) override;
   bool OnCertificateError(CefRefPtr<CefBrowser> browser,
                           cef_errorcode_t cert_error,
                           const CefString& request_url,
                           CefRefPtr<CefSSLInfo> ssl_info,
-                          CefRefPtr<CefRequestCallback> callback) override;
+                          CefRefPtr<CefCallback> callback) override;
   void OnPluginCrashed(CefRefPtr<CefBrowser> browser,
                        const CefString& plugin_path) override;
   void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,

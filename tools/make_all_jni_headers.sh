@@ -26,7 +26,6 @@ else
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefPrintDialogCallback_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefPrintJobCallback_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefQueryCallback_N
-  "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefRequestCallback_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefSchemeRegistrar_N
   "${DIR}"/make_jni_header.sh $1 org.cef.handler.CefClientHandler
   "${DIR}"/make_jni_header.sh $1 org.cef.misc.CefPrintSettings_N

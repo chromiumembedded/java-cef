@@ -209,15 +209,6 @@ public class CefSettings {
     public int uncaught_exception_stack_size = 0;
 
     /**
-     * Set to true to ignore errors related to invalid SSL certificates.
-     * Enabling this setting can lead to potential security vulnerabilities like
-     * "man in the middle" attacks. Applications that load content from the
-     * internet should not enable this setting. Also configurable using the
-     * "ignore-certificate-errors" command-line switch.
-     */
-    public boolean ignore_certificate_errors = false;
-
-    /**
      * Opaque background color used for accelerated content. By default the
      * background color will be white. Only the RGB compontents of the specified
      * value will be used. The alpha component must greater than 0 to enable use
@@ -260,7 +251,6 @@ public class CefSettings {
         tmp.pack_loading_disabled = pack_loading_disabled;
         tmp.remote_debugging_port = remote_debugging_port;
         tmp.uncaught_exception_stack_size = uncaught_exception_stack_size;
-        tmp.ignore_certificate_errors = ignore_certificate_errors;
         if (background_color != null) tmp.background_color = background_color.clone();
         tmp.cookieable_schemes_list = cookieable_schemes_list;
         tmp.cookieable_schemes_exclude_defaults = cookieable_schemes_exclude_defaults;

@@ -21,11 +21,10 @@ class ResourceRequestHandler : public CefResourceRequestHandler {
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
       CefRefPtr<CefRequest> request) override;
-  ReturnValue OnBeforeResourceLoad(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      CefRefPtr<CefRequest> request,
-      CefRefPtr<CefRequestCallback> callback) override;
+  ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefRequest> request,
+                                   CefRefPtr<CefCallback> callback) override;
   CefRefPtr<CefResourceHandler> GetResourceHandler(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
