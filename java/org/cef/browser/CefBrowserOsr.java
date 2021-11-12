@@ -4,30 +4,7 @@
 
 package org.cef.browser;
 
-import com.jogamp.nativewindow.NativeSurface;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.util.GLBuffers;
-
-import org.cef.CefClient;
-import org.cef.OS;
-import org.cef.callback.CefDragData;
-import org.cef.handler.CefRenderHandler;
-import org.cef.handler.CefScreenInfo;
-
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
@@ -48,11 +25,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.lang.ClassNotFoundException;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.NoSuchMethodException;
-import java.lang.SecurityException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -64,8 +36,24 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.swing.MenuSelectionManager;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+
+import org.cef.CefClient;
+import org.cef.OS;
+import org.cef.callback.CefDragData;
+import org.cef.handler.CefRenderHandler;
+import org.cef.handler.CefScreenInfo;
+
+import com.jogamp.nativewindow.NativeSurface;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLJPanel;
+import com.jogamp.opengl.util.GLBuffers;
 
 /**
  * This class represents an off-screen rendered browser.
@@ -74,7 +62,7 @@ import javax.swing.SwingUtilities;
  */
 class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private CefRenderer renderer_;
-    private GLCanvas canvas_;
+    private GLJPanel canvas_;
     private long window_handle_ = 0;
     private boolean justCreated_ = false;
     private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
@@ -89,7 +77,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     private CefBrowserOsr(CefClient client, String url, boolean transparent,
-            CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
+                          CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
         super(client, url, context, parent, inspectAt);
         isTransparent_ = transparent;
         renderer_ = new CefRenderer(transparent);
@@ -115,7 +103,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
-            CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
+                                                 CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
         return new CefBrowserOsr(
                 client, url, isTransparent_, context, (CefBrowserOsr) this, inspectAt);
     }
@@ -137,7 +125,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private void createGLCanvas() {
         GLProfile glprofile = GLProfile.getMaxFixedFunc(true);
         GLCapabilities glcapabilities = new GLCapabilities(glprofile);
-        canvas_ = new GLCanvas(glcapabilities) {
+        canvas_ = new GLJPanel(glcapabilities) {
             private Method scaleFactorAccessor = null;
             private boolean removed_ = true;
 
@@ -167,9 +155,9 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                         try {
                             if (scaleFactorAccessor == null) {
                                 scaleFactorAccessor = getClass()
-                                                              .getClassLoader()
-                                                              .loadClass("sun.awt.CGraphicsDevice")
-                                                              .getDeclaredMethod("getScaleFactor");
+                                        .getClassLoader()
+                                        .loadClass("sun.awt.CGraphicsDevice")
+                                        .getDeclaredMethod("getScaleFactor");
                             }
                             Object factor = scaleFactorAccessor.invoke(config.getDevice());
                             if (factor instanceof Integer) {
@@ -356,7 +344,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
-            ByteBuffer buffer, int width, int height) {
+                        ByteBuffer buffer, int width, int height) {
         // if window is closing, canvas_ or opengl context could be null
         final GLContext context = canvas_ != null ? canvas_.getContext() : null;
 
@@ -396,10 +384,14 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
             appendEvent(triggerEvent);
         }
 
-        protected void registerListeners() {}
+        protected void registerListeners() {
+        }
 
-        protected void unregisterListeners() {}
-    };
+        protected void unregisterListeners() {
+        }
+    }
+
+    ;
 
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
@@ -571,7 +563,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                     if (SwingUtilities.isEventDispatchThread()) {
                         throw new RuntimeException(
                                 "Waiting on this Future using the AWT Event Thread is illegal, "
-                                + "because it can potentially deadlock the thread.");
+                                        + "because it can potentially deadlock the thread.");
                     }
                 }
 
