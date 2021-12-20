@@ -8,6 +8,6 @@ if [ -z "$1" ]; then
 else
   DIR="$( cd "$( dirname "$0" )" && cd .. && pwd )"
   OUT_DIR="${DIR}/out/$1"
-  jar -cf "${OUT_DIR}"/jcef.jar -C "${OUT_DIR}" org
+  jar -cmf "${OUT_DIR}"/manifest/MANIFEST.MF "${OUT_DIR}"/jcef.jar -C "${OUT_DIR}" org
   jar -cf "${OUT_DIR}"/jcef-tests.jar -C "${OUT_DIR}" tests
 fi

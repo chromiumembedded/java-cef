@@ -17,6 +17,9 @@ else
 
   javac -Xdiags:verbose -cp "$CLS_PATH" -d "$OUT_PATH" "${JAVA_PATH}"/tests/detailed/*.java "${JAVA_PATH}"/tests/junittests/*.java "${JAVA_PATH}"/tests/simple/*.java "${JAVA_PATH}"/org/cef/*.java "${JAVA_PATH}"/org/cef/browser/*.java "${JAVA_PATH}"/org/cef/callback/*.java "${JAVA_PATH}"/org/cef/handler/*.java "${JAVA_PATH}"/org/cef/misc/*.java "${JAVA_PATH}"/org/cef/network/*.java
 
+  # Copy MANIFEST.MF
+  rsync -a ./java/manifest/MANIFEST.MF $OUT_PATH/manifest/
+
   # Copy resource files.
   cp -f "${JAVA_PATH}"/tests/detailed/handler/*.html "$OUT_PATH/tests/detailed/handler"
   cp -f "${JAVA_PATH}"/tests/detailed/handler/*.png "$OUT_PATH/tests/detailed/handler"
