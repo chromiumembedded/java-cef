@@ -66,6 +66,9 @@ class CefHelperApp : public CefApp, public CefRenderProcessHandler {
 
   void OnBrowserCreated(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefDictionaryValue> extra_info) override {
+    if (!extra_info) {
+      return;
+    }
     auto router_configs = extra_info->GetList("router_configs");
     if (router_configs) {
       // Configuration from BrowserProcessHandler::GetMessageRouterConfigs.
