@@ -533,10 +533,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
-    public void find(int identifier, String searchText, boolean forward, boolean matchCase,
-            boolean findNext) {
+    public void find(String searchText, boolean forward, boolean matchCase, boolean findNext) {
         try {
-            N_Find(identifier, searchText, forward, matchCase, findNext);
+            N_Find(searchText, forward, matchCase, findNext);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -795,8 +794,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_Print();
     private final native void N_PrintToPDF(
             String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
-    private final native void N_Find(int identifier, String searchText, boolean forward,
-            boolean matchCase, boolean findNext);
+    private final native void N_Find(
+            String searchText, boolean forward, boolean matchCase, boolean findNext);
     private final native void N_StopFinding(boolean clearSelection);
     private final native void N_CloseDevTools();
     private final native void N_ReplaceMisspelling(String word);

@@ -66,8 +66,8 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
     }
 
     @Override
-    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture) {
+    public boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture) {
         return false;
     }
 
@@ -164,11 +164,6 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
             CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
         return true;
-    }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {
-        System.out.println("Plugin " + pluginPath + "CRASHED");
     }
 
     @Override

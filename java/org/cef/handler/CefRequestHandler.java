@@ -61,8 +61,8 @@ public interface CefRequestHandler {
      * @param user_gesture True if the request was initiated by a user gesture.
      * @return True to cancel navigation or false to continue
      */
-    boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture);
+    boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture);
 
     /**
      * Called on the IO thread before a resource request is initiated. The |browser| and |frame|
@@ -132,13 +132,6 @@ public interface CefRequestHandler {
      */
     boolean onCertificateError(CefBrowser browser, CefLoadHandler.ErrorCode cert_error,
             String request_url, CefCallback callback);
-
-    /**
-     * Called on the browser process UI thread when a plugin has crashed.
-     * @param browser The corresponding browser.
-     * @param pluginPath The path of the plugin that crashed.
-     */
-    void onPluginCrashed(CefBrowser browser, String pluginPath);
 
     /**
      * Called on the browser process UI thread when the render process terminates unexpectedly.

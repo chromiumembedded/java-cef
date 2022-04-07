@@ -202,20 +202,6 @@ bool RequestHandler::OnCertificateError(CefRefPtr<CefBrowser> browser,
   return (jresult != JNI_FALSE);
 }
 
-void RequestHandler::OnPluginCrashed(CefRefPtr<CefBrowser> browser,
-                                     const CefString& plugin_path) {
-  ScopedJNIEnv env;
-  if (!env)
-    return;
-
-  ScopedJNIBrowser jbrowser(env, browser);
-  ScopedJNIString jpluginPath(env, plugin_path);
-
-  JNI_CALL_VOID_METHOD(env, handle_, "onPluginCrashed",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       jbrowser.get(), jpluginPath.get());
-}
-
 void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                                TerminationStatus status) {
   // Forward request to ClientHandler to make the message_router_ happy.

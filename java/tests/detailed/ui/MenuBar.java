@@ -60,7 +60,6 @@ import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
 import tests.detailed.dialog.UrlRequestDialog;
-import tests.detailed.dialog.WebPluginManagerDialog;
 import tests.detailed.util.DataUri;
 
 @SuppressWarnings("serial")
@@ -250,17 +249,6 @@ public class MenuBar extends JMenuBar {
             }
         });
         fileMenu.add(showCookies);
-
-        JMenuItem showPlugins = new JMenuItem("Show Plugins");
-        showPlugins.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                WebPluginManagerDialog pluginManager =
-                        new WebPluginManagerDialog(owner_, "Plugin Manager");
-                pluginManager.setVisible(true);
-            }
-        });
-        fileMenu.add(showPlugins);
 
         fileMenu.addSeparator();
 

@@ -1535,13 +1535,12 @@ Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv* env,
 JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1Find(JNIEnv* env,
                                            jobject obj,
-                                           jint identifier,
                                            jstring searchText,
                                            jboolean forward,
                                            jboolean matchCase,
                                            jboolean findNext) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  browser->GetHost()->Find((int)identifier, GetJNIString(env, searchText),
+  browser->GetHost()->Find(GetJNIString(env, searchText),
                            (forward != JNI_FALSE), (matchCase != JNI_FALSE),
                            (findNext != JNI_FALSE));
 }

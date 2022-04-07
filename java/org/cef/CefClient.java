@@ -46,7 +46,6 @@ import org.cef.network.CefRequest;
 import org.cef.network.CefRequest.TransitionType;
 import org.cef.network.CefResponse;
 import org.cef.network.CefURLRequest;
-import org.cef.network.CefWebPluginInfo;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -830,16 +829,11 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,
-            CefCallback callback) {
+    public boolean onCertificateError(
+            CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         if (requestHandler_ != null)
             return requestHandler_.onCertificateError(browser, cert_error, request_url, callback);
         return false;
-    }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {
-        if (requestHandler_ != null) requestHandler_.onPluginCrashed(browser, pluginPath);
     }
 
     @Override

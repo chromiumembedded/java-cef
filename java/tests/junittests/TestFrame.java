@@ -218,8 +218,8 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
     }
 
     @Override
-    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture) {
+    public boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture) {
         return false;
     }
 
@@ -247,9 +247,6 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
             String request_url, CefCallback callback) {
         return false;
     }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {}
 
     @Override
     public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {}

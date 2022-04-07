@@ -26,8 +26,8 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
-    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture) {
+    public boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture) {
         return false;
     }
 
@@ -51,13 +51,10 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
-    public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,
-            CefCallback callback) {
+    public boolean onCertificateError(
+            CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         return false;
     }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {}
 
     @Override
     public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {}

@@ -352,7 +352,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv*,
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find(JNIEnv*,
                                                                   jobject,
-                                                                  jint,
                                                                   jstring,
                                                                   jboolean,
                                                                   jboolean,

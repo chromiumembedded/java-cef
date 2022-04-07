@@ -53,8 +53,6 @@ class RequestHandler : public CefRequestHandler {
                           const CefString& request_url,
                           CefRefPtr<CefSSLInfo> ssl_info,
                           CefRefPtr<CefCallback> callback) override;
-  void OnPluginCrashed(CefRefPtr<CefBrowser> browser,
-                       const CefString& plugin_path) override;
   void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                  TerminationStatus status) override;
 
