@@ -162,7 +162,7 @@ Java_org_cef_handler_CefClientHandler_N_1removeWindowHandler(
     jobject clientHandler,
     jobject windowHandler) {
   SetCefForJNIObject<WindowHandler>(env, windowHandler, nullptr,
-                                    "WindowHandler");
+                                    "CefWindowHandler");
 }
 
 JNIEXPORT void JNICALL
