@@ -109,6 +109,12 @@ Java_org_cef_browser_CefMessageRouter_1N_N_1RemoveHandler(
                             },
                             msgRouter, routerHandler));
   }
+  
+  
+  // Remove JNI reference on jrouterhandler added by the ScopedJNIObject
+  SetCefForJNIObject<MessageRouterHandler>(env, jrouterHandler, nullptr,
+                                           "CefMessageRouterHandler");
+  
   return JNI_TRUE;
 }
 
