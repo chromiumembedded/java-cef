@@ -78,7 +78,7 @@ class Gsutil(object):
   RETRY_BASE_DELAY = 5.0
   RETRY_DELAY_MULTIPLE = 1.3
 
-  def __init__(self, path, boto_path=None, version='4.46'):
+  def __init__(self, path, boto_path=None, version='5.9'):
     if not os.path.exists(path):
       raise FileNotFoundError('GSUtil not found in %s' % path)
     self.path = path
