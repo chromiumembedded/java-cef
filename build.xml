@@ -42,7 +42,7 @@
     
   <target name="jar" depends="compile">
     <mkdir dir="${out.path}"/>
-    <jar destfile="${out.path}/jcef.jar" index="true" update="false">
+    <jar destfile="${out.path}/jcef.jar" index="true" update="false" manifest="java/manifest/MANIFEST.MF">
       <fileset dir="${out.path}">
         <include name="org/cef/**"/>
       </fileset>

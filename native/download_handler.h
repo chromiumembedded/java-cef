@@ -21,12 +21,12 @@ class DownloadHandler : public CefDownloadHandler {
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
       const CefString& suggested_name,
-      CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
+      CefRefPtr<CefBeforeDownloadCallback> callback) override;
 
   virtual void OnDownloadUpdated(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
-      CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
+      CefRefPtr<CefDownloadItemCallback> callback) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

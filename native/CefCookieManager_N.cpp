@@ -4,7 +4,7 @@
 
 #include "CefCookieManager_N.h"
 
-#include "include/base/cef_bind.h"
+#include "include/base/cef_callback.h"
 #include "include/cef_cookie.h"
 #include "include/cef_task.h"
 #include "include/wrapper/cef_closure_task.h"
@@ -61,13 +61,13 @@ Java_org_cef_network_CefCookieManager_1N_N_1GetGlobalManager(JNIEnv* env,
                                                              jclass cls) {
   // TODO(JCEF): Expose the callback object.
   CefRefPtr<CefCookieManager> manager =
-      CefCookieManager::GetGlobalManager(NULL);
+      CefCookieManager::GetGlobalManager(nullptr);
   if (!manager)
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal jManager(env, NewJNIObject(env, cls));
   if (!jManager)
-    return NULL;
+    return nullptr;
 
   SetCefForJNIObject(env, jManager, manager.get(), kCefClassName);
   return jManager.Release();
@@ -77,24 +77,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_network_CefCookieManager_1N_N_1Dispose(JNIEnv* env,
                                                     jobject obj,
                                                     jlong self) {
-  SetCefForJNIObject<CefCookieManager>(env, obj, NULL, kCefClassName);
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_network_CefCookieManager_1N_N_1SetSupportedSchemes(
-    JNIEnv* env,
-    jobject obj,
-    jlong self,
-    jobject jschemes,
-    jboolean includeDefaults) {
-  CefRefPtr<CefCookieManager> manager = GetSelf(self);
-  if (!manager)
-    return;
-
-  std::vector<CefString> schemes;
-  GetJNIStringVector(env, jschemes, schemes);
-  // TODO(JCEF): Expose the callback object.
-  manager->SetSupportedSchemes(schemes, includeDefaults != JNI_FALSE, NULL);
+  SetCefForJNIObject<CefCookieManager>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
@@ -143,10 +126,10 @@ Java_org_cef_network_CefCookieManager_1N_N_1SetCookie(JNIEnv* env,
   // java instead.
   // TODO(JCEF): Expose the callback object.
   bool result = CefPostTask(
-      TID_IO, base::Bind(base::IgnoreResult(&CefCookieManager::SetCookie),
-                         manager.get(), GetJNIString(env, jurl),
-                         GetJNICookie(env, jcookie),
-                         CefRefPtr<CefSetCookieCallback>()));
+      TID_IO, base::BindOnce(base::IgnoreResult(&CefCookieManager::SetCookie),
+                             manager.get(), GetJNIString(env, jurl),
+                             GetJNICookie(env, jcookie),
+                             CefRefPtr<CefSetCookieCallback>()));
   return result ? JNI_TRUE : JNI_FALSE;
 }
 
@@ -165,10 +148,11 @@ Java_org_cef_network_CefCookieManager_1N_N_1DeleteCookies(JNIEnv* env,
   // java instead.
   // TODO(JCEF): Expose the callback object.
   bool result = CefPostTask(
-      TID_IO, base::Bind(base::IgnoreResult(&CefCookieManager::DeleteCookies),
-                         manager.get(), GetJNIString(env, jurl),
-                         GetJNIString(env, jcookieName),
-                         CefRefPtr<CefDeleteCookiesCallback>()));
+      TID_IO,
+      base::BindOnce(base::IgnoreResult(&CefCookieManager::DeleteCookies),
+                     manager.get(), GetJNIString(env, jurl),
+                     GetJNIString(env, jcookieName),
+                     CefRefPtr<CefDeleteCookiesCallback>()));
   return result ? JNI_TRUE : JNI_FALSE;
 }
 

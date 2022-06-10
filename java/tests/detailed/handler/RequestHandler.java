@@ -7,7 +7,7 @@ package tests.detailed.handler;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefRequestCallback;
+import org.cef.callback.CefCallback;
 import org.cef.handler.CefLoadHandler.ErrorCode;
 import org.cef.handler.CefRequestHandler;
 import org.cef.handler.CefResourceHandler;
@@ -66,8 +66,8 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
     }
 
     @Override
-    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String target_url,
-            boolean user_gesture) {
+    public boolean onOpenURLFromTab(
+            CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture) {
         return false;
     }
 
@@ -155,20 +155,15 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
 
     @Override
     public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefRequestCallback callback) {
+            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
         return false;
     }
 
     @Override
-    public boolean onCertificateError(CefBrowser browser, ErrorCode cert_error, String request_url,
-            CefRequestCallback callback) {
+    public boolean onCertificateError(
+            CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
         return true;
-    }
-
-    @Override
-    public void onPluginCrashed(CefBrowser browser, String pluginPath) {
-        System.out.println("Plugin " + pluginPath + "CRASHED");
     }
 
     @Override

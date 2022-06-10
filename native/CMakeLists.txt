@@ -56,8 +56,8 @@ set(JCEF_SRCS
   CefQueryCallback_N.h
   CefRequest_N.cpp
   CefRequest_N.h
-  CefRequestCallback_N.cpp
-  CefRequestCallback_N.h
+  CefCallback_N.cpp
+  CefCallback_N.h
   CefRequestContext_N.cpp
   CefRequestContext_N.h
   CefResponse_N.cpp
@@ -66,10 +66,6 @@ set(JCEF_SRCS
   CefSchemeRegistrar_N.h
   CefURLRequest_N.cpp
   CefURLRequest_N.h
-  CefWebPluginInfo_N.cpp
-  CefWebPluginInfo_N.h
-  CefWebPluginManager_N.cpp
-  CefWebPluginManager_N.h
   browser_process_handler.cpp
   browser_process_handler.h
   client_app.cpp
@@ -136,10 +132,6 @@ set(JCEF_SRCS
   url_request_client.cpp
   url_request_client.h
   util.h
-  web_plugin_unstable_callback.cpp
-  web_plugin_unstable_callback.h
-  web_plugin_visitor.cpp
-  web_plugin_visitor.h
   window_handler.cpp
   window_handler.h
   write_handler.cpp

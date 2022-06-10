@@ -63,14 +63,6 @@ public interface CefAppHandler {
     public void onContextInitialized();
 
     /**
-     * Return the handler for printing on Linux. If a print handler is not
-     * provided then printing will not be supported on the Linux platform.
-     *
-     * @return a reference to a print handler implementation
-     */
-    public CefPrintHandler getPrintHandler();
-
-    /**
      * Called from any thread when work has been scheduled for the browser process
      * main (UI) thread. This callback should schedule a
      * CefApp.DoMessageLoopWork() call to happen on the main (UI) thread.

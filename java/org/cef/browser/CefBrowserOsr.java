@@ -28,6 +28,13 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.StringSelection;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureRecognizer;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceAdapter;
+import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DropTarget;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -49,6 +56,8 @@ import java.lang.SecurityException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -317,7 +326,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         });
 
         // Connect the Canvas with a drag and drop listener.
-        new DropTarget(canvas_, new CefDropTargetListenerOsr(this));
+        new DropTarget(canvas_, new CefDropTargetListener(this));
     }
 
     @Override
@@ -381,15 +390,43 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         return true;
     }
 
+    private static final class SyntheticDragGestureRecognizer extends DragGestureRecognizer {
+        public SyntheticDragGestureRecognizer(Component c, int action, MouseEvent triggerEvent) {
+            super(new DragSource(), c, action);
+            appendEvent(triggerEvent);
+        }
+
+        protected void registerListeners() {}
+
+        protected void unregisterListeners() {}
+    };
+
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
-        // TODO(JCEF) Prepared for DnD support using OSR mode.
-        return false;
+        int action = (mask & CefDragData.DragOperations.DRAG_OPERATION_MOVE) == 0
+                ? DnDConstants.ACTION_COPY
+                : DnDConstants.ACTION_MOVE;
+        MouseEvent triggerEvent =
+                new MouseEvent(canvas_, MouseEvent.MOUSE_DRAGGED, 0, 0, x, y, 0, false);
+        DragGestureEvent ev = new DragGestureEvent(
+                new SyntheticDragGestureRecognizer(canvas_, action, triggerEvent), action,
+                new Point(x, y), new ArrayList<>(Arrays.asList(triggerEvent)));
+
+        DragSource.getDefaultDragSource().startDrag(ev, /*dragCursor=*/null,
+                new StringSelection(dragData.getFragmentText()), new DragSourceAdapter() {
+                    @Override
+                    public void dragDropEnd(DragSourceDropEvent dsde) {
+                        dragSourceEndedAt(dsde.getLocation(), mask);
+                        dragSourceSystemDragEnded();
+                    }
+                });
+        return true;
     }
 
     @Override
     public void updateDragCursor(CefBrowser browser, int operation) {
-        // TODO(JCEF) Prepared for DnD support using OSR mode.
+        // TODO: Consider calling onCursorChange() if we want different cursors based on
+        // |operation|.
     }
 
     private void createBrowserIfRequired(boolean hasParent) {
@@ -429,8 +466,8 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution) {
-        int width = (int) (canvas_.getWidth() * scaleFactor_);
-        int height = (int) (canvas_.getHeight() * scaleFactor_);
+        int width = (int) Math.ceil(canvas_.getWidth() * scaleFactor_);
+        int height = (int) Math.ceil(canvas_.getHeight() * scaleFactor_);
 
         // In order to grab a screenshot of the browser window, we need to get the OpenGL internals
         // from the GLCanvas that displays the browser.

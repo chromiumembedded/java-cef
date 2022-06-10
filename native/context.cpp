@@ -19,7 +19,7 @@
 
 namespace {
 
-Context* g_context = NULL;
+Context* g_context = nullptr;
 
 CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
   CefString tmp;
@@ -50,9 +50,9 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.user_agent) = tmp;
     tmp.clear();
   }
-  if (GetJNIFieldString(env, cls, obj, "product_version", &tmp) &&
+  if (GetJNIFieldString(env, cls, obj, "user_agent_product", &tmp) &&
       !tmp.empty()) {
-    CefString(&settings.product_version) = tmp;
+    CefString(&settings.user_agent_product) = tmp;
     tmp.clear();
   }
   if (GetJNIFieldString(env, cls, obj, "locale", &tmp) && !tmp.empty()) {
@@ -63,7 +63,7 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.log_file) = tmp;
     tmp.clear();
   }
-  jobject obj_sev = NULL;
+  jobject obj_sev = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "log_severity", &obj_sev,
                         "Lorg/cef/CefSettings$LogSeverity;")) {
     ScopedJNIObjectLocal severity(env, obj_sev);
@@ -107,9 +107,7 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
                  &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
                  &settings.uncaught_exception_stack_size);
-  GetJNIFieldBoolean(env, cls, obj, "ignore_certificate_errors",
-                     &settings.ignore_certificate_errors);
-  jobject obj_col = NULL;
+  jobject obj_col = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "background_color", &obj_col,
                         "Lorg/cef/CefSettings$ColorType;")) {
     ScopedJNIObjectLocal color_type(env, obj_col);
@@ -117,6 +115,14 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     JNI_CALL_METHOD(env, color_type, "getColor", "()J", Long, jcolor);
     settings.background_color = (cef_color_t)jcolor;
   }
+  if (GetJNIFieldString(env, cls, obj, "cookieable_schemes_list", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.cookieable_schemes_list) = tmp;
+    tmp.clear();
+  }
+  GetJNIFieldBoolean(env, cls, obj, "cookieable_schemes_exclude_defaults",
+                     &settings.cookieable_schemes_exclude_defaults);
+
   return settings;
 }
 
@@ -168,9 +174,9 @@ bool Context::Initialize(JNIEnv* env,
   DCHECK(thread_checker_.CalledOnValidThread());
 
 #if defined(OS_WIN)
-  CefMainArgs main_args(::GetModuleHandle(NULL));
+  CefMainArgs main_args(::GetModuleHandle(nullptr));
 #else
-  CefMainArgs main_args(0, NULL);
+  CefMainArgs main_args(0, nullptr);
 #endif
 
   CefSettings settings = GetJNISettings(env, jsettings);
@@ -225,7 +231,7 @@ bool Context::Initialize(JNIEnv* env,
   res = util_mac::CefInitializeOnMainThread(main_args, settings,
                                             client_app.get());
 #else
-  res = CefInitialize(main_args, settings, client_app.get(), NULL);
+  res = CefInitialize(main_args, settings, client_app.get(), nullptr);
 #endif
 
 #if defined(OS_POSIX)
@@ -286,7 +292,7 @@ Context::Context() : external_message_pump_(true) {
 
 Context::~Context() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  g_context = NULL;
+  g_context = nullptr;
 
 #if defined(OS_MACOSX)
   cef_unload_library();

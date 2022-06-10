@@ -6,7 +6,6 @@
 #define JCEF_NATIVE_TEMP_WINDOW_MAC_H_
 #pragma once
 
-#include "include/base/cef_scoped_ptr.h"
 #include "include/cef_base.h"
 
 #ifdef __OBJC__
@@ -27,8 +26,8 @@ class TempWindowMac {
  private:
   // A single instance will be created/owned by Context.
   friend class Context;
-  // Allow deletion via scoped_ptr only.
-  friend struct base::DefaultDeleter<TempWindowMac>;
+  // Allow deletion via std::unique_ptr only.
+  friend std::default_delete<TempWindowMac>;
 
   TempWindowMac();
   ~TempWindowMac();

@@ -21,7 +21,7 @@ class CookieVisitor : public CefCookieVisitor {
   virtual bool Visit(const CefCookie& cookie,
                      int count,
                      int total,
-                     bool& deleteCookie) OVERRIDE;
+                     bool& deleteCookie) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

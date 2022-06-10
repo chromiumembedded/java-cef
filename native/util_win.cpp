@@ -23,6 +23,7 @@
 #include "include/cef_path_util.h"
 
 #define XBUTTON1_HI (XBUTTON1 << 16)
+#undef MOUSE_MOVED
 
 namespace util {
 
@@ -73,44 +74,41 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
 
 #ifdef USING_JAVA
 
-static int getMouseEvent(const char* evtName) {
-  ScopedJNIEnv env;
-  if (!env)
-    return 0;
-
-  int value = 0;
-  ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
-  GetJNIFieldStaticInt(env, jcls, evtName, &value);
-  return value;
-}
-
 static int getModifiers(BOOLEAN forceShift) {
   ScopedJNIEnv env;
   if (!env)
     return 0;
 
-  int alt = 0;
-  int ctrl = 0;
-  int shift = 0;
-  int button1 = 0;
-  int button2 = 0;
-  int button3 = 0;
+  int modifiers = 0;
 
-  ScopedJNIClass jcls(env, "java/awt/event/InputEvent");
+  const char* inputEventClassName = "java/awt/event/InputEvent";
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           ALT_DOWN_MASK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           CTRL_DOWN_MASK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           SHIFT_DOWN_MASK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           BUTTON1_DOWN_MASK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           BUTTON2_DOWN_MASK, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, inputEventClassName),
+                           BUTTON3_DOWN_MASK, 0);
+
   if ((GetKeyState(VK_MENU) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "ALT_DOWN_MASK", &alt);
+    modifiers |= JNI_STATIC(ALT_DOWN_MASK);
   if ((GetKeyState(VK_CONTROL) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "CTRL_DOWN_MASK", &ctrl);
+    modifiers |= JNI_STATIC(CTRL_DOWN_MASK);
   if (forceShift || (GetKeyState(VK_SHIFT) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "SHIFT_DOWN_MASK", &shift);
+    modifiers |= JNI_STATIC(SHIFT_DOWN_MASK);
   if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "BUTTON1_DOWN_MASK", &button1);
+    modifiers |= JNI_STATIC(BUTTON1_DOWN_MASK);
   if ((GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "BUTTON2_DOWN_MASK", &button2);
+    modifiers |= JNI_STATIC(BUTTON2_DOWN_MASK);
   if ((GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0)
-    GetJNIFieldStaticInt(env, jcls, "BUTTON3_DOWN_MASK", &button3);
+    modifiers |= JNI_STATIC(BUTTON3_DOWN_MASK);
 
-  return (alt | ctrl | shift | button1 | button2 | button3);
+  return modifiers;
 }
 
 static int getMouseButton(WPARAM wParam) {
@@ -118,30 +116,78 @@ static int getMouseButton(WPARAM wParam) {
   if (!env)
     return 0;
 
-  int mouseButton = 0;
-  ScopedJNIClass jcls(env, "java/awt/event/MouseEvent");
+  const char* mouseEventClassName = "java/awt/event/MouseEvent";
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           BUTTON1, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           BUTTON2, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           BUTTON3, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           NOBUTTON, 0);
+
   switch (wParam) {
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
     case WM_LBUTTONDBLCLK:
-      GetJNIFieldStaticInt(env, jcls, "BUTTON1", &mouseButton);
-      break;
+      return JNI_STATIC(BUTTON1);
     case WM_MBUTTONDOWN:
     case WM_MBUTTONUP:
     case WM_MBUTTONDBLCLK:
-      GetJNIFieldStaticInt(env, jcls, "BUTTON2", &mouseButton);
-      break;
+      return JNI_STATIC(BUTTON2);
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
     case WM_RBUTTONDBLCLK:
-      GetJNIFieldStaticInt(env, jcls, "BUTTON3", &mouseButton);
-      break;
+      return JNI_STATIC(BUTTON3);
     default:
-      GetJNIFieldStaticInt(env, jcls, "NOBUTTON", &mouseButton);
-      break;
+      return JNI_STATIC(NOBUTTON);
   }
+}
 
-  return mouseButton;
+static int getMouseEvent(WPARAM wParam) {
+  ScopedJNIEnv env;
+  if (!env)
+    return 0;
+
+  const char* mouseEventClassName = "java/awt/event/MouseEvent";
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           MOUSE_MOVED, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           MOUSE_PRESSED, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           MOUSE_RELEASED, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, mouseEventClassName),
+                           MOUSE_WHEEL, 0);
+
+  switch (wParam) {
+    case WM_MOUSEMOVE:
+      return JNI_STATIC(MOUSE_MOVED);
+
+    // Handle a double click like a single click.
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+    // FALL THRU
+
+    // Handle button down and up events.
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+      return JNI_STATIC(MOUSE_PRESSED);
+
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+      return JNI_STATIC(MOUSE_RELEASED);
+
+    // Handle horizontal mouse wheel event.
+    // The vertical mouse wheel is already recognized in Java.
+    // case WM_MOUSEWHEEL:
+    case WM_MOUSEHWHEEL:
+      return JNI_STATIC(MOUSE_WHEEL);
+    default:
+      return 0;
+  }
 }
 
 static std::map<CefWindowHandle, CefRefPtr<CefBrowser>> g_browsers_;
@@ -175,41 +221,26 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (!cefBrowser)
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 
+  // We're creating the scoped JNI env here so it can be re-used for
+  // the following subfunctions, which all need an env internally,
+  // without having the invoking thread constantly attaching and
+  // detaching from the JVM (which is ugly, especially if a debugger
+  // is attached, but also generally detrimental to performance)
+  ScopedJNIEnv env;
+  if (!env)
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+
   int mouseButton = getMouseButton(wParam);
   // Horizonal wheel event is the same as vertical wheel event
   // with pressed shift button.
   int modifiers = getModifiers(wParam == WM_MOUSEHWHEEL);
-  int mouseEvent = 0;
 
+  int mouseEvent = getMouseEvent(wParam);
   switch (wParam) {
-    case WM_MOUSEMOVE:
-      mouseEvent = getMouseEvent("MOUSE_MOVED");
-      break;
-
-    // Handle a double click like a single click.
-    case WM_LBUTTONDBLCLK:
-    case WM_MBUTTONDBLCLK:
-    case WM_RBUTTONDBLCLK:
-    // FALL THRU
-
-    // Handle button down and up events.
-    case WM_LBUTTONDOWN:
-    case WM_MBUTTONDOWN:
-    case WM_RBUTTONDOWN:
-      mouseEvent = getMouseEvent("MOUSE_PRESSED");
-      break;
-
-    case WM_LBUTTONUP:
-    case WM_MBUTTONUP:
-    case WM_RBUTTONUP:
-      mouseEvent = getMouseEvent("MOUSE_RELEASED");
-      break;
-
     // Handle horizontal mouse wheel event.
     // The vertical mouse wheel is already recognized in Java.
     // case WM_MOUSEWHEEL:
     case WM_MOUSEHWHEEL:
-      mouseEvent = getMouseEvent("MOUSE_WHEEL");
       mouseButton =
           GET_WHEEL_DELTA_WPARAM(((MOUSEHOOKSTRUCTEX*)pStruct)->mouseData);
       break;
@@ -281,12 +312,12 @@ CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
 
 void SetParent(CefWindowHandle browserHandle,
                CefWindowHandle parentHandle,
-               const base::Closure& callback) {
+               base::OnceClosure callback) {
   if (parentHandle == kNullWindowHandle)
     parentHandle = TempWindow::GetWindowHandle();
   if (parentHandle != kNullWindowHandle && browserHandle != kNullWindowHandle)
     ::SetParent(browserHandle, parentHandle);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void SetWindowBounds(CefWindowHandle browserHandle,

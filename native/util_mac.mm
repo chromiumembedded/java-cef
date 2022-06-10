@@ -29,7 +29,7 @@ namespace {
 static std::set<CefWindowHandle> g_browsers_;
 static CriticalLock g_browsers_lock_;
 id g_mouse_monitor_ = nil;
-static CefRefPtr<ClientApp> g_client_app_ = NULL;
+static CefRefPtr<ClientApp> g_client_app_ = nullptr;
 bool g_handling_send_event = false;
 
 }  // namespace
@@ -111,7 +111,7 @@ bool g_handling_send_event = false;
                                    handler:^(NSEvent* evt) {
                                      // Get corresponding CefWindowHandle of
                                      // Java-Canvas
-                                     NSView* browser = NULL;
+                                     NSView* browser = nullptr;
                                      NSPoint absPos = [evt locationInWindow];
                                      NSWindow* evtWin = [evt window];
                                      g_browsers_lock_.Lock();
@@ -217,7 +217,7 @@ bool g_handling_send_event = false;
 + (void)initialize:(InitializeParams*)params {
   g_client_app_ = params->application_;
   params->result_ = CefInitialize(params->args_, params->settings_,
-                                  g_client_app_.get(), NULL);
+                                  g_client_app_.get(), nullptr);
 }
 
 + (void)shutdown {
@@ -226,7 +226,7 @@ bool g_handling_send_event = false;
     CefDoMessageLoopWork();
 
   CefShutdown();
-  g_client_app_ = NULL;
+  g_client_app_ = nullptr;
 
   [NSEvent removeMonitor:g_mouse_monitor_];
 }
@@ -297,7 +297,7 @@ bool g_handling_send_event = false;
 
 - (id)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
-  cefBrowser = NULL;
+  cefBrowser = nullptr;
   return self;
 }
 
@@ -306,7 +306,7 @@ bool g_handling_send_event = false;
     util::DestroyCefBrowser(cefBrowser);
   }
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  cefBrowser = NULL;
+  cefBrowser = nullptr;
   [super dealloc];
 }
 
@@ -319,7 +319,7 @@ bool g_handling_send_event = false;
         (ClientHandler*)(cefBrowser->GetHost()->GetClient().get());
 
     CefRefPtr<WindowHandler> windowHandler = clientHandler->GetWindowHandler();
-    if (windowHandler.get() != NULL) {
+    if (windowHandler.get() != nullptr) {
       CefRect rect;
       windowHandler->GetRect(cefBrowser, rect);
       util_mac::TranslateRect(self, rect);
@@ -348,7 +348,7 @@ bool g_handling_send_event = false;
 
 - (void)destroyCefBrowser {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  cefBrowser = NULL;
+  cefBrowser = nullptr;
   [self removeFromSuperview];
   // Also remove all subviews so the CEF objects are released.
   for (NSView* view in [self subviews]) {
@@ -384,7 +384,7 @@ namespace util_mac {
 
 std::string GetAbsPath(const std::string& path) {
   char full_path[PATH_MAX];
-  if (realpath(path.c_str(), full_path) == NULL)
+  if (realpath(path.c_str(), full_path) == nullptr)
     return std::string();
   return full_path;
 }
@@ -524,7 +524,8 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   g_browsers_lock_.Lock();
   bool browser_exists = g_browsers_.erase(handle) > 0;
   g_browsers_lock_.Unlock();
-  if (!browser_exists) return;
+  if (!browser_exists)
+    return;
 
   // There are some cases where the superview of CefBrowser isn't
   // a CefBrowserContentView. For example if another CefBrowser window was
@@ -539,13 +540,16 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
 
 void SetParent(CefWindowHandle handle,
                jlong parentHandle,
-               const base::Closure& callback) {
-  base::Closure* pCallback = new base::Closure(callback);
+               base::OnceClosure callback) {
+  base::RepeatingClosure* pCallback = new base::RepeatingClosure(
+      base::BindRepeating([](base::OnceClosure& cb) { std::move(cb).Run(); },
+                          OwnedRef(std::move(callback))));
   dispatch_async(dispatch_get_main_queue(), ^{
     g_browsers_lock_.Lock();
     bool browser_exists = g_browsers_.count(handle) > 0;
     g_browsers_lock_.Unlock();
-    if (!browser_exists) return;
+    if (!browser_exists)
+      return;
 
     CefBrowserContentView* browser_view =
         (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)

@@ -25,7 +25,6 @@ public class SearchDialog extends JDialog {
     private final CefBrowser browser_;
     private final JTextField searchField_ = new JTextField(30);
     private final JCheckBox caseCheckBox_ = new JCheckBox("Case sensitive");
-    private final int identifier_ = (int) Math.random();
     private final JButton prevButton_ = new JButton("Prev");
     private final JButton nextButton_ = new JButton("Next");
 
@@ -54,7 +53,7 @@ public class SearchDialog extends JDialog {
 
                 setTitle("Find \"" + searchField_.getText() + "\"");
                 boolean matchCase = caseCheckBox_.isSelected();
-                browser_.find(identifier_, searchField_.getText(), true, matchCase, false);
+                browser_.find(searchField_.getText(), true, matchCase, false);
                 prevButton_.setEnabled(true);
                 nextButton_.setEnabled(true);
             }
@@ -66,7 +65,7 @@ public class SearchDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 boolean matchCase = caseCheckBox_.isSelected();
                 setTitle("Find \"" + searchField_.getText() + "\"");
-                browser_.find(identifier_, searchField_.getText(), false, matchCase, true);
+                browser_.find(searchField_.getText(), false, matchCase, true);
             }
         });
         prevButton_.setEnabled(false);
@@ -77,7 +76,7 @@ public class SearchDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 boolean matchCase = caseCheckBox_.isSelected();
                 setTitle("Find \"" + searchField_.getText() + "\"");
-                browser_.find(identifier_, searchField_.getText(), true, matchCase, true);
+                browser_.find(searchField_.getText(), true, matchCase, true);
             }
         });
         nextButton_.setEnabled(false);

@@ -11,7 +11,7 @@
 
 namespace {
 
-TempWindowMac* g_temp_window = NULL;
+TempWindowMac* g_temp_window = nullptr;
 
 }  // namespace
 
@@ -28,7 +28,7 @@ TempWindowMac::TempWindowMac() : window_(nil) {
 }
 
 TempWindowMac::~TempWindowMac() {
-  g_temp_window = NULL;
+  g_temp_window = nullptr;
   DCHECK(window_);
 
   [window_ close];

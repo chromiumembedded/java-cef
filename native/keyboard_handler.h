@@ -21,11 +21,11 @@ class KeyboardHandler : public CefKeyboardHandler {
   virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                              const CefKeyEvent& event,
                              CefEventHandle os_event,
-                             bool* is_keyboard_shortcut) OVERRIDE;
+                             bool* is_keyboard_shortcut) override;
 
   virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
                           const CefKeyEvent& event,
-                          CefEventHandle os_event) OVERRIDE;
+                          CefEventHandle os_event) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

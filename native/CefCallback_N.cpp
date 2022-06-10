@@ -14,7 +14,7 @@ CefRefPtr<CefCallback> GetSelf(jlong self) {
 
 void ClearSelf(JNIEnv* env, jobject obj) {
   // Clear the reference added in ResourceHandler.
-  SetCefForJNIObject<CefCallback>(env, obj, NULL, "CefCallback");
+  SetCefForJNIObject<CefCallback>(env, obj, nullptr, "CefCallback");
 }
 
 }  // namespace

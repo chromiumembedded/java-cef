@@ -33,7 +33,7 @@ Java_org_cef_callback_CefDragData_1N_N_1Clone(JNIEnv* env,
                                               jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
 
   CefRefPtr<CefDragData> cloneData = dragData->Clone();
   ScopedJNIDragData jcloneData(env, cloneData);
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_callback_CefDragData_1N_N_1Dispose(JNIEnv* env,
                                                 jobject obj,
                                                 jlong self) {
-  SetCefForJNIObject<CefDragData>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<CefDragData>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
@@ -93,7 +93,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetLinkURL(JNIEnv* env,
                                                    jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetLinkURL());
 }
 
@@ -103,7 +103,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetLinkTitle(JNIEnv* env,
                                                      jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetLinkTitle());
 }
 
@@ -113,7 +113,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetLinkMetadata(JNIEnv* env,
                                                         jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetLinkMetadata());
 }
 
@@ -123,7 +123,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetFragmentText(JNIEnv* env,
                                                         jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetFragmentText());
 }
 
@@ -133,7 +133,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetFragmentHtml(JNIEnv* env,
                                                         jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetFragmentHtml());
 }
 
@@ -143,7 +143,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetFragmentBaseURL(JNIEnv* env,
                                                            jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetFragmentBaseURL());
 }
 
@@ -167,7 +167,7 @@ Java_org_cef_callback_CefDragData_1N_N_1GetFileName(JNIEnv* env,
                                                     jlong self) {
   CefRefPtr<CefDragData> dragData = GetSelf(self);
   if (!dragData)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, dragData->GetFileName());
 }
 

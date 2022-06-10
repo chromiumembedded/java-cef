@@ -18,25 +18,26 @@ class PrintHandler : public CefPrintHandler {
   PrintHandler(JNIEnv* env, jobject handler);
 
   // CefPrintHandler methods
-  virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) override;
 
   virtual void OnPrintSettings(CefRefPtr<CefBrowser> browser,
                                CefRefPtr<CefPrintSettings> settings,
-                               bool get_defaults) OVERRIDE;
+                               bool get_defaults) override;
 
   virtual bool OnPrintDialog(
       CefRefPtr<CefBrowser> browser,
       bool has_selection,
-      CefRefPtr<CefPrintDialogCallback> callback) OVERRIDE;
+      CefRefPtr<CefPrintDialogCallback> callback) override;
 
   virtual bool OnPrintJob(CefRefPtr<CefBrowser> browser,
                           const CefString& document_name,
                           const CefString& pdf_file_path,
-                          CefRefPtr<CefPrintJobCallback> callback) OVERRIDE;
+                          CefRefPtr<CefPrintJobCallback> callback) override;
 
-  virtual void OnPrintReset(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual void OnPrintReset(CefRefPtr<CefBrowser> browser) override;
 
-  virtual CefSize GetPdfPaperSize(int device_units_per_inch) OVERRIDE;
+  virtual CefSize GetPdfPaperSize(CefRefPtr<CefBrowser> browser,
+                                  int device_units_per_inch) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

@@ -24,23 +24,24 @@ class ClientHandler : public CefClient {
   ClientHandler(JNIEnv* env, jobject handler);
 
   // CefClient methods
-  CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() OVERRIDE;
-  CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
-  CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE;
-  CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE;
-  CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE;
-  CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE;
-  CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
-  CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE;
-  CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE;
-  CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE;
-  CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;
-  CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE;
+  CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override;
+  CefRefPtr<CefDialogHandler> GetDialogHandler() override;
+  CefRefPtr<CefDisplayHandler> GetDisplayHandler() override;
+  CefRefPtr<CefDownloadHandler> GetDownloadHandler() override;
+  CefRefPtr<CefDragHandler> GetDragHandler() override;
+  CefRefPtr<CefFocusHandler> GetFocusHandler() override;
+  CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override;
+  CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override;
+  CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
+  CefRefPtr<CefLoadHandler> GetLoadHandler() override;
+  CefRefPtr<CefPrintHandler> GetPrintHandler() override;
+  CefRefPtr<CefRenderHandler> GetRenderHandler() override;
+  CefRefPtr<CefRequestHandler> GetRequestHandler() override;
 
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefProcessId source_process,
-                                CefRefPtr<CefProcessMessage> message) OVERRIDE;
+                                CefRefPtr<CefProcessMessage> message) override;
 
   // Additional handler for windowed rendering mode
   CefRefPtr<WindowHandler> GetWindowHandler();

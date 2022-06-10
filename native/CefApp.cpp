@@ -97,7 +97,7 @@ Java_org_cef_CefApp_N_1Startup(JNIEnv* env,
   // Can't use GetJNIString before the CEF library is loaded.
   std::string framework_path;
   if (pathToCefFramework) {
-    const char* chr = env->GetStringUTFChars(pathToCefFramework, NULL);
+    const char* chr = env->GetStringUTFChars(pathToCefFramework, nullptr);
     if (chr) {
       framework_path = chr;
       env->ReleaseStringUTFChars(pathToCefFramework, chr);

@@ -18,10 +18,10 @@ class FocusHandler : public CefFocusHandler {
   FocusHandler(JNIEnv* env, jobject handler);
 
   // CefFocusHandler methods
-  virtual void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) OVERRIDE;
+  virtual void OnTakeFocus(CefRefPtr<CefBrowser> browser, bool next) override;
   virtual bool OnSetFocus(CefRefPtr<CefBrowser> browser,
-                          FocusSource source) OVERRIDE;
-  virtual void OnGotFocus(CefRefPtr<CefBrowser> browser) OVERRIDE;
+                          FocusSource source) override;
+  virtual void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

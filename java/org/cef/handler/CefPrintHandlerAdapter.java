@@ -49,7 +49,7 @@ public abstract class CefPrintHandlerAdapter extends CefNativeAdapter implements
     }
 
     @Override
-    public Dimension getPdfPaperSize(int deviceUnitsPerInch) {
+    public Dimension getPdfPaperSize(CefBrowser browser, int deviceUnitsPerInch) {
         // default implementation is A4 letter size
         // @ 300 DPI, A4 is 2480 x 3508
         // @ 150 DPI, A4 is 1240 x 1754

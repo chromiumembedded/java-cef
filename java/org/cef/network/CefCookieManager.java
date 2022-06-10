@@ -38,16 +38,6 @@ public abstract class CefCookieManager {
     public abstract void dispose();
 
     /**
-     * Set the schemes supported by this manager. Calling this method with an empty |schemes| value
-     * and |includeDefaults| set to false will disable all loading and saving of cookies for this
-     * manager. Must be called before any cookies are accessed.
-     * @param schemes List of supported schemes.
-     * @param includeDefaults If true the default schemes ("http", "https", "ws" and "wss") will
-     *         also be supported.
-     */
-    public abstract void setSupportedSchemes(Vector<String> schemes, boolean includeDefaults);
-
-    /**
      * Visit all cookies. The returned cookies are ordered by longest path, then by earliest
      * creation date.
      * @param visitor Callback that will receive cookies on the UI thread.

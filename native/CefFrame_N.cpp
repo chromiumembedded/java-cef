@@ -16,7 +16,7 @@ CefRefPtr<CefFrame> GetSelf(jlong self) {
 }
 
 void ClearSelf(JNIEnv* env, jobject obj) {
-  SetCefForJNIObject<CefFrame>(env, obj, NULL, "CefFrame");
+  SetCefForJNIObject<CefFrame>(env, obj, nullptr, "CefFrame");
 }
 
 }  // namespace
@@ -43,7 +43,7 @@ Java_org_cef_browser_CefFrame_1N_N_1GetURL(JNIEnv* env,
                                            jlong self) {
   CefRefPtr<CefFrame> frame = GetSelf(self);
   if (!frame)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, frame->GetURL());
 }
 
@@ -53,7 +53,7 @@ Java_org_cef_browser_CefFrame_1N_N_1GetName(JNIEnv* env,
                                             jlong self) {
   CefRefPtr<CefFrame> frame = GetSelf(self);
   if (!frame)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, frame->GetName());
 }
 
@@ -93,10 +93,10 @@ Java_org_cef_browser_CefFrame_1N_N_1GetParent(JNIEnv* env,
                                               jlong self) {
   CefRefPtr<CefFrame> frame = GetSelf(self);
   if (!frame)
-    return NULL;
+    return nullptr;
   CefRefPtr<CefFrame> parent = frame->GetParent();
   if (!parent)
-    return NULL;
+    return nullptr;
   ScopedJNIFrame jparent(env, parent);
   return jparent.Release();
 }

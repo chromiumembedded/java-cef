@@ -20,11 +20,11 @@ class WriteHandler : public CefWriteHandler {
   virtual ~WriteHandler();
 
   // CefWriteHandler methods
-  virtual size_t Write(const void* ptr, size_t size, size_t n) OVERRIDE;
-  virtual int Seek(int64 offset, int whence) OVERRIDE;
-  virtual int64 Tell() OVERRIDE;
-  virtual int Flush() OVERRIDE;
-  virtual bool MayBlock() OVERRIDE;
+  virtual size_t Write(const void* ptr, size_t size, size_t n) override;
+  virtual int Seek(int64 offset, int whence) override;
+  virtual int64 Tell() override;
+  virtual int Flush() override;
+  virtual bool MayBlock() override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

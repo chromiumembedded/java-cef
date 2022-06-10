@@ -9,7 +9,7 @@
 // CriticalLock
 
 CriticalLock::CriticalLock() {
-  pthread_mutex_init(&lock_, NULL);
+  pthread_mutex_init(&lock_, nullptr);
 }
 
 CriticalLock::~CriticalLock() {
@@ -27,7 +27,7 @@ void CriticalLock::Unlock() {
 // CriticalWait
 
 CriticalWait::CriticalWait(CriticalLock* lock) : lock_(lock) {
-  pthread_cond_init(&cond_, NULL);
+  pthread_cond_init(&cond_, nullptr);
 }
 
 CriticalWait::~CriticalWait() {
@@ -44,7 +44,7 @@ bool CriticalWait::Wait(unsigned int maxWaitMs) {
   struct timeval tv;
   struct timespec ts;
 
-  gettimeofday(&tv, NULL);
+  gettimeofday(&tv, nullptr);
   ts.tv_sec = tv.tv_sec + sec;
   ts.tv_nsec = nsec;
 

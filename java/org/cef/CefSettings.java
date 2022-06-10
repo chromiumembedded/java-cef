@@ -127,9 +127,9 @@ public class CefSettings {
      * Value that will be inserted as the product portion of the default
      * User-Agent string. If empty the Chromium product version will be used. If
      * |userAgent| is specified this value will be ignored. Also configurable
-     * using the "product-version" command-line switch.
+     * using the "user_agent_product" command-line switch.
      */
-    public String product_version = null;
+    public String user_agent_product = null;
 
     /**
      * The locale string that will be passed to Blink. If empty the default
@@ -209,21 +209,26 @@ public class CefSettings {
     public int uncaught_exception_stack_size = 0;
 
     /**
-     * Set to true to ignore errors related to invalid SSL certificates.
-     * Enabling this setting can lead to potential security vulnerabilities like
-     * "man in the middle" attacks. Applications that load content from the
-     * internet should not enable this setting. Also configurable using the
-     * "ignore-certificate-errors" command-line switch.
-     */
-    public boolean ignore_certificate_errors = false;
-
-    /**
      * Opaque background color used for accelerated content. By default the
      * background color will be white. Only the RGB compontents of the specified
      * value will be used. The alpha component must greater than 0 to enable use
      * of the background color but will be otherwise ignored.
      */
     public ColorType background_color = null;
+
+    ///
+    // Comma delimited list of schemes supported by the associated
+    // CefCookieManager. If |cookieable_schemes_exclude_defaults| is false (0) the
+    // default schemes ("http", "https", "ws" and "wss") will also be supported.
+    // Specifying a |cookieable_schemes_list| value and setting
+    // |cookieable_schemes_exclude_defaults| to true (1) will disable all loading
+    // and saving of cookies for this manager. Can be overridden
+    // for individual CefRequestContext instances via the
+    // CefRequestContextSettings.cookieable_schemes_list and
+    // CefRequestContextSettings.cookieable_schemes_exclude_defaults values.
+    ///
+    public String cookieable_schemes_list = null;
+    public boolean cookieable_schemes_exclude_defaults = false;
 
     public CefSettings() {}
 
@@ -236,7 +241,7 @@ public class CefSettings {
         tmp.cache_path = cache_path;
         tmp.persist_session_cookies = persist_session_cookies;
         tmp.user_agent = user_agent;
-        tmp.product_version = product_version;
+        tmp.user_agent_product = user_agent_product;
         tmp.locale = locale;
         tmp.log_file = log_file;
         tmp.log_severity = log_severity;
@@ -246,8 +251,9 @@ public class CefSettings {
         tmp.pack_loading_disabled = pack_loading_disabled;
         tmp.remote_debugging_port = remote_debugging_port;
         tmp.uncaught_exception_stack_size = uncaught_exception_stack_size;
-        tmp.ignore_certificate_errors = ignore_certificate_errors;
         if (background_color != null) tmp.background_color = background_color.clone();
+        tmp.cookieable_schemes_list = cookieable_schemes_list;
+        tmp.cookieable_schemes_exclude_defaults = cookieable_schemes_exclude_defaults;
         return tmp;
     }
 }

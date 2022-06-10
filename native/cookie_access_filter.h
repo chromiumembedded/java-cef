@@ -20,12 +20,12 @@ class CookieAccessFilter : public CefCookieAccessFilter {
   bool CanSendCookie(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      CefRefPtr<CefRequest> request,
-                     const CefCookie& cookie) OVERRIDE;
+                     const CefCookie& cookie) override;
   bool CanSaveCookie(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      CefRefPtr<CefRequest> request,
                      CefRefPtr<CefResponse> response,
-                     const CefCookie& cookie) OVERRIDE;
+                     const CefCookie& cookie) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

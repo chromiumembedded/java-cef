@@ -12,11 +12,11 @@ Java_org_cef_browser_CefRequestContext_1N_N_1GetGlobalContext(JNIEnv* env,
                                                               jclass cls) {
   CefRefPtr<CefRequestContext> context = CefRequestContext::GetGlobalContext();
   if (!context.get())
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal jContext(env, NewJNIObject(env, cls));
   if (!jContext)
-    return NULL;
+    return nullptr;
 
   SetCefForJNIObject(env, jContext, context.get(), "CefRequestContext");
   return jContext.Release();
@@ -26,8 +26,8 @@ JNIEXPORT jobject JNICALL
 Java_org_cef_browser_CefRequestContext_1N_N_1CreateContext(JNIEnv* env,
                                                            jclass cls,
                                                            jobject jhandler) {
-  CefRefPtr<CefRequestContextHandler> handler = NULL;
-  if (jhandler != NULL) {
+  CefRefPtr<CefRequestContextHandler> handler = nullptr;
+  if (jhandler != nullptr) {
     handler = new RequestContextHandler(env, jhandler);
   }
 
@@ -36,11 +36,11 @@ Java_org_cef_browser_CefRequestContext_1N_N_1CreateContext(JNIEnv* env,
   CefRefPtr<CefRequestContext> context =
       CefRequestContext::CreateContext(settings, handler);
   if (!context.get())
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal jContext(env, NewJNIObject(env, cls));
   if (!jContext)
-    return NULL;
+    return nullptr;
 
   SetCefForJNIObject(env, jContext, context.get(), "CefRequestContext");
   return jContext.Release();
@@ -60,5 +60,5 @@ JNIEXPORT void JNICALL
 Java_org_cef_browser_CefRequestContext_1N_N_1CefRequestContext_1DTOR(
     JNIEnv* env,
     jobject obj) {
-  SetCefForJNIObject<CefRequestContext>(env, obj, NULL, "CefRequestContext");
+  SetCefForJNIObject<CefRequestContext>(env, obj, nullptr, "CefRequestContext");
 }

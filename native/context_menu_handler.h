@@ -20,14 +20,14 @@ class ContextMenuHandler : public CefContextMenuHandler {
   void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
                            CefRefPtr<CefContextMenuParams> params,
-                           CefRefPtr<CefMenuModel> model) OVERRIDE;
+                           CefRefPtr<CefMenuModel> model) override;
   bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefContextMenuParams> params,
                             int command_id,
-                            EventFlags event_flags) OVERRIDE;
+                            EventFlags event_flags) override;
   void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
-                              CefRefPtr<CefFrame> frame) OVERRIDE;
+                              CefRefPtr<CefFrame> frame) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

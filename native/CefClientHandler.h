@@ -128,6 +128,16 @@ Java_org_cef_handler_CefClientHandler_N_1removeLoadHandler(JNIEnv*,
 
 /*
  * Class:     org_cef_handler_CefClientHandler
+ * Method:    N_removePrintHandler
+ * Signature: (Lorg/cef/handler/CefPrintHandler;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_handler_CefClientHandler_N_1removePrintHandler(JNIEnv*,
+                                                            jobject,
+                                                            jobject);
+
+/*
+ * Class:     org_cef_handler_CefClientHandler
  * Method:    N_removeMessageRouter
  * Signature: (Lorg/cef/browser/CefMessageRouter;)V
  */

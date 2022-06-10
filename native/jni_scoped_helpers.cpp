@@ -2,6 +2,9 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#include <algorithm>
+#include <mutex>
+
 #include "jni_scoped_helpers.h"
 
 #include "client_handler.h"
@@ -22,7 +25,7 @@ jint GetJNIEnv(JNIEnv** env, bool* mustDetach) {
 
   jint result = jvm->GetEnv((void**)env, JNI_VERSION_1_6);
   if (result == JNI_EDETACHED) {
-    result = jvm->AttachCurrentThreadAsDaemon((void**)env, NULL);
+    result = jvm->AttachCurrentThreadAsDaemon((void**)env, nullptr);
     if (result == JNI_OK) {
       *mustDetach = true;
     }
@@ -40,22 +43,55 @@ void DetachJNIEnv() {
   }
 }
 
+// Using a simple cache to store global refs to loaded classes, since we
+// need to load the same classes over and over, which should neither change
+// on the JVM side nor be GCed...
+std::map<std::string, jobject> classCache_;
+std::mutex classCacheMutex_;
+// ...except if there's a change in the classloader to use by JCEF, in which
+// case the cache can be invalidated
+jobject classCacheClassLoader_;
+
 // Returns a class with the given fully qualified |class_name| (with '/' as
 // separator).
 jclass FindClass(JNIEnv* env, const char* class_name) {
-  jobject classLoader = GetJavaClassLoader();
-  ASSERT(classLoader);
-
   std::string classNameSeparatedByDots(class_name);
   std::replace(classNameSeparatedByDots.begin(), classNameSeparatedByDots.end(),
                '/', '.');
 
+  jobject classLoader = GetJavaClassLoader();
+  ASSERT(classLoader);
+
+  // std::map is not thread-safe with regard to concurrent reading and writing
+  std::lock_guard<std::mutex> guard(classCacheMutex_);
+
+  if (classLoader != classCacheClassLoader_) {
+    for (std::pair<const std::string, jobject>& entry : classCache_) {
+      env->DeleteGlobalRef(entry.second);
+    }
+    classCache_.clear();
+    classCacheClassLoader_ = classLoader;
+  }
+
+  std::map<std::string, jobject>::iterator it =
+      classCache_.find(classNameSeparatedByDots);
+  if (it != classCache_.end()) {
+    return static_cast<jclass>(env->NewLocalRef(it->second));
+  }
+
   ScopedJNIString classNameJString(env, classNameSeparatedByDots);
-  jobject result = NULL;
+  jobject result = nullptr;
 
   JNI_CALL_METHOD(env, classLoader, "loadClass",
                   "(Ljava/lang/String;)Ljava/lang/Class;", Object, result,
                   classNameJString.get());
+
+  // Make a global reference out of the local reference to allow for caching.
+  // This produces a non-garbage-collectable class, since this global ref is
+  // never released! However, for the classes that are requested by JCEF via
+  // this mechanism, that should be acceptable, because they aren't candidates
+  // to be GCed anyway.
+  classCache_[classNameSeparatedByDots] = env->NewGlobalRef(result);
 
   return static_cast<jclass>(result);
 }
@@ -63,7 +99,7 @@ jclass FindClass(JNIEnv* env, const char* class_name) {
 jobject NewJNIBoolRef(JNIEnv* env, bool initValue) {
   ScopedJNIObjectLocal jboolRef(env, "org/cef/misc/BoolRef");
   if (!jboolRef)
-    return NULL;
+    return nullptr;
   SetJNIBoolRef(env, jboolRef, initValue);
   return jboolRef.Release();
 }
@@ -71,7 +107,7 @@ jobject NewJNIBoolRef(JNIEnv* env, bool initValue) {
 jobject NewJNIIntRef(JNIEnv* env, int initValue) {
   ScopedJNIObjectLocal jintRef(env, "org/cef/misc/IntRef");
   if (!jintRef)
-    return NULL;
+    return nullptr;
   SetJNIIntRef(env, jintRef, initValue);
   return jintRef.Release();
 }
@@ -79,7 +115,7 @@ jobject NewJNIIntRef(JNIEnv* env, int initValue) {
 jobject NewJNIStringRef(JNIEnv* env, const CefString& initValue) {
   ScopedJNIObjectLocal jstringRef(env, "org/cef/misc/StringRef");
   if (!jstringRef)
-    return NULL;
+    return nullptr;
   SetJNIStringRef(env, jstringRef, initValue);
   return jstringRef.Release();
 }
@@ -87,7 +123,7 @@ jobject NewJNIStringRef(JNIEnv* env, const CefString& initValue) {
 jobject NewJNIDate(JNIEnv* env, const CefTime& time) {
   ScopedJNIObjectLocal jdate(env, "java/util/Date");
   if (!jdate)
-    return NULL;
+    return nullptr;
   double timestamp = time.GetDoubleT() * 1000;
   JNI_CALL_VOID_METHOD(env, jdate, "setTime", "(J)V", (jlong)timestamp);
   return jdate.Release();
@@ -100,7 +136,7 @@ jobject NewJNICookie(JNIEnv* env, const CefCookie& cookie) {
   ScopedJNIString path(env, CefString(&cookie.path));
   const bool hasExpires = (cookie.has_expires != 0);
   ScopedJNIObjectLocal expires(
-      env, hasExpires ? NewJNIDate(env, cookie.expires) : NULL);
+      env, hasExpires ? NewJNIDate(env, cookie.expires) : nullptr);
   ScopedJNIDate creation(env, cookie.creation);
   ScopedJNIDate last_access(env, cookie.last_access);
 
@@ -162,7 +198,7 @@ jobject NewJNIURLRequestStatus(
 
 jobject GetJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> browser) {
   if (!browser)
-    return NULL;
+    return nullptr;
   CefRefPtr<ClientHandler> client =
       (ClientHandler*)browser->GetHost()->GetClient().get();
   return client->getBrowser(env, browser);
@@ -201,7 +237,7 @@ ScopedJNIEnv::~ScopedJNIEnv() {
     if (export_result_) {
       *export_result_ = jenv_->PopLocalFrame(*export_result_);
     } else {
-      jenv_->PopLocalFrame(NULL);
+      jenv_->PopLocalFrame(nullptr);
     }
   }
   if (should_detach_) {
@@ -210,7 +246,7 @@ ScopedJNIEnv::~ScopedJNIEnv() {
 }
 
 ScopedJNIObjectGlobal::ScopedJNIObjectGlobal(JNIEnv* env, jobject handle)
-    : jhandle_(NULL) {
+    : jhandle_(nullptr) {
   if (handle) {
     jhandle_ = env->NewGlobalRef(handle);
     DCHECK(jhandle_);
@@ -303,10 +339,10 @@ CefString ScopedJNIStringResult::GetCefString() const {
 ScopedJNIBrowser::ScopedJNIBrowser(JNIEnv* env, CefRefPtr<CefBrowser> obj)
     : ScopedJNIBase<jobject>(env) {
   if (obj) {
-    // Will return NULL for browsers that represent native popup windows.
+    // Will return nullptr for browsers that represent native popup windows.
     jhandle_ = GetJNIBrowser(env_, obj);
   } else {
-    jhandle_ = NULL;
+    jhandle_ = nullptr;
   }
 }
 
@@ -319,7 +355,7 @@ void ScopedJNIBrowser::SetHandle(jobject handle, bool should_delete) {
 
 CefRefPtr<CefBrowser> ScopedJNIBrowser::GetCefObject() const {
   if (!jhandle_)
-    return NULL;
+    return nullptr;
   return GetJNIBrowser(env_, jhandle_);
 }
 
@@ -388,6 +424,12 @@ ScopedJNIResponse::ScopedJNIResponse(JNIEnv* env, CefRefPtr<CefResponse> obj)
                                    obj,
                                    "org/cef/network/CefResponse_N",
                                    "CefResponse") {}
+
+ScopedJNICallback::ScopedJNICallback(JNIEnv* env, CefRefPtr<CefCallback> obj)
+    : ScopedJNIObject<CefCallback>(env,
+                                   obj,
+                                   "org/cef/callback/CefCallback_N",
+                                   "CefCallback") {}
 
 ScopedJNIBoolRef::ScopedJNIBoolRef(JNIEnv* env, bool value)
     : ScopedJNIBase<jobject>(env) {

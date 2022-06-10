@@ -4,10 +4,10 @@
 
 package org.cef.handler;
 
-import java.util.Vector;
-
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefFileDialogCallback;
+
+import java.util.Vector;
 
 /**
  * Implement this interface to handle dialog events. The methods of this class

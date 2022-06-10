@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_network_CefPostData_1N_N_1Dispose(JNIEnv* env,
                                                jobject obj,
                                                jlong self) {
-  SetCefForJNIObject<CefPostData>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<CefPostData>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL

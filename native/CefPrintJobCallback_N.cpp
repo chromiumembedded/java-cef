@@ -15,7 +15,7 @@ CefRefPtr<CefPrintJobCallback> GetSelf(jlong self) {
 
 void ClearSelf(JNIEnv* env, jobject obj) {
   // Clear the reference added in PrintJobHandler::OnPrintJob.
-  SetCefForJNIObject<CefPrintJobCallback>(env, obj, NULL,
+  SetCefForJNIObject<CefPrintJobCallback>(env, obj, nullptr,
                                           "CefPrintJobCallback");
 }
 

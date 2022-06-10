@@ -7,20 +7,6 @@
 #include "jni_util.h"
 #include "util.h"
 
-namespace {
-
-// JNI CefCallback object.
-class ScopedJNICallback : public ScopedJNIObject<CefCallback> {
- public:
-  ScopedJNICallback(JNIEnv* env, CefRefPtr<CefCallback> obj)
-      : ScopedJNIObject<CefCallback>(env,
-                                     obj,
-                                     "org/cef/callback/CefCallback_N",
-                                     "CefCallback") {}
-};
-
-}  // namespace
-
 ResourceHandler::ResourceHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
@@ -97,7 +83,7 @@ bool ResourceHandler::ReadResponse(void* data_out,
     jcallback.SetTemporary();
   }
 
-  jbyte* jbyte = env->GetByteArrayElements(jbytes, NULL);
+  jbyte* jbyte = env->GetByteArrayElements(jbytes, nullptr);
   if (jbyte) {
     memmove(data_out, jbyte,
             (bytes_read < bytes_to_read ? bytes_read : bytes_to_read));

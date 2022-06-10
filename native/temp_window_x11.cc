@@ -12,8 +12,8 @@
 
 namespace {
 
-::Display* g_xdisplay = NULL;
-TempWindowX11* g_temp_window = NULL;
+::Display* g_xdisplay = nullptr;
+TempWindowX11* g_temp_window = nullptr;
 
 // Create the temp window.
 ::Window CreateTempWindow() {
@@ -52,7 +52,7 @@ TempWindowX11::TempWindowX11() : xwindow_(kNullWindowHandle) {
 }
 
 TempWindowX11::~TempWindowX11() {
-  g_temp_window = NULL;
+  g_temp_window = nullptr;
   DCHECK(xwindow_);
 
   CloseTempWindow(xwindow_);

@@ -17,7 +17,7 @@ CefRefPtr<CefQueryCallback> GetSelf(jlong self) {
 
 void ClearSelf(JNIEnv* env, jobject obj) {
   // Clear the reference added in ClientHandler::OnQuery.
-  SetCefForJNIObject<CefQueryCallback>(env, obj, NULL, "CefQueryCallback");
+  SetCefForJNIObject<CefQueryCallback>(env, obj, nullptr, "CefQueryCallback");
 }
 
 }  // namespace

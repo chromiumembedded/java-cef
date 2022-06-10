@@ -36,11 +36,11 @@ URLRequestClient::~URLRequestClient() {
   if (!env)
     return;
 
-  SetCefForJNIObject<URLRequestClient>(env, client_handle_, NULL,
+  SetCefForJNIObject<URLRequestClient>(env, client_handle_, nullptr,
                                        kCefClassName);
 }
 
-// TODO(jcef): Solve jurlReques instead of using NULL
+// TODO(jcef): Solve jurlReques instead of using nullptr
 void URLRequestClient::OnRequestComplete(CefRefPtr<CefURLRequest> request) {
   ScopedJNIEnv env;
   if (!env)

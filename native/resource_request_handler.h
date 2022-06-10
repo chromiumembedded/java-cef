@@ -20,35 +20,34 @@ class ResourceRequestHandler : public CefResourceRequestHandler {
   CefRefPtr<CefCookieAccessFilter> GetCookieAccessFilter(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
-      CefRefPtr<CefRequest> request) OVERRIDE;
-  ReturnValue OnBeforeResourceLoad(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefFrame> frame,
-      CefRefPtr<CefRequest> request,
-      CefRefPtr<CefRequestCallback> callback) OVERRIDE;
+      CefRefPtr<CefRequest> request) override;
+  ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefRequest> request,
+                                   CefRefPtr<CefCallback> callback) override;
   CefRefPtr<CefResourceHandler> GetResourceHandler(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
-      CefRefPtr<CefRequest> request) OVERRIDE;
+      CefRefPtr<CefRequest> request) override;
   void OnResourceRedirect(CefRefPtr<CefBrowser> browser,
                           CefRefPtr<CefFrame> frame,
                           CefRefPtr<CefRequest> request,
                           CefRefPtr<CefResponse> response,
-                          CefString& new_url) OVERRIDE;
+                          CefString& new_url) override;
   bool OnResourceResponse(CefRefPtr<CefBrowser> browser,
                           CefRefPtr<CefFrame> frame,
                           CefRefPtr<CefRequest> request,
-                          CefRefPtr<CefResponse> response) OVERRIDE;
+                          CefRefPtr<CefResponse> response) override;
   void OnResourceLoadComplete(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
                               CefRefPtr<CefResponse> response,
                               URLRequestStatus status,
-                              int64 received_content_length) OVERRIDE;
+                              int64 received_content_length) override;
   void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
                            CefRefPtr<CefRequest> request,
-                           bool& allow_os_execution) OVERRIDE;
+                           bool& allow_os_execution) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

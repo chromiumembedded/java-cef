@@ -37,18 +37,18 @@ CefRange GetJNIPageRange(JNIEnv* env, jobject obj) {
 jobject NewJNIPageRange(JNIEnv* env, const CefRange& range) {
   ScopedJNIClass cls(env, "org/cef/misc/CefPageRange");
   if (!cls)
-    return NULL;
+    return nullptr;
 
   ScopedJNIObjectLocal obj(env, NewJNIObject(env, cls));
   if (!obj)
-    return NULL;
+    return nullptr;
 
   if (SetJNIFieldInt(env, cls, obj, "from", range.from) &&
       SetJNIFieldInt(env, cls, obj, "to", range.to)) {
     return obj.Release();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace
@@ -64,7 +64,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_misc_CefPrintSettings_1N_N_1Dispose(JNIEnv* env,
                                                  jobject obj,
                                                  jlong self) {
-  SetCefForJNIObject<CefPrintSettings>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<CefPrintSettings>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jboolean JNICALL
@@ -143,7 +143,7 @@ Java_org_cef_misc_CefPrintSettings_1N_N_1GetDeviceName(JNIEnv* env,
                                                        jlong self) {
   CefRefPtr<CefPrintSettings> settings = GetSelf(self);
   if (!settings)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, settings->GetDeviceName());
 }
 

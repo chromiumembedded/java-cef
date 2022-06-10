@@ -32,9 +32,8 @@ class BrowserProcessHandler : public CefBrowserProcessHandler {
   BrowserProcessHandler(JNIEnv* env, jobject app_handler);
   virtual ~BrowserProcessHandler();
 
-  void OnContextInitialized() OVERRIDE;
-  CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
-  void OnScheduleMessagePumpWork(int64 delay_ms) OVERRIDE;
+  void OnContextInitialized() override;
+  void OnScheduleMessagePumpWork(int64 delay_ms) override;
 
   static CefRefPtr<CefListValue> GetMessageRouterConfigs();
   static void AddMessageRouterConfig(const CefMessageRouterConfig& cfg);

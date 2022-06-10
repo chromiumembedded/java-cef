@@ -18,7 +18,7 @@ CefRefPtr<CefCookieAccessFilter> ResourceRequestHandler::GetCookieAccessFilter(
     CefRefPtr<CefRequest> request) {
   ScopedJNIEnv env;
   if (!env)
-    return NULL;
+    return nullptr;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
@@ -36,16 +36,15 @@ CefRefPtr<CefCookieAccessFilter> ResourceRequestHandler::GetCookieAccessFilter(
 
   if (jresult)
     return new CookieAccessFilter(env, jresult);
-  return NULL;
+  return nullptr;
 }
 
 // TODO(JCEF): Expose the |callback| parameter.
 ResourceRequestHandler::ReturnValue
-ResourceRequestHandler::OnBeforeResourceLoad(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefRefPtr<CefRequest> request,
-    CefRefPtr<CefRequestCallback> callback) {
+ResourceRequestHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                             CefRefPtr<CefFrame> frame,
+                                             CefRefPtr<CefRequest> request,
+                                             CefRefPtr<CefCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
     return RV_CONTINUE;
@@ -72,7 +71,7 @@ CefRefPtr<CefResourceHandler> ResourceRequestHandler::GetResourceHandler(
     CefRefPtr<CefRequest> request) {
   ScopedJNIEnv env;
   if (!env)
-    return NULL;
+    return nullptr;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
@@ -90,7 +89,7 @@ CefRefPtr<CefResourceHandler> ResourceRequestHandler::GetResourceHandler(
 
   if (jresult)
     return new ResourceHandler(env, jresult);
-  return NULL;
+  return nullptr;
 }
 
 void ResourceRequestHandler::OnResourceRedirect(CefRefPtr<CefBrowser> browser,

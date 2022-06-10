@@ -52,7 +52,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetLinkUrl(JNIEnv* env,
                                                             jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetLinkUrl());
 }
 
@@ -63,7 +63,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetUnfilteredLinkUrl(
     jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetUnfilteredLinkUrl());
 }
 
@@ -73,7 +73,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSourceUrl(JNIEnv* env,
                                                               jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetSourceUrl());
 }
 
@@ -93,7 +93,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetPageUrl(JNIEnv* env,
                                                             jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetPageUrl());
 }
 
@@ -103,7 +103,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetFrameUrl(JNIEnv* env,
                                                              jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetFrameUrl());
 }
 
@@ -113,7 +113,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetFrameCharset(JNIEnv* env,
                                                                  jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetFrameCharset());
 }
 
@@ -164,7 +164,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetSelectionText(JNIEnv* env,
                                                                   jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetSelectionText());
 }
 
@@ -174,7 +174,7 @@ Java_org_cef_callback_CefContextMenuParams_1N_N_1GetMisspelledWord(JNIEnv* env,
                                                                    jlong self) {
   CefRefPtr<CefContextMenuParams> menuParams = GetSelf(self);
   if (!menuParams)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, menuParams->GetMisspelledWord());
 }
 

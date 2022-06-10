@@ -21,18 +21,18 @@ class LoadHandler : public CefLoadHandler {
   void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                             bool isLoading,
                             bool canGoBack,
-                            bool canGoForward) OVERRIDE;
+                            bool canGoForward) override;
   void OnLoadStart(CefRefPtr<CefBrowser> browser,
                    CefRefPtr<CefFrame> frame,
-                   TransitionType transition_type) OVERRIDE;
+                   TransitionType transition_type) override;
   void OnLoadEnd(CefRefPtr<CefBrowser> browser,
                  CefRefPtr<CefFrame> frame,
-                 int httpStatusCode) OVERRIDE;
+                 int httpStatusCode) override;
   void OnLoadError(CefRefPtr<CefBrowser> browser,
                    CefRefPtr<CefFrame> frame,
                    ErrorCode errorCode,
                    const CefString& errorText,
-                   const CefString& failedUrl) OVERRIDE;
+                   const CefString& failedUrl) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

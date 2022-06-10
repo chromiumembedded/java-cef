@@ -31,10 +31,10 @@ class LifeSpanHandler : public CefLifeSpanHandler {
                              CefRefPtr<CefClient>& client,
                              CefBrowserSettings& settings,
                              CefRefPtr<CefDictionaryValue>& extra_info,
-                             bool* no_javascript_access) OVERRIDE;
-  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+                             bool* no_javascript_access) override;
+  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
+  virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
+  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
   void OnAfterParentChanged(CefRefPtr<CefBrowser> browser);
 

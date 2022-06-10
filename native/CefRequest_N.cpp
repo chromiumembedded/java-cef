@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_network_CefRequest_1N_N_1Dispose(JNIEnv* env,
                                               jobject obj,
                                               jlong self) {
-  SetCefForJNIObject<CefRequest>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<CefRequest>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jlong JNICALL
@@ -58,7 +58,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetURL(JNIEnv* env,
                                              jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, request->GetURL());
 }
 
@@ -84,7 +84,7 @@ Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv* env,
     return;
 
   cef_referrer_policy_t policy = REFERRER_POLICY_DEFAULT;
-  if (jpolicy != NULL) {
+  if (jpolicy != nullptr) {
     if (IsJNIEnumValue(env, jpolicy,
                        "org/cef/network/CefRequest$ReferrerPolicy",
                        "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_"
@@ -140,7 +140,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetReferrerURL(JNIEnv* env,
                                                      jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
 
   return NewJNIString(env, request->GetReferrerURL());
 }
@@ -151,9 +151,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetReferrerPolicy(JNIEnv* env,
                                                         jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
 
-  jobject result = NULL;
+  jobject result = nullptr;
   CefRequest::ReferrerPolicy rp = request->GetReferrerPolicy();
   switch (rp) {
     default:
@@ -192,7 +192,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetMethod(JNIEnv* env,
                                                 jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, request->GetMethod());
 }
 
@@ -213,10 +213,10 @@ Java_org_cef_network_CefRequest_1N_N_1GetPostData(JNIEnv* env,
                                                   jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   CefRefPtr<CefPostData> postData = request->GetPostData();
   if (!postData.get())
-    return NULL;
+    return nullptr;
   ScopedJNIPostData jpostData(env, postData);
   return jpostData.Release();
 }
@@ -243,7 +243,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetHeaderByName(JNIEnv* env,
                                                       jstring jname) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, request->GetHeaderByName(GetJNIString(env, jname)));
 }
 
@@ -340,7 +340,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetFirstPartyForCookies(JNIEnv* env,
                                                               jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   return NewJNIString(env, request->GetFirstPartyForCookies());
 }
 
@@ -361,9 +361,9 @@ Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv* env,
                                                       jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
 
-  jobject result = NULL;
+  jobject result = nullptr;
   CefRequest::ResourceType rt = request->GetResourceType();
   switch (rt) {
     JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_MAIN_FRAME,
@@ -395,6 +395,10 @@ Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv* env,
              result);
     JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_PLUGIN_RESOURCE,
              result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType",
+             RT_NAVIGATION_PRELOAD_MAIN_FRAME, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType",
+             RT_NAVIGATION_PRELOAD_SUB_FRAME, result);
   }
   return result;
 }
@@ -405,7 +409,7 @@ Java_org_cef_network_CefRequest_1N_N_1GetTransitionType(JNIEnv* env,
                                                         jlong self) {
   CefRefPtr<CefRequest> request = GetSelf(self);
   if (!request)
-    return NULL;
+    return nullptr;
   ScopedJNITransitionType type(env, request->GetTransitionType());
   return type.Release();
 }

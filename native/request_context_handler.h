@@ -17,13 +17,6 @@ class RequestContextHandler : public CefRequestContextHandler {
   RequestContextHandler(JNIEnv* env, jobject jhandler);
 
   // RequestContextHandler methods
-  bool OnBeforePluginLoad(const CefString& mime_type,
-                          const CefString& plugin_url,
-                          bool is_main_frame,
-                          const CefString& top_origin_url,
-                          CefRefPtr<CefWebPluginInfo> plugin_info,
-                          PluginPolicy* plugin_policy) OVERRIDE;
-
   CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
@@ -31,7 +24,7 @@ class RequestContextHandler : public CefRequestContextHandler {
       bool is_navigation,
       bool is_download,
       const CefString& request_initiator,
-      bool& disable_default_handling) OVERRIDE;
+      bool& disable_default_handling) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

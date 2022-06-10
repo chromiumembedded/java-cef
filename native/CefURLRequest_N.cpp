@@ -27,7 +27,7 @@ class URLRequest : public CefTask {
   bool Create() {
     if (!urlRequest_)
       Dispatch(REQ_CREATE);
-    return (urlRequest_.get() != NULL);
+    return (urlRequest_.get() != nullptr);
   }
 
   CefURLRequest::Status GetRequestStatus() {
@@ -46,7 +46,7 @@ class URLRequest : public CefTask {
 
   CefRefPtr<CefResponse> GetResponse() {
     if (!urlRequest_)
-      return NULL;
+      return nullptr;
     Dispatch(REQ_RESPONSE);
     return response_;
   }
@@ -93,12 +93,12 @@ class URLRequest : public CefTask {
     }
   }
 
-  virtual void Execute() OVERRIDE {
+  virtual void Execute() override {
     lock_.Lock();
     switch (mode_) {
       case REQ_CREATE:
         // TODO(JCEF): Add the ability to specify a CefRequestContext.
-        urlRequest_ = CefURLRequest::Create(request_, client_.get(), NULL);
+        urlRequest_ = CefURLRequest::Create(request_, client_.get(), nullptr);
         break;
       case REQ_STATUS:
         status_ = urlRequest_->GetRequestStatus();
@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL
 Java_org_cef_network_CefURLRequest_1N_N_1Dispose(JNIEnv* env,
                                                  jobject obj,
                                                  jlong self) {
-  SetCefForJNIObject<URLRequest>(env, obj, NULL, kCefClassName);
+  SetCefForJNIObject<URLRequest>(env, obj, nullptr, kCefClassName);
 }
 
 JNIEXPORT jobject JNICALL
@@ -161,7 +161,7 @@ Java_org_cef_network_CefURLRequest_1N_N_1GetRequestStatus(JNIEnv* env,
                                                           jlong self) {
   CefRefPtr<URLRequest> urlRequest = GetSelf(self);
   if (!urlRequest)
-    return NULL;
+    return nullptr;
 
   ScopedJNIURLRequestStatus status(env, urlRequest->GetRequestStatus());
   return status.Release();
@@ -184,11 +184,11 @@ Java_org_cef_network_CefURLRequest_1N_N_1GetResponse(JNIEnv* env,
                                                      jlong self) {
   CefRefPtr<URLRequest> urlRequest = GetSelf(self);
   if (!urlRequest)
-    return NULL;
+    return nullptr;
 
   CefRefPtr<CefResponse> response = urlRequest->GetResponse();
   if (!response)
-    return NULL;
+    return nullptr;
 
   ScopedJNIResponse jresponse(env, response);
   return jresponse.Release();
