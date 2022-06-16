@@ -47,7 +47,6 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.6</version>
 				<executions>
 					<execution>
 						<id>get-the-git-infos</id>
@@ -62,18 +61,20 @@
 				</configuration>
 			</plugin>			
 		</plugins>
-		<!--<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>${basedir}/binary_distrib/${distribution.folder}/bin/lib/${distribution.folder}/</directory>
-				<includes>
-					<include>*</include>
-				</includes>
-			</resource>
-		</resources>-->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.googlecode.cmake-maven-project</groupId>
+					<artifactId>cmake-maven-plugin</artifactId>
+					<version>3.22.1-b1</version>
+				</plugin>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.2.6</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<profiles>
 		<profile>
@@ -92,7 +93,6 @@
 					<plugin>
 						<groupId>com.googlecode.cmake-maven-project</groupId>
 						<artifactId>cmake-maven-plugin</artifactId>
-						<version>3.7.2-b1</version>
 						<executions>
 							<execution>
 								<id>cmake-generate-windows</id>
@@ -172,7 +172,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-install-plugin</artifactId>
-						<version>3.0.0-M1</version>
 						<executions>
 							<execution>
 								<id>install-jogl-all</id>
@@ -250,7 +249,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -269,7 +267,7 @@
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-                				<artifactId>maven-deploy-plugin</artifactId>
+                		<artifactId>maven-deploy-plugin</artifactId>
 						<configuration>
 							<skip>${skip.deploy}</skip>
 						</configuration>
@@ -395,7 +393,6 @@
 					<plugin>
 						<groupId>com.googlecode.cmake-maven-project</groupId>
 						<artifactId>cmake-maven-plugin</artifactId>
-						<version>3.7.2-b1</version>
 						<executions>
 							<execution>
 								<id>cmake-generate-linux</id>
@@ -486,7 +483,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-install-plugin</artifactId>
-						<version>3.0.0-M1</version>
 						<executions>
 							<execution>
 								<id>install-jogl-all</id>
@@ -564,7 +560,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4</version>
 						<executions>
 							<execution>
 								<id>assemble-linux-binaries</id>
@@ -595,15 +590,14 @@
 								</configuration>
 							</execution>
 						</executions>
-						
 					</plugin>
 					<plugin>
                 		<groupId>org.apache.maven.plugins</groupId>
                 		<artifactId>maven-deploy-plugin</artifactId>
 						<configuration>
-						 <skip>${skip.deploy}</skip>
+							<skip>${skip.deploy}</skip>
 						</configuration>
-                				<executions>
+                		<executions>
 							<execution>
 								<id>deploy-jogl-all</id>
 								<phase>deploy</phase>
@@ -741,7 +735,6 @@
 					<plugin>
 						<groupId>com.googlecode.cmake-maven-project</groupId>
 						<artifactId>cmake-maven-plugin</artifactId>
-						<version>3.7.2-b1</version>
 						<executions>
 							<execution>
 								<id>cmake-generate-mac</id>
@@ -800,7 +793,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-install-plugin</artifactId>
-						<version>3.0.0-M1</version>
 						<executions>
 							<execution>
 								<id>deploy-jcef</id>
@@ -835,7 +827,6 @@
 					
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
@@ -853,12 +844,12 @@
 						</configuration>
 					</plugin>
 					<plugin>
-                				<groupId>org.apache.maven.plugins</groupId>
-                				<artifactId>maven-deploy-plugin</artifactId>
+             			<groupId>org.apache.maven.plugins</groupId>
+             			<artifactId>maven-deploy-plugin</artifactId>
 						<configuration>
-						<skip>true</skip>
+							<skip>true</skip>
 						</configuration>
-                				<executions>
+                		<executions>
 							<execution>
 								<id>deploy-native-binaries</id>
 								<phase>deploy</phase>
