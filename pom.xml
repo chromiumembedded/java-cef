@@ -13,6 +13,8 @@
 		<repository.url>https://dev.enactor.co.uk/artifactory/libs-release-local</repository.url>
 		<repository.id>www.enactor.co.uk</repository.id>
 		<skip.deploy>true</skip.deploy>
+		<cmake.download>false</cmake.download>
+		<download.cmake>${cmake.download}</download.cmake> <!-- Older cmake plugin versions use this -->
 	</properties>
 	<distributionManagement>
 		<snapshotRepository>
