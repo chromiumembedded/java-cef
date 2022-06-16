@@ -13,6 +13,7 @@
 		<repository.url>https://dev.enactor.co.uk/artifactory/libs-release-local</repository.url>
 		<repository.id>www.enactor.co.uk</repository.id>
 		<skip.deploy>true</skip.deploy>
+		<cmake.download>false</cmake.download>
 	</properties>
 	<distributionManagement>
 		<snapshotRepository>
@@ -67,6 +68,9 @@
 					<groupId>com.googlecode.cmake-maven-project</groupId>
 					<artifactId>cmake-maven-plugin</artifactId>
 					<version>3.7.2-b1</version>
+					<configuration>
+						<cmake.download>${cmake.download}</cmake.download>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
@@ -85,7 +89,6 @@
 				</os>
 			</activation>
 			<properties>
-				<cmake.download>false</cmake.download>
 				<distribution.folder>win64</distribution.folder>
 				<distribution.arch>windows-amd64</distribution.arch>
 			</properties>
@@ -386,7 +389,6 @@
 				</os>
 			</activation>
 			<properties>
-				<cmake.download>false</cmake.download>
 				<distribution.folder>linux64</distribution.folder>
 				<distribution.arch>linux-amd64</distribution.arch>
 			</properties>
@@ -728,7 +730,6 @@
 				</os>
 			</activation>
 			<properties>
-				<cmake.download>false</cmake.download>
 				<distribution.folder>macosx64</distribution.folder>
 				<distribution.arch>macos-amd64</distribution.arch>
 			</properties>
