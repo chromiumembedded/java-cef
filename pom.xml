@@ -82,12 +82,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>deploy-snapshot</id>
-			<properties>
-				<repository.url>${repository.url.snapshot}</repository.url>
-			</properties>
-		</profile>
-		<profile>
 			<id>generate-windows</id>
 			<activation>
 				<os>
