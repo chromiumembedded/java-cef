@@ -104,7 +104,7 @@
 								<configuration>
 									<sourcePath>${basedir}</sourcePath>
 									<targetPath>${basedir}/jcef_build</targetPath>
-									<generator>Visual Studio 15 2017 Win64</generator>
+									<generator>Visual Studio 17 2022 Win64</generator>
 									<classifier>windows-x86_64</classifier>
 									<environmentVariables>
 										<JAVA_HOME>${java.home}</JAVA_HOME>
