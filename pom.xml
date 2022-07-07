@@ -751,7 +751,6 @@
 									<environmentVariables>
 									</environmentVariables>
 									<options>
-										<option>-DPROJECT_ARCH="x86_64"</option>
 										<option>-DCMAKE_BUILD_TYPE=Release</option>
 										<option>-DJCEF_VERSION=${project.version}</option>
 										<option>-DJCEF_COMMIT_NUMBER=${git.total.commit.count}</option>
