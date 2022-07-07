@@ -104,12 +104,13 @@
 								<configuration>
 									<sourcePath>${basedir}</sourcePath>
 									<targetPath>${basedir}/jcef_build</targetPath>
-									<generator>Visual Studio 17 2022 Win64</generator>
+									<generator>Visual Studio 17 2022</generator>
 									<classifier>windows-x86_64</classifier>
 									<environmentVariables>
 										<JAVA_HOME>${java.home}</JAVA_HOME>
 									</environmentVariables>
 									<options>
+										<option>-A x64</option>
 										<option>-DCMAKE_BUILD_TYPE=Release</option>
 										<option>-DJCEF_VERSION=${project.version}</option>
 										<option>-DJCEF_COMMIT_NUMBER=${git.total.commit.count}</option>
@@ -750,6 +751,7 @@
 									<environmentVariables>
 									</environmentVariables>
 									<options>
+										<option>-DPROJECT_ARCH="x86_64"</option>
 										<option>-DCMAKE_BUILD_TYPE=Release</option>
 										<option>-DJCEF_VERSION=${project.version}</option>
 										<option>-DJCEF_COMMIT_NUMBER=${git.total.commit.count}</option>
