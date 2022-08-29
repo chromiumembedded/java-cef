@@ -98,7 +98,6 @@ else
     cp -f "$OUT_BINARY_PATH"/v8_context_snapshot.bin "$DISTRIB_LIB_PATH"
     cp -f "$OUT_BINARY_PATH"/*.pak "$DISTRIB_LIB_PATH"
     cp -rf "$OUT_BINARY_PATH"/locales/ "$DISTRIB_LIB_PATH"
-    cp -rf "$OUT_BINARY_PATH"/swiftshader/ "$DISTRIB_LIB_PATH"
   fi
 fi
 
