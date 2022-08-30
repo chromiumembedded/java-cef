@@ -62,7 +62,7 @@ public interface CefSchemeRegistrar {
      * If |isCspBypassing| is true the scheme can bypass Content-Security-Policy
      * (CSP) checks. This value should be false in most cases where |isStandard|
      * is true.
-     * 
+     *
      * If |is_fetch_enabled| is true the scheme can perform Fetch API requests.
      *
      * This function may be called on any thread. It should only be called once

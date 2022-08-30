@@ -4,6 +4,11 @@
 
 package tests.detailed.dialog;
 
+import org.cef.callback.CefCookieVisitor;
+import org.cef.misc.BoolRef;
+import org.cef.network.CefCookie;
+import org.cef.network.CefCookieManager;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -18,11 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-
-import org.cef.callback.CefCookieVisitor;
-import org.cef.misc.BoolRef;
-import org.cef.network.CefCookie;
-import org.cef.network.CefCookieManager;
 
 @SuppressWarnings("serial")
 public class CookieManagerDialog extends JDialog {

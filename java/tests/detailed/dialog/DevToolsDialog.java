@@ -4,6 +4,8 @@
 
 package tests.detailed.dialog;
 
+import org.cef.browser.CefBrowser;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Point;
@@ -11,8 +13,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.JDialog;
-
-import org.cef.browser.CefBrowser;
 
 @SuppressWarnings("serial")
 public class DevToolsDialog extends JDialog {
