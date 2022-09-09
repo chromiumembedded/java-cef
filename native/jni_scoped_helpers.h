@@ -684,7 +684,7 @@ class ScopedJNIString : public ScopedJNIBase<jstring> {
 // JNI date.
 class ScopedJNIDate : public ScopedJNIBase<jobject> {
  public:
-  ScopedJNIDate(JNIEnv* env, const CefTime& time);
+  ScopedJNIDate(JNIEnv* env, const CefBaseTime& time);
 };
 
 // JNI cookie.

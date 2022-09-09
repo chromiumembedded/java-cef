@@ -33,7 +33,7 @@ CefCookie GetJNICookie(JNIEnv* env, jobject jcookie) {
   CefString value(&cookie.value);
   CefString domain(&cookie.domain);
   CefString path(&cookie.path);
-  CefTime creation, lastAccess, expires;
+  CefBaseTime creation, lastAccess, expires;
 
   GetJNIFieldString(env, cls, jcookie, "name", &name);
   GetJNIFieldString(env, cls, jcookie, "value", &value);
