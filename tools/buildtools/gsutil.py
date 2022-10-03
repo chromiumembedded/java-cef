@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -31,10 +31,10 @@ API_URL = 'https://www.googleapis.com/storage/v1/b/pub/o/'
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_BIN_DIR = os.path.join(THIS_DIR, 'external_bin', 'gsutil')
-DEFAULT_FALLBACK_GSUTIL = os.path.join(
-    THIS_DIR, 'third_party', 'gsutil', 'gsutil')
 
 IS_WINDOWS = os.name == 'nt'
+
+VERSION = '4.68'
 
 
 class InvalidGsutilError(Exception):
@@ -79,7 +79,7 @@ def download_gsutil(version, target_dir):
 
 @contextlib.contextmanager
 def temporary_directory(base):
-  tmpdir = tempfile.mkdtemp(prefix='gsutil_py', dir=base)
+  tmpdir = tempfile.mkdtemp(prefix='t', dir=base)
   try:
     yield tmpdir
   finally:
@@ -98,7 +98,20 @@ def ensure_gsutil(version, target, clean):
     return gsutil_bin
 
   if not os.path.exists(target):
-    os.makedirs(target)
+    try:
+      os.makedirs(target)
+    except FileExistsError:
+      # Another process is prepping workspace, so let's check if gsutil_bin is
+      # present.  If after several checks it's still not, continue with
+      # downloading gsutil.
+      delay = 2  # base delay, in seconds
+      for _ in range(3):  # make N attempts
+        # sleep first as it's not expected to have file ready just yet.
+        time.sleep(delay)
+        delay *= 1.5  # next delay increased by that factor
+        if os.path.isfile(gsutil_bin):
+          return gsutil_bin
+
   with temporary_directory(target) as instance_dir:
     # Clean up if we're redownloading a corrupted gsutil.
     cleanup_path = os.path.join(instance_dir, 'clean')
@@ -109,16 +122,12 @@ def ensure_gsutil(version, target, clean):
     if cleanup_path:
       shutil.rmtree(cleanup_path)
 
-    download_dir = os.path.join(instance_dir, 'download')
+    download_dir = os.path.join(instance_dir, 'd')
     target_zip_filename = download_gsutil(version, instance_dir)
     with zipfile.ZipFile(target_zip_filename, 'r') as target_zip:
       target_zip.extractall(download_dir)
 
-    try:
-      os.rename(download_dir, bin_dir)
-    except (OSError, IOError):
-      # Something else did this in parallel.
-      pass
+    shutil.move(download_dir, bin_dir)
     # Final check that the gsutil bin exists.  This should never fail.
     if not os.path.isfile(gsutil_bin):
       raise InvalidGsutilError()
@@ -129,29 +138,45 @@ def ensure_gsutil(version, target, clean):
   return gsutil_bin
 
 
-def run_gsutil(force_version, fallback, target, args, clean=False):
-  if force_version:
-    gsutil_bin = ensure_gsutil(force_version, target, clean)
-  else:
-    gsutil_bin = fallback
-  disable_update = ['-o', 'GSUtil:software_update_check_period=0']
-  cmd = [sys.executable, gsutil_bin] + disable_update + args
-  return subprocess.call(cmd)
+def run_gsutil(target, args, clean=False):
+  gsutil_bin = ensure_gsutil(VERSION, target, clean)
+  args_opt = ['-o', 'GSUtil:software_update_check_period=0']
 
+  if sys.platform == 'darwin':
+    # We are experiencing problems with multiprocessing on MacOS where gsutil.py
+    # may hang.
+    # This behavior is documented in gsutil codebase, and recommendation is to
+    # set GSUtil:parallel_process_count=1.
+    # https://github.com/GoogleCloudPlatform/gsutil/blob/06efc9dc23719fab4fd5fadb506d252bbd3fe0dd/gslib/command.py#L1331
+    # https://github.com/GoogleCloudPlatform/gsutil/issues/1100
+    args_opt.extend(['-o', 'GSUtil:parallel_process_count=1'])
+  assert sys.platform != 'cygwin'
 
+  cmd = [
+      sys.executable,
+      gsutil_bin
+  ] + args_opt + args
+  return subprocess.call(cmd, shell=IS_WINDOWS)
 
 
 def parse_args():
   bin_dir = os.environ.get('DEPOT_TOOLS_GSUTIL_BIN_DIR', DEFAULT_BIN_DIR)
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--force-version', default='4.30')
+  # Help is disabled as it conflicts with gsutil -h, which controls headers.
+  parser = argparse.ArgumentParser(add_help=False)
+
   parser.add_argument('--clean', action='store_true',
       help='Clear any existing gsutil package, forcing a new download.')
-  parser.add_argument('--fallback', default=DEFAULT_FALLBACK_GSUTIL)
   parser.add_argument('--target', default=bin_dir,
       help='The target directory to download/store a gsutil version in. '
            '(default is %(default)s).')
+
+  # These two args exist for backwards-compatibility but are no-ops.
+  parser.add_argument('--force-version', default=VERSION,
+                      help='(deprecated, this flag has no effect)')
+  parser.add_argument('--fallback',
+                      help='(deprecated, this flag has no effect)')
+
   parser.add_argument('args', nargs=argparse.REMAINDER)
 
   args, extras = parser.parse_known_args()
@@ -164,8 +189,7 @@ def parse_args():
 
 def main():
   args = parse_args()
-  return run_gsutil(args.force_version, args.fallback, args.target, args.args,
-                    clean=args.clean)
+  return run_gsutil(args.target, args.args, clean=args.clean)
 
 
 if __name__ == '__main__':
