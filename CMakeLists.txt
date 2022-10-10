@@ -161,6 +161,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadCEF)
 DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
 
+
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 
@@ -192,6 +193,20 @@ endif()
 
 message(STATUS "Using Python: ${PYTHON_EXECUTABLE}")
 
+#
+# Enactor custom tweak.
+#
+
+# In order to fix the macos compilation issue with latest xcode 
+# cef_mac.h line 63 has been commented. This modified file should be copied from the enactor folder
+
+if(OS_MACOSX)
+  message("MacOS copy cef_mac.h...")
+  execute_process(
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/enactor/cef_mac.h
+                ${CEF_ROOT}/include/internal/cef_mac.h)
+endif()
 
 #
 # Java configuration.
