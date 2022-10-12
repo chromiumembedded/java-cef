@@ -214,7 +214,7 @@
 									<goal>install-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
+									<file>${basedir}/jcef_build/native/Release/jcef.jar</file>
 									<groupId>com.enactor.core</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
