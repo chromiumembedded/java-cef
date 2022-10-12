@@ -214,7 +214,7 @@
 									<goal>install-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/jcef_build/native/Release/jcef.jar</file>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<groupId>com.enactor.core</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
@@ -317,7 +317,7 @@
 									<goal>deploy-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/jcef_build/native/Release/jcef.jar</file>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
 									<groupId>com.enactor.core</groupId>
@@ -525,7 +525,7 @@
 									<goal>install-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/jcef_build/native/Release/jcef.jar</file>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<groupId>com.enactor.core</groupId>
 									<artifactId>jcef</artifactId>
 									<version>${project.version}</version>
@@ -643,7 +643,7 @@
 									<goal>deploy-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/jcef_build/native/Release/jcef.jar</file>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
 									<groupId>com.enactor.core</groupId>
@@ -851,9 +851,91 @@
              			<groupId>org.apache.maven.plugins</groupId>
              			<artifactId>maven-deploy-plugin</artifactId>
 						<configuration>
-							<skip>true</skip>
+							<skip>${skip.deploy}</skip>
 						</configuration>
                 		<executions>
+							<execution>
+								<id>deploy-jogl-all</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all.jar</file>
+									<repositoryId>${repository.id}</repositoryId>
+									<url>${repository.url}</url>
+									<groupId>com.enactor.core</groupId>
+									<artifactId>jogl-all</artifactId>
+									<version>${project.version}</version>
+									<packaging>jar</packaging>
+								</configuration>
+							</execution>
+							<execution>
+								<id>deploy-jogl-all-natives</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jogl-all-natives-${distribution.arch}.jar</file>
+									<repositoryId>${repository.id}</repositoryId>
+									<url>${repository.url}</url>
+									<groupId>com.enactor.core</groupId>
+									<artifactId>jogl-all-natives</artifactId>
+									<version>${project.version}</version>
+									<classifier>${distribution.arch}</classifier>
+									<packaging>jar</packaging>
+								</configuration>
+							</execution>
+							<execution>
+								<id>deploy-jcef</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
+									<repositoryId>${repository.id}</repositoryId>
+									<url>${repository.url}</url>
+									<groupId>com.enactor.core</groupId>
+									<artifactId>jcef</artifactId>
+									<version>${project.version}</version>
+									<packaging>jar</packaging>
+								</configuration>
+							</execution>
+							<execution>
+								<id>deploy-gluegen-rt</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt.jar</file>
+									<repositoryId>${repository.id}</repositoryId>
+									<url>${repository.url}</url>
+									<groupId>com.enactor.core</groupId>
+									<artifactId>gluegen-rt</artifactId>
+									<version>${project.version}</version>
+									<packaging>jar</packaging>
+								</configuration>
+							</execution>
+							<execution>
+								<id>deploy-gluegen-rt-natives</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${basedir}/binary_distrib/${distribution.folder}/bin/gluegen-rt-natives-${distribution.arch}.jar</file>
+									<repositoryId>${repository.id}</repositoryId>
+									<url>${repository.url}</url>
+									<groupId>com.enactor.core</groupId>
+									<artifactId>gluegen-rt-natives</artifactId>
+									<version>${project.version}</version>
+									<classifier>${distribution.arch}</classifier>
+									<packaging>jar</packaging>
+								</configuration>
+							</execution>
 							<execution>
 								<id>deploy-native-binaries</id>
 								<phase>deploy</phase>
