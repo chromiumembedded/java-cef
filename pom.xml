@@ -316,7 +316,6 @@
 								<goals>
 									<goal>deploy-file</goal>
 								</goals>
-								<skip>true</skip>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
@@ -643,7 +642,6 @@
 								<goals>
 									<goal>deploy-file</goal>
 								</goals>
-								<skip>true</skip>
 								<configuration>
 									<file>${basedir}/binary_distrib/${distribution.folder}/bin/jcef.jar</file>
 									<repositoryId>${repository.id}</repositoryId>
