@@ -157,10 +157,10 @@ public class MenuBar extends JMenuBar {
                 File selectedFile = fc.getSelectedFile();
                 if (selectedFile != null) {
                     CefPdfPrintSettings pdfSettings = new CefPdfPrintSettings();
-                    pdfSettings.header_footer_enabled = true;
-                    // A4 page size
-                    pdfSettings.page_width = 210000;
-                    pdfSettings.page_height = 297000;
+                    pdfSettings.display_header_footer = true;
+                    // letter page size
+                    pdfSettings.paper_width = 8.5;
+                    pdfSettings.paper_height = 11;
                     browser.printToPDF(
                             selectedFile.getAbsolutePath(), pdfSettings, new CefPdfPrintCallback() {
                                 @Override

@@ -1078,33 +1078,18 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
   if (!cls)
     return settings;
 
-  GetJNIFieldBoolean(env, cls, obj, "header_footer_enabled",
-                     &settings.header_footer_enabled);
-
-  if (GetJNIFieldString(env, cls, obj, "header_footer_title", &tmp) &&
-      !tmp.empty()) {
-    CefString(&settings.header_footer_title) = tmp;
-    tmp.clear();
-  }
-
-  if (GetJNIFieldString(env, cls, obj, "header_footer_url", &tmp) &&
-      !tmp.empty()) {
-    CefString(&settings.header_footer_url) = tmp;
-    tmp.clear();
-  }
-
   GetJNIFieldBoolean(env, cls, obj, "landscape", &settings.landscape);
 
-  GetJNIFieldBoolean(env, cls, obj, "backgrounds_enabled",
-                     &settings.backgrounds_enabled);
+  GetJNIFieldBoolean(env, cls, obj, "print_background",
+                     &settings.print_background);
 
-  GetJNIFieldInt(env, cls, obj, "page_width", &settings.page_width);
+  GetJNIFieldDouble(env, cls, obj, "scale", &settings.scale);
 
-  GetJNIFieldInt(env, cls, obj, "page_height", &settings.page_height);
+  GetJNIFieldDouble(env, cls, obj, "paper_width", &settings.paper_width);
+  GetJNIFieldDouble(env, cls, obj, "paper_height", &settings.paper_height);
 
-  GetJNIFieldBoolean(env, cls, obj, "selection_only", &settings.selection_only);
-
-  GetJNIFieldInt(env, cls, obj, "scale_factor", &settings.scale_factor);
+  GetJNIFieldBoolean(env, cls, obj, "prefer_css_page_size",
+                     &settings.prefer_css_page_size);
 
   jobject obj_margin_type = nullptr;
   if (GetJNIFieldObject(env, cls, obj, "margin_type", &obj_margin_type,
@@ -1120,19 +1105,35 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
       settings.margin_type = PDF_PRINT_MARGIN_NONE;
     } else if (IsJNIEnumValue(env, margin_type,
                               "org/cef/misc/CefPdfPrintSettings$MarginType",
-                              "MINIMUM")) {
-      settings.margin_type = PDF_PRINT_MARGIN_MINIMUM;
-    } else if (IsJNIEnumValue(env, margin_type,
-                              "org/cef/misc/CefPdfPrintSettings$MarginType",
                               "CUSTOM")) {
       settings.margin_type = PDF_PRINT_MARGIN_CUSTOM;
     }
   }
 
-  GetJNIFieldInt(env, cls, obj, "margin_top", &settings.margin_top);
-  GetJNIFieldInt(env, cls, obj, "margin_bottom", &settings.margin_bottom);
-  GetJNIFieldInt(env, cls, obj, "margin_right", &settings.margin_right);
-  GetJNIFieldInt(env, cls, obj, "margin_left", &settings.margin_left);
+  GetJNIFieldDouble(env, cls, obj, "margin_top", &settings.margin_top);
+  GetJNIFieldDouble(env, cls, obj, "margin_bottom", &settings.margin_bottom);
+  GetJNIFieldDouble(env, cls, obj, "margin_right", &settings.margin_right);
+  GetJNIFieldDouble(env, cls, obj, "margin_left", &settings.margin_left);
+
+  if (GetJNIFieldString(env, cls, obj, "page_ranges", &tmp) && !tmp.empty()) {
+    CefString(&settings.page_ranges) = tmp;
+    tmp.clear();
+  }
+
+  GetJNIFieldBoolean(env, cls, obj, "display_header_footer",
+                     &settings.display_header_footer);
+
+  if (GetJNIFieldString(env, cls, obj, "header_template", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.header_template) = tmp;
+    tmp.clear();
+  }
+
+  if (GetJNIFieldString(env, cls, obj, "footer_template", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.footer_template) = tmp;
+    tmp.clear();
+  }
 
   return settings;
 }
