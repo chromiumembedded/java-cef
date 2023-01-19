@@ -154,12 +154,6 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
     }
 
     @Override
-    public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
-        return false;
-    }
-
-    @Override
     public boolean onCertificateError(
             CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         SwingUtilities.invokeLater(new CertErrorDialog(owner_, cert_error, request_url, callback));
