@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
  * The visibility of this class is "package". To create a new
  * CefBrowser instance, please use CefBrowserFactory.
  */
-abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
+public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private volatile boolean isPending_ = false;
     private final CefClient client_;
     private final String url_;
