@@ -55,3 +55,5 @@ Thumbs.db
 /tools/buildtools/linux64/clang-format
 /tools/buildtools/mac/clang-format
 /tools/buildtools/win/clang-format.exe
+.idea
+*.iml
