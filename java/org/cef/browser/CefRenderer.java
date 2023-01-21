@@ -27,7 +27,7 @@ public class CefRenderer {
         return transparent_;
     }
 
-    protected int getTextureID() {
+    public int getTextureID() {
         return texture_id_[0];
     }
 

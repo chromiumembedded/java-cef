@@ -23,17 +23,15 @@ import java.util.concurrent.CompletableFuture;
  * CefBrowser instance, please use CefBrowserFactory.
  */
 public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
-    private CefRenderer renderer_;
-    private long window_handle_ = 0;
     private boolean justCreated_ = false;
-    private Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
+    protected Rectangle browser_rect_ = new Rectangle(0, 0, 1, 1); // Work around CEF issue #1437.
     private Point screenPoint_ = new Point(0, 0);
     private double scaleFactor_ = 1.0;
     private int depth = 32;
     private int depth_per_component = 8;
     private boolean isTransparent_;
 
-    CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
+    public CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
         this(client, url, transparent, context, null, null);
     }
 
@@ -41,7 +39,6 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
             CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
         super(client, url, context, parent, inspectAt);
         isTransparent_ = transparent;
-        renderer_ = new CefRenderer(transparent);
     }
 
     @Override
@@ -62,10 +59,8 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     @Override
-    protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
-            CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
-        return new CefBrowserOsr(
-                client, url, isTransparent_, context, (CefBrowserOsr) this, inspectAt);
+    protected CefBrowser_N createDevToolsBrowser(CefClient client, String url, CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
+        return null;
     }
 
     @Override
@@ -82,15 +77,10 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public void onPopupShow(CefBrowser browser, boolean show) {
-        if (!show) {
-            renderer_.clearPopupRects();
-            invalidate();
-        }
     }
 
     @Override
     public void onPopupSize(CefBrowser browser, Rectangle size) {
-        renderer_.onPopupSize(size);
     }
 
     @Override
@@ -120,8 +110,6 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public void updateDragCursor(CefBrowser browser, int operation) {
-        // TODO: Consider calling onCursorChange() if we want different cursors based on
-        // |operation|.
     }
 
     private void createBrowserIfRequired(boolean hasParent) {
