@@ -31,6 +31,13 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private int depth_per_component = 8;
     private boolean isTransparent_;
 
+    protected final Component dummyComponent = new Component() {
+        @Override
+        public Point getLocationOnScreen() {
+            return new Point(0, 0);
+        }
+    };
+
     public CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
         this(client, url, transparent, context, null, null);
     }
@@ -50,7 +57,7 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
     @Override
     public Component getUIComponent() {
-        return null;
+        return dummyComponent;
     }
 
     @Override
