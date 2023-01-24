@@ -401,11 +401,25 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         protected void unregisterListeners() {}
     };
 
+    private static int getDndAction(int mask) {
+        // Default to copy if multiple operations are specified.
+        int action = DnDConstants.ACTION_NONE;
+        if ((mask & CefDragData.DragOperations.DRAG_OPERATION_COPY)
+                == CefDragData.DragOperations.DRAG_OPERATION_COPY) {
+            action = DnDConstants.ACTION_COPY;
+        } else if ((mask & CefDragData.DragOperations.DRAG_OPERATION_MOVE)
+                == CefDragData.DragOperations.DRAG_OPERATION_MOVE) {
+            action = DnDConstants.ACTION_MOVE;
+        } else if ((mask & CefDragData.DragOperations.DRAG_OPERATION_LINK)
+                == CefDragData.DragOperations.DRAG_OPERATION_LINK) {
+            action = DnDConstants.ACTION_LINK;
+        }
+        return action;
+    }
+
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
-        int action = (mask & CefDragData.DragOperations.DRAG_OPERATION_MOVE) == 0
-                ? DnDConstants.ACTION_COPY
-                : DnDConstants.ACTION_MOVE;
+        int action = getDndAction(mask);
         MouseEvent triggerEvent =
                 new MouseEvent(canvas_, MouseEvent.MOUSE_DRAGGED, 0, 0, x, y, 0, false);
         DragGestureEvent ev = new DragGestureEvent(
@@ -416,7 +430,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 new StringSelection(dragData.getFragmentText()), new DragSourceAdapter() {
                     @Override
                     public void dragDropEnd(DragSourceDropEvent dsde) {
-                        dragSourceEndedAt(dsde.getLocation(), mask);
+                        dragSourceEndedAt(dsde.getLocation(), action);
                         dragSourceSystemDragEnded();
                     }
                 });
