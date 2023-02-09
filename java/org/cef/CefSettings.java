@@ -75,6 +75,10 @@ public class CefSettings {
         }
     }
 
+    // macOS specific settings
+    public String framework_dir_path = null;
+    public String main_bundle_path = null;
+
     /**
      * The path to a separate executable that will be launched for sub-processes.
      * By default the browser process executable is used. See the comments on
@@ -235,6 +239,8 @@ public class CefSettings {
     @Override
     public CefSettings clone() {
         CefSettings tmp = new CefSettings();
+        tmp.framework_dir_path = framework_dir_path;
+        tmp.main_bundle_path = main_bundle_path;
         tmp.browser_subprocess_path = browser_subprocess_path;
         tmp.windowless_rendering_enabled = windowless_rendering_enabled;
         tmp.command_line_args_disabled = command_line_args_disabled;
