@@ -128,6 +128,11 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 # CEF configuration.
 #
 
+# Specify the CEF branch
+if(NOT DEFINED CEF_BRANCH)
+  set(CEF_BRANCH "4896")
+endif()
+
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
   set(CEF_VERSION "100.0.24+g0783cf8+chromium-100.0.4896.127")
@@ -159,7 +164,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Download and extract the CEF binary distribution (executes DownloadCEF.cmake).
 include(DownloadCEF)
-DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
+DownloadCEF("${CEF_PLATFORM}" "${CEF_BRANCH}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
 
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
