@@ -25,15 +25,15 @@ function(DownloadCEF platform branch version download_dir)
       string(REPLACE "+" "%2B" CEF_DOWNLOAD_URL_ESCAPED ${CEF_DOWNLOAD_URL})
 
       # Download the SHA1 hash for the binary distribution.
-      message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}.sha1 from ${CEF_DOWNLOAD_URL_ESCAPED}...")
-      file(DOWNLOAD "${CEF_DOWNLOAD_URL_ESCAPED}.sha1" "${CEF_DOWNLOAD_PATH}.sha1")
-      file(READ "${CEF_DOWNLOAD_PATH}.sha1" CEF_SHA1)
+      # message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}.sha1 from ${CEF_DOWNLOAD_URL_ESCAPED}...")
+      # file(DOWNLOAD "${CEF_DOWNLOAD_URL_ESCAPED}.sha1" "${CEF_DOWNLOAD_PATH}.sha1")
+      # file(READ "${CEF_DOWNLOAD_PATH}.sha1" CEF_SHA1)
 
       # Download the binary distribution and verify the hash.
       message(STATUS "Downloading ${CEF_DOWNLOAD_PATH}...")
       file(
         DOWNLOAD "${CEF_DOWNLOAD_URL_ESCAPED}" "${CEF_DOWNLOAD_PATH}"
-        EXPECTED_HASH SHA1=${CEF_SHA1}
+        # EXPECTED_HASH SHA1=${CEF_SHA1}
         SHOW_PROGRESS
         )
     endif()

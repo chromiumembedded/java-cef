@@ -57,3 +57,4 @@ Thumbs.db
 /tools/buildtools/win/clang-format.exe
 .idea
 *.iml
+.vscode
