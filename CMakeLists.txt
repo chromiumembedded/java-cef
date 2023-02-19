@@ -130,7 +130,7 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF branch
 if(NOT DEFINED CEF_BRANCH)
-  set(CEF_BRANCH "4896")
+  set(CEF_BRANCH "5359")
 endif()
 
 # Specify the CEF distribution version.
