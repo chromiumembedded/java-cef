@@ -110,7 +110,7 @@ bool GetJNIFieldDate(JNIEnv* env,
                      jclass cls,
                      jobject obj,
                      const char* field_name,
-                     CefTime* value);
+                     CefBaseTime* value);
 
 bool GetJNIFieldBoolean(JNIEnv* env,
                         jclass cls,

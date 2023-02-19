@@ -19,7 +19,6 @@ class RunFileDialogCallback : public CefRunFileDialogCallback {
 
   // RunFileDialogCallback methods
   virtual void OnFileDialogDismissed(
-      int selected_accept_filter,
       const std::vector<CefString>& file_paths) override;
 
  protected:

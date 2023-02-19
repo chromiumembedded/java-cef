@@ -378,7 +378,7 @@ class CefBrowserWr extends CefBrowser_N {
             }
         } else {
             synchronized (content_rect_) {
-                Rectangle bounds = component_.getBounds();
+                Rectangle bounds = null != canvas_ ? canvas_.getBounds() : component_.getBounds();
                 content_rect_ = new Rectangle((int) (bounds.getX() * scaleFactor_),
                         (int) (bounds.getY() * scaleFactor_),
                         (int) (bounds.getWidth() * scaleFactor_),

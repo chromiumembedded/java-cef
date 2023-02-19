@@ -9,6 +9,8 @@
 
 #include "jni_scoped_helpers.h"
 
+#include "include/cef_base.h"
+
 namespace {
 
 JavaVM* g_jvm = nullptr;
@@ -804,14 +806,16 @@ bool GetJNIFieldDate(JNIEnv* env,
                      jclass cls,
                      jobject obj,
                      const char* field_name,
-                     CefTime* value) {
+                     CefBaseTime* value) {
   jobject fieldobj = nullptr;
   if (GetJNIFieldObject(env, cls, obj, field_name, &fieldobj,
                         "Ljava/util/Date;")) {
     ScopedJNIObjectLocal jdate(env, fieldobj);
     long timestamp = 0;
     JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
-    value->SetDoubleT((double)(timestamp / 1000));
+    CefTime cef_time;
+    cef_time.SetDoubleT((double)(timestamp / 1000));
+    cef_time_to_basetime(&cef_time, value);
     return true;
   }
   return false;
