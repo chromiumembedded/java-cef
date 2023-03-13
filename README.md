@@ -4,6 +4,7 @@ The Java Chromium Embedded Framework (JCEF) is a simple framework for embedding 
 
 * Building JCEF - https://bitbucket.org/chromiumembedded/java-cef/wiki/BranchesAndBuilding
 * Support Forum - http://magpcss.org/ceforum/viewforum.php?f=17
+* Issue Tracker - https://github.com/chromiumembedded/java-cef/issues
 * Downloads - https://github.com/jcefmaven/jcefbuild
 * Maven/Gradle Artifacts - https://github.com/jcefmaven/jcefmaven
 * Donations - http://www.magpcss.org/ceforum/donate.php
@@ -29,7 +30,7 @@ The JCEF project is an extension of the Chromium Embedded Framework (CEF) projec
 
 JCEF is still very much a work in progress. Some ways that you can help out:
 
-\- Vote for issues in the [JCEF issue tracker](https://bitbucket.org/chromiumembedded/java-cef/issues?status=new&status=open) that are important to you. This helps with development prioritization.
+\- Vote for issues in the [JCEF issue tracker](https://github.com/chromiumembedded/java-cef/issues) that are important to you. This helps with development prioritization.
 
 \- Report any bugs that you find or feature requests that are important to you. Make sure to first search for existing issues before creating new ones. Please use the [JCEF Forum](http://magpcss.org/ceforum/viewforum.php?f=17) and not the issue tracker for usage questions. Each JCEF issue should:
 
@@ -40,7 +41,7 @@ JCEF is still very much a work in progress. Some ways that you can help out:
 
 \- Write unit tests for new or existing functionality.
 
-\- Pull requests and patches are welcome. View open issues in the [JCEF issue tracker](https://bitbucket.org/chromiumembedded/java-cef/issues?status=new&status=open) or search for TODO(cef) in the source code for ideas.
+\- Pull requests and patches are welcome. View open issues in the [JCEF issue tracker](https://github.com/chromiumembedded/java-cef/issues) or search for TODO(cef) in the source code for ideas.
 
 If you would like to contribute source code changes to JCEF please follow the below guidelines:
 

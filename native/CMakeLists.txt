@@ -254,7 +254,7 @@ if(OS_LINUX)
   COPY_FILES("${JCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
   # TODO(jcef): Eliminate the symlink requirement once we figure out how.
-  # See https://bitbucket.org/chromiumembedded/java-cef/issues/137#comment-20535941
+  # See https://github.com/chromiumembedded/java-cef/issues/137#issuecomment-1465038405
   add_custom_command(
     TARGET ${JCEF_TARGET}
     POST_BUILD
