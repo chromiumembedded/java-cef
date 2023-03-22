@@ -57,7 +57,7 @@ public class CefSettings {
     public class ColorType {
         private long color_value = 0;
 
-        private ColorType() {}
+        public ColorType() {}
 
         public ColorType(int alpha, int red, int green, int blue) {
             color_value = (alpha << 24) | (red << 16) | (green << 8) | (blue << 0);
