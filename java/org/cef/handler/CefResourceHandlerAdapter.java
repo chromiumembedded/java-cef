@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCallback;
+import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
 import org.cef.network.CefCookie;
@@ -17,8 +18,38 @@ import org.cef.network.CefResponse;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefResourceHandlerAdapter implements CefResourceHandler {
+    // forge causes some problems without this
+    private static final ClassLoader clr;
+    
+    static {
+        try {
+            // reason: prevent class loading issues with forge
+            Class<?>[] LOADER = new Class[] {
+                    IntRef.class,
+                    BoolRef.class,
+                    CefRequest.class,
+                    StringRef.class,
+                    Class.forName("org.cef.callback.CefCallback_N"),
+                    Class.forName("org.cef.network.CefResponse_N")
+            };
+        } catch (Throwable err) {
+        }
+        
+        ClassLoader c = Thread.currentThread().getContextClassLoader();
+        if (c == null) c = CefResourceHandlerAdapter.class.getClassLoader();
+        clr = c;
+    }
+    
+    /**
+     * override {@link CefResourceHandlerAdapter#handleRequest(CefRequest, CefCallback)} instead
+     */
     @Override
-    public boolean processRequest(CefRequest request, CefCallback callback) {
+    public final boolean processRequest(CefRequest request, CefCallback callback) {
+        Thread.currentThread().setContextClassLoader(clr); // reason: prevent class loading issues with forge
+        return handleRequest(request, callback);
+    }
+    
+    public boolean handleRequest(CefRequest request, CefCallback callback) {
         return false;
     }
 
