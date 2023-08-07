@@ -18,38 +18,8 @@ import org.cef.network.CefResponse;
  * This class exists as convenience for creating handler objects.
  */
 public abstract class CefResourceHandlerAdapter implements CefResourceHandler {
-    // forge causes some problems without this
-    private static final ClassLoader clr;
-    
-    static {
-        try {
-            // reason: prevent class loading issues with forge
-            Class<?>[] LOADER = new Class[] {
-                    IntRef.class,
-                    BoolRef.class,
-                    CefRequest.class,
-                    StringRef.class,
-                    Class.forName("org.cef.callback.CefCallback_N"),
-                    Class.forName("org.cef.network.CefResponse_N")
-            };
-        } catch (Throwable err) {
-        }
-        
-        ClassLoader c = Thread.currentThread().getContextClassLoader();
-        if (c == null) c = CefResourceHandlerAdapter.class.getClassLoader();
-        clr = c;
-    }
-    
-    /**
-     * override {@link CefResourceHandlerAdapter#handleRequest(CefRequest, CefCallback)} instead
-     */
     @Override
-    public final boolean processRequest(CefRequest request, CefCallback callback) {
-        Thread.currentThread().setContextClassLoader(clr); // reason: prevent class loading issues with forge
-        return handleRequest(request, callback);
-    }
-    
-    public boolean handleRequest(CefRequest request, CefCallback callback) {
+    public boolean processRequest(CefRequest request, CefCallback callback) {
         return false;
     }
 
