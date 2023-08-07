@@ -73,9 +73,6 @@ int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
 
 int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_ALT, 0);
-  // JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON1_DOWN_MASK, 0);
-  // JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON2_DOWN_MASK, 0);
-  // JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON3_DOWN_MASK, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_CONTROL, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_SUPER, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_SHIFT, 0);
@@ -83,12 +80,12 @@ int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
   int cef_modifiers = 0;
   if (modifiers & JNI_STATIC(GLFW_MOD_ALT))
     cef_modifiers |= EVENTFLAG_ALT_DOWN;
-  // if (modifiers & JNI_STATIC(BUTTON1_DOWN_MASK))
-  //   cef_modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
-  // if (modifiers & JNI_STATIC(BUTTON2_DOWN_MASK))
-  //   cef_modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
-  // if (modifiers & JNI_STATIC(BUTTON3_DOWN_MASK))
-  //   cef_modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
+  if (modifiers & 0x10) // BUTTON1_MASK
+    cef_modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
+  if (modifiers & 0x20) // BUTTON2_MASK
+    cef_modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
+  if (modifiers & 0x40) // BUTTON3_MASK
+    cef_modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
   if (modifiers & JNI_STATIC(GLFW_MOD_CONTROL))
     cef_modifiers |= EVENTFLAG_CONTROL_DOWN;
   if (modifiers & JNI_STATIC(GLFW_MOD_SUPER))
@@ -96,7 +93,7 @@ int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
   if (modifiers & JNI_STATIC(GLFW_MOD_SHIFT))
     cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
 
-  std::cout << modifiers << ", " << cef_modifiers << "\n" << std::flush;
+  std::cout << "mcef " << modifiers << "\ncef  " << cef_modifiers << "\n" << std::flush;
 
   return cef_modifiers;
 }
@@ -1849,25 +1846,22 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
                                                      jobject obj,
                                                      jobject mouse_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(mouse_event));
-  if (!cls)
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(mouse_event));
+  if (!cls || !objClass)
     return;
 
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON1);
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON2);
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON3);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_DRAGGED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_ENTERED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_EXITED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_MOVED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_PRESSED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_RELEASED);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_1);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_2);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_3);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_PRESS);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_RELEASE);
 
   int event_type, x, y, modifiers;
-  if (!CallJNIMethodI_V(env, cls, mouse_event, "getID", &event_type) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getX", &x) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getModifiersEx", &modifiers)) {
+  if (!CallJNIMethodI_V(env, objClass, mouse_event, "getID", &event_type) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getModifiersEx", &modifiers)) {
     return;
   }
 
@@ -1875,36 +1869,40 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
   cef_event.x = x;
   cef_event.y = y;
 
-  cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
-  if (event_type == JNI_STATIC(MOUSE_PRESSED) ||
-      event_type == JNI_STATIC(MOUSE_RELEASED)) {
+  if (event_type == JNI_STATIC(GLFW_PRESS) ||
+      event_type == JNI_STATIC(GLFW_RELEASE)) {
     int click_count, button;
-    if (!CallJNIMethodI_V(env, cls, mouse_event, "getClickCount",
+    if (!CallJNIMethodI_V(env, objClass, mouse_event, "getClickCount",
                           &click_count) ||
-        !CallJNIMethodI_V(env, cls, mouse_event, "getButton", &button)) {
+        !CallJNIMethodI_V(env, objClass, mouse_event, "getButton", &button)) {
       return;
     }
 
+std::cout << "glfw button: " << button << "\n" << std::flush;
+
     CefBrowserHost::MouseButtonType cef_mbt;
-    if (button == JNI_STATIC(BUTTON1))
+    if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_1))
       cef_mbt = MBT_LEFT;
-    else if (button == JNI_STATIC(BUTTON2))
+    else if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_2))
       cef_mbt = MBT_MIDDLE;
-    else if (button == JNI_STATIC(BUTTON3))
+    else if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_3))
       cef_mbt = MBT_RIGHT;
     else
       return;
 
+std::cout << "cef  button: " << cef_mbt << "\n" << std::flush;
+
     browser->GetHost()->SendMouseClickEvent(
-        cef_event, cef_mbt, (event_type == JNI_STATIC(MOUSE_RELEASED)),
+        cef_event, cef_mbt, (event_type == JNI_STATIC(GLFW_RELEASE)),
         click_count);
-  } else if (event_type == JNI_STATIC(MOUSE_MOVED) ||
-             event_type == JNI_STATIC(MOUSE_DRAGGED) ||
-             event_type == JNI_STATIC(MOUSE_ENTERED) ||
-             event_type == JNI_STATIC(MOUSE_EXITED)) {
+  } else if (event_type == 503 || // MOUSE_MOVED
+             event_type == 506 || // MOUSE_DRAGGED
+             event_type == 504 || // MOUSE_ENTERED
+             event_type == 505) { // MOUSE_EXITED
     browser->GetHost()->SendMouseMoveEvent(
-        cef_event, (event_type == JNI_STATIC(MOUSE_EXITED)));
+        cef_event, (event_type == 505)); // MOUSE_EXITED
   }
 }
 
