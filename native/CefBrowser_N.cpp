@@ -12,6 +12,7 @@
 #include "browser_process_handler.h"
 #include "client_handler.h"
 #include "critical_wait.h"
+#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "life_span_handler.h"
 #include "pdf_print_callback.h"
@@ -1600,7 +1601,8 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
                                                    jobject obj,
                                                    jobject key_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(key_event));
+  ScopedJNIClass cls(env, "java/awt/event/KeyEvent");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(key_event));
   if (!cls)
     return;
 
@@ -1610,9 +1612,9 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 
   int event_type, modifiers;
   char16 key_char;
-  if (!CallJNIMethodI_V(env, cls, key_event, "getID", &event_type) ||
-      !CallJNIMethodC_V(env, cls, key_event, "getKeyChar", &key_char) ||
-      !CallJNIMethodI_V(env, cls, key_event, "getModifiersEx", &modifiers)) {
+  if (!CallJNIMethodI_V(env, objClass, key_event, "getID", &event_type) ||
+      !CallJNIMethodC_V(env, objClass, key_event, "getKeyChar", &key_char) ||
+      !CallJNIMethodI_V(env, objClass, key_event, "getModifiersEx", &modifiers)) {
     return;
   }
 
@@ -1622,13 +1624,13 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 #if defined(OS_WIN)
 
   jlong scanCode = 0;
-  GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
+  GetJNIFieldLong(env, objClass, key_event, "scancode", &scanCode);
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
 #elif defined(OS_LINUX) || defined(OS_MACOSX)
   int key_code;
-  if (!CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
+  if (!CallJNIMethodI_V(env, objClass, key_event, "getKeyCode", &key_code)) {
     return;
   }
 
