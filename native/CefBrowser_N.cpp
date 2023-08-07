@@ -39,8 +39,6 @@
 #undef MOUSE_MOVED
 #endif
 
-#include <iostream>
-
 namespace {
 
 int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
@@ -92,8 +90,6 @@ int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
     cef_modifiers |= EVENTFLAG_COMMAND_DOWN;
   if (modifiers & JNI_STATIC(GLFW_MOD_SHIFT))
     cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
-
-  std::cout << "mcef " << modifiers << "\ncef  " << cef_modifiers << "\n" << std::flush;
 
   return cef_modifiers;
 }
@@ -1651,7 +1647,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
   cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
 #if defined(OS_WIN)
-
   jlong scanCode = 0;
   GetJNIFieldLong(env, objClass, key_event, "scancode", &scanCode);
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
@@ -1880,8 +1875,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
       return;
     }
 
-std::cout << "glfw button: " << button << "\n" << std::flush;
-
     CefBrowserHost::MouseButtonType cef_mbt;
     if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_1))
       cef_mbt = MBT_LEFT;
@@ -1891,8 +1884,6 @@ std::cout << "glfw button: " << button << "\n" << std::flush;
       cef_mbt = MBT_RIGHT;
     else
       return;
-
-std::cout << "cef  button: " << cef_mbt << "\n" << std::flush;
 
     browser->GetHost()->SendMouseClickEvent(
         cef_event, cef_mbt, (event_type == JNI_STATIC(GLFW_RELEASE)),
@@ -1912,20 +1903,21 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
     jobject obj,
     jobject mouse_wheel_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(mouse_wheel_event));
-  if (!cls)
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(mouse_wheel_event));
+  if (!cls || !objClass)
     return;
 
-  JNI_STATIC_DEFINE_INT(env, cls, WHEEL_UNIT_SCROLL);
+  JNI_STATIC_DEFINE_INT(env, objClass, WHEEL_UNIT_SCROLL);
 
   int scroll_type, delta, x, y, modifiers;
-  if (!CallJNIMethodI_V(env, cls, mouse_wheel_event, "getScrollType",
+  if (!CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getScrollType",
                         &scroll_type) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getWheelRotation",
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getWheelRotation",
                         &delta) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getX", &x) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getModifiersEx",
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getModifiersEx",
                         &modifiers)) {
     return;
   }
@@ -1934,11 +1926,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
   cef_event.x = x;
   cef_event.y = y;
 
-  cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
-  if (scroll_type == JNI_STATIC(WHEEL_UNIT_SCROLL)) {
+  if (scroll_type == 0) {
     // Use the smarter version that considers platform settings.
-    CallJNIMethodI_V(env, cls, mouse_wheel_event, "getUnitsToScroll", &delta);
+    CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getUnitsToScroll", &delta);
   }
 
   double deltaX = 0, deltaY = 0;

@@ -1,4 +1,4 @@
-package org.cef.util;
+package org.cef.event;
 
 public class CefKeyEvent {
     public int keyCode;
