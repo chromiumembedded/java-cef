@@ -921,7 +921,6 @@ struct JNIObjectsForCreate {
   ScopedJNIObjectGlobal jparentBrowser;
   ScopedJNIObjectGlobal jclientHandler;
   ScopedJNIObjectGlobal url;
-  ScopedJNIObjectGlobal canvas;
   ScopedJNIObjectGlobal jcontext;
   ScopedJNIObjectGlobal jinspectAt;
 
@@ -930,7 +929,6 @@ struct JNIObjectsForCreate {
                       jobject _jparentBrowser,
                       jobject _jclientHandler,
                       jstring _url,
-                      jobject _canvas,
                       jobject _jcontext,
                       jobject _jinspectAt)
       :
@@ -939,7 +937,6 @@ struct JNIObjectsForCreate {
         jparentBrowser(env, _jparentBrowser),
         jclientHandler(env, _jclientHandler),
         url(env, _url),
-        canvas(env, _canvas),
         jcontext(env, _jcontext),
         jinspectAt(env, _jinspectAt) {}
 };
@@ -960,42 +957,7 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     return;
 
   CefWindowInfo windowInfo;
-  if (osr == JNI_FALSE) {
-    CefRect rect;
-    CefRefPtr<WindowHandler> windowHandler =
-        (WindowHandler*)clientHandler->GetWindowHandler().get();
-    if (windowHandler.get()) {
-      windowHandler->GetRect(objs->jbrowser, rect);
-    }
-#if defined(OS_WIN)
-    CefWindowHandle parent = TempWindow::GetWindowHandle();
-    if (objs->canvas != nullptr) {
-      parent = GetHwndOfCanvas(objs->canvas, env);
-    } else {
-      // Do not activate hidden browser windows on creation.
-      windowInfo.ex_style |= WS_EX_NOACTIVATE;
-    }
-    windowInfo.SetAsChild(parent, rect);
-#elif defined(OS_MACOSX)
-    NSWindow* parent = nullptr;
-    if (windowHandle != 0) {
-      parent = (NSWindow*)windowHandle;
-    } else {
-      parent = TempWindow::GetWindow();
-    }
-    CefWindowHandle browserContentView =
-        util_mac::CreateBrowserContentView(parent, rect);
-    windowInfo.SetAsChild(browserContentView, rect);
-#elif defined(OS_LINUX)
-    CefWindowHandle parent = TempWindow::GetWindowHandle();
-    if (objs->canvas != nullptr) {
-      parent = GetDrawableOfCanvas(objs->canvas, env);
-    }
-    windowInfo.SetAsChild(parent, rect);
-#endif
-  } else {
-    windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
-  }
+  windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
 
   CefBrowserSettings settings;
 
@@ -1173,10 +1135,9 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateBrowser(JNIEnv* env,
                                                     jstring url,
                                                     jboolean osr,
                                                     jboolean transparent,
-                                                    jobject canvas,
                                                     jobject jcontext) {
   std::shared_ptr<JNIObjectsForCreate> objs(new JNIObjectsForCreate(
-      env, jbrowser, nullptr, jclientHandler, url, canvas, jcontext, nullptr));
+      env, jbrowser, nullptr, jclientHandler, url, jcontext, nullptr));
   if (CefCurrentlyOn(TID_UI)) {
     create(objs, windowHandle, osr, transparent);
   } else {
@@ -1194,11 +1155,10 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools(JNIEnv* env,
                                                      jlong windowHandle,
                                                      jboolean osr,
                                                      jboolean transparent,
-                                                     jobject canvas,
                                                      jobject inspect) {
   std::shared_ptr<JNIObjectsForCreate> objs(
       new JNIObjectsForCreate(env, jbrowser, jparent, jclientHandler, nullptr,
-                              canvas, nullptr, inspect));
+                              nullptr, inspect));
   if (CefCurrentlyOn(TID_UI)) {
     create(objs, windowHandle, osr, transparent);
   } else {
@@ -2045,41 +2005,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1UpdateUI(JNIEnv* env,
   } else {
     CefPostTask(TID_UI, base::BindOnce(util::SetWindowBounds, windowHandle,
                                        contentRect));
-  }
-#endif
-}
-
-JNIEXPORT void JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
-                                                jobject obj,
-                                                jlong windowHandle,
-                                                jobject canvas) {
-  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  base::OnceClosure callback = base::BindOnce(&OnAfterParentChanged, browser);
-
-#if defined(OS_MACOSX)
-  util::SetParent(browser->GetHost()->GetWindowHandle(), windowHandle,
-                  std::move(callback));
-#else
-  CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
-  CefWindowHandle parentHandle =
-      canvas ? util::GetWindowHandle(env, canvas) : kNullWindowHandle;
-  if (CefCurrentlyOn(TID_UI)) {
-    util::SetParent(browserHandle, parentHandle, std::move(callback));
-  } else {
-#if defined(OS_LINUX)
-    CriticalLock lock;
-    CriticalWait waitCond(&lock);
-    lock.Lock();
-    CefPostTask(TID_UI,
-                base::BindOnce(util::SetParentSync, browserHandle, parentHandle,
-                               &waitCond, std::move(callback)));
-    waitCond.Wait(1000);
-    lock.Unlock();
-#else
-    CefPostTask(TID_UI, base::BindOnce(util::SetParent, browserHandle,
-                                       parentHandle, std::move(callback)));
-#endif
   }
 #endif
 }
