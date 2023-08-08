@@ -6,25 +6,28 @@ public class CefKeyEvent {
     public static final int KEY_RELEASE = 0;
     public static final int KEY_TYPE = 2;
 
+    // intentionally leaving these public for now
+    // may remove the getters, or maybe add setters, or maybe move to private
+    // not sure yet
     public int keyCode;
     public int id;
-    public int modifiersEx;
+    public int modifiers;
     public char keyChar;
     public long scancode;
 
-    public CefKeyEvent(int keyCode, int id, int modifiersEx, char keyChar) {
-        this.keyCode = keyCode;
+    public CefKeyEvent(int id, int keyCode, char keyChar, int modifiers) {
         this.id = id;
-        this.modifiersEx = modifiersEx;
+        this.keyCode = keyCode;
         this.keyChar = keyChar;
+        this.modifiers = modifiers;
     }
 
     public int getID() {
         return id;
     }
 
-    public int getModifiersEx() {
-        return modifiersEx;
+    public int getModifiers() {
+        return modifiers;
     }
 
     public char getKeyChar() {

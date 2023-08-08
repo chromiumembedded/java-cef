@@ -5,14 +5,21 @@ public class CefMouseWheelEvent {
     public static final int WHEEL_UNIT_SCROLL = 0;
     public static final int WHEEL_BLOCK_SCROLL = 1;
 
-    int id, delta, x, y, modifiers;
-    int amount = 32; // TODO: might want to make this change dependent on system?
+    // intentionally leaving these public for now
+    // may remove the getters, or maybe add setters, or maybe move to private
+    // not sure yet
+    public int id;
+    public int delta;
+    public int x;
+    public int y;
+    public int modifiers;
+    public int amount = 32; // TODO: might want to make this change dependent on system?
 
-    public CefMouseWheelEvent(int id, int delta, int x, int y, int modifiers) {
+    public CefMouseWheelEvent(int id, int x, int y, int delta, int modifiers) {
         this.id = id;
-        this.delta = delta;
         this.x = x;
         this.y = y;
+        this.delta = delta;
         this.modifiers = modifiers;
     }
 
@@ -32,7 +39,7 @@ public class CefMouseWheelEvent {
         return y;
     }
 
-    public int getModifiersEx() {
+    public int getModifiers() {
         return modifiers;
     }
 

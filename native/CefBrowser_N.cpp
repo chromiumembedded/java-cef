@@ -1639,7 +1639,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
   char16 key_char;
   if (!CallJNIMethodI_V(env, objClass, key_event, "getID", &event_type) ||
       !CallJNIMethodC_V(env, objClass, key_event, "getKeyChar", &key_char) ||
-      !CallJNIMethodI_V(env, objClass, key_event, "getModifiersEx", &modifiers)) {
+      !CallJNIMethodI_V(env, objClass, key_event, "getModifiers", &modifiers)) {
     return;
   }
 
@@ -1856,7 +1856,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
   if (!CallJNIMethodI_V(env, objClass, mouse_event, "getID", &event_type) ||
       !CallJNIMethodI_V(env, objClass, mouse_event, "getX", &x) ||
       !CallJNIMethodI_V(env, objClass, mouse_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, objClass, mouse_event, "getModifiersEx", &modifiers)) {
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getModifiers", &modifiers)) {
     return;
   }
 
@@ -1917,7 +1917,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
                         &delta) ||
       !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getX", &x) ||
       !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getModifiersEx",
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getModifiers",
                         &modifiers)) {
     return;
   }

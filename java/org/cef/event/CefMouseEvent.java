@@ -9,20 +9,23 @@ public class CefMouseEvent {
     public static final int BUTTON2_MASK = 0x20;
     public static final int BUTTON3_MASK = 0x40;
 
+    // intentionally leaving these public for now
+    // may remove the getters, or maybe add setters, or maybe move to private
+    // not sure yet
     public int id;
     public int x;
     public int y;
-    public int modifs;
+    public int modifiers;
     public int clickCount;
     public int button;
 
-    public CefMouseEvent(int id, int x, int y, int modifs, int clickCount, int button) {
+    public CefMouseEvent(int id, int x, int y, int clickCount, int button, int modifiers) {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.modifs = modifs;
         this.clickCount = clickCount;
         this.button = button;
+        this.modifiers = modifiers;
     }
 
     public int getID() {
@@ -37,8 +40,8 @@ public class CefMouseEvent {
         return y;
     }
 
-    public int getModifiersEx() {
-        return modifs;
+    public int getModifiers() {
+        return modifiers;
     }
 
     public int getClickCount() {
