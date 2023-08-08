@@ -68,6 +68,31 @@ int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
   return cef_modifiers;
 }
 
+int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_ALT, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_CONTROL, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_SUPER, 0);
+  JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_SHIFT, 0);
+
+  int cef_modifiers = 0;
+  if (modifiers & JNI_STATIC(GLFW_MOD_ALT))
+    cef_modifiers |= EVENTFLAG_ALT_DOWN;
+  if (modifiers & 0x10) // BUTTON1_MASK
+    cef_modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
+  if (modifiers & 0x20) // BUTTON2_MASK
+    cef_modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
+  if (modifiers & 0x40) // BUTTON3_MASK
+    cef_modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
+  if (modifiers & JNI_STATIC(GLFW_MOD_CONTROL))
+    cef_modifiers |= EVENTFLAG_CONTROL_DOWN;
+  if (modifiers & JNI_STATIC(GLFW_MOD_SUPER))
+    cef_modifiers |= EVENTFLAG_COMMAND_DOWN;
+  if (modifiers & JNI_STATIC(GLFW_MOD_SHIFT))
+    cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
+
+  return cef_modifiers;
+}
+
 #if defined(OS_LINUX)
 
 // From ui/events/keycodes/keyboard_codes_posix.h.
@@ -1600,66 +1625,66 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
                                                    jobject obj,
                                                    jobject key_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(key_event));
-  if (!cls)
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(key_event));
+  if (!cls || !objClass)
     return;
 
-  JNI_STATIC_DEFINE_INT(env, cls, KEY_PRESSED);
-  JNI_STATIC_DEFINE_INT(env, cls, KEY_RELEASED);
-  JNI_STATIC_DEFINE_INT(env, cls, KEY_TYPED);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_PRESS);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_RELEASE);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_REPEAT);
 
   int event_type, modifiers;
   char16 key_char;
-  if (!CallJNIMethodI_V(env, cls, key_event, "getID", &event_type) ||
-      !CallJNIMethodC_V(env, cls, key_event, "getKeyChar", &key_char) ||
-      !CallJNIMethodI_V(env, cls, key_event, "getModifiersEx", &modifiers)) {
+  if (!CallJNIMethodI_V(env, objClass, key_event, "getID", &event_type) ||
+      !CallJNIMethodC_V(env, objClass, key_event, "getKeyChar", &key_char) ||
+      !CallJNIMethodI_V(env, objClass, key_event, "getModifiers", &modifiers)) {
     return;
   }
 
   CefKeyEvent cef_event;
-  cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
 #if defined(OS_WIN)
-
   jlong scanCode = 0;
-  GetJNIFieldLong(env, cls, key_event, "scancode", &scanCode);
+  GetJNIFieldLong(env, objClass, key_event, "scancode", &scanCode);
   BYTE VkCode = LOBYTE(MapVirtualKey(scanCode, MAPVK_VSC_TO_VK));
   cef_event.native_key_code = (scanCode << 16) |  // key scan code
                               1;                  // key repeat count
 #elif defined(OS_LINUX) || defined(OS_MACOSX)
   int key_code;
-  if (!CallJNIMethodI_V(env, cls, key_event, "getKeyCode", &key_code)) {
+  if (!CallJNIMethodI_V(env, objClass, key_event, "getKeyCode", &key_code)) {
     return;
   }
 
-  JNI_STATIC_DEFINE_INT(env, cls, VK_BACK_SPACE);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_DELETE);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_DOWN);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_ENTER);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_ESCAPE);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_LEFT);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_RIGHT);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_TAB);
-  JNI_STATIC_DEFINE_INT(env, cls, VK_UP);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_BACKSPACE);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_DELETE);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_DOWN);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_ENTER);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_ESCAPE);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_LEFT);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_RIGHT);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_TAB);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_KEY_UP);
 
 #if defined(OS_LINUX)
-  if (key_code == JNI_STATIC(VK_BACK_SPACE))
+  if (key_code == JNI_STATIC(GLFW_KEY_BACKSPACE))
     cef_event.native_key_code = XK_BackSpace;
-  else if (key_code == JNI_STATIC(VK_DELETE))
+  else if (key_code == JNI_STATIC(GLFW_KEY_DELETE))
     cef_event.native_key_code = XK_Delete;
-  else if (key_code == JNI_STATIC(VK_DOWN))
+  else if (key_code == JNI_STATIC(GLFW_KEY_DOWN))
     cef_event.native_key_code = XK_Down;
-  else if (key_code == JNI_STATIC(VK_ENTER))
+  else if (key_code == JNI_STATIC(GLFW_KEY_ENTER))
     cef_event.native_key_code = XK_Return;
-  else if (key_code == JNI_STATIC(VK_ESCAPE))
+  else if (key_code == JNI_STATIC(GLFW_KEY_ESCAPE))
     cef_event.native_key_code = XK_Escape;
-  else if (key_code == JNI_STATIC(VK_LEFT))
+  else if (key_code == JNI_STATIC(GLFW_KEY_LEFT))
     cef_event.native_key_code = XK_Left;
-  else if (key_code == JNI_STATIC(VK_RIGHT))
+  else if (key_code == JNI_STATIC(GLFW_KEY_RIGHT))
     cef_event.native_key_code = XK_Right;
-  else if (key_code == JNI_STATIC(VK_TAB))
+  else if (key_code == JNI_STATIC(GLFW_KEY_TAB))
     cef_event.native_key_code = XK_Tab;
-  else if (key_code == JNI_STATIC(VK_UP))
+  else if (key_code == JNI_STATIC(GLFW_KEY_UP))
     cef_event.native_key_code = XK_Up;
   else
     cef_event.native_key_code = key_char;
@@ -1688,31 +1713,31 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
     cef_event.character = cef_event.unmodified_character;
   }
 #elif defined(OS_MACOSX)
-  if (key_code == JNI_STATIC(VK_BACK_SPACE)) {
+  if (key_code == JNI_STATIC(GLFW_KEY_BACKSPACE)) {
     cef_event.native_key_code = kVK_Delete;
     cef_event.unmodified_character = kBackspaceCharCode;
-  } else if (key_code == JNI_STATIC(VK_DELETE)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_DELETE)) {
     cef_event.native_key_code = kVK_ForwardDelete;
     cef_event.unmodified_character = kDeleteCharCode;
-  } else if (key_code == JNI_STATIC(VK_DOWN)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_DOWN)) {
     cef_event.native_key_code = kVK_DownArrow;
     cef_event.unmodified_character = /* NSDownArrowFunctionKey */ 0xF701;
-  } else if (key_code == JNI_STATIC(VK_ENTER)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_ENTER)) {
     cef_event.native_key_code = kVK_Return;
     cef_event.unmodified_character = kReturnCharCode;
-  } else if (key_code == JNI_STATIC(VK_ESCAPE)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_ESCAPE)) {
     cef_event.native_key_code = kVK_Escape;
     cef_event.unmodified_character = kEscapeCharCode;
-  } else if (key_code == JNI_STATIC(VK_LEFT)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_LEFT)) {
     cef_event.native_key_code = kVK_LeftArrow;
     cef_event.unmodified_character = /* NSLeftArrowFunctionKey */ 0xF702;
-  } else if (key_code == JNI_STATIC(VK_RIGHT)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_RIGHT)) {
     cef_event.native_key_code = kVK_RightArrow;
     cef_event.unmodified_character = /* NSRightArrowFunctionKey */ 0xF703;
-  } else if (key_code == JNI_STATIC(VK_TAB)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_TAB)) {
     cef_event.native_key_code = kVK_Tab;
     cef_event.unmodified_character = kTabCharCode;
-  } else if (key_code == JNI_STATIC(VK_UP)) {
+  } else if (key_code == JNI_STATIC(GLFW_KEY_UP)) {
     cef_event.native_key_code = kVK_UpArrow;
     cef_event.unmodified_character = /* NSUpArrowFunctionKey */ 0xF700;
   } else {
@@ -1786,19 +1811,19 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
 #endif  // defined(OS_MACOSX)
 #endif  // defined(OS_LINUX) || defined(OS_MACOSX)
 
-  if (event_type == JNI_STATIC(KEY_PRESSED)) {
+  if (event_type == JNI_STATIC(GLFW_PRESS)) {
 #if defined(OS_WIN)
     cef_event.windows_key_code = VkCode;
 #endif
     cef_event.type = KEYEVENT_RAWKEYDOWN;
-  } else if (event_type == JNI_STATIC(KEY_RELEASED)) {
+  } else if (event_type == JNI_STATIC(GLFW_RELEASE)) {
 #if defined(OS_WIN)
     cef_event.windows_key_code = VkCode;
     // bits 30 and 31 should always be 1 for WM_KEYUP
     cef_event.native_key_code |= 0xC0000000;
 #endif
     cef_event.type = KEYEVENT_KEYUP;
-  } else if (event_type == JNI_STATIC(KEY_TYPED)) {
+  } else if (event_type == JNI_STATIC(GLFW_REPEAT)) {
 #if defined(OS_WIN)
     cef_event.windows_key_code = key_char;
 #endif
@@ -1815,25 +1840,22 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
                                                      jobject obj,
                                                      jobject mouse_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(mouse_event));
-  if (!cls)
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(mouse_event));
+  if (!cls || !objClass)
     return;
 
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON1);
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON2);
-  JNI_STATIC_DEFINE_INT(env, cls, BUTTON3);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_DRAGGED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_ENTERED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_EXITED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_MOVED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_PRESSED);
-  JNI_STATIC_DEFINE_INT(env, cls, MOUSE_RELEASED);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_1);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_2);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_MOUSE_BUTTON_3);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_PRESS);
+  JNI_STATIC_DEFINE_INT(env, cls, GLFW_RELEASE);
 
   int event_type, x, y, modifiers;
-  if (!CallJNIMethodI_V(env, cls, mouse_event, "getID", &event_type) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getX", &x) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, cls, mouse_event, "getModifiersEx", &modifiers)) {
+  if (!CallJNIMethodI_V(env, objClass, mouse_event, "getID", &event_type) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, objClass, mouse_event, "getModifiers", &modifiers)) {
     return;
   }
 
@@ -1841,36 +1863,36 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
   cef_event.x = x;
   cef_event.y = y;
 
-  cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
-  if (event_type == JNI_STATIC(MOUSE_PRESSED) ||
-      event_type == JNI_STATIC(MOUSE_RELEASED)) {
+  if (event_type == JNI_STATIC(GLFW_PRESS) ||
+      event_type == JNI_STATIC(GLFW_RELEASE)) {
     int click_count, button;
-    if (!CallJNIMethodI_V(env, cls, mouse_event, "getClickCount",
+    if (!CallJNIMethodI_V(env, objClass, mouse_event, "getClickCount",
                           &click_count) ||
-        !CallJNIMethodI_V(env, cls, mouse_event, "getButton", &button)) {
+        !CallJNIMethodI_V(env, objClass, mouse_event, "getButton", &button)) {
       return;
     }
 
     CefBrowserHost::MouseButtonType cef_mbt;
-    if (button == JNI_STATIC(BUTTON1))
+    if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_1))
       cef_mbt = MBT_LEFT;
-    else if (button == JNI_STATIC(BUTTON2))
+    else if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_2))
       cef_mbt = MBT_MIDDLE;
-    else if (button == JNI_STATIC(BUTTON3))
+    else if (button == JNI_STATIC(GLFW_MOUSE_BUTTON_3))
       cef_mbt = MBT_RIGHT;
     else
       return;
 
     browser->GetHost()->SendMouseClickEvent(
-        cef_event, cef_mbt, (event_type == JNI_STATIC(MOUSE_RELEASED)),
+        cef_event, cef_mbt, (event_type == JNI_STATIC(GLFW_RELEASE)),
         click_count);
-  } else if (event_type == JNI_STATIC(MOUSE_MOVED) ||
-             event_type == JNI_STATIC(MOUSE_DRAGGED) ||
-             event_type == JNI_STATIC(MOUSE_ENTERED) ||
-             event_type == JNI_STATIC(MOUSE_EXITED)) {
+  } else if (event_type == 503 || // MOUSE_MOVED
+             event_type == 506 || // MOUSE_DRAGGED
+             event_type == 504 || // MOUSE_ENTERED
+             event_type == 505) { // MOUSE_EXITED
     browser->GetHost()->SendMouseMoveEvent(
-        cef_event, (event_type == JNI_STATIC(MOUSE_EXITED)));
+        cef_event, (event_type == 505)); // MOUSE_EXITED
   }
 }
 
@@ -1880,20 +1902,21 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
     jobject obj,
     jobject mouse_wheel_event) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
-  ScopedJNIClass cls(env, env->GetObjectClass(mouse_wheel_event));
-  if (!cls)
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
+  ScopedJNIClass objClass = ScopedJNIClass(env, env->GetObjectClass(mouse_wheel_event));
+  if (!cls || !objClass)
     return;
 
-  JNI_STATIC_DEFINE_INT(env, cls, WHEEL_UNIT_SCROLL);
+  JNI_STATIC_DEFINE_INT(env, objClass, WHEEL_UNIT_SCROLL);
 
   int scroll_type, delta, x, y, modifiers;
-  if (!CallJNIMethodI_V(env, cls, mouse_wheel_event, "getScrollType",
+  if (!CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getScrollType",
                         &scroll_type) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getWheelRotation",
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getWheelRotation",
                         &delta) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getX", &x) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getY", &y) ||
-      !CallJNIMethodI_V(env, cls, mouse_wheel_event, "getModifiersEx",
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getX", &x) ||
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getY", &y) ||
+      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getModifiers",
                         &modifiers)) {
     return;
   }
@@ -1902,11 +1925,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
   cef_event.x = x;
   cef_event.y = y;
 
-  cef_event.modifiers = GetCefModifiers(env, cls, modifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
-  if (scroll_type == JNI_STATIC(WHEEL_UNIT_SCROLL)) {
+  if (scroll_type == 0) { // WHEEL_UNIT_SCROLL
     // Use the smarter version that considers platform settings.
-    CallJNIMethodI_V(env, cls, mouse_wheel_event, "getUnitsToScroll", &delta);
+    CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getUnitsToScroll", &delta);
   }
 
   double deltaX = 0, deltaY = 0;
