@@ -1,6 +1,11 @@
 package org.cef.event;
 
 public class CefKeyEvent {
+    /* id constants */
+    public static final int KEY_PRESS = 1;
+    public static final int KEY_RELEASE = 0;
+    public static final int KEY_TYPE = 2;
+
     public int keyCode;
     public int id;
     public int modifiersEx;
