@@ -5,10 +5,8 @@
 package org.cef.handler;
 
 import org.cef.callback.CefCallback;
-import org.cef.misc.BoolRef;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;
-import org.cef.network.CefCookie;
 import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
 

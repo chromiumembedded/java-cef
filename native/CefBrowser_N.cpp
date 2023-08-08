@@ -12,7 +12,6 @@
 #include "browser_process_handler.h"
 #include "client_handler.h"
 #include "critical_wait.h"
-#include "jni_scoped_helpers.h"
 #include "jni_util.h"
 #include "life_span_handler.h"
 #include "pdf_print_callback.h"
@@ -1928,7 +1927,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
 
   cef_event.modifiers = GetCefModifiersGlfw(env, cls, modifiers);
 
-  if (scroll_type == 0) {
+  if (scroll_type == 0) { // WHEEL_UNIT_SCROLL
     // Use the smarter version that considers platform settings.
     CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getUnitsToScroll", &delta);
   }
