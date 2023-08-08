@@ -2,6 +2,7 @@ package org.cef.event;
 
 public class CefMouseEvent {
     public static final int MOUSE_MOVED = 502;
+    public static final int MOUSE_DRAGGED = 506;
     public static final int BUTTON1_MASK = 0x10;
     public static final int BUTTON2_MASK = 0x20;
     public static final int BUTTON3_MASK = 0x40;
