@@ -40,34 +40,6 @@
 
 namespace {
 
-int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
-  JNI_STATIC_DEFINE_INT_RV(env, cls, ALT_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON1_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON2_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, BUTTON3_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, CTRL_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, META_DOWN_MASK, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, cls, SHIFT_DOWN_MASK, 0);
-
-  int cef_modifiers = 0;
-  if (modifiers & JNI_STATIC(ALT_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_ALT_DOWN;
-  if (modifiers & JNI_STATIC(BUTTON1_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
-  if (modifiers & JNI_STATIC(BUTTON2_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
-  if (modifiers & JNI_STATIC(BUTTON3_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
-  if (modifiers & JNI_STATIC(CTRL_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_CONTROL_DOWN;
-  if (modifiers & JNI_STATIC(META_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_COMMAND_DOWN;
-  if (modifiers & JNI_STATIC(SHIFT_DOWN_MASK))
-    cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
-
-  return cef_modifiers;
-}
-
 int GetCefModifiersGlfw(JNIEnv* env, jclass cls, int modifiers) {
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_ALT, 0);
   JNI_STATIC_DEFINE_INT_RV(env, cls, GLFW_MOD_CONTROL, 0);
@@ -1912,13 +1884,13 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragEnter(JNIEnv* env,
       GetCefFromJNIObject<CefDragData>(env, jdragData, "CefDragData");
   if (!drag_data.get())
     return;
-  ScopedJNIClass cls(env, "java/awt/event/MouseEvent");
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
   if (!cls)
     return;
 
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
-  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDragEnter(
@@ -1931,13 +1903,13 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDragOver(JNIEnv* env,
                                                          jobject pos,
                                                          jint jmodifiers,
                                                          jint allowedOps) {
-  ScopedJNIClass cls(env, "java/awt/event/MouseEvent");
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
   if (!cls)
     return;
 
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
-  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDragOver(
@@ -1956,13 +1928,13 @@ Java_org_cef_browser_CefBrowser_1N_N_1DragTargetDrop(JNIEnv* env,
                                                      jobject obj,
                                                      jobject pos,
                                                      jint jmodifiers) {
-  ScopedJNIClass cls(env, "java/awt/event/MouseEvent");
+  ScopedJNIClass cls(env, "org/lwjgl/glfw/GLFW");
   if (!cls)
     return;
 
   CefMouseEvent cef_event;
   GetJNIPoint(env, pos, &cef_event.x, &cef_event.y);
-  cef_event.modifiers = GetCefModifiers(env, cls, jmodifiers);
+  cef_event.modifiers = GetCefModifiersGlfw(env, cls, jmodifiers);
 
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
   browser->GetHost()->DragTargetDrop(cef_event);
