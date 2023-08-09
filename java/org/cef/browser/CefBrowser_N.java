@@ -11,6 +11,9 @@ import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
+import org.cef.event.CefKeyEvent;
+import org.cef.event.CefMouseEvent;
+import org.cef.event.CefMouseWheelEvent;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
@@ -18,14 +21,10 @@ import org.cef.handler.CefWindowHandler;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
-import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
 
@@ -152,11 +151,11 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
      * Create a new browser.
      */
     protected void createBrowser(CefClientHandler clientHandler, long windowHandle, String url,
-            boolean osr, boolean transparent, Component canvas, CefRequestContext context) {
+            boolean osr, boolean transparent, CefRequestContext context) {
         if (getNativeRef("CefBrowser") == 0 && !isPending_) {
             try {
                 N_CreateBrowser(
-                        clientHandler, windowHandle, url, osr, transparent, canvas, context);
+                        clientHandler, windowHandle, url, osr, transparent, context);
             } catch (UnsatisfiedLinkError err) {
                 err.printStackTrace();
             }
@@ -174,12 +173,12 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
      * Create a new browser as dev tools
      */
     protected final void createDevTools(CefBrowser_N parent, CefClientHandler clientHandler,
-            long windowHandle, boolean osr, boolean transparent, Component canvas,
+            long windowHandle, boolean osr, boolean transparent,
             Point inspectAt) {
         if (getNativeRef("CefBrowser") == 0 && !isPending_) {
             try {
                 isPending_ = N_CreateDevTools(
-                        parent, clientHandler, windowHandle, osr, transparent, canvas, inspectAt);
+                        parent, clientHandler, windowHandle, osr, transparent, inspectAt);
             } catch (UnsatisfiedLinkError err) {
                 err.printStackTrace();
             }
@@ -595,7 +594,7 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
      * Send a key event.
      * @param e The event to send.
      */
-    protected final void sendKeyEvent(KeyEvent e) {
+    protected final void sendKeyEvent(CefKeyEvent e) {
         try {
             N_SendKeyEvent(e);
         } catch (UnsatisfiedLinkError ule) {
@@ -607,7 +606,7 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
      * Send a mouse event.
      * @param e The event to send.
      */
-    protected final void sendMouseEvent(MouseEvent e) {
+    protected final void sendMouseEvent(CefMouseEvent e) {
         try {
             N_SendMouseEvent(e);
         } catch (UnsatisfiedLinkError ule) {
@@ -619,7 +618,7 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
      * Send a mouse wheel event.
      * @param e The event to send.
      */
-    protected final void sendMouseWheelEvent(MouseWheelEvent e) {
+    protected final void sendMouseWheelEvent(CefMouseWheelEvent e) {
         try {
             N_SendMouseWheelEvent(e);
         } catch (UnsatisfiedLinkError ule) {
@@ -729,16 +728,6 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
         }
     }
 
-    protected final void setParent(long windowHandle, Component canvas) {
-        if (isClosing_ || isClosed_) return;
-
-        try {
-            N_SetParent(windowHandle, canvas);
-        } catch (UnsatisfiedLinkError ule) {
-            ule.printStackTrace();
-        }
-    }
-
     /**
      * Call this method if the browser frame was moved.
      * This fixes positioning of select popups and dismissal on window move/resize.
@@ -752,10 +741,10 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
     }
 
     private final native boolean N_CreateBrowser(CefClientHandler clientHandler, long windowHandle,
-            String url, boolean osr, boolean transparent, Component canvas,
+            String url, boolean osr, boolean transparent,
             CefRequestContext context);
     private final native boolean N_CreateDevTools(CefBrowser parent, CefClientHandler clientHandler,
-            long windowHandle, boolean osr, boolean transparent, Component canvas, Point inspectAt);
+            long windowHandle, boolean osr, boolean transparent, Point inspectAt);
     private final native long N_GetWindowHandle(long surfaceHandle);
     private final native boolean N_CanGoBack();
     private final native void N_GoBack();
@@ -801,9 +790,9 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
     private final native void N_ReplaceMisspelling(String word);
     private final native void N_WasResized(int width, int height);
     private final native void N_Invalidate();
-    private final native void N_SendKeyEvent(KeyEvent e);
-    private final native void N_SendMouseEvent(MouseEvent e);
-    private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
+    private final native void N_SendKeyEvent(CefKeyEvent e);
+    private final native void N_SendMouseEvent(CefMouseEvent e);
+    private final native void N_SendMouseWheelEvent(CefMouseWheelEvent e);
     private final native void N_DragTargetDragEnter(
             CefDragData dragData, Point pos, int modifiers, int allowed_ops);
     private final native void N_DragTargetDragOver(Point pos, int modifiers, int allowed_ops);
@@ -812,6 +801,5 @@ public abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowse
     private final native void N_DragSourceEndedAt(Point pos, int operation);
     private final native void N_DragSourceSystemDragEnded();
     private final native void N_UpdateUI(Rectangle contentRect, Rectangle browserRect);
-    private final native void N_SetParent(long windowHandle, Component canvas);
     private final native void N_NotifyMoveOrResizeStarted();
 }

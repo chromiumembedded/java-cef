@@ -10,9 +10,8 @@ import org.cef.CefClient;
  * Creates a new instance of CefBrowser according the passed values
  */
 public class CefBrowserFactory {
-    public static CefBrowser create(CefClient client, String url, boolean isOffscreenRendered,
+    public static CefBrowser create(CefClient client, String url,
             boolean isTransparent, CefRequestContext context) {
-        if (isOffscreenRendered) return new CefBrowserOsr(client, url, isTransparent, context);
-        return new CefBrowserWr(client, url, context);
+        return new CefBrowserOsr(client, url, isTransparent, context);
     }
 }

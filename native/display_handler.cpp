@@ -6,77 +6,6 @@
 
 #include "jni_util.h"
 
-namespace {
-
-int GetCursorId(cef_cursor_type_t type) {
-  ScopedJNIEnv env;
-  if (!env)
-    return 0;
-
-  const char* cursorClassName = "java/awt/Cursor";
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           CROSSHAIR_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           DEFAULT_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           E_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           HAND_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           MOVE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           N_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           NE_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           NW_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           S_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           SE_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           SW_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           TEXT_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           W_RESIZE_CURSOR, 0);
-  JNI_STATIC_DEFINE_INT_RV(env, ScopedJNIClass(env, cursorClassName),
-                           WAIT_CURSOR, 0);
-
-  switch (type) {
-    case CT_CROSS:
-      return JNI_STATIC(CROSSHAIR_CURSOR);
-    case CT_HAND:
-      return JNI_STATIC(HAND_CURSOR);
-    case CT_IBEAM:
-      return JNI_STATIC(TEXT_CURSOR);
-    case CT_WAIT:
-      return JNI_STATIC(WAIT_CURSOR);
-    case CT_EASTRESIZE:
-      return JNI_STATIC(E_RESIZE_CURSOR);
-    case CT_NORTHRESIZE:
-      return JNI_STATIC(N_RESIZE_CURSOR);
-    case CT_NORTHEASTRESIZE:
-      return JNI_STATIC(NE_RESIZE_CURSOR);
-    case CT_NORTHWESTRESIZE:
-      return JNI_STATIC(NW_RESIZE_CURSOR);
-    case CT_SOUTHRESIZE:
-      return JNI_STATIC(S_RESIZE_CURSOR);
-    case CT_SOUTHEASTRESIZE:
-      return JNI_STATIC(SE_RESIZE_CURSOR);
-    case CT_SOUTHWESTRESIZE:
-      return JNI_STATIC(SW_RESIZE_CURSOR);
-    case CT_WESTRESIZE:
-      return JNI_STATIC(W_RESIZE_CURSOR);
-    case CT_MOVE:
-      return JNI_STATIC(MOVE_CURSOR);
-    default:
-      return JNI_STATIC(DEFAULT_CURSOR);
-  }
-}
-
-}  // namespace
-
 DisplayHandler::DisplayHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
@@ -191,7 +120,7 @@ bool DisplayHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
     return false;
 
   ScopedJNIBrowser jbrowser(env, browser);
-  const int cursorId = GetCursorId(type);
+  const int cursorId = (int) type;
   jboolean jreturn = JNI_FALSE;
 
   JNI_CALL_METHOD(env, handle_, "onCursorChange",

@@ -124,9 +124,9 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         if (getNativeRef("CefBrowser") == 0) {
             if (getParentBrowser() != null) {
                 createDevTools(getParentBrowser(), getClient(), windowHandle, true, isTransparent_,
-                        null, getInspectAt());
+                        getInspectAt());
             } else {
-                createBrowser(getClient(), windowHandle, getUrl(), true, isTransparent_, null,
+                createBrowser(getClient(), windowHandle, getUrl(), true, isTransparent_,
                         getRequestContext());
             }
         } else if (hasParent && justCreated_) {
