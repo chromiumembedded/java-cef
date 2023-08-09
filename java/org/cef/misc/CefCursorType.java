@@ -47,7 +47,7 @@ public enum CefCursorType {
 	CUSTOM(0),
 	;
 	
-	int glfwId;
+	public final int glfwId;
 	
 	CefCursorType(int glfwId) {
 		this.glfwId = glfwId;
