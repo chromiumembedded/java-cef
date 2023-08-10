@@ -373,7 +373,6 @@ public class CefClient extends CefClientHandler
     public void onTakeFocus(CefBrowser browser, boolean next) {
         if (browser == null) return;
 
-        browser.setFocus(false);
         if (focusHandler_ != null) focusHandler_.onTakeFocus(browser, next);
     }
 
@@ -390,7 +389,6 @@ public class CefClient extends CefClientHandler
     public void onGotFocus(CefBrowser browser) {
         if (browser == null) return;
 
-        browser.setFocus(true);
         if (focusHandler_ != null) focusHandler_.onGotFocus(browser);
     }
 
