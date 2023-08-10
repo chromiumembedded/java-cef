@@ -455,7 +455,6 @@ public class CefApp extends CefAppHandlerAdapter {
             System.load(jcefPath + "/libjcef.dylib");
             return N_Startup(getCefFrameworkPath(args));
         } else if (OS.isLinux()) {
-            System.loadLibrary("jawt");
             System.load(jcefPath + "/libcef.so");
             System.load(jcefPath + "/libjcef.so");
             return N_Startup(null);
