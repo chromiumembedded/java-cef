@@ -388,41 +388,35 @@ public class CefApp extends CefAppHandlerAdapter {
     }
 
     /**
+     * CEF takes full control of Cmd+Q and doesn't allow our application to see that it has been pressed.
+     * This allows us to run our application's shutdown code, so we can have a graceful "Cmd+Q" exit.
+     */
+    public Runnable macOSTerminationRequestRunnable = new Runnable() {
+        @Override
+        public void run() {
+        }
+    };
+
+    /**
      * This method is invoked by the native code (currently on Mac only) in case
      * of a termination event (e.g. someone pressed CMD+Q).
      */
     protected final void handleBeforeTerminate() {
-        System.out.println("Cmd+Q termination request.");
-        // Execute on the AWT event dispatching thread. Always call asynchronously
-        // so the call stack has a chance to unwind.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                CefAppHandler handler =
-                        (CefAppHandler) ((appHandler_ == null) ? this : appHandler_);
-                if (!handler.onBeforeTerminate()) dispose();
-            }
-        });
+//        CefAppHandler handler =
+//                (CefAppHandler) ((appHandler_ == null) ? this : appHandler_);
+//        if (!handler.onBeforeTerminate()) dispose();
+        macOSTerminationRequestRunnable.run();
     }
 
     /**
      * Shut down the context.
      */
     private final void shutdown() {
-        // Execute on the AWT event dispatching thread. Always call asynchronously
-        // so the call stack has a chance to unwind.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("shutdown on " + Thread.currentThread());
+        // Shutdown native CEF.
+        N_Shutdown();
 
-                // Shutdown native CEF.
-                N_Shutdown();
-
-                setState(CefAppState.TERMINATED);
-                CefApp.self = null;
-            }
-        });
+        setState(CefAppState.TERMINATED);
+        CefApp.self = null;
     }
 
     /**
