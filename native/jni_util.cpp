@@ -4,7 +4,6 @@
 
 #include "jni_util.h"
 
-#include <jawt.h>
 #include <algorithm>
 
 #include "jni_scoped_helpers.h"
