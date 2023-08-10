@@ -994,23 +994,25 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
   }
 }
 
-void OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
-  if (!CefCurrentlyOn(TID_UI)) {
-    CefPostTask(TID_UI, base::BindOnce(&OnAfterParentChanged, browser));
-    return;
-  }
-
-  if (browser->GetHost()->GetClient()) {
-    CefRefPtr<LifeSpanHandler> lifeSpanHandler =
-        (LifeSpanHandler*)browser->GetHost()
-            ->GetClient()
-            ->GetLifeSpanHandler()
-            .get();
-    if (lifeSpanHandler) {
-      lifeSpanHandler->OnAfterParentChanged(browser);
-    }
-  }
-}
+// Removed because we don't care about when the native parent window changes.
+// This fixes a compile issue on macOS - ds58
+//void OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
+//  if (!CefCurrentlyOn(TID_UI)) {
+//    CefPostTask(TID_UI, base::BindOnce(&OnAfterParentChanged, browser));
+//    return;
+//  }
+//
+//  if (browser->GetHost()->GetClient()) {
+//    CefRefPtr<LifeSpanHandler> lifeSpanHandler =
+//        (LifeSpanHandler*)browser->GetHost()
+//            ->GetClient()
+//            ->GetLifeSpanHandler()
+//            .get();
+//    if (lifeSpanHandler) {
+//      lifeSpanHandler->OnAfterParentChanged(browser);
+//    }
+//  }
+//}
 
 jobject NewJNILongVector(JNIEnv* env, const std::vector<int64>& vals) {
   ScopedJNIObjectLocal jvector(env, "java/util/Vector");

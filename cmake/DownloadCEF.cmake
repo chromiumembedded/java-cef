@@ -21,7 +21,7 @@ function(DownloadCEF platform branch version download_dir)
     set(CEF_DOWNLOAD_FILENAME "${CEF_DISTRIBUTION}.tar.bz2")
     set(CEF_DOWNLOAD_PATH "${CEF_DOWNLOAD_DIR}/${CEF_DOWNLOAD_FILENAME}")
     if(NOT EXISTS "${CEF_DOWNLOAD_PATH}")
-      set(CEF_DOWNLOAD_URL "https://ewr1.vultrobjects.com/cef-builds/${branch}/${CEF_DOWNLOAD_FILENAME}")
+      set(CEF_DOWNLOAD_URL "https://mcef-download.cinemamod.com/cef-builds/${branch}/${CEF_DOWNLOAD_FILENAME}")
       string(REPLACE "+" "%2B" CEF_DOWNLOAD_URL_ESCAPED ${CEF_DOWNLOAD_URL})
 
       # Download the SHA1 hash for the binary distribution.
