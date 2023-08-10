@@ -105,7 +105,7 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
 
     protected void createBrowser(String startURL) {
         assertNull(browser_);
-        browser_ = client_.createBrowser(startURL, false /* useOSR */, false /* isTransparent */);
+        browser_ = client_.createBrowser(startURL, false /* isTransparent */);
         assertNotNull(browser_);
 
         getContentPane().add(browser_.getUIComponent(), BorderLayout.CENTER);

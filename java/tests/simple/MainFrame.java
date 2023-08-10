@@ -104,7 +104,7 @@ public class MainFrame extends JFrame {
         //     by calling the method "getUIComponent()" on the instance of CefBrowser.
         //     The UI component is inherited from a java.awt.Component and therefore
         //     it can be embedded into any AWT UI.
-        browser_ = client_.createBrowser(startURL, useOSR, isTransparent);
+        browser_ = client_.createBrowser(startURL, isTransparent);
         browerUI_ = browser_.getUIComponent();
 
         // (4) For this minimal browser, we need only a text field to enter an URL

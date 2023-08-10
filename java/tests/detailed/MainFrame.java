@@ -202,7 +202,7 @@ public class MainFrame extends BrowserFrame {
 
         // Create the browser.
         CefBrowser browser = client_.createBrowser(
-                "http://www.google.com", osrEnabled, transparentPaintingEnabled, null);
+                "http://www.google.com", osrEnabled, null);
         setBrowser(browser);
 
         // Set up the UI for this example implementation.
