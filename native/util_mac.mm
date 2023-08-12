@@ -538,38 +538,4 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void SetParent(CefWindowHandle handle,
-               jlong parentHandle,
-               base::OnceClosure callback) {
-  base::RepeatingClosure* pCallback = new base::RepeatingClosure(
-      base::BindRepeating([](base::OnceClosure& cb) { std::move(cb).Run(); },
-                          OwnedRef(std::move(callback))));
-  dispatch_async(dispatch_get_main_queue(), ^{
-    g_browsers_lock_.Lock();
-    bool browser_exists = g_browsers_.count(handle) > 0;
-    g_browsers_lock_.Unlock();
-    if (!browser_exists)
-      return;
-
-    CefBrowserContentView* browser_view =
-        (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)
-            superview];
-    [browser_view retain];
-    [browser_view removeFromSuperview];
-
-    NSView* contentView;
-    if (parentHandle) {
-      NSWindow* window = (NSWindow*)parentHandle;
-      contentView = [window contentView];
-    } else {
-      contentView =
-          CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(TempWindow::GetWindowHandle());
-    }
-    [contentView addSubview:browser_view];
-    [browser_view release];
-    pCallback->Run();
-    delete pCallback;
-  });
-}
-
 }  // namespace util

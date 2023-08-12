@@ -93,31 +93,7 @@ void AddCefBrowser(CefRefPtr<CefBrowser> browser);
 // Called by CefBrowser.close(true) to destroy the native browser window.
 void DestroyCefBrowser(CefRefPtr<CefBrowser> browser);
 
-#if defined(OS_MACOSX)
-
-// Set the parent of |browserHandle|. If the parent is nullptr the browser will
-// be parented to the TempWindow.
-void SetParent(CefWindowHandle browserHandle,
-               jlong parentHandle,
-               base::OnceClosure callback);
-
-#else  // !defined(OS_MACOSX)
-
-// Return the window handle for the specified canvas.
-CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas);
-
-// Set the parent of |browserHandle|. If the parent is nullptr the browser will
-// be parented to the TempWindow.
-void SetParent(CefWindowHandle browserHandle,
-               CefWindowHandle parentHandle,
-               base::OnceClosure callback);
-
-#if defined(OS_LINUX)
-void SetParentSync(CefWindowHandle browserHandle,
-                   CefWindowHandle parentHandle,
-                   CriticalWait* waitCond,
-                   base::OnceClosure callback);
-#endif
+#if !defined(OS_MACOSX)
 
 // Set the window bounds for |browserHandle|.
 void SetWindowBounds(CefWindowHandle browserHandle, const CefRect& contentRect);
