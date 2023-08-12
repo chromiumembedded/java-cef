@@ -54,7 +54,7 @@ void DestroyCefBrowser(CefRefPtr<CefBrowser> browser) {
 }
 
 CefWindowHandle GetWindowHandle(JNIEnv* env, jobject canvas) {
-  return GetDrawableOfCanvas(canvas, env);
+  return 0;
 }
 
 void SetParent(CefWindowHandle browserHandle,

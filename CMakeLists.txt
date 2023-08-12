@@ -218,7 +218,6 @@ set(JAVA_FATAL_ERROR "A Java installation is required. Set the JAVA_HOME "
                      "installation directory.")
 
 # Find the Java Native Interface (JNI) installation.
-
 find_package(JNI ${JDK_MIN_VERSION})
 if(NOT ${JNI_FOUND})
   message(FATAL_ERROR ${JAVA_FATAL_ERROR})
