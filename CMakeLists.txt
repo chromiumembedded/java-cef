@@ -117,6 +117,8 @@ cmake_minimum_required(VERSION 3.19)
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+
 # Project name.
 project(jcef)
 
@@ -216,9 +218,7 @@ set(JAVA_FATAL_ERROR "A Java installation is required. Set the JAVA_HOME "
                      "installation directory.")
 
 # Find the Java Native Interface (JNI) installation.
-set(JAVA_INCLUDE_PATH NotNeeded)
-set(JAVA_INCLUDE_PATH2 NotNeeded)
-set(JAVA_AWT_INCLUDE_PATH NotNeeded)
+
 find_package(JNI ${JDK_MIN_VERSION})
 if(NOT ${JNI_FOUND})
   message(FATAL_ERROR ${JAVA_FATAL_ERROR})
