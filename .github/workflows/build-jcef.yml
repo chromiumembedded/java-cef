@@ -1,6 +1,10 @@
 name: Build java-cef 5359
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   java-cef-linux:
