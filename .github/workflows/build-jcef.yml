@@ -26,9 +26,9 @@ jobs:
           export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-17-openjdk-amd64/include
           cmake -G "Ninja" -DPROJECT_ARCH=${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release ..
           ninja -j4
-          mv native/Release native/linux_${{ matrix.platform }}
-          strip native/linux_${{ matrix.platform }}/libcef.so
-          tar -czf linux_${{ matrix.platform }}.tar.gz -C native .
+          mv native/Release linux_${{ matrix.platform }}
+          strip linux_${{ matrix.platform }}/libcef.so
+          tar -czf linux_${{ matrix.platform }}.tar.gz linux_${{ matrix.platform }}
           sha256sum linux_${{ matrix.platform }}.tar.gz > linux_${{ matrix.platform }}.tar.gz.sha256
       - name: Copy s3cfg
         run: echo "${{ secrets.S3_CFG }}" > ~/.s3cfg
@@ -59,7 +59,8 @@ jobs:
           cd native
           ren Release windows_${{ matrix.platform }}
           cd ..
-          tar -czf windows_${{ matrix.platform }}.tar.gz -C native .
+          move native/windows_${{ matrix.platform }} windows_${{ matrix.platform }}
+          tar -czf windows_${{ matrix.platform }}.tar.gz windows_${{ matrix.platform }}
           Get-FileHash -Algorithm SHA256 -Path "windows_${{ matrix.platform }}.tar.gz" | Out-File "windows_${{ matrix.platform }}.tar.gz.sha256"
       - name: Copy s3cfg
         run: echo "${{ secrets.S3_CFG }}" > "$HOME\AppData\Roaming\s3cmd.ini"
@@ -84,8 +85,8 @@ jobs:
           mkdir jcef_build && cd jcef_build
           cmake -G "Ninja" -DPROJECT_ARCH=${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release ..
           ninja -j4
-          mv native/Release native/macos_${{ matrix.platform }}
-          tar -czf macos_${{ matrix.platform }}.tar.gz -C native .
+          mv native/Release macos_${{ matrix.platform }}
+          tar -czf macos_${{ matrix.platform }}.tar.gz macos_${{ matrix.platform }}
           sha256sum macos_${{ matrix.platform }}.tar.gz > macos_${{ matrix.platform }}.tar.gz.sha256
       - name: Copy s3cfg
         run: echo "${{ secrets.S3_CFG }}" > ~/.s3cfg
