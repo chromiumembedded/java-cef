@@ -1843,10 +1843,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
 
   JNI_STATIC_DEFINE_INT(env, objClass, WHEEL_UNIT_SCROLL);
 
-  int scroll_type, delta, x, y, modifiers;
+  int scroll_type, x, y, modifiers;
+  double delta;
   if (!CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getScrollType",
                         &scroll_type) ||
-      !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getWheelRotation",
+      !CallJNIMethodD_V(env, objClass, mouse_wheel_event, "getWheelRotation",
                         &delta) ||
       !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getX", &x) ||
       !CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getY", &y) ||
@@ -1863,7 +1864,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendMouseWheelEvent(
 
   if (scroll_type == 0) { // WHEEL_UNIT_SCROLL
     // Use the smarter version that considers platform settings.
-    CallJNIMethodI_V(env, objClass, mouse_wheel_event, "getUnitsToScroll", &delta);
+    CallJNIMethodD_V(env, objClass, mouse_wheel_event, "getUnitsToScroll", &delta);
   }
 
   double deltaX = 0, deltaY = 0;

@@ -9,13 +9,13 @@ public class CefMouseWheelEvent {
     // may remove the getters, or maybe add setters, or maybe move to private
     // not sure yet
     public int id;
-    public int delta;
+    public double delta;
     public int x;
     public int y;
     public int modifiers;
     public int amount = 32; // TODO: might want to make this change dependent on system?
 
-    public CefMouseWheelEvent(int id, int x, int y, int delta, int modifiers) {
+    public CefMouseWheelEvent(int id, int x, int y, double delta, int modifiers) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -27,7 +27,7 @@ public class CefMouseWheelEvent {
         return id;
     }
 
-    public int getWheelRotation() {
+    public double getWheelRotation() {
         return delta;
     }
 
@@ -43,7 +43,7 @@ public class CefMouseWheelEvent {
         return modifiers;
     }
 
-    public int getUnitsToScroll() {
+    public double getUnitsToScroll() {
         return amount * delta;
     }
 }

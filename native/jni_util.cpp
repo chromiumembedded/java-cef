@@ -959,6 +959,20 @@ bool CallJNIMethodC_V(JNIEnv* env,
   return false;
 }
 
+bool CallJNIMethodD_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      double* value) {
+  jmethodID methodID = env->GetMethodID(cls, method_name, "()D");
+  if (methodID) {
+    *value = env->CallDoubleMethod(obj, methodID);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 CefSize GetJNISize(JNIEnv* env, jobject obj) {
   CefSize size;
 
