@@ -125,10 +125,8 @@ public class BrowserFrame extends JFrame {
     public void removeBrowser(Runnable r) {
         System.out.println("BrowserFrame.removeBrowser");
         afterParentChangedAction_ = r;
-        remove(browser_.getUIComponent());
         // The removeNotify() notification should be sent as a result of calling remove().
         // However, it isn't in all cases so we do it manually here.
-        browser_.getUIComponent().removeNotify();
         browser_ = null;
     }
 

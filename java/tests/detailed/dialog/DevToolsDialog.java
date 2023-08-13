@@ -29,7 +29,6 @@ public class DevToolsDialog extends JDialog {
         setLocation(owner.getLocation().x + 20, owner.getLocation().y + 20);
 
         devTools_ = browser.getDevTools(inspectAt);
-        add(devTools_.getUIComponent());
 
         addComponentListener(new ComponentAdapter() {
             @Override

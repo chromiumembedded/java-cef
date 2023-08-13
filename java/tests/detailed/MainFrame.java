@@ -239,7 +239,6 @@ public class MainFrame extends BrowserFrame {
         if (createImmediately) browser.createImmediately();
 
         // Add the browser to the UI.
-        contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
 
         MenuBar menuBar = new MenuBar(
                 this, browser, control_pane_, downloadDialog, CefCookieManager.getGlobalManager());

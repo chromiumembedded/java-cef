@@ -408,7 +408,6 @@ public class MenuBar extends JMenuBar {
                         if (reparentButton.getText().equals("Reparent <")) {
                             owner_.removeBrowser(new Runnable() {
                                 public void run() {
-                                    newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
                                     newFrame.setBrowser(browser_);
                                     reparentButton.setText("Reparent >");
                                     reparentPending_ = false;
@@ -420,7 +419,6 @@ public class MenuBar extends JMenuBar {
                                     JRootPane rootPane = (JRootPane) owner_.getComponent(0);
                                     Container container = rootPane.getContentPane();
                                     JPanel panel = (JPanel) container.getComponent(0);
-                                    panel.add(browser_.getUIComponent());
                                     owner_.setBrowser(browser_);
                                     owner_.revalidate();
                                     reparentButton.setText("Reparent <");

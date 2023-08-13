@@ -108,7 +108,6 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
         browser_ = client_.createBrowser(startURL, false /* isTransparent */);
         assertNotNull(browser_);
 
-        getContentPane().add(browser_.getUIComponent(), BorderLayout.CENTER);
         pack();
         setSize(800, 600);
         setVisible(true);
