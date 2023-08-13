@@ -18,7 +18,10 @@ jobs:
     steps:
       - name: Upload mask
         run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - name: Install deps and build
         run: |
           sudo apt update
@@ -46,7 +49,10 @@ jobs:
     steps:
       - name: Upload mask
         run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Install s3cmd
         run: |
@@ -78,7 +84,10 @@ jobs:
     steps:
       - name: Upload mask
         run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - run: |
           brew install ninja
           brew install coreutils
