@@ -25,12 +25,6 @@ JavaVM* GetJVM();
 void SetJavaClassLoader(JNIEnv* env, jobject javaClassLoader);
 jobject GetJavaClassLoader();
 
-#if defined(OS_WIN)
-HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env);
-#elif defined(OS_LINUX)
-unsigned long GetDrawableOfCanvas(jobject canvas, JNIEnv* env);
-#endif
-
 // Create a new JNI object and call the default constructor.
 jobject NewJNIObject(JNIEnv* env, jclass cls);
 jobject NewJNIObject(JNIEnv* env, const char* class_name);
