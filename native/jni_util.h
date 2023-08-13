@@ -169,6 +169,13 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       const char* method_name,
                       char16* value);
 
+// Call a JNI method that returns a double and accepts no arguments.
+bool CallJNIMethodD_V(JNIEnv* env,
+                      jclass cls,
+                      jobject obj,
+                      const char* method_name,
+                      double* value);
+
 // Rertieve the CefSize equivalent of a java.awt.Dimension.
 CefSize GetJNISize(JNIEnv* env, jobject obj);
 
