@@ -1,0 +1,96 @@
+name: Build java-cef 5359
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  java-cef-linux:
+    runs-on: [ubuntu-20.04]
+    strategy:
+      matrix:
+        platform: [amd64, arm64]
+    steps:
+      - name: Upload mask
+        run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
+      - uses: actions/checkout@v3
+      - name: Install deps and build
+        run: |
+          sudo apt update
+          sudo apt install build-essential g++ cmake ninja-build openjdk-17-jdk python3 libgtk2.0-dev s3cmd -y
+          mkdir jcef_build && cd jcef_build
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-17-openjdk-amd64/include
+          cmake -G "Ninja" -DPROJECT_ARCH=${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release ..
+          ninja -j4
+          mv native/Release linux_${{ matrix.platform }}
+          strip linux_${{ matrix.platform }}/libcef.so
+          tar -czf linux_${{ matrix.platform }}.tar.gz linux_${{ matrix.platform }}
+          sha256sum linux_${{ matrix.platform }}.tar.gz > linux_${{ matrix.platform }}.tar.gz.sha256
+      - name: Copy s3cfg
+        run: echo "${{ secrets.S3_CFG }}" > ~/.s3cfg
+      - name: Upload java-cef build
+        run: |
+          s3cmd put -P /home/runner/work/java-cef/java-cef/jcef_build/linux_${{ matrix.platform }}.tar.gz s3://mcef-us-1/java-cef-builds/${{ github.sha }}/linux_${{ matrix.platform }}.tar.gz
+          s3cmd put -P /home/runner/work/java-cef/java-cef/jcef_build/linux_${{ matrix.platform }}.tar.gz.sha256 s3://mcef-us-1/java-cef-builds/${{ github.sha }}/linux_${{ matrix.platform }}.tar.gz.sha256
+  java-cef-windows:
+    runs-on: [windows-2022]
+    strategy:
+      matrix:
+        platform: [amd64, arm64]
+    steps:
+      - name: Upload mask
+        run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
+      - uses: actions/checkout@v3
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Install s3cmd
+        run: |
+          pip install python-dateutil
+          Invoke-WebRequest -Uri "https://github.com/s3tools/s3cmd/archive/master.zip" -OutFile "D:\s3cmd.zip"
+          Expand-Archive -Path "D:\s3cmd.zip" -DestinationPath "D:\s3cmd"
+      - name: Build
+        run: |
+          mkdir jcef_build && cd jcef_build
+          cmake -G "Ninja" -DPROJECT_ARCH=${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release ..
+          ninja -j4
+          cd native
+          ren Release windows_${{ matrix.platform }}
+          cd ..
+          move native/windows_${{ matrix.platform }} windows_${{ matrix.platform }}
+          tar -czf windows_${{ matrix.platform }}.tar.gz windows_${{ matrix.platform }}
+          Get-FileHash -Algorithm SHA256 -Path "windows_${{ matrix.platform }}.tar.gz" | Out-File "windows_${{ matrix.platform }}.tar.gz.sha256"
+      - name: Copy s3cfg
+        run: echo "${{ secrets.S3_CFG }}" > "$HOME\AppData\Roaming\s3cmd.ini"
+      - name: Upload java-cef build
+        run: |
+          python D:\s3cmd\s3cmd-master\s3cmd put -P D:\a\java-cef\java-cef\jcef_build\windows_${{ matrix.platform }}.tar.gz s3://mcef-us-1/java-cef-builds/${{ github.sha }}/windows_${{ matrix.platform }}.tar.gz
+          python D:\s3cmd\s3cmd-master\s3cmd put -P D:\a\java-cef\java-cef\jcef_build\windows_${{ matrix.platform }}.tar.gz.sha256 s3://mcef-us-1/java-cef-builds/${{ github.sha }}/windows_${{ matrix.platform }}.tar.gz.sha256
+  java-cef-macos:
+    runs-on: [macos-12]
+    strategy:
+      matrix:
+        platform: [amd64, arm64]
+    steps:
+      - name: Upload mask
+        run: echo "::add-mask::${{ secrets.UPLOAD_URL }}"
+      - uses: actions/checkout@v3
+      - run: |
+          brew install ninja
+          brew install coreutils
+          brew install s3cmd
+          sudo xcode-select --switch /Applications/Xcode_13.1.app
+          mkdir jcef_build && cd jcef_build
+          cmake -G "Ninja" -DPROJECT_ARCH=${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release ..
+          ninja -j4
+          mv native/Release macos_${{ matrix.platform }}
+          tar -czf macos_${{ matrix.platform }}.tar.gz macos_${{ matrix.platform }}
+          sha256sum macos_${{ matrix.platform }}.tar.gz > macos_${{ matrix.platform }}.tar.gz.sha256
+      - name: Copy s3cfg
+        run: echo "${{ secrets.S3_CFG }}" > ~/.s3cfg
+      - name: Upload java-cef build
+        run: |
+          s3cmd put -P /Users/runner/work/java-cef/java-cef/jcef_build/macos_${{ matrix.platform }}.tar.gz s3://mcef-us-1/java-cef-builds/${{ github.sha }}/macos_${{ matrix.platform }}.tar.gz
+          s3cmd put -P /Users/runner/work/java-cef/java-cef/jcef_build/macos_${{ matrix.platform }}.tar.gz.sha256 s3://mcef-us-1/java-cef-builds/${{ github.sha }}/macos_${{ matrix.platform }}.tar.gz.sha256
