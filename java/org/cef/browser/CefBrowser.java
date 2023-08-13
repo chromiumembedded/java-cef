@@ -32,12 +32,6 @@ public interface CefBrowser {
     public void createImmediately();
 
     /**
-     * Get the underlying UI component (e.g. java.awt.Canvas).
-     * @return The underlying UI component.
-     */
-    public Component getUIComponent();
-
-    /**
      * Get the client associated with this browser.
      * @return The browser client.
      */
