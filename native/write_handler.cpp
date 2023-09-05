@@ -42,12 +42,12 @@ size_t WriteHandler::Write(const void* ptr, size_t size, size_t n) {
   return rv;
 }
 
-int WriteHandler::Seek(int64 offset, int whence) {
+int WriteHandler::Seek(int64_t offset, int whence) {
   // not supported by Javas OutputStream
   return -1;
 }
 
-int64 WriteHandler::Tell() {
+int64_t WriteHandler::Tell() {
   return offset_;
 }
 
