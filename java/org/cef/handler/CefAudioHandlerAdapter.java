@@ -18,7 +18,7 @@ public abstract class CefAudioHandlerAdapter implements CefAudioHandler {
 	public void onAudioStreamStarted(CefBrowser browser, Object params, int channels) {
 	}
 	
-	public void onAudioStreamPacket(CefBrowser browser, float[][] data, int frames, long pts) {
+	public void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts) {
 	}
 	
 	public 	void onAudioStreamStopped(CefBrowser browser) {

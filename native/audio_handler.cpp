@@ -49,7 +49,7 @@ void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const floa
 
   // TODO: this is based on a bit of an assumption
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamPacket",
-                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;[[FIL]])V",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;[FIL)V",
                   jbrowser.get(), nullptr, frames, (long long) pts); // TODO:
 }
 
