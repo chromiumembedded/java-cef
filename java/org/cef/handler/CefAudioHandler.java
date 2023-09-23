@@ -11,7 +11,7 @@ import org.cef.browser.CefBrowser;
  * The methods of this class will be called on the UI thread.
  */
 public interface CefAudioHandler {
-	int getAudioParameters(CefBrowser browser, Object params);
+	boolean getAudioParameters(CefBrowser browser, Object params);
 	
 	void onAudioStreamStarted(CefBrowser browser, Object params, int channels);
 	

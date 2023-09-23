@@ -87,6 +87,8 @@ set(JCEF_SRCS
   dialog_handler.h
   display_handler.cpp
   display_handler.h
+  audio_handler.cpp
+  audio_handler.h
   download_handler.cpp
   download_handler.h
   drag_handler.cpp

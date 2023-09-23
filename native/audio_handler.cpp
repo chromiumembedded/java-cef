@@ -13,13 +13,17 @@ bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
                                      CefAudioParameters& params) {
   ScopedJNIEnv env;
   if (!env)
-    return 0;
+    return true;
 
   ScopedJNIBrowser jbrowser(env, browser);
 
-  return JNI_CALL_INT_METHOD(env, handle_, "getAudioParameters",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/Object;)I",
-                       jbrowser.get(), nullptr);
+  jboolean jreturn = JNI_FALSE;
+
+  JNI_CALL_METHOD(env, handle_, "getAudioParameters",
+                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/Object;)Z", Boolean,
+                       jreturn, jbrowser.get(), nullptr);
+
+  return (jreturn != JNI_FALSE);
 }
 
 void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
@@ -38,16 +42,15 @@ void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
 void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const float** data, int frames, int64_t pts) {
   ScopedJNIEnv env;
   if (!env)
-    return false;
+    return;
 
   ScopedJNIBrowser jbrowser(env, browser);
-  ScopedJNIString jtext(env, text);
-  jboolean jreturn = JNI_FALSE;
+  // ScopedJNIString jtext(env, text);
 
   // TODO: this is based on a bit of an assumption
-  JNI_CALL_METHOD(env, handle_, "onAudioStreamPacket",
-                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;[[FIL]])Z", Boolean,
-                  jreturn, jbrowser.get(), jtext.get()); // TODO:
+  JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamPacket",
+                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;[[FIL]])V",
+                  jbrowser.get(), nullptr, frames, (long long) pts); // TODO:
 }
 
 void AudioHandler::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) {
@@ -66,12 +69,12 @@ void AudioHandler::OnAudioStreamError(CefRefPtr<CefBrowser> browser,
                                       const CefString& text) {
   ScopedJNIEnv env;
   if (!env)
-    return false;
+    return;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIString jtext(env, text);
 
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamError",
                        "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;)V",
-                       jbrowser.get(), text.get());
+                       jbrowser.get(), jtext.get());
 }

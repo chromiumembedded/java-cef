@@ -11,8 +11,8 @@ import org.cef.browser.CefBrowser;
  * The methods of this class will be called on the UI thread.
  */
 public abstract class CefAudioHandlerAdapter implements CefAudioHandler {
-	public int getAudioParameters(CefBrowser browser, Object params) {
-		return 0; // TODO
+	public boolean getAudioParameters(CefBrowser browser, Object params) {
+		return true; // TODO do I need something here?
 	}
 	
 	public void onAudioStreamStarted(CefBrowser browser, Object params, int channels) {
