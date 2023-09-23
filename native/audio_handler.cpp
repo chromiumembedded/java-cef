@@ -9,8 +9,8 @@
 AudioHandler::AudioHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-int AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
-                                     cef_audio_parameters_t* params) {
+bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
+                                     CefAudioParameters& params) {
   ScopedJNIEnv env;
   if (!env)
     return 0;
@@ -23,7 +23,7 @@ int AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
 }
 
 void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
-                                   cef_audio_parameters_t params, int channels) {
+                                   const CefAudioParameters& params, int channels) {
   ScopedJNIEnv env;
   if (!env)
     return;
@@ -35,7 +35,7 @@ void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
                        jbrowser.get(), nullptr, channels);
 }
 
-void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, float** data, int frames, long long pts) {
+void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const float** data, int frames, int64_t pts) {
   ScopedJNIEnv env;
   if (!env)
     return false;

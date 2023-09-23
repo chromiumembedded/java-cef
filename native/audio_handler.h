@@ -8,24 +8,24 @@
 
 #include <jni.h>
 
-#include "include/cef_audio_handler_capi.h"
+#include "include/cef_audio_handler.h"
 
 #include "jni_scoped_helpers.h"
 
-// https://github.com/chromiumembedded/cef/blob/master/include/capi/cef_audio_handler_capi.h
+// https://github.com/chromiumembedded/cef/blob/master/include/cef_audio_handler.h
 // AudioHandler implementation.
 class AudioHandler : public CefAudioHandler {
  public:
   AudioHandler(JNIEnv* env, jobject handler);
 
   // CefAudioHandler methods:
-  int GetAudioParameters(CefRefPtr<CefBrowser> browser,
-                       cef_audio_parameters_t params) override;
+  bool GetAudioParameters(CefRefPtr<CefBrowser> browser,
+                         CefAudioParameters& params) override;
   void OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
-                     cef_audio_parameters_t params, int channels) override;
-  bool OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, float** data, int frames, long long pts) override;
+                     const CefAudioParameters& params, int channels) override;
+  void OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const float** data, int frames, int64_t pts) override;
   void OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) override;
-  void OnAudioStreamError(CefRefPtr<CefBrowser> browser, CefString& text) override;
+  void OnAudioStreamError(CefRefPtr<CefBrowser> browser, const CefString& text) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;
