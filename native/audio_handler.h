@@ -2,8 +2,8 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#ifndef JCEF_NATIVE_DISPLAY_HANDLER_H_
-#define JCEF_NATIVE_DISPLAY_HANDLER_H_
+#ifndef JCEF_NATIVE_AUDIO_HANDLER_H_
+#define JCEF_NATIVE_AUDIO_HANDLER_H_
 #pragma once
 
 #include <jni.h>
@@ -12,12 +12,12 @@
 
 #include "jni_scoped_helpers.h"
 
-// DisplayHandler implementation.
+// AudioHandler implementation.
 class AudioHandler : public CefAudioHandler {
  public:
   AudioHandler(JNIEnv* env, jobject handler);
 
-  // CefDisplayHandler methods:
+  // CefAudioHandler methods:
   int GetAudioParameters(CefRefPtr<CefBrowser> browser,
                        cef_audio_parameters_t params) override;
   void OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
@@ -33,4 +33,4 @@ class AudioHandler : public CefAudioHandler {
   IMPLEMENT_REFCOUNTING(AudioHandler);
 };
 
-#endif  // JCEF_NATIVE_DISPLAY_HANDLER_H_
+#endif  // JCEF_NATIVE_AUDIO_HANDLER_H_
