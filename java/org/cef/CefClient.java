@@ -54,6 +54,7 @@ public class CefClient extends CefClientHandler
     private CefContextMenuHandler contextMenuHandler_ = null;
     private CefDialogHandler dialogHandler_ = null;
     private CefDisplayHandler displayHandler_ = null;
+    private CefAudioHandler audioHandler_ = null;
     private CefDownloadHandler downloadHandler_ = null;
     private CefDragHandler dragHandler_ = null;
     private CefFocusHandler focusHandler_ = null;
@@ -121,6 +122,11 @@ public class CefClient extends CefClientHandler
 
     @Override
     protected CefDisplayHandler getDisplayHandler() {
+        return this;
+    }
+    
+    @Override
+    protected CefAudioHandler getAudioHandler() {
         return this;
     }
 
@@ -795,29 +801,38 @@ public class CefClient extends CefClientHandler
     
     // CefAudioHandler
     
+    public CefClient addAudioHandler(CefAudioHandler handler) {
+        if (audioHandler_ == null) audioHandler_ = handler;
+        return this;
+    }
+    
+    public void removeAudioHandler() {
+        audioHandler_ = null;
+    }
     
     @Override
-    public int getAudioParameters(CefBrowser browser, Object params) {
-        return 0; // TODO
+    public boolean getAudioParameters(CefBrowser browser, Object params) {
+        if (audioHandler_ != null) return audioHandler_.getAudioParameters(browser, params);
+        return false;
     }
     
     @Override
     public void onAudioStreamStarted(CefBrowser browser, Object params, int channels) {
-        // TODO
+        if (audioHandler_ != null) audioHandler_.onAudioStreamStarted(browser, params, channels);
     }
     
     @Override
-    public void onAudioStreamPacket(CefBrowser browser, float[][] data, int frames, long pts) {
-        // TODO
+    public void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts) {
+        if (audioHandler_ != null) audioHandler_.onAudioStreamPacket(browser, data, frames, pts);
     }
     
     @Override
     public void onAudioStreamStopped(CefBrowser browser) {
-        // TODO
+        if (audioHandler_ != null) audioHandler_.onAudioStreamStopped(browser);
     }
     
     @Override
     public void onAudioStreamError(CefBrowser browser, String text) {
-        // TODO
+        if (audioHandler_ != null) audioHandler_.onAudioStreamError(browser, text);
     }
 }

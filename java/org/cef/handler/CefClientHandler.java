@@ -80,13 +80,20 @@ public abstract class CefClientHandler implements CefNative {
      * default implementation will be used.
      */
     abstract protected CefDialogHandler getDialogHandler();
-
+    
     /**
      * Return the handler for browser display state events.
      * This method is a callback method and is called by
      * the native code.
      */
     abstract protected CefDisplayHandler getDisplayHandler();
+    
+    /**
+     * Return the handler for browser audio events.
+     * This method is a callback method and is called by
+     * the native code.
+     */
+    abstract protected CefAudioHandler getAudioHandler();
 
     /**
      * Return the handler for download events.

@@ -15,7 +15,7 @@ public interface CefAudioHandler {
 	
 	void onAudioStreamStarted(CefBrowser browser, Object params, int channels);
 	
-	void onAudioStreamPacket(CefBrowser browser, float[][] data, int frames, long pts);
+	void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts);
 	
 	void onAudioStreamStopped(CefBrowser browser);
 	
