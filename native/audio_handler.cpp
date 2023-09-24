@@ -45,20 +45,18 @@ void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const floa
     return;
 
   ScopedJNIBrowser jbrowser(env, browser);
-  // ScopedJNIString jtext(env, text);
 
+  // TODO: this should truthfully be using a float buffer, but I'm not yet sure how to do that from JNI
   jfloatArray jArray = env->NewFloatArray(frames);
   int size = frames;
   jfloat* fill = (jfloat*) malloc(size * sizeof(jfloat));
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
     fill[i] = data[0][i];
-  }
- env->SetFloatArrayRegion(jArray, 0, size, fill);
+  env->SetFloatArrayRegion(jArray, 0, size, fill);
 
-  // TODO: this is based on a bit of an assumption
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamPacket",
-                  "(Lorg/cef/browser/CefBrowser;[FIL)V",
-                  jbrowser.get(), jArray, frames, (long long) pts); // TODO:
+                  "(Lorg/cef/browser/CefBrowser;[FIJ)V",
+                  jbrowser.get(), jArray, frames, (long long) pts);
 }
 
 void AudioHandler::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) {
