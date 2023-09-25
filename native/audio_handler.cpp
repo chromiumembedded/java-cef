@@ -6,8 +6,38 @@
 
 #include "jni_util.h"
 
+//#include <iostream>
+
 AudioHandler::AudioHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
+
+jobject jniParams(ScopedJNIEnv env, CefAudioParameters& params) {
+  jclass cls = env->FindClass("org/cef/misc/CefChannelLayout");
+  if (cls == nullptr) {
+//    std::cout << "Could not find class 0";
+    return nullptr;
+  }
+  jmethodID getLayout = env->GetStaticMethodID(cls, "forId", "(I)Lorg/cef/misc/CefChannelLayout;");
+  if (getLayout == 0) {
+//    std::cout << "Could not find method 0";
+    return nullptr;
+  }
+  jobject layout = env->CallStaticObjectMethod(cls, getLayout, (int) params.channel_layout);
+
+  cls = env->FindClass("org/cef/misc/CefAudioParameters");
+  if (cls == nullptr) {
+//    std::cout << "Could not find class 1";
+    return nullptr;
+  }
+  jmethodID constructor = env->GetMethodID(cls, "<init>", "(Lorg/cef/misc/CefChannelLayout;II)V");
+  if (constructor == 0) {
+//    std::cout << "Could not find constructor 1";
+    return nullptr;
+  }
+  jobject parameters = env->NewObject(cls, constructor, layout, params.sample_rate, params.frames_per_buffer);
+
+  return parameters;
+}
 
 bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
                                      CefAudioParameters& params) {
@@ -20,8 +50,8 @@ bool AudioHandler::GetAudioParameters(CefRefPtr<CefBrowser> browser,
   jboolean jreturn = JNI_FALSE;
 
   JNI_CALL_METHOD(env, handle_, "getAudioParameters",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/Object;)Z", Boolean,
-                       jreturn, jbrowser.get(), nullptr);
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/misc/CefAudioParameters;)Z", Boolean,
+                       jreturn, jbrowser.get(), jniParams(env, params));
 
   return (jreturn != JNI_FALSE);
 }
@@ -35,8 +65,8 @@ void AudioHandler::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
 
   JNI_CALL_VOID_METHOD(env, handle_, "onAudioStreamStarted",
-                       "(Lorg/cef/browser/CefBrowser;Ljava/lang/Object;I)V",
-                       jbrowser.get(), nullptr, channels);
+                       "(Lorg/cef/browser/CefBrowser;Lorg/cef/misc/CefAudioParameters;I)V",
+                       jbrowser.get(), jniParams(env, params), channels);
 }
 
 void AudioHandler::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser, const float** data, int frames, int64_t pts) {

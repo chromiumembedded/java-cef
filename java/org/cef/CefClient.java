@@ -23,6 +23,7 @@ import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
 import org.cef.handler.*;
 import org.cef.misc.BoolRef;
+import org.cef.misc.CefAudioParameters;
 import org.cef.misc.CefPrintSettings;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -811,13 +812,13 @@ public class CefClient extends CefClientHandler
     }
     
     @Override
-    public boolean getAudioParameters(CefBrowser browser, Object params) {
+    public boolean getAudioParameters(CefBrowser browser, CefAudioParameters params) {
         if (audioHandler_ != null) return audioHandler_.getAudioParameters(browser, params);
         return false;
     }
     
     @Override
-    public void onAudioStreamStarted(CefBrowser browser, Object params, int channels) {
+    public void onAudioStreamStarted(CefBrowser browser, CefAudioParameters params, int channels) {
         if (audioHandler_ != null) audioHandler_.onAudioStreamStarted(browser, params, channels);
     }
     
