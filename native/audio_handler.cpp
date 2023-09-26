@@ -11,7 +11,7 @@
 AudioHandler::AudioHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-jobject jniParams(ScopedJNIEnv env, CefAudioParameters& params) {
+jobject jniParams(ScopedJNIEnv env, const CefAudioParameters& params) {
   jclass cls = env->FindClass("org/cef/misc/CefChannelLayout");
   if (cls == nullptr) {
 //    std::cout << "Could not find class 0";
