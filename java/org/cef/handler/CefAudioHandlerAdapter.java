@@ -13,7 +13,7 @@ import org.cef.misc.CefAudioParameters;
  */
 public abstract class CefAudioHandlerAdapter implements CefAudioHandler {
 	public boolean getAudioParameters(CefBrowser browser, CefAudioParameters params) {
-		return true; // TODO do I need something here?
+		return false;
 	}
 	
 	public void onAudioStreamStarted(CefBrowser browser, CefAudioParameters params, int channels) {
