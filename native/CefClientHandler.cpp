@@ -55,6 +55,15 @@ Java_org_cef_handler_CefClientHandler_N_1removeDisplayHandler(
 }
 
 JNIEXPORT void JNICALL
+Java_org_cef_handler_CefClientHandler_N_1removeAudioHandler(
+    JNIEnv* env,
+    jobject clientHandler,
+    jobject audioHandler) {
+  SetCefForJNIObject<CefAudioHandler>(env, audioHandler, nullptr,
+                                        "CefAudioHandler");
+}
+
+JNIEXPORT void JNICALL
 Java_org_cef_handler_CefClientHandler_N_1removeDownloadHandler(
     JNIEnv* env,
     jobject clientHandler,

@@ -15,6 +15,7 @@
 #include "context_menu_handler.h"
 #include "dialog_handler.h"
 #include "display_handler.h"
+#include "audio_handler.h"
 #include "download_handler.h"
 #include "drag_handler.h"
 #include "focus_handler.h"
@@ -104,6 +105,10 @@ CefRefPtr<CefDialogHandler> ClientHandler::GetDialogHandler() {
 CefRefPtr<CefDisplayHandler> ClientHandler::GetDisplayHandler() {
   return GetHandler<DisplayHandler>("DisplayHandler");
 }
+
+ CefRefPtr<CefAudioHandler> ClientHandler::GetAudioHandler() {
+   return GetHandler<AudioHandler>("AudioHandler");
+ }
 
 CefRefPtr<CefDownloadHandler> ClientHandler::GetDownloadHandler() {
   return GetHandler<DownloadHandler>("DownloadHandler");

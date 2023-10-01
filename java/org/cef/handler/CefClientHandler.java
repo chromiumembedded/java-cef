@@ -80,13 +80,20 @@ public abstract class CefClientHandler implements CefNative {
      * default implementation will be used.
      */
     abstract protected CefDialogHandler getDialogHandler();
-
+    
     /**
      * Return the handler for browser display state events.
      * This method is a callback method and is called by
      * the native code.
      */
     abstract protected CefDisplayHandler getDisplayHandler();
+    
+    /**
+     * Return the handler for browser audio events.
+     * This method is a callback method and is called by
+     * the native code.
+     */
+    abstract protected CefAudioHandler getAudioHandler();
 
     /**
      * Return the handler for download events.
@@ -198,8 +205,16 @@ public abstract class CefClientHandler implements CefNative {
             err.printStackTrace();
         }
     }
+    
+    protected void removeAudioHandler(CefAudioHandler h) {
+        try {
+            N_removeAudioHandler(h);
+        } catch (UnsatisfiedLinkError err) {
+            err.printStackTrace();
+        }
+    }
 
-    protected void removeDownloadHandler(CefDisplayHandler h) {
+    protected void removeDownloadHandler(CefDownloadHandler h) {
         try {
             N_removeDownloadHandler(h);
         } catch (UnsatisfiedLinkError err) {
@@ -301,7 +316,8 @@ public abstract class CefClientHandler implements CefNative {
     private final native void N_removeContextMenuHandler(CefContextMenuHandler h);
     private final native void N_removeDialogHandler(CefDialogHandler h);
     private final native void N_removeDisplayHandler(CefDisplayHandler h);
-    private final native void N_removeDownloadHandler(CefDisplayHandler h);
+    private final native void N_removeAudioHandler(CefAudioHandler h);
+    private final native void N_removeDownloadHandler(CefDownloadHandler h);
     private final native void N_removeDragHandler(CefDragHandler h);
     private final native void N_removeFocusHandler(CefFocusHandler h);
     private final native void N_removeJSDialogHandler(CefJSDialogHandler h);

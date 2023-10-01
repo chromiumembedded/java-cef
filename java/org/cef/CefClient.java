@@ -21,25 +21,9 @@ import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
-import org.cef.handler.CefClientHandler;
-import org.cef.handler.CefContextMenuHandler;
-import org.cef.handler.CefDialogHandler;
-import org.cef.handler.CefDisplayHandler;
-import org.cef.handler.CefDownloadHandler;
-import org.cef.handler.CefDragHandler;
-import org.cef.handler.CefFocusHandler;
-import org.cef.handler.CefJSDialogHandler;
-import org.cef.handler.CefKeyboardHandler;
-import org.cef.handler.CefLifeSpanHandler;
-import org.cef.handler.CefLoadHandler;
-import org.cef.handler.CefPrintHandler;
-import org.cef.handler.CefRenderHandler;
-import org.cef.handler.CefRequestHandler;
-import org.cef.handler.CefResourceHandler;
-import org.cef.handler.CefResourceRequestHandler;
-import org.cef.handler.CefScreenInfo;
-import org.cef.handler.CefWindowHandler;
+import org.cef.handler.*;
 import org.cef.misc.BoolRef;
+import org.cef.misc.CefAudioParameters;
 import org.cef.misc.CefPrintSettings;
 import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
@@ -66,11 +50,12 @@ public class CefClient extends CefClientHandler
         implements CefContextMenuHandler, CefDialogHandler, CefDisplayHandler, CefDownloadHandler,
         CefDragHandler, CefFocusHandler, CefJSDialogHandler, CefKeyboardHandler,
         CefLifeSpanHandler, CefLoadHandler, CefPrintHandler, CefRenderHandler,
-        CefRequestHandler, CefWindowHandler {
+        CefRequestHandler, CefWindowHandler, CefAudioHandler {
     private HashMap<Integer, CefBrowser> browser_ = new HashMap<Integer, CefBrowser>();
     private CefContextMenuHandler contextMenuHandler_ = null;
     private CefDialogHandler dialogHandler_ = null;
     private CefDisplayHandler displayHandler_ = null;
+    private CefAudioHandler audioHandler_ = null;
     private CefDownloadHandler downloadHandler_ = null;
     private CefDragHandler dragHandler_ = null;
     private CefFocusHandler focusHandler_ = null;
@@ -138,6 +123,11 @@ public class CefClient extends CefClientHandler
 
     @Override
     protected CefDisplayHandler getDisplayHandler() {
+        return this;
+    }
+    
+    @Override
+    protected CefAudioHandler getAudioHandler() {
         return this;
     }
 
@@ -532,6 +522,7 @@ public class CefClient extends CefClientHandler
                 removeContextMenuHandler(this);
                 removeDialogHandler(this);
                 removeDisplayHandler(this);
+                removeAudioHandler(this);
                 removeDownloadHandler(this);
                 removeDragHandler(this);
                 removeFocusHandler(this);
@@ -807,5 +798,42 @@ public class CefClient extends CefClientHandler
     @Override
     public boolean getScreenInfo(CefBrowser arg0, CefScreenInfo arg1) {
         return false;
+    }
+    
+    // CefAudioHandler
+    
+    public CefClient addAudioHandler(CefAudioHandler handler) {
+        if (audioHandler_ == null) audioHandler_ = handler;
+        return this;
+    }
+    
+    public void removeAudioHandler() {
+        audioHandler_ = null;
+    }
+    
+    @Override
+    public boolean getAudioParameters(CefBrowser browser, CefAudioParameters params) {
+        if (audioHandler_ != null) return audioHandler_.getAudioParameters(browser, params);
+        return false;
+    }
+    
+    @Override
+    public void onAudioStreamStarted(CefBrowser browser, CefAudioParameters params, int channels) {
+        if (audioHandler_ != null) audioHandler_.onAudioStreamStarted(browser, params, channels);
+    }
+    
+    @Override
+    public void onAudioStreamPacket(CefBrowser browser, float[] data, int frames, long pts) {
+        if (audioHandler_ != null) audioHandler_.onAudioStreamPacket(browser, data, frames, pts);
+    }
+    
+    @Override
+    public void onAudioStreamStopped(CefBrowser browser) {
+        if (audioHandler_ != null) audioHandler_.onAudioStreamStopped(browser);
+    }
+    
+    @Override
+    public void onAudioStreamError(CefBrowser browser, String text) {
+        if (audioHandler_ != null) audioHandler_.onAudioStreamError(browser, text);
     }
 }
