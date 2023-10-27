@@ -754,14 +754,6 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
-        if (requestHandler_ != null && browser != null)
-            return requestHandler_.onQuotaRequest(browser, origin_url, new_size, callback);
-        return false;
-    }
-
-    @Override
     public boolean onCertificateError(
             CefBrowser browser, ErrorCode cert_error, String request_url, CefCallback callback) {
         if (requestHandler_ != null)

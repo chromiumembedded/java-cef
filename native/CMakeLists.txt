@@ -218,9 +218,6 @@ SET_CEF_TARGET_OUT_DIR()
 #
 
 if(OS_LINUX)
-  # Find required libraries and update compiler/linker variables.
-  FIND_LINUX_LIBRARIES("gmodule-2.0 gtk+-2.0 gthread-2.0")
-
   # Helper executable target.
   add_executable(${JCEF_HELPER_TARGET} ${JCEF_HELPER_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_HELPER_TARGET})
@@ -259,16 +256,15 @@ if(OS_LINUX)
   COPY_FILES("${JCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
   # TODO(jcef): Eliminate the symlink requirement once we figure out how.
-  # See https://bitbucket.org/chromiumembedded/java-cef/issues/137#comment-20535941
+  # See https://github.com/chromiumembedded/java-cef/issues/137#issuecomment-1465038405
   add_custom_command(
     TARGET ${JCEF_TARGET}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo ""
     COMMAND ${CMAKE_COMMAND} -E echo "*** Run the following commands manually to create necessary symlinks ***"
-    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_RESOURCE_DIR}/icudtl.dat ${JAVA_DIR}/jre/bin/icudtl.dat"
-    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/natives_blob.bin ${JAVA_DIR}/jre/bin/natives_blob.bin"
-    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/snapshot_blob.bin ${JAVA_DIR}/jre/bin/snapshot_blob.bin"
-    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/v8_context_snapshot.bin ${JAVA_DIR}/jre/bin/v8_context_snapshot.bin"
+    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_RESOURCE_DIR}/icudtl.dat ${JAVA_DIR}/bin/icudtl.dat"
+    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/snapshot_blob.bin ${JAVA_DIR}/bin/snapshot_blob.bin"
+    COMMAND ${CMAKE_COMMAND} -E echo "sudo ln -s ${CEF_BINARY_DIR}/v8_context_snapshot.bin ${JAVA_DIR}/bin/v8_context_snapshot.bin"
     COMMAND ${CMAKE_COMMAND} -E echo ""
     VERBATIM
     )

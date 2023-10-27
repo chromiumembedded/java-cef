@@ -132,12 +132,12 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF branch
 if(NOT DEFINED CEF_BRANCH)
-  set(CEF_BRANCH "5359")
+  set(CEF_BRANCH "5845")
 endif()
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "108.4.13+ga98cd4c+chromium-108.0.5359.125")
+  set(CEF_VERSION "116.0.27+gd8c85ac+chromium-116.0.5845.190")
 endif()
 
 # Determine the platform.
