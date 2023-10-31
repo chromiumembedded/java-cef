@@ -10,6 +10,7 @@ import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefScreenInfo;
 
 import java.awt.*;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
