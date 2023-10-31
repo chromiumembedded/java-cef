@@ -20,6 +20,16 @@ else
       exit 1
     fi
 
+    # Necessary for libjcef.so to find libjawt.so.
+    JAVA_PATH="$(readlink -f $(which java))"
+    JAVA_LIB_PATH="$(dirname ${JAVA_PATH})/../lib"
+    if [ ! -d "$JAVA_LIB_PATH" ]; then
+      echo "ERROR: Java lib path does not exist"
+      exit 1
+    fi
+
+    LIB_PATH="${LIB_PATH}:${JAVA_LIB_PATH}"
+
     CLS_PATH="${DIR}/third_party/jogamp/jar/*:$OUT_PATH"
     RUN_TYPE="$3"
 

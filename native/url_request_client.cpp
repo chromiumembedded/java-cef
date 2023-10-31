@@ -52,8 +52,8 @@ void URLRequestClient::OnRequestComplete(CefRefPtr<CefURLRequest> request) {
 }
 
 void URLRequestClient::OnUploadProgress(CefRefPtr<CefURLRequest> request,
-                                        int64 current,
-                                        int64 total) {
+                                        int64_t current,
+                                        int64_t total) {
   ScopedJNIEnv env;
   if (!env)
     return;
@@ -64,8 +64,8 @@ void URLRequestClient::OnUploadProgress(CefRefPtr<CefURLRequest> request,
 }
 
 void URLRequestClient::OnDownloadProgress(CefRefPtr<CefURLRequest> request,
-                                          int64 current,
-                                          int64 total) {
+                                          int64_t current,
+                                          int64_t total) {
   ScopedJNIEnv env;
   if (!env)
     return;

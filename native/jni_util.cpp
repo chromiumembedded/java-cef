@@ -339,8 +339,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_SOCKET_IS_CONNECTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_BLOCKED_ENROLLMENT_CHECK_PENDING, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_UPLOAD_STREAM_REWIND_NOT_SUPPORTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONTEXT_SHUT_DOWN, jerrorCode);
@@ -949,7 +947,7 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,
                       const char* method_name,
-                      char16* value) {
+                      char16_t* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()C");
   if (methodID) {
     *value = env->CallCharMethod(obj, methodID);

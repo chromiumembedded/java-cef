@@ -28,7 +28,7 @@ MessageRouterHandler::MessageRouterHandler(JNIEnv* env, jobject handler)
 bool MessageRouterHandler::OnQuery(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
-    int64 query_id,
+    int64_t query_id,
     const CefString& request,
     bool persistent,
     CefRefPtr<CefMessageRouterBrowserSide::Callback> callback) {
@@ -63,7 +63,7 @@ bool MessageRouterHandler::OnQuery(
 
 void MessageRouterHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser,
                                            CefRefPtr<CefFrame> frame,
-                                           int64 query_id) {
+                                           int64_t query_id) {
   ScopedJNIEnv env;
   if (!env)
     return;

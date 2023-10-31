@@ -236,12 +236,6 @@ class TestFrame extends JFrame implements CefLifeSpanHandler, CefLoadHandler, Ce
     }
 
     @Override
-    public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
-        return false;
-    }
-
-    @Override
     public boolean onCertificateError(CefBrowser browser, CefLoadHandler.ErrorCode cert_error,
             String request_url, CefCallback callback) {
         return false;

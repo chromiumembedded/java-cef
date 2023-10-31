@@ -167,7 +167,7 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,
                       const char* method_name,
-                      char16* value);
+                      char16_t* value);
 
 // Call a JNI method that returns a double and accepts no arguments.
 bool CallJNIMethodD_V(JNIEnv* env,
