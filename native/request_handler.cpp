@@ -120,8 +120,8 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIString joriginUrl(env, origin_url);
   ScopedJNIString jhost(env, host);
-  ScopedJNIString jrealm(env, host);
-  ScopedJNIString jscheme(env, host);
+  ScopedJNIString jrealm(env, realm);
+  ScopedJNIString jscheme(env, scheme);
   ScopedJNIAuthCallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
