@@ -20,6 +20,32 @@ public class KeyboardHandler extends CefKeyboardHandlerAdapter {
                 browser.executeJavaScript("alert('You pressed the space bar!');", "", 0);
             }
             return true;
+        } else if (event.type == CefKeyEvent.EventType.KEYEVENT_RAWKEYDOWN && event.is_system_key) {
+            // CMD+[key] is not working on a Mac.
+            // This switch statement delegates the common keyboard shortcuts to the browser
+            switch (event.unmodified_character) {
+                case 'a':
+                    browser.getFocusedFrame().selectAll();
+                    break;
+                case 'c':
+                    browser.getFocusedFrame().copy();
+                    break;
+                case 'v':
+                    browser.getFocusedFrame().paste();
+                    break;
+                case 'x':
+                    browser.getFocusedFrame().cut();
+                    break;
+                case 'z':
+                    browser.getFocusedFrame().undo();
+                    break;
+                case 'Z':
+                    browser.getFocusedFrame().redo();
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         }
         return false;
     }
