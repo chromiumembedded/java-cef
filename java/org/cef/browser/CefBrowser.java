@@ -390,4 +390,26 @@ public interface CefBrowser {
      * @throws UnsupportedOperationException if not supported
      */
     public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution);
+
+    /**
+     * Set the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be
+     * lower if the browser cannot generate frames at the requested rate. The
+     * minimum value is 1, and the maximum value is 60 (default 30).
+     *
+     * @param frameRate the maximum frame rate
+     * @throws UnsupportedOperationException if not supported
+     */
+    public void setWindowlessFrameRate(int frameRate);
+
+    /**
+     * Returns the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be lower if the browser cannot
+     * generate frames at the requested rate. The minimum value is 1, and the maximum value is 60
+     * (default 30).
+     *
+     * @return the framerate, 0 if an error occurs
+     * @throws UnsupportedOperationException if not supported
+     */
+    public CompletableFuture<Integer> getWindowlessFrameRate();
 }

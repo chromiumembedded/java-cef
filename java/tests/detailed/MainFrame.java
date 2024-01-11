@@ -6,6 +6,7 @@ package tests.detailed;
 
 import org.cef.CefApp;
 import org.cef.CefApp.CefVersion;
+import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 import org.cef.CefSettings;
 import org.cef.CefSettings.ColorType;
@@ -58,6 +59,7 @@ public class MainFrame extends BrowserFrame {
         boolean osrEnabledArg = false;
         boolean transparentPaintingEnabledArg = false;
         boolean createImmediately = false;
+        int windowless_frame_rate = 0;
         for (String arg : args) {
             arg = arg.toLowerCase();
             if (arg.equals("--off-screen-rendering-enabled")) {
@@ -66,6 +68,8 @@ public class MainFrame extends BrowserFrame {
                 transparentPaintingEnabledArg = true;
             } else if (arg.equals("--create-immediately")) {
                 createImmediately = true;
+            } else if (arg.equals("--windowless-frame-rate-60")) {
+                windowless_frame_rate = 60;
             }
         }
 
@@ -73,10 +77,21 @@ public class MainFrame extends BrowserFrame {
 
         // MainFrame keeps all the knowledge to display the embedded browser
         // frame.
-        final MainFrame frame = new MainFrame(
-                osrEnabledArg, transparentPaintingEnabledArg, createImmediately, args);
+        final MainFrame frame = new MainFrame(osrEnabledArg, transparentPaintingEnabledArg,
+                createImmediately, windowless_frame_rate, args);
         frame.setSize(800, 600);
         frame.setVisible(true);
+
+        if (osrEnabledArg && windowless_frame_rate != 0) {
+            frame.getBrowser().getWindowlessFrameRate().thenAccept(
+                    framerate -> System.out.println("Framerate is:" + framerate));
+
+            frame.getBrowser().setWindowlessFrameRate(2);
+            frame.getBrowser().getWindowlessFrameRate().thenAccept(
+                    framerate -> System.out.println("Framerate is:" + framerate));
+
+            frame.getBrowser().setWindowlessFrameRate(windowless_frame_rate);
+        }
     }
 
     private final CefClient client_;
@@ -88,7 +103,7 @@ public class MainFrame extends BrowserFrame {
     private boolean transparent_painting_enabled_;
 
     public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled,
-            boolean createImmediately, String[] args) {
+            boolean createImmediately, int windowless_frame_rate, String[] args) {
         this.osr_enabled_ = osrEnabled;
         this.transparent_painting_enabled_ = transparentPaintingEnabled;
 
@@ -200,9 +215,12 @@ public class MainFrame extends BrowserFrame {
             }
         });
 
+        CefBrowserSettings browserSettings = new CefBrowserSettings();
+        browserSettings.windowless_frame_rate = windowless_frame_rate;
+
         // Create the browser.
-        CefBrowser browser = client_.createBrowser(
-                "http://www.google.com", osrEnabled, transparentPaintingEnabled, null);
+        CefBrowser browser = client_.createBrowser("http://www.google.com", osrEnabled,
+                transparentPaintingEnabled, null, browserSettings);
         setBrowser(browser);
 
         // Set up the UI for this example implementation.

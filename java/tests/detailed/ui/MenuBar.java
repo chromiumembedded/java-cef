@@ -470,7 +470,7 @@ public class MenuBar extends JMenuBar {
         newwindow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, null);
+                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, 0, null);
                 frame.setSize(800, 600);
                 frame.setVisible(true);
             }

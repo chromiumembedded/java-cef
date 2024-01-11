@@ -4,6 +4,7 @@
 
 package org.cef.browser;
 
+import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 
 /**
@@ -11,8 +12,9 @@ import org.cef.CefClient;
  */
 public class CefBrowserFactory {
     public static CefBrowser create(CefClient client, String url, boolean isOffscreenRendered,
-            boolean isTransparent, CefRequestContext context) {
-        if (isOffscreenRendered) return new CefBrowserOsr(client, url, isTransparent, context);
-        return new CefBrowserWr(client, url, context);
+            boolean isTransparent, CefRequestContext context, CefBrowserSettings settings) {
+        if (isOffscreenRendered)
+            return new CefBrowserOsr(client, url, isTransparent, context, settings);
+        return new CefBrowserWr(client, url, context, settings);
     }
 }
