@@ -43,6 +43,30 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools(JNIEnv*,
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_ExecuteDevToolsMethod
+ * Signature:
+ * (Ljava/lang/String;Ljava/lang/String;Lorg/cef/browser/CefBrowser_N/DevToolsMethodCallback;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ExecuteDevToolsMethod(JNIEnv*,
+                                                            jobject,
+                                                            jstring,
+                                                            jstring,
+                                                            jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_AddDevToolsMessageObserver
+ * Signature:
+ * (Lorg/cef/browser/CefDevToolsMessageObserver;)Lorg/cef/browser/CefRegistration;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1AddDevToolsMessageObserver(JNIEnv*,
+                                                                 jobject,
+                                                                 jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_GetWindowHandle
  * Signature: (J)J
  */
@@ -348,7 +372,7 @@ Java_org_cef_browser_CefBrowser_1N_N_1PrintToPDF(JNIEnv*,
 /*
  * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_Find
- * Signature: (ILjava/lang/String;ZZZ)V
+ * Signature: (Ljava/lang/String;ZZZ)V
  */
 JNIEXPORT void JNICALL Java_org_cef_browser_CefBrowser_1N_N_1Find(JNIEnv*,
                                                                   jobject,
@@ -520,6 +544,17 @@ JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1NotifyMoveOrResizeStarted(JNIEnv*,
                                                                 jobject);
 
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Header for class org_cef_browser_CefBrowser_N_DevToolsMethodCallback */
+
+#ifndef _Included_org_cef_browser_CefBrowser_N_DevToolsMethodCallback
+#define _Included_org_cef_browser_CefBrowser_N_DevToolsMethodCallback
+#ifdef __cplusplus
+extern "C" {
+#endif
 #ifdef __cplusplus
 }
 #endif

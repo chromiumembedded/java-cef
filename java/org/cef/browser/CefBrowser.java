@@ -337,18 +337,28 @@ public interface CefBrowser {
     public void stopFinding(boolean clearSelection);
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      */
     public CefBrowser getDevTools();
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      *
      * @param inspectAt a position in the UI which should be inspected.
      */
     public CefBrowser getDevTools(Point inspectAt);
+
+    /**
+     * Get an instance of a client that can be used to leverage the DevTools
+     * protocol. Only one instance per browser is available.
+     *
+     * @see {@link CefDevToolsClient}
+     * @return DevTools client, or null if this browser is not yet created
+     *   or if it is closed or closing
+     */
+    public CefDevToolsClient getDevToolsClient();
 
     /**
      * If a misspelled word is currently selected in an editable node calling

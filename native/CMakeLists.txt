@@ -54,6 +54,8 @@ set(JCEF_SRCS
   CefPrintSettings_N.h
   CefQueryCallback_N.cpp
   CefQueryCallback_N.h
+  CefRegistration_N.cpp
+  CefRegistration_N.h
   CefRequest_N.cpp
   CefRequest_N.h
   CefCallback_N.cpp
@@ -83,6 +85,10 @@ set(JCEF_SRCS
   cookie_visitor.cpp
   cookie_visitor.h
   critical_wait.h
+  devtools_message_observer.cpp
+  devtools_message_observer.h
+  devtools_method_callback.cpp
+  devtools_method_callback.h
   dialog_handler.cpp
   dialog_handler.h
   display_handler.cpp

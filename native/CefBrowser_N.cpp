@@ -6,12 +6,15 @@
 
 #include "include/base/cef_callback.h"
 #include "include/cef_browser.h"
+#include "include/cef_parser.h"
 #include "include/cef_task.h"
 #include "include/wrapper/cef_closure_task.h"
 
 #include "browser_process_handler.h"
 #include "client_handler.h"
 #include "critical_wait.h"
+#include "devtools_message_observer.h"
+#include "devtools_method_callback.h"
 #include "jni_util.h"
 #include "life_span_handler.h"
 #include "pdf_print_callback.h"
@@ -1035,6 +1038,26 @@ void getZoomLevel(CefRefPtr<CefBrowserHost> host,
   }
 }
 
+void executeDevToolsMethod(CefRefPtr<CefBrowserHost> host,
+                           const CefString& method,
+                           const CefString& parametersAsJson,
+                           CefRefPtr<DevToolsMethodCallback> callback) {
+  CefRefPtr<CefDictionaryValue> parameters = nullptr;
+  if (!parametersAsJson.empty()) {
+    CefRefPtr<CefValue> value = CefParseJSON(
+        parametersAsJson, cef_json_parser_options_t::JSON_PARSER_RFC);
+
+    if (!value || value->GetType() != VTYPE_DICTIONARY) {
+      callback->onComplete(0);
+      return;
+    }
+
+    parameters = value->GetDictionary();
+  }
+
+  callback->onComplete(host->ExecuteDevToolsMethod(0, method, parameters));
+}
+
 void OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
   if (!CefCurrentlyOn(TID_UI)) {
     CefPostTask(TID_UI, base::BindOnce(&OnAfterParentChanged, browser));
@@ -1138,6 +1161,16 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
   return settings;
 }
 
+// JNI CefRegistration object.
+class ScopedJNIRegistration : public ScopedJNIObject<CefRegistration> {
+ public:
+  ScopedJNIRegistration(JNIEnv* env, CefRefPtr<CefRegistration> obj)
+      : ScopedJNIObject<CefRegistration>(env,
+                                         obj,
+                                         "org/cef/misc/CefRegistration_N",
+                                         "CefRegistration") {}
+};
+
 }  // namespace
 
 JNIEXPORT jboolean JNICALL
@@ -1181,6 +1214,53 @@ Java_org_cef_browser_CefBrowser_1N_N_1CreateDevTools(JNIEnv* env,
                 base::BindOnce(&create, objs, windowHandle, osr, transparent));
   }
   return JNI_FALSE;  // set asynchronously
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1ExecuteDevToolsMethod(
+    JNIEnv* env,
+    jobject jbrowser,
+    jstring method,
+    jstring parametersAsJson,
+    jobject jcallback) {
+  CefRefPtr<DevToolsMethodCallback> callback =
+      new DevToolsMethodCallback(env, jcallback);
+
+  CefRefPtr<CefBrowser> browser = GetJNIBrowser(env, jbrowser);
+  if (!browser.get()) {
+    callback->onComplete(0);
+    return;
+  }
+
+  CefString strMethod = GetJNIString(env, method);
+  CefString strParametersAsJson = GetJNIString(env, parametersAsJson);
+
+  if (CefCurrentlyOn(TID_UI)) {
+    executeDevToolsMethod(browser->GetHost(), strMethod, strParametersAsJson,
+                          callback);
+  } else {
+    CefPostTask(TID_UI,
+                base::BindOnce(executeDevToolsMethod, browser->GetHost(),
+                               strMethod, strParametersAsJson, callback));
+  }
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1AddDevToolsMessageObserver(
+    JNIEnv* env,
+    jobject jbrowser,
+    jobject jobserver) {
+  CefRefPtr<CefBrowser> browser =
+      JNI_GET_BROWSER_OR_RETURN(env, jbrowser, NULL);
+
+  CefRefPtr<DevToolsMessageObserver> observer =
+      new DevToolsMessageObserver(env, jobserver);
+
+  CefRefPtr<CefRegistration> registration =
+      browser->GetHost()->AddDevToolsMessageObserver(observer);
+
+  ScopedJNIRegistration jregistration(env, registration);
+  return jregistration.Release();
 }
 
 JNIEXPORT jlong JNICALL
