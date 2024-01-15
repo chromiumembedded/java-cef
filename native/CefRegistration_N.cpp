@@ -7,8 +7,8 @@
 #include "jni_scoped_helpers.h"
 
 JNIEXPORT void JNICALL
-Java_org_cef_misc_CefRegistration_1N_N_1Dispose(JNIEnv* env,
-                                                jobject obj,
-                                                jlong self) {
+Java_org_cef_browser_CefRegistration_1N_N_1Dispose(JNIEnv* env,
+                                                   jobject obj,
+                                                   jlong self) {
   SetCefForJNIObject<CefRegistration>(env, obj, NULL, "CefRegistration");
 }

@@ -569,10 +569,10 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetWindowlessFrameRate(JNIEnv*,
 }
 #endif
 #endif
-/* Header for class org_cef_browser_CefBrowser_N_DevToolsMethodCallback */
+/* Header for class org_cef_browser_CefBrowser_N_IntCallback */
 
-#ifndef _Included_org_cef_browser_CefBrowser_N_DevToolsMethodCallback
-#define _Included_org_cef_browser_CefBrowser_N_DevToolsMethodCallback
+#ifndef _Included_org_cef_browser_CefBrowser_N_IntCallback
+#define _Included_org_cef_browser_CefBrowser_N_IntCallback
 #ifdef __cplusplus
 extern "C" {
 #endif
