@@ -38,14 +38,11 @@ public interface CefDialogHandler {
      * "image/*"), (b) individual file extensions (e.g. ".txt" or ".png"), or (c)
      * combined description and file extension delimited using "|" and ";" (e.g.
      * "Image Types|.png;.gif;.jpg").
-     * @param selectedAcceptFilter is the 0-based index of the filter that should
-     * be selected by default.
      * @param callback is a callback handler for handling own file dialogs.
      *
      * @return To display a custom dialog return true and execute callback.
      * To display the default dialog return false.
      */
     public boolean onFileDialog(CefBrowser browser, FileDialogMode mode, String title,
-            String defaultFilePath, Vector<String> acceptFilters, int selectedAcceptFilter,
-            CefFileDialogCallback callback);
+            String defaultFilePath, Vector<String> acceptFilters, CefFileDialogCallback callback);
 }

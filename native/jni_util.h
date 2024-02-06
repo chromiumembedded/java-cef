@@ -110,7 +110,7 @@ bool GetJNIFieldDate(JNIEnv* env,
                      jclass cls,
                      jobject obj,
                      const char* field_name,
-                     CefTime* value);
+                     CefBaseTime* value);
 
 bool GetJNIFieldBoolean(JNIEnv* env,
                         jclass cls,
@@ -173,7 +173,7 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,
                       const char* method_name,
-                      char16* value);
+                      char16_t* value);
 
 // Rertieve the CefSize equivalent of a java.awt.Dimension.
 CefSize GetJNISize(JNIEnv* env, jobject obj);

@@ -4,9 +4,9 @@
 
 package org.cef.handler;
 
-import java.awt.Rectangle;
-
 import org.cef.browser.CefBrowser;
+
+import java.awt.Rectangle;
 
 /**
  * Implement this interface to handle events if window rendering is enabled.

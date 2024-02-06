@@ -98,7 +98,9 @@ else
     cp -f "$OUT_BINARY_PATH"/v8_context_snapshot.bin "$DISTRIB_LIB_PATH"
     cp -f "$OUT_BINARY_PATH"/*.pak "$DISTRIB_LIB_PATH"
     cp -rf "$OUT_BINARY_PATH"/locales/ "$DISTRIB_LIB_PATH"
-    cp -rf "$OUT_BINARY_PATH"/swiftshader/ "$DISTRIB_LIB_PATH"
+    cp -f "$OUT_BINARY_PATH"/libvk_swiftshader.so "$DISTRIB_LIB_PATH"
+    cp -f "$OUT_BINARY_PATH"/vk_swiftshader_icd.json "$DISTRIB_LIB_PATH"
+    cp -f "$OUT_BINARY_PATH"/libvulkan.so.1 "$DISTRIB_LIB_PATH"
   fi
 fi
 

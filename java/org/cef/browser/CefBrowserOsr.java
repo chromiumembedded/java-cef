@@ -15,6 +15,7 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.GLBuffers;
 
+import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.callback.CefDragData;
@@ -60,9 +61,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
@@ -84,13 +87,18 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private int depth_per_component = 8;
     private boolean isTransparent_;
 
-    CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context) {
-        this(client, url, transparent, context, null, null);
+    private CopyOnWriteArrayList<Consumer<CefPaintEvent>> onPaintListeners =
+            new CopyOnWriteArrayList<>();
+
+    CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context,
+            CefBrowserSettings settings) {
+        this(client, url, transparent, context, null, null, settings);
     }
 
     private CefBrowserOsr(CefClient client, String url, boolean transparent,
-            CefRequestContext context, CefBrowserOsr parent, Point inspectAt) {
-        super(client, url, context, parent, inspectAt);
+            CefRequestContext context, CefBrowserOsr parent, Point inspectAt,
+            CefBrowserSettings settings) {
+        super(client, url, context, parent, inspectAt, settings);
         isTransparent_ = transparent;
         renderer_ = new CefRenderer(transparent);
         createGLCanvas();
@@ -117,7 +125,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     protected CefBrowser_N createDevToolsBrowser(CefClient client, String url,
             CefRequestContext context, CefBrowser_N parent, Point inspectAt) {
         return new CefBrowserOsr(
-                client, url, isTransparent_, context, (CefBrowserOsr) this, inspectAt);
+                client, url, isTransparent_, context, (CefBrowserOsr) this, inspectAt, null);
     }
 
     private synchronized long getWindowHandle() {
@@ -355,6 +363,22 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     @Override
+    public void addOnPaintListener(Consumer<CefPaintEvent> listener) {
+        onPaintListeners.add(listener);
+    }
+
+    @Override
+    public void setOnPaintListener(Consumer<CefPaintEvent> listener) {
+        onPaintListeners.clear();
+        onPaintListeners.add(listener);
+    }
+
+    @Override
+    public void removeOnPaintListener(Consumer<CefPaintEvent> listener) {
+        onPaintListeners.remove(listener);
+    }
+
+    @Override
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height) {
         // if window is closing, canvas_ or opengl context could be null
@@ -376,6 +400,13 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 canvas_.display();
             }
         });
+        if (!onPaintListeners.isEmpty()) {
+            CefPaintEvent paintEvent =
+                    new CefPaintEvent(browser, popup, dirtyRects, buffer, width, height);
+            for (Consumer<CefPaintEvent> l : onPaintListeners) {
+                l.accept(paintEvent);
+            }
+        }
     }
 
     @Override
@@ -401,11 +432,25 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
         protected void unregisterListeners() {}
     };
 
+    private static int getDndAction(int mask) {
+        // Default to copy if multiple operations are specified.
+        int action = DnDConstants.ACTION_NONE;
+        if ((mask & CefDragData.DragOperations.DRAG_OPERATION_COPY)
+                == CefDragData.DragOperations.DRAG_OPERATION_COPY) {
+            action = DnDConstants.ACTION_COPY;
+        } else if ((mask & CefDragData.DragOperations.DRAG_OPERATION_MOVE)
+                == CefDragData.DragOperations.DRAG_OPERATION_MOVE) {
+            action = DnDConstants.ACTION_MOVE;
+        } else if ((mask & CefDragData.DragOperations.DRAG_OPERATION_LINK)
+                == CefDragData.DragOperations.DRAG_OPERATION_LINK) {
+            action = DnDConstants.ACTION_LINK;
+        }
+        return action;
+    }
+
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
-        int action = (mask & CefDragData.DragOperations.DRAG_OPERATION_MOVE) == 0
-                ? DnDConstants.ACTION_COPY
-                : DnDConstants.ACTION_MOVE;
+        int action = getDndAction(mask);
         MouseEvent triggerEvent =
                 new MouseEvent(canvas_, MouseEvent.MOUSE_DRAGGED, 0, 0, x, y, 0, false);
         DragGestureEvent ev = new DragGestureEvent(
@@ -416,7 +461,7 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 new StringSelection(dragData.getFragmentText()), new DragSourceAdapter() {
                     @Override
                     public void dragDropEnd(DragSourceDropEvent dsde) {
-                        dragSourceEndedAt(dsde.getLocation(), mask);
+                        dragSourceEndedAt(dsde.getLocation(), action);
                         dragSourceSystemDragEnded();
                     }
                 });

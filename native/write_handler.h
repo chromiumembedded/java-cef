@@ -21,8 +21,8 @@ class WriteHandler : public CefWriteHandler {
 
   // CefWriteHandler methods
   virtual size_t Write(const void* ptr, size_t size, size_t n) override;
-  virtual int Seek(int64 offset, int whence) override;
-  virtual int64 Tell() override;
+  virtual int Seek(int64_t offset, int whence) override;
+  virtual int64_t Tell() override;
   virtual int Flush() override;
   virtual bool MayBlock() override;
 

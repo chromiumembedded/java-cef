@@ -5,11 +5,13 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefPaintEvent;
 import org.cef.callback.CefDragData;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
+import java.util.function.Consumer;
 
 /**
  * Implement this interface to handle events when window rendering is disabled.
@@ -64,6 +66,24 @@ public interface CefRenderHandler {
      */
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height);
+
+    /**
+     * Add provided listener.
+     * @param listener Code that gets executed after a frame was rendered.
+     */
+    public void addOnPaintListener(Consumer<CefPaintEvent> listener);
+
+    /**
+     * Remove existing listeners and replace with provided listener.
+     * @param listener Code that gets executed after a frame was rendered.
+     */
+    public void setOnPaintListener(Consumer<CefPaintEvent> listener);
+
+    /**
+     * Remove provided listener.
+     * @param listener Code that gets executed after a frame was rendered.
+     */
+    public void removeOnPaintListener(Consumer<CefPaintEvent> listener);
 
     /**
      * Handle cursor changes.

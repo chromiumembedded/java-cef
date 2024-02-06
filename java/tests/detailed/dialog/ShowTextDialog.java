@@ -4,6 +4,8 @@
 
 package tests.detailed.dialog;
 
+import org.cef.callback.CefStringVisitor;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -15,8 +17,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import org.cef.callback.CefStringVisitor;
 
 @SuppressWarnings("serial")
 public class ShowTextDialog extends JDialog implements CefStringVisitor {

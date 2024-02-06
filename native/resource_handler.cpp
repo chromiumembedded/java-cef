@@ -36,7 +36,7 @@ bool ResourceHandler::ProcessRequest(CefRefPtr<CefRequest> request,
 }
 
 void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
-                                         int64& response_length,
+                                         int64_t& response_length,
                                          CefString& redirectUrl) {
   ScopedJNIEnv env;
   if (!env)
@@ -44,7 +44,7 @@ void ResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
 
   ScopedJNIResponse jresponse(env, response);
   jresponse.SetTemporary();
-  ScopedJNIIntRef jresponseLength(env, response_length);
+  ScopedJNIIntRef jresponseLength(env, (int)response_length);
   ScopedJNIStringRef jredirectUrl(env, redirectUrl);
 
   JNI_CALL_VOID_METHOD(env, handle_, "getResponseHeaders",

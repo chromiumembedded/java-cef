@@ -37,6 +37,7 @@ call make_jni_header.bat %1 org.cef.callback.CefQueryCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefSchemeRegistrar_N
 call make_jni_header.bat %1 org.cef.handler.CefClientHandler
 call make_jni_header.bat %1 org.cef.misc.CefPrintSettings_N
+call make_jni_header.bat %1 org.cef.browser.CefRegistration_N
 call make_jni_header.bat %1 org.cef.network.CefCookieManager_N
 call make_jni_header.bat %1 org.cef.network.CefPostData_N
 call make_jni_header.bat %1 org.cef.network.CefPostDataElement_N

@@ -164,3 +164,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Paste(JNIEnv* env,
 
   frame->Paste();
 }
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefFrame_1N_N_1SelectAll(JNIEnv* env,
+                                              jobject obj,
+                                              jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->SelectAll();
+}

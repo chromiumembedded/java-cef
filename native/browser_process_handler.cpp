@@ -38,7 +38,7 @@ void BrowserProcessHandler::OnContextInitialized() {
   JNI_CALL_VOID_METHOD(env, handle_, "onContextInitialized", "()V");
 }
 
-void BrowserProcessHandler::OnScheduleMessagePumpWork(int64 delay_ms) {
+void BrowserProcessHandler::OnScheduleMessagePumpWork(int64_t delay_ms) {
   if (!handle_)
     return;
 

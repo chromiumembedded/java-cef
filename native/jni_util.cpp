@@ -9,6 +9,8 @@
 
 #include "jni_scoped_helpers.h"
 
+#include "include/cef_base.h"
+
 namespace {
 
 JavaVM* g_jvm = nullptr;
@@ -338,8 +340,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_SOCKET_IS_CONNECTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_BLOCKED_ENROLLMENT_CHECK_PENDING, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_UPLOAD_STREAM_REWIND_NOT_SUPPORTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONTEXT_SHUT_DOWN, jerrorCode);
@@ -634,17 +634,9 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_HTTP2_RST_STREAM_NO_ERROR_RECEIVED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_TOO_MANY_RETRIES, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_HTTP2_STREAM_CLOSED, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_HTTP2_CLIENT_REFUSED_STREAM, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_HTTP_RESPONSE_CODE_FAILURE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -804,14 +796,16 @@ bool GetJNIFieldDate(JNIEnv* env,
                      jclass cls,
                      jobject obj,
                      const char* field_name,
-                     CefTime* value) {
+                     CefBaseTime* value) {
   jobject fieldobj = nullptr;
   if (GetJNIFieldObject(env, cls, obj, field_name, &fieldobj,
                         "Ljava/util/Date;")) {
     ScopedJNIObjectLocal jdate(env, fieldobj);
     long timestamp = 0;
     JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
-    value->SetDoubleT((double)(timestamp / 1000));
+    CefTime cef_time;
+    cef_time.SetDoubleT((double)(timestamp / 1000));
+    cef_time_to_basetime(&cef_time, value);
     return true;
   }
   return false;
@@ -946,7 +940,7 @@ bool CallJNIMethodC_V(JNIEnv* env,
                       jclass cls,
                       jobject obj,
                       const char* method_name,
-                      char16* value) {
+                      char16_t* value) {
   jmethodID methodID = env->GetMethodID(cls, method_name, "()C");
   if (methodID) {
     *value = env->CallCharMethod(obj, methodID);
