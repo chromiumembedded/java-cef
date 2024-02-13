@@ -23,12 +23,14 @@ void X_XMoveResizeWindow(unsigned long browserHandle,
                          unsigned int height) {
   ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
   XMoveResizeWindow(xdisplay, browserHandle, 0, 0, width, height);
+  XFlush(xdisplay);
 }
 
 void X_XReparentWindow(unsigned long browserHandle,
                        unsigned long parentDrawable) {
   ::Display* xdisplay = (::Display*)TempWindow::GetDisplay();
   XReparentWindow(xdisplay, browserHandle, parentDrawable, 0, 0);
+  XFlush(xdisplay);
 }
 
 void X_XSync(bool discard) {

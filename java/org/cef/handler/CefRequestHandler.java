@@ -104,20 +104,6 @@ public interface CefRequestHandler {
             int port, String realm, String scheme, CefAuthCallback callback);
 
     /**
-     * Called on the IO thread when JavaScript requests a specific storage quota size via the
-     * webkitStorageInfo.requestQuota function.
-     *
-     * @param browser The corresponding browser.
-     * @param origin_url Origin of the page making the request.
-     * @param new_size Requested quota size in bytes.
-     * @param callback Call CefCallback.Continue() either in this method or at a later time
-     *         to grant or deny the request.
-     * @return True to handle the request (callback must be executed) or false to cancel.
-     */
-    boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefCallback callback);
-
-    /**
      * Called on the UI thread to handle requests for URLs with an invalid SSL certificate. If
      * "ignore-certificate-errors" command-line switch is set all invalid certificates will be
      * accepted without calling this method.

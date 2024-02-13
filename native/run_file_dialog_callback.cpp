@@ -12,7 +12,6 @@ RunFileDialogCallback::RunFileDialogCallback(JNIEnv* env, jobject jcallback)
     : handle_(env, jcallback) {}
 
 void RunFileDialogCallback::OnFileDialogDismissed(
-    int selected_accept_filter,
     const std::vector<CefString>& file_paths) {
   ScopedJNIEnv env;
   if (!env)
@@ -20,6 +19,5 @@ void RunFileDialogCallback::OnFileDialogDismissed(
 
   ScopedJNIObjectLocal jfilePaths(env, NewJNIStringVector(env, file_paths));
   JNI_CALL_VOID_METHOD(env, handle_, "onFileDialogDismissed",
-                       "(ILjava/util/Vector;)V", selected_accept_filter,
-                       jfilePaths.get());
+                       "(Ljava/util/Vector;)V", jfilePaths.get());
 }

@@ -22,19 +22,17 @@ void ClearSelf(JNIEnv* env, jobject obj) {
 }  // namespace
 
 JNIEXPORT void JNICALL
-Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue(
-    JNIEnv* env,
-    jobject obj,
-    jlong self,
-    jint selectedAcceptFilter,
-    jobject jFilePaths) {
+Java_org_cef_callback_CefFileDialogCallback_1N_N_1Continue(JNIEnv* env,
+                                                           jobject obj,
+                                                           jlong self,
+                                                           jobject jFilePaths) {
   CefRefPtr<CefFileDialogCallback> callback = GetSelf(self);
   if (!callback)
     return;
 
   std::vector<CefString> filePaths;
   GetJNIStringVector(env, jFilePaths, filePaths);
-  callback->Continue(selectedAcceptFilter, filePaths);
+  callback->Continue(filePaths);
 
   ClearSelf(env, obj);
 }

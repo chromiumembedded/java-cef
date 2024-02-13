@@ -4,10 +4,9 @@
 
 package tests.detailed.ui;
 
-import org.cef.CefApp;
-import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.browser.CefBrowser;
+import org.cef.browser.CefDevToolsClient;
 import org.cef.callback.CefPdfPrintCallback;
 import org.cef.callback.CefRunFileDialogCallback;
 import org.cef.callback.CefStringVisitor;
@@ -21,12 +20,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -40,10 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -86,6 +83,7 @@ public class MenuBar extends JMenuBar {
     private final DownloadDialog downloadDialog_;
     private final CefCookieManager cookieManager_;
     private boolean reparentPending_ = false;
+    private CefDevToolsClient devToolsClient_;
 
     public MenuBar(MainFrame owner, CefBrowser browser, ControlPanel control_pane,
             DownloadDialog downloadDialog, CefCookieManager cookieManager) {
@@ -121,8 +119,7 @@ public class MenuBar extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 CefRunFileDialogCallback callback = new CefRunFileDialogCallback() {
                     @Override
-                    public void onFileDialogDismissed(
-                            int selectedAcceptFilter, Vector<String> filePaths) {
+                    public void onFileDialogDismissed(Vector<String> filePaths) {
                         if (!filePaths.isEmpty()) {
                             try {
                                 SaveAs saveContent = new SaveAs(filePaths.get(0));
@@ -158,10 +155,10 @@ public class MenuBar extends JMenuBar {
                 File selectedFile = fc.getSelectedFile();
                 if (selectedFile != null) {
                     CefPdfPrintSettings pdfSettings = new CefPdfPrintSettings();
-                    pdfSettings.header_footer_enabled = true;
-                    // A4 page size
-                    pdfSettings.page_width = 210000;
-                    pdfSettings.page_height = 297000;
+                    pdfSettings.display_header_footer = true;
+                    // letter page size
+                    pdfSettings.paper_width = 8.5;
+                    pdfSettings.paper_height = 11;
                     browser.printToPDF(
                             selectedFile.getAbsolutePath(), pdfSettings, new CefPdfPrintCallback() {
                                 @Override
@@ -383,6 +380,37 @@ public class MenuBar extends JMenuBar {
         });
         testMenu.add(showDevTools);
 
+        JMenu devToolsProtocolMenu = new JMenu("DevTools Protocol");
+        JMenuItem autoDarkMode = devToolsProtocolMenu.add(new JCheckBoxMenuItem("Auto Dark Mode"));
+        autoDarkMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Toggle the auto dark mode override
+                String params = String.format("{ \"enabled\": %s }", autoDarkMode.isSelected());
+                executeDevToolsMethod("Emulation.setAutoDarkModeOverride", params);
+            }
+        });
+        JMenuItem checkContrast = devToolsProtocolMenu.add(new JMenuItem("Check Contrast"));
+        checkContrast.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check contrast, which usually triggers a series of Audits.issueAdded events
+                executeDevToolsMethod("Audits.checkContrast");
+            }
+        });
+        JMenuItem enableCSS = devToolsProtocolMenu.add(new JMenuItem("Enable CSS Agent"));
+        enableCSS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Enable the CSS agent, which usually triggers a series of CSS.styleSheetAdded
+                // events. We can only enable the CSS agent if the DOM agent is enabled first, so we
+                // need to chain the two commands.
+                executeDevToolsMethod("DOM.enable")
+                        .thenCompose(unused -> executeDevToolsMethod("CSS.enable"));
+            }
+        });
+        testMenu.add(devToolsProtocolMenu);
+
         JMenuItem testURLRequest = new JMenuItem("URL Request");
         testURLRequest.addActionListener(new ActionListener() {
             @Override
@@ -442,7 +470,7 @@ public class MenuBar extends JMenuBar {
         newwindow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, null);
+                final MainFrame frame = new MainFrame(OS.isLinux(), false, false, 0, null);
                 frame.setSize(800, 600);
                 frame.setVisible(true);
             }
@@ -493,8 +521,7 @@ public class MenuBar extends JMenuBar {
                 CompletableFuture<BufferedImage> shot = browser.createScreenshot(false);
                 shot.thenAccept((image) -> {
                     System.out.println("Took screenshot asynchronously in "
-                            + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)
-                            + " msecs");
+                            + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) + " msecs");
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -549,6 +576,26 @@ public class MenuBar extends JMenuBar {
         frame.add(label);
         frame.setVisible(true);
         frame.pack();
+    }
+
+    private CompletableFuture<String> executeDevToolsMethod(String methodName) {
+        return executeDevToolsMethod(methodName, null);
+    }
+
+    private CompletableFuture<String> executeDevToolsMethod(
+            String methodName, String paramsAsJson) {
+        if (devToolsClient_ == null) {
+            devToolsClient_ = browser_.getDevToolsClient();
+            devToolsClient_.addEventListener(
+                    (method, json) -> System.out.println("CDP event " + method + ": " + json));
+        }
+
+        return devToolsClient_.executeDevToolsMethod(methodName, paramsAsJson)
+                .handle((error, json) -> {
+                    System.out.println(
+                            "CDP result of " + methodName + ": " + (error != null ? error : json));
+                    return null;
+                });
     }
 
     public void addBookmarkSeparator() {

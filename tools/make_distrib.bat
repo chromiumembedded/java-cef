@@ -75,8 +75,10 @@ copy %OUT_BINARY_PATH%\libGLESv2.dll %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\natives_blob.bin %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\snapshot_blob.bin %DISTRIB_LIB_PATH%
 copy %OUT_BINARY_PATH%\v8_context_snapshot.bin %DISTRIB_LIB_PATH%
+copy %OUT_BINARY_PATH%\vk_swiftshader.dll %DISTRIB_LIB_PATH%
+copy %OUT_BINARY_PATH%\vk_swiftshader_icd.json %DISTRIB_LIB_PATH%
+copy %OUT_BINARY_PATH%\vulkan-1.dll %DISTRIB_LIB_PATH%
 xcopy /sfy %OUT_BINARY_PATH%\*.pak %DISTRIB_LIB_PATH%
-xcopy /sfy %OUT_BINARY_PATH%\swiftshader\* %DISTRIB_LIB_PATH%\swiftshader\
 
 :: Copy documentation to the docs directory.
 xcopy /sfy %OUT_DOCS_PATH%\* %DISTRIB_DOCS_PATH%\

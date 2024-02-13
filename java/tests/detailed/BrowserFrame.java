@@ -4,14 +4,15 @@
 
 package tests.detailed;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
 import org.cef.CefApp;
 import org.cef.browser.CefBrowser;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 public class BrowserFrame extends JFrame {
     private volatile boolean isClosed_ = false;

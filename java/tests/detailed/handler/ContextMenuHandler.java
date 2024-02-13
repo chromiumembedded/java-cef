@@ -4,17 +4,17 @@
 
 package tests.detailed.handler;
 
-import java.awt.Frame;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefMenuModel.MenuId;
 import org.cef.handler.CefContextMenuHandler;
+
+import java.awt.Frame;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;

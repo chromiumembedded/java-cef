@@ -95,19 +95,19 @@ bool g_handling_send_event = false;
   method_exchangeImplementations(originalTerm, swizzledTerm);
 
   g_mouse_monitor_ = [NSEvent
-      addLocalMonitorForEventsMatchingMask:(NSLeftMouseDownMask |
-                                            NSLeftMouseUpMask |
-                                            NSLeftMouseDraggedMask |
-                                            NSRightMouseDownMask |
-                                            NSRightMouseUpMask |
-                                            NSRightMouseDraggedMask |
-                                            NSOtherMouseDownMask |
-                                            NSOtherMouseUpMask |
-                                            NSOtherMouseDraggedMask |
-                                            NSScrollWheelMask |
-                                            NSMouseMovedMask |
-                                            NSMouseEnteredMask |
-                                            NSMouseExitedMask)
+      addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
+                                            NSEventMaskLeftMouseUp |
+                                            NSEventMaskLeftMouseDragged |
+                                            NSEventMaskRightMouseDown |
+                                            NSEventMaskRightMouseUp |
+                                            NSEventMaskRightMouseDragged |
+                                            NSEventMaskOtherMouseDown |
+                                            NSEventMaskOtherMouseUp |
+                                            NSEventMaskOtherMouseDragged |
+                                            NSEventMaskScrollWheel |
+                                            NSEventMaskMouseMoved |
+                                            NSEventMaskMouseEntered |
+                                            NSEventMaskMouseExited)
                                    handler:^(NSEvent* evt) {
                                      // Get corresponding CefWindowHandle of
                                      // Java-Canvas
@@ -141,37 +141,37 @@ bool g_handling_send_event = false;
                                      // Forward mouse event to browsers parent
                                      // (JCEF UI)
                                      switch ([evt type]) {
-                                       case NSLeftMouseDown:
-                                       case NSOtherMouseDown:
-                                       case NSRightMouseDown:
+                                       case NSEventTypeLeftMouseDown:
+                                       case NSEventTypeOtherMouseDown:
+                                       case NSEventTypeRightMouseDown:
                                          [[browser superview] mouseDown:evt];
                                          return evt;
 
-                                       case NSLeftMouseUp:
-                                       case NSOtherMouseUp:
-                                       case NSRightMouseUp:
+                                       case NSEventTypeLeftMouseUp:
+                                       case NSEventTypeOtherMouseUp:
+                                       case NSEventTypeRightMouseUp:
                                          [[browser superview] mouseUp:evt];
                                          return evt;
 
-                                       case NSLeftMouseDragged:
-                                       case NSOtherMouseDragged:
-                                       case NSRightMouseDragged:
+                                       case NSEventTypeLeftMouseDragged:
+                                       case NSEventTypeOtherMouseDragged:
+                                       case NSEventTypeRightMouseDragged:
                                          [[browser superview] mouseDragged:evt];
                                          return evt;
 
-                                       case NSMouseMoved:
+                                       case NSEventTypeMouseMoved:
                                          [[browser superview] mouseMoved:evt];
                                          return evt;
 
-                                       case NSMouseEntered:
+                                       case NSEventTypeMouseEntered:
                                          [[browser superview] mouseEntered:evt];
                                          return evt;
 
-                                       case NSMouseExited:
+                                       case NSEventTypeMouseExited:
                                          [[browser superview] mouseExited:evt];
                                          return evt;
 
-                                       case NSScrollWheel:
+                                       case NSEventTypeScrollWheel:
                                          [[browser superview] scrollWheel:evt];
                                          return evt;
 

@@ -154,7 +154,7 @@ void ResourceRequestHandler::OnResourceLoadComplete(
     CefRefPtr<CefRequest> request,
     CefRefPtr<CefResponse> response,
     CefResourceRequestHandler::URLRequestStatus status,
-    int64 received_content_length) {
+    int64_t received_content_length) {
   ScopedJNIEnv env;
   if (!env)
     return;

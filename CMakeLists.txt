@@ -130,14 +130,20 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "100.0.14+g4e5ba66+chromium-100.0.4896.75")
+  set(CEF_VERSION "119.4.7+g55e15c8+chromium-119.0.6045.199")
 endif()
 
 # Determine the platform.
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
   if("${PROJECT_ARCH}" STREQUAL "arm64")
     set(CEF_PLATFORM "macosarm64")
+  elseif("${PROJECT_ARCH}" STREQUAL "x86_64")
+    set(CEF_PLATFORM "macosx64")
+  elseif("${CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+    set(PROJECT_ARCH "arm64")
+    set(CEF_PLATFORM "macosarm64")
   else()
+    set(PROJECT_ARCH "x86_64")
     set(CEF_PLATFORM "macosx64")
   endif()
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
@@ -160,7 +166,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Download and extract the CEF binary distribution (executes DownloadCEF.cmake).
 include(DownloadCEF)
 DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
-
 
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
@@ -273,12 +278,19 @@ file(COPY "${CEF_ROOT}/README.txt" DESTINATION "${CMAKE_BINARY_DIR}")
 if(OS_WINDOWS)
   set(GS_PLATFORM "win32")
   set(GS_HASHPATH "win/clang-format.exe.sha1")
+  set(GS_OUTPATH "win/clang-format.exe")
 elseif(OS_MACOSX)
   set(GS_PLATFORM "darwin")
-  set(GS_HASHPATH "mac/clang-format.sha1")
+  if("${CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+    set(GS_HASHPATH "mac/clang-format.arm64.sha1")
+  else()
+    set(GS_HASHPATH "mac/clang-format.x64.sha1")
+  endif()
+  set(GS_OUTPATH "mac/clang-format")
 elseif(OS_LINUX)
   set(GS_PLATFORM "linux*")
   set(GS_HASHPATH "linux64/clang-format.sha1")
+  set(GS_OUTPATH "linux64/clang-format")
 endif()
 
 message(STATUS "Downloading clang-format from Google Storage...")
@@ -290,6 +302,7 @@ execute_process(
           "--no_auth"
           "--bucket" "chromium-clang-format"
           "-s" "tools/buildtools/${GS_HASHPATH}"
+          "-o" "tools/buildtools/${GS_OUTPATH}"
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   RESULT_VARIABLE EXECUTE_RV
   )

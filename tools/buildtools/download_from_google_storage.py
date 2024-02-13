@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Download files from Google Storage based on SHA1 sums."""
 
 from __future__ import print_function
@@ -45,9 +44,10 @@ PLATFORM_MAPPING = {
     'aix7': 'aix',
 }
 
-
-class FileNotFoundError(IOError):
-  pass
+if sys.version_info.major == 2:
+  # pylint: disable=redefined-builtin
+  class FileNotFoundError(IOError):
+    pass
 
 
 class InvalidFileError(IOError):
@@ -78,12 +78,11 @@ class Gsutil(object):
   RETRY_BASE_DELAY = 5.0
   RETRY_DELAY_MULTIPLE = 1.3
 
-  def __init__(self, path, boto_path=None, version='4.46'):
+  def __init__(self, path, boto_path=None):
     if not os.path.exists(path):
       raise FileNotFoundError('GSUtil not found in %s' % path)
     self.path = path
     self.boto_path = boto_path
-    self.version = version
 
   def get_sub_env(self):
     env = os.environ.copy()
@@ -100,12 +99,12 @@ class Gsutil(object):
     return env
 
   def call(self, *args):
-    cmd = [sys.executable, self.path, '--force-version', self.version]
+    cmd = [sys.executable, self.path]
     cmd.extend(args)
     return subprocess2.call(cmd, env=self.get_sub_env())
 
   def check_call(self, *args):
-    cmd = [sys.executable, self.path, '--force-version', self.version]
+    cmd = [sys.executable, self.path]
     cmd.extend(args)
     ((out, err), code) = subprocess2.communicate(
         cmd,
@@ -129,7 +128,7 @@ class Gsutil(object):
 
   def check_call_with_retries(self, *args):
     delay = self.RETRY_BASE_DELAY
-    for i in xrange(self.MAX_TRIES):
+    for i in range(self.MAX_TRIES):
       code, out, err = self.check_call(*args)
       if not code or i == self.MAX_TRIES - 1:
         break
@@ -254,28 +253,27 @@ def _downloader_worker_thread(thread_num, q, force, base_url,
         continue
       extract_dir = output_filename[:-len('.tar.gz')]
     if os.path.exists(output_filename) and not force:
-      if not extract or os.path.exists(extract_dir):
-        if get_sha1(output_filename) == input_sha1_sum:
-          continue
-    # Check if file exists.
+      skip = get_sha1(output_filename) == input_sha1_sum
+      if extract:
+        # Additional condition for extract:
+        # 1) extract_dir must exist
+        # 2) .tmp flag file mustn't exist
+        if not os.path.exists(extract_dir):
+          out_q.put('%d> Extract dir %s does not exist, re-downloading...' %
+                    (thread_num, extract_dir))
+          skip = False
+        # .tmp file is created just before extraction and removed just after
+        # extraction. If such file exists, it means the process was terminated
+        # mid-extraction and therefore needs to be extracted again.
+        elif os.path.exists(extract_dir + '.tmp'):
+          out_q.put('%d> Detected tmp flag file for %s, '
+                    're-downloading...' % (thread_num, output_filename))
+          skip = False
+      if skip:
+        continue
+
     file_url = '%s/%s' % (base_url, input_sha1_sum)
-    (code, _, err) = gsutil.check_call('ls', file_url)
-    if code != 0:
-      if code == 404:
-        out_q.put('%d> File %s for %s does not exist, skipping.' % (
-            thread_num, file_url, output_filename))
-        ret_codes.put((1, 'File %s for %s does not exist.' % (
-            file_url, output_filename)))
-      else:
-        # Other error, probably auth related (bad ~/.boto, etc).
-        out_q.put('%d> Failed to fetch file %s for %s, skipping. [Err: %s]' %
-                  (thread_num, file_url, output_filename, err))
-        ret_codes.put((1, 'Failed to fetch file %s for %s. [Err: %s]' %
-                       (file_url, output_filename, err)))
-      continue
-    # Fetch the file.
-    if verbose:
-      out_q.put('%d> Downloading %s...' % (thread_num, output_filename))
+
     try:
       if delete:
         os.remove(output_filename)  # Delete the file if it exists already.
@@ -283,10 +281,30 @@ def _downloader_worker_thread(thread_num, q, force, base_url,
       if os.path.exists(output_filename):
         out_q.put('%d> Warning: deleting %s failed.' % (
             thread_num, output_filename))
+    if verbose:
+      out_q.put('%d> Downloading %s@%s...' % (
+          thread_num, output_filename, input_sha1_sum))
     code, _, err = gsutil.check_call('cp', file_url, output_filename)
     if code != 0:
-      out_q.put('%d> %s' % (thread_num, err))
-      ret_codes.put((code, err))
+      if code == 404:
+        out_q.put('%d> File %s for %s does not exist, skipping.' % (
+            thread_num, file_url, output_filename))
+        ret_codes.put((1, 'File %s for %s does not exist.' % (
+            file_url, output_filename)))
+      elif code == 401:
+        out_q.put(
+            """%d> Failed to fetch file %s for %s due to unauthorized access,
+            skipping. Try running `gsutil.py config` and pass 0 if you don't
+            know your project id.""" % (thread_num, file_url, output_filename))
+        ret_codes.put(
+            (1, 'Failed to fetch file %s for %s due to unauthorized access.' %
+             (file_url, output_filename)))
+      else:
+        # Other error, probably auth related (bad ~/.boto, etc).
+        out_q.put('%d> Failed to fetch file %s for %s, skipping. [Err: %s]' %
+                  (thread_num, file_url, output_filename, err))
+        ret_codes.put((code, 'Failed to fetch file %s for %s. [Err: %s]' %
+                       (file_url, output_filename, err)))
       continue
 
     remote_sha1 = get_sha1(output_filename)
@@ -327,7 +345,9 @@ def _downloader_worker_thread(thread_num, q, force, base_url,
         out_q.put('%d> Extracting %d entries from %s to %s' %
                   (thread_num, len(tar.getmembers()),output_filename,
                    extract_dir))
-        tar.extractall(path=dirname)
+        with open(extract_dir + '.tmp', 'a'):
+          tar.extractall(path=dirname)
+        os.remove(extract_dir + '.tmp')
     # Set executable bit.
     if sys.platform == 'cygwin':
       # Under cygwin, mark all files as executable. The executable flag in
@@ -373,7 +393,7 @@ def _data_exists(input_sha1_sum, output_filename, extract):
     input_sha1_sum: Expected sha1 stored on disk.
     output_filename: The file to potentially download later. Its sha1 will be
         compared to input_sha1_sum.
-    extract: Wheather or not a downloaded file should be extracted. If the file
+    extract: Whether or not a downloaded file should be extracted. If the file
         is not extracted, this just compares the sha1 of the file. If the file
         is to be extracted, this only compares the sha1 of the target archive if
         the target directory already exists. The content of the target directory

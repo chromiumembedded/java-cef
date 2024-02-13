@@ -148,6 +148,14 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
         }
     }
 
+    public void selectAll() {
+        try {
+            N_SelectAll(getNativeRef(null));
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     private final native void N_Dispose(long self);
     private final native long N_GetIdentifier(long self);
     private final native String N_GetURL(long self);
@@ -162,4 +170,5 @@ class CefFrame_N extends CefNativeAdapter implements CefFrame {
     private final native void N_Cut(long self);
     private final native void N_Copy(long self);
     private final native void N_Paste(long self);
+    private final native void N_SelectAll(long self);
 }

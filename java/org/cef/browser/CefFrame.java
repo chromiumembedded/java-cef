@@ -98,4 +98,9 @@ public interface CefFrame {
      * Execute paste in this frame.
      */
     public void paste();
+
+    /**
+     * Execute selectAll in this frame.
+     */
+    public void selectAll();
 }

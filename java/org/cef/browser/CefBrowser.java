@@ -337,18 +337,28 @@ public interface CefBrowser {
     public void stopFinding(boolean clearSelection);
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      */
     public CefBrowser getDevTools();
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      *
      * @param inspectAt a position in the UI which should be inspected.
      */
     public CefBrowser getDevTools(Point inspectAt);
+
+    /**
+     * Get an instance of a client that can be used to leverage the DevTools
+     * protocol. Only one instance per browser is available.
+     *
+     * @see {@link CefDevToolsClient}
+     * @return DevTools client, or null if this browser is not yet created
+     *   or if it is closed or closing
+     */
+    public CefDevToolsClient getDevToolsClient();
 
     /**
      * If a misspelled word is currently selected in an editable node calling
@@ -363,7 +373,7 @@ public interface CefBrowser {
      * <p>
      * If executed on the AWT Event Thread, this returns an immediately resolved {@link
      * java.util.concurrent.CompletableFuture}. If executed from another thread, the {@link
-     * java.util.concurrent.CompletableFuture} returned is resolved as soon as the screenshot 
+     * java.util.concurrent.CompletableFuture} returned is resolved as soon as the screenshot
      * has been taken (which must happen on the event thread).
      * <p>
      * The generated screenshot can either be returned as-is, containing all natively-rendered
@@ -380,4 +390,26 @@ public interface CefBrowser {
      * @throws UnsupportedOperationException if not supported
      */
     public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution);
+
+    /**
+     * Set the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be
+     * lower if the browser cannot generate frames at the requested rate. The
+     * minimum value is 1, and the maximum value is 60 (default 30).
+     *
+     * @param frameRate the maximum frame rate
+     * @throws UnsupportedOperationException if not supported
+     */
+    public void setWindowlessFrameRate(int frameRate);
+
+    /**
+     * Returns the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be lower if the browser cannot
+     * generate frames at the requested rate. The minimum value is 1, and the maximum value is 60
+     * (default 30).
+     *
+     * @return the framerate, 0 if an error occurs
+     * @throws UnsupportedOperationException if not supported
+     */
+    public CompletableFuture<Integer> getWindowlessFrameRate();
 }

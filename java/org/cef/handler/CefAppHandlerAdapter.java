@@ -32,9 +32,10 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
                     continue;
                 }
                 // Arguments with '--', '-' and, on Windows, '/' prefixes are considered switches.
-                int switchCnt = arg.startsWith("--")
-                        ? 2
-                        : arg.startsWith("/") ? 1 : arg.startsWith("-") ? 1 : 0;
+                int switchCnt = arg.startsWith("--") ? 2
+                        : arg.startsWith("/")        ? 1
+                        : arg.startsWith("-")        ? 1
+                                                     : 0;
                 switch (switchCnt) {
                     case 2:
                         // An argument of "--" will terminate switch parsing with all subsequent

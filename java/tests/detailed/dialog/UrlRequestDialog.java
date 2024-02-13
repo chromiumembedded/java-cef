@@ -4,6 +4,11 @@
 
 package tests.detailed.dialog;
 
+import org.cef.network.CefPostData;
+import org.cef.network.CefPostDataElement;
+import org.cef.network.CefRequest;
+import org.cef.network.CefRequest.CefUrlRequestFlags;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -31,11 +36,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-
-import org.cef.network.CefPostData;
-import org.cef.network.CefPostDataElement;
-import org.cef.network.CefRequest;
-import org.cef.network.CefRequest.CefUrlRequestFlags;
 
 @SuppressWarnings("serial")
 public class UrlRequestDialog extends JDialog {

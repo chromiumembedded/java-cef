@@ -4,11 +4,7 @@
 
 package org.cef;
 
-import org.cef.browser.CefBrowser;
-import org.cef.browser.CefBrowserFactory;
-import org.cef.browser.CefFrame;
-import org.cef.browser.CefMessageRouter;
-import org.cef.browser.CefRequestContext;
+import org.cef.browser.*;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefBeforeDownloadCallback;
 import org.cef.callback.CefCallback;
@@ -60,6 +56,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
 
@@ -141,7 +138,16 @@ public class CefClient extends CefClientHandler
             CefRequestContext context) {
         if (isDisposed_)
             throw new IllegalStateException("Can't create browser. CefClient is disposed");
-        return CefBrowserFactory.create(this, url, isOffscreenRendered, isTransparent, context);
+        return CefBrowserFactory.create(
+                this, url, isOffscreenRendered, isTransparent, context, null);
+    }
+
+    public CefBrowser createBrowser(String url, boolean isOffscreenRendered, boolean isTransparent,
+            CefRequestContext context, CefBrowserSettings settings) {
+        if (isDisposed_)
+            throw new IllegalStateException("Can't create browser. CefClient is disposed");
+        return CefBrowserFactory.create(
+                this, url, isOffscreenRendered, isTransparent, context, settings);
     }
 
     @Override
@@ -274,11 +280,10 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean onFileDialog(CefBrowser browser, FileDialogMode mode, String title,
-            String defaultFilePath, Vector<String> acceptFilters, int selectedAcceptFilter,
-            CefFileDialogCallback callback) {
+            String defaultFilePath, Vector<String> acceptFilters, CefFileDialogCallback callback) {
         if (dialogHandler_ != null && browser != null) {
-            return dialogHandler_.onFileDialog(browser, mode, title, defaultFilePath, acceptFilters,
-                    selectedAcceptFilter, callback);
+            return dialogHandler_.onFileDialog(
+                    browser, mode, title, defaultFilePath, acceptFilters, callback);
         }
         return false;
     }
@@ -304,6 +309,12 @@ public class CefClient extends CefClientHandler
     public void onTitleChange(CefBrowser browser, String title) {
         if (displayHandler_ != null && browser != null)
             displayHandler_.onTitleChange(browser, title);
+    }
+
+    @Override
+    public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+        if (displayHandler_ != null && browser != null)
+            displayHandler_.OnFullscreenModeChange(browser, fullscreen);
     }
 
     @Override
@@ -755,6 +766,15 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public void addOnPaintListener(Consumer<CefPaintEvent> listener) {}
+
+    @Override
+    public void setOnPaintListener(Consumer<CefPaintEvent> listener) {}
+
+    @Override
+    public void removeOnPaintListener(Consumer<CefPaintEvent> listener) {}
+
+    @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
         if (browser == null) return false;
 
@@ -817,14 +837,6 @@ public class CefClient extends CefClientHandler
         if (requestHandler_ != null && browser != null)
             return requestHandler_.getAuthCredentials(
                     browser, origin_url, isProxy, host, port, realm, scheme, callback);
-        return false;
-    }
-
-    @Override
-    public boolean onQuotaRequest(
-            CefBrowser browser, String origin_url, long new_size, CefCallback callback) {
-        if (requestHandler_ != null && browser != null)
-            return requestHandler_.onQuotaRequest(browser, origin_url, new_size, callback);
         return false;
     }
 

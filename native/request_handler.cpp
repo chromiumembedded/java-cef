@@ -120,8 +120,8 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIString joriginUrl(env, origin_url);
   ScopedJNIString jhost(env, host);
-  ScopedJNIString jrealm(env, host);
-  ScopedJNIString jscheme(env, host);
+  ScopedJNIString jrealm(env, realm);
+  ScopedJNIString jscheme(env, scheme);
   ScopedJNIAuthCallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
@@ -133,34 +133,6 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
       Boolean, jresult, jbrowser.get(), joriginUrl.get(),
       (isProxy ? JNI_TRUE : JNI_FALSE), jhost.get(), port, jrealm.get(),
       jscheme.get(), jcallback.get());
-
-  if (jresult == JNI_FALSE) {
-    // If the Java method returns "false" the callback won't be used and
-    // the reference can therefore be removed.
-    jcallback.SetTemporary();
-  }
-
-  return (jresult != JNI_FALSE);
-}
-
-bool RequestHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                                    const CefString& origin_url,
-                                    int64 new_size,
-                                    CefRefPtr<CefCallback> callback) {
-  ScopedJNIEnv env;
-  if (!env)
-    return false;
-
-  ScopedJNIBrowser jbrowser(env, browser);
-  ScopedJNIString joriginUrl(env, origin_url);
-  ScopedJNICallback jcallback(env, callback);
-  jboolean jresult = JNI_FALSE;
-
-  JNI_CALL_METHOD(env, handle_, "onQuotaRequest",
-                  "(Lorg/cef/browser/CefBrowser;Ljava/lang/String;"
-                  "JLorg/cef/callback/CefCallback;)Z",
-                  Boolean, jresult, jbrowser.get(), joriginUrl.get(),
-                  (jlong)new_size, jcallback.get());
 
   if (jresult == JNI_FALSE) {
     // If the Java method returns "false" the callback won't be used and

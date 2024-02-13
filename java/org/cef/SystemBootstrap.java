@@ -13,7 +13,9 @@ public class SystemBootstrap {
     /**
      * Simple interface for how a library by name should be loaded.
      */
-    static public interface Loader { public void loadLibrary(String libname); }
+    static public interface Loader {
+        public void loadLibrary(String libname);
+    }
 
     /**
      * Default implementation is to call System.loadLibrary
