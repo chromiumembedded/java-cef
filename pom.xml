@@ -312,7 +312,7 @@
 							</execution>
 							<execution>
 								<id>deploy-jcef</id>
-								<phase>none</phase>
+								<phase>deploy</phase>
 								<goals>
 									<goal>deploy-file</goal>
 								</goals>
