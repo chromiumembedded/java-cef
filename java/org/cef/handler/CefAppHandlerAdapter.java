@@ -89,4 +89,11 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
     public void onScheduleMessagePumpWork(long delay_ms) {
         CefApp.getInstance().doMessageLoopWork(delay_ms);
     }
+
+    @Override
+    public boolean onAlreadyRunningAppRelaunch(
+            CefCommandLine command_line, String current_directory) {
+        // The default implementation does nothing
+        return false;
+    }
 }
