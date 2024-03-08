@@ -23,6 +23,8 @@ class DisplayHandler : public CefDisplayHandler {
                        const CefString& url) override;
   void OnTitleChange(CefRefPtr<CefBrowser> browser,
                      const CefString& title) override;
+  void OnFullscreenModeChange(CefRefPtr<CefBrowser> browser,
+                              bool fullscreen) override;
   bool OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) override;
   void OnStatusMessage(CefRefPtr<CefBrowser> browser,
                        const CefString& value) override;

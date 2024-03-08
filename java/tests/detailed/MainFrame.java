@@ -22,6 +22,8 @@ import org.cef.handler.CefRequestContextHandlerAdapter;
 import org.cef.network.CefCookieManager;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GraphicsConfiguration;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -30,6 +32,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.handler.AppHandler;
@@ -101,6 +104,8 @@ public class MainFrame extends BrowserFrame {
     private boolean browserFocus_ = true;
     private boolean osr_enabled_;
     private boolean transparent_painting_enabled_;
+    private JPanel contentPanel_;
+    private JFrame fullscreenFrame_;
 
     public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled,
             boolean createImmediately, int windowless_frame_rate, String[] args) {
@@ -178,6 +183,10 @@ public class MainFrame extends BrowserFrame {
             public void onStatusMessage(CefBrowser browser, String value) {
                 status_panel_.setStatusText(value);
             }
+            @Override
+            public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+                setBrowserFullscreen(fullscreen);
+            }
         });
 
         // 2.2) To disable/enable navigation buttons and to display a prgress bar
@@ -190,19 +199,25 @@ public class MainFrame extends BrowserFrame {
             @Override
             public void onLoadingStateChange(CefBrowser browser, boolean isLoading,
                     boolean canGoBack, boolean canGoForward) {
-                control_pane_.update(browser, isLoading, canGoBack, canGoForward);
-                status_panel_.setIsInProgress(isLoading);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        control_pane_.update(browser, isLoading, canGoBack, canGoForward);
+                        status_panel_.setIsInProgress(isLoading);
 
-                if (!isLoading && !errorMsg_.isEmpty()) {
-                    browser.loadURL(DataUri.create("text/html", errorMsg_));
-                    errorMsg_ = "";
-                }
+                        if (!isLoading && !errorMsg_.isEmpty()) {
+                            browser.loadURL(DataUri.create("text/html", errorMsg_));
+                            errorMsg_ = "";
+                        }
+                    }
+                });
             }
 
             @Override
             public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
                     String errorText, String failedUrl) {
-                if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED) {
+                if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED
+                        && frame == browser.getMainFrame()) {
                     errorMsg_ = "<html><head>";
                     errorMsg_ += "<title>Error while loading</title>";
                     errorMsg_ += "</head><body>";
@@ -224,8 +239,8 @@ public class MainFrame extends BrowserFrame {
         setBrowser(browser);
 
         // Set up the UI for this example implementation.
-        JPanel contentPanel = createContentPanel();
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
+        contentPanel_ = createContentPanel();
+        getContentPane().add(contentPanel_, BorderLayout.CENTER);
 
         // Clear focus from the browser when the address field gains focus.
         control_pane_.getAddressField().addFocusListener(new FocusAdapter() {
@@ -257,7 +272,7 @@ public class MainFrame extends BrowserFrame {
         if (createImmediately) browser.createImmediately();
 
         // Add the browser to the UI.
-        contentPanel.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
+        contentPanel_.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
 
         MenuBar menuBar = new MenuBar(
                 this, browser, control_pane_, downloadDialog, CefCookieManager.getGlobalManager());
@@ -277,6 +292,8 @@ public class MainFrame extends BrowserFrame {
         menuBar.addBookmark("Spellcheck Test", "client://tests/spellcheck.html");
         menuBar.addBookmark("LocalStorage Test", "client://tests/localstorage.html");
         menuBar.addBookmark("Transparency Test", "client://tests/transparency.html");
+        menuBar.addBookmark("Fullscreen Test",
+                "https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_fullscreen2");
         menuBar.addBookmarkSeparator();
         menuBar.addBookmark(
                 "javachromiumembedded", "https://bitbucket.org/chromiumembedded/java-cef");
@@ -299,5 +316,34 @@ public class MainFrame extends BrowserFrame {
 
     public boolean isTransparentPaintingEnabled() {
         return transparent_painting_enabled_;
+    }
+
+    public void setBrowserFullscreen(boolean fullscreen) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Component browserUI = getBrowser().getUIComponent();
+                if (fullscreen) {
+                    if (fullscreenFrame_ == null) {
+                        fullscreenFrame_ = new JFrame();
+                        fullscreenFrame_.setUndecorated(true);
+                        fullscreenFrame_.setResizable(true);
+                    }
+                    GraphicsConfiguration gc = MainFrame.this.getGraphicsConfiguration();
+                    fullscreenFrame_.setBounds(gc.getBounds());
+                    gc.getDevice().setFullScreenWindow(fullscreenFrame_);
+
+                    contentPanel_.remove(browserUI);
+                    fullscreenFrame_.add(browserUI);
+                    fullscreenFrame_.setVisible(true);
+                    fullscreenFrame_.validate();
+                } else {
+                    fullscreenFrame_.remove(browserUI);
+                    fullscreenFrame_.setVisible(false);
+                    contentPanel_.add(browserUI, BorderLayout.CENTER);
+                    contentPanel_.validate();
+                }
+            }
+        });
     }
 }
