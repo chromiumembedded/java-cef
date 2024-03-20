@@ -312,9 +312,9 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+    public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
         if (displayHandler_ != null && browser != null)
-            displayHandler_.OnFullscreenModeChange(browser, fullscreen);
+            displayHandler_.onFullscreenModeChange(browser, fullscreen);
     }
 
     @Override

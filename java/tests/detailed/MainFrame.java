@@ -184,7 +184,7 @@ public class MainFrame extends BrowserFrame {
                 status_panel_.setStatusText(value);
             }
             @Override
-            public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+            public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
                 setBrowserFullscreen(fullscreen);
             }
         });
