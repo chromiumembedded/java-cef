@@ -50,6 +50,31 @@ void BrowserProcessHandler::OnScheduleMessagePumpWork(int64_t delay_ms) {
                        delay_ms);
 }
 
+bool BrowserProcessHandler::OnAlreadyRunningAppRelaunch(
+    CefRefPtr<CefCommandLine> command_line,
+    const CefString& current_directory) {
+  if (!handle_)
+    return false;
+
+  ScopedJNIEnv env;
+  if (!env)
+    return false;
+
+  ScopedJNIObject<CefCommandLine> jcommandLine(
+      env, command_line, "org/cef/callback/CefCommandLine_N", "CefCommandLine");
+  jcommandLine.SetTemporary();
+  ScopedJNIString jcurrentDirectory(env, current_directory);
+
+  jboolean jresult = 0;
+
+  JNI_CALL_BOOLEAN_METHOD(
+      jresult, env, handle_, "onAlreadyRunningAppRelaunch",
+      "(Lorg/cef/callback/CefCommandLine;Ljava/lang/String;)Z",
+      jcommandLine.get(), jcurrentDirectory.get());
+
+  return jresult;
+}
+
 // static
 CefRefPtr<CefListValue> BrowserProcessHandler::GetMessageRouterConfigs() {
   int idx = 0;

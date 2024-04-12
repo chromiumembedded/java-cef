@@ -312,6 +312,12 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+        if (displayHandler_ != null && browser != null)
+            displayHandler_.onFullscreenModeChange(browser, fullscreen);
+    }
+
+    @Override
     public boolean onTooltip(CefBrowser browser, String text) {
         if (displayHandler_ != null && browser != null) {
             return displayHandler_.onTooltip(browser, text);

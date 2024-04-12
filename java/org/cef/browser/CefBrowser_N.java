@@ -351,9 +351,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
-    public CefFrame getFrame(long identifier) {
+    public CefFrame getFrameByIdentifier(String identifier) {
         try {
-            return N_GetFrame(identifier);
+            return N_GetFrameByIdentifier(identifier);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return null;
@@ -361,9 +361,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
-    public CefFrame getFrame(String name) {
+    public CefFrame getFrameByName(String name) {
         try {
-            return N_GetFrame2(name);
+            return N_GetFrameByName(name);
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
             return null;
@@ -371,7 +371,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
-    public Vector<Long> getFrameIdentifiers() {
+    public Vector<String> getFrameIdentifiers() {
         try {
             return N_GetFrameIdentifiers();
         } catch (UnsatisfiedLinkError ule) {
@@ -839,9 +839,9 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native int N_GetIdentifier();
     private final native CefFrame N_GetMainFrame();
     private final native CefFrame N_GetFocusedFrame();
-    private final native CefFrame N_GetFrame(long identifier);
-    private final native CefFrame N_GetFrame2(String name);
-    private final native Vector<Long> N_GetFrameIdentifiers();
+    private final native CefFrame N_GetFrameByIdentifier(String identifier);
+    private final native CefFrame N_GetFrameByName(String name);
+    private final native Vector<String> N_GetFrameIdentifiers();
     private final native Vector<String> N_GetFrameNames();
     private final native int N_GetFrameCount();
     private final native boolean N_IsPopup();
