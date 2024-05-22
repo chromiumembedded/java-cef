@@ -48,11 +48,13 @@ public abstract class CefAppHandlerAdapter implements CefAppHandler {
                     case 1: {
                         // Switches can optionally have a value specified using the '=' delimiter
                         // (e.g. "-switch=value").
-                        String[] switchVals = arg.substring(switchCnt).split("=");
-                        if (switchVals.length == 2) {
-                            command_line.appendSwitchWithValue(switchVals[0], switchVals[1]);
+                        String switchStr = arg.substring(switchCnt);
+                        int index = switchStr.indexOf('=');
+                        if (index > 0) {
+                            command_line.appendSwitchWithValue(
+                                    switchStr.substring(0, index), switchStr.substring(index + 1));
                         } else {
-                            command_line.appendSwitch(switchVals[0]);
+                            command_line.appendSwitch(switchStr);
                         }
                         break;
                     }
