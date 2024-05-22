@@ -1153,6 +1153,12 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
     tmp.clear();
   }
 
+  GetJNIFieldBoolean(env, cls, obj, "generate_tagged_pdf",
+                     &settings.generate_tagged_pdf);
+
+  GetJNIFieldBoolean(env, cls, obj, "generate_document_outline",
+                     &settings.generate_document_outline);
+
   return settings;
 }
 

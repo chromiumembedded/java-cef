@@ -105,6 +105,16 @@ public class CefPdfPrintSettings {
      */
     public String footer_template;
 
+    /**
+     * Whether or not to generate tagged (accessible) PDF.
+     */
+    public boolean generate_tagged_pdf;
+
+    /**
+     * Whether or not to embed the document outline into the PDF.
+     */
+    public boolean generate_document_outline;
+
     public CefPdfPrintSettings() {}
 
     @Override
@@ -125,6 +135,8 @@ public class CefPdfPrintSettings {
         tmp.display_header_footer = this.display_header_footer;
         tmp.header_template = this.header_template;
         tmp.footer_template = this.footer_template;
+        tmp.generate_tagged_pdf = this.generate_tagged_pdf;
+        tmp.generate_document_outline = this.generate_document_outline;
         return tmp;
     }
 }
