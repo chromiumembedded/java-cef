@@ -103,6 +103,12 @@ public class CefApp extends CefAppHandlerAdapter {
         INITIALIZED,
 
         /**
+         * CEF initialization has failed (for example due to a second process using
+         * the same root_cache_path).
+         */
+        INITIALIZATION_FAILED,
+
+        /**
          * CefApp is in its shutdown process. All CefClients and CefBrowser
          * instances will be disposed. No new CefClient or CefBrowser is allowed to
          * be created. The message loop will be performed until all CefClients and
@@ -424,7 +430,11 @@ public class CefApp extends CefAppHandlerAdapter {
                         }
                     }
 
-                    if (N_Initialize(appHandler_, settings)) setState(CefAppState.INITIALIZED);
+                    if (N_Initialize(appHandler_, settings)) {
+                        setState(CefAppState.INITIALIZED);
+                    } else {
+                        setState(CefAppState.INITIALIZATION_FAILED);
+                    }
                 }
             };
             if (SwingUtilities.isEventDispatchThread())

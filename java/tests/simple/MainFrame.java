@@ -133,7 +133,7 @@ public class MainFrame extends JFrame {
                 address_.setText(url);
             }
             @Override
-            public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+            public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
                 setBrowserFullscreen(fullscreen);
             }
         });

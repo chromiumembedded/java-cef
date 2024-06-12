@@ -33,7 +33,7 @@ public interface CefDisplayHandler {
      * @param browser The browser generating the event.
      * @param fullscreen True if fullscreen mode is on.
      */
-    public void OnFullscreenModeChange(CefBrowser browser, boolean fullscreen);
+    public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen);
 
     /**
      * About to display a tooltip.

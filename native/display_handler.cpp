@@ -119,7 +119,7 @@ void DisplayHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser,
     return;
 
   ScopedJNIBrowser jbrowser(env, browser);
-  JNI_CALL_VOID_METHOD(env, handle_, "OnFullscreenModeChange",
+  JNI_CALL_VOID_METHOD(env, handle_, "onFullscreenModeChange",
                        "(Lorg/cef/browser/CefBrowser;Z)V", jbrowser.get(),
                        (jboolean)fullscreen);
 }
