@@ -686,20 +686,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST,
                jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_FTP_FAILED,
-               jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_SERVICE_UNAVAILABLE, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_TRANSFER_ABORTED, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_FILE_BUSY, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_SYNTAX_ERROR, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_COMMAND_NOT_SUPPORTED, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_FTP_BAD_COMMAND_SEQUENCE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PKCS12_IMPORT_BAD_PASSWORD, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",

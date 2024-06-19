@@ -280,10 +280,11 @@ public class CefClient extends CefClientHandler
 
     @Override
     public boolean onFileDialog(CefBrowser browser, FileDialogMode mode, String title,
-            String defaultFilePath, Vector<String> acceptFilters, CefFileDialogCallback callback) {
+            String defaultFilePath, Vector<String> acceptFilters, Vector<String> acceptExtensions,
+            Vector<String> acceptDescriptions, CefFileDialogCallback callback) {
         if (dialogHandler_ != null && browser != null) {
-            return dialogHandler_.onFileDialog(
-                    browser, mode, title, defaultFilePath, acceptFilters, callback);
+            return dialogHandler_.onFileDialog(browser, mode, title, defaultFilePath, acceptFilters,
+                    acceptExtensions, acceptDescriptions, callback);
         }
         return false;
     }
@@ -371,10 +372,12 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
+    public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
             String suggestedName, CefBeforeDownloadCallback callback) {
         if (downloadHandler_ != null && browser != null)
-            downloadHandler_.onBeforeDownload(browser, downloadItem, suggestedName, callback);
+            return downloadHandler_.onBeforeDownload(
+                    browser, downloadItem, suggestedName, callback);
+        return false;
     }
 
     @Override
@@ -849,8 +852,10 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
-    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {
-        if (requestHandler_ != null) requestHandler_.onRenderProcessTerminated(browser, status);
+    public void onRenderProcessTerminated(
+            CefBrowser browser, TerminationStatus status, int error_code, String error_string) {
+        if (requestHandler_ != null)
+            requestHandler_.onRenderProcessTerminated(browser, status, error_code, error_string);
     }
 
     // CefWindowHandler

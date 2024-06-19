@@ -15,9 +15,11 @@ import org.cef.callback.CefDownloadItemCallback;
  */
 public interface CefDownloadHandler {
     /**
-     * Called before a download begins. By default the download will be canceled.
-     * Execute callback either asynchronously or in this method to continue the download
-     * if desired.
+     * Called before a download begins. Return true and execute |callback| either
+     * asynchronously or in this method to continue or cancel the download.
+     * Return false to proceed with default handling (cancel with Alloy style,
+     * download shelf with Chrome style). Do not keep a reference to
+     * downloadItem outside of this method.
      *
      * @param browser The desired browser.
      * @param downloadItem The item to be downloaded. Do not keep a reference to it outside this
@@ -25,7 +27,7 @@ public interface CefDownloadHandler {
      * @param suggestedName is the suggested name for the download file.
      * @param callback start the download by calling the Continue method
      */
-    public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
+    public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
             String suggestedName, CefBeforeDownloadCallback callback);
 
     /**

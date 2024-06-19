@@ -27,12 +27,15 @@ class ScopedJNIFileDialogCallback
 DialogHandler::DialogHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
-                                 FileDialogMode mode,
-                                 const CefString& title,
-                                 const CefString& default_file_path,
-                                 const std::vector<CefString>& accept_filters,
-                                 CefRefPtr<CefFileDialogCallback> callback) {
+bool DialogHandler::OnFileDialog(
+    CefRefPtr<CefBrowser> browser,
+    FileDialogMode mode,
+    const CefString& title,
+    const CefString& default_file_path,
+    const std::vector<CefString>& accept_filters,
+    const std::vector<CefString>& accept_extensions,
+    const std::vector<CefString>& accept_descriptions,
+    CefRefPtr<CefFileDialogCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
     return false;
@@ -42,6 +45,10 @@ bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
   ScopedJNIString jdefaultFilePath(env, default_file_path);
   ScopedJNIObjectLocal jacceptFilters(env,
                                       NewJNIStringVector(env, accept_filters));
+  ScopedJNIObjectLocal jacceptExtensions(
+      env, NewJNIStringVector(env, accept_extensions));
+  ScopedJNIObjectLocal jacceptDescriptions(
+      env, NewJNIStringVector(env, accept_descriptions));
   ScopedJNIFileDialogCallback jcallback(env, callback);
 
   ScopedJNIObjectResult jmode(env);
@@ -61,9 +68,11 @@ bool DialogHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
       env, handle_, "onFileDialog",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/handler/"
       "CefDialogHandler$FileDialogMode;Ljava/lang/String;Ljava/lang/"
-      "String;Ljava/util/Vector;Lorg/cef/callback/CefFileDialogCallback;)Z",
+      "String;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/cef/"
+      "callback/CefFileDialogCallback;)Z",
       Boolean, jreturn, jbrowser.get(), jmode.get(), jtitle.get(),
-      jdefaultFilePath.get(), jacceptFilters.get(), jcallback.get());
+      jdefaultFilePath.get(), jacceptFilters.get(), jacceptExtensions.get(),
+      jacceptDescriptions.get(), jcallback.get());
 
   if (jreturn == JNI_FALSE) {
     // If the Java method returns "false" the callback won't be used and
