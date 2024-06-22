@@ -83,6 +83,16 @@ public abstract class CefResponse {
     public abstract void setMimeType(String mimeType);
 
     /**
+     * Get the response charset.
+     */
+    public abstract String getCharset();
+
+    /**
+     * Set the response charset.
+     */
+    public abstract void setCharset(String charset);
+
+    /**
      * Get the value for the specified response header field. Use getHeaderMap instead if there
      * might be multiple values.
      * @param name The header name.
