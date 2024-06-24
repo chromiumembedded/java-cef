@@ -164,19 +164,21 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetFocusedFrame(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
- * Method:    N_GetFrame
- * Signature: (J)Lorg/cef/browser/CefFrame;
- */
-JNIEXPORT jobject JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1GetFrame(JNIEnv*, jobject, jlong);
-
-/*
- * Class:     org_cef_browser_CefBrowser_N
- * Method:    N_GetFrame2
+ * Method:    N_GetFrameByIdentifier
  * Signature: (Ljava/lang/String;)Lorg/cef/browser/CefFrame;
  */
 JNIEXPORT jobject JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1GetFrame2(JNIEnv*, jobject, jstring);
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameByIdentifier(JNIEnv*,
+                                                           jobject,
+                                                           jstring);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_GetFrameByName
+ * Signature: (Ljava/lang/String;)Lorg/cef/browser/CefFrame;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameByName(JNIEnv*, jobject, jstring);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N

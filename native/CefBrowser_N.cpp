@@ -1086,21 +1086,6 @@ void OnAfterParentChanged(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-jobject NewJNILongVector(JNIEnv* env, const std::vector<int64_t>& vals) {
-  ScopedJNIObjectLocal jvector(env, "java/util/Vector");
-  if (!jvector)
-    return nullptr;
-
-  std::vector<int64_t>::const_iterator iter;
-  for (iter = vals.begin(); iter != vals.end(); ++iter) {
-    ScopedJNIObjectLocal argument(
-        env, NewJNIObject(env, "java/lang/Long", "(J)V", (jlong)*iter));
-    JNI_CALL_VOID_METHOD(env, jvector, "addElement", "(Ljava/lang/Object;)V",
-                         argument.get());
-  }
-  return jvector.Release();
-}
-
 CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
   CefString tmp;
   CefPdfPrintSettings settings;
@@ -1167,6 +1152,12 @@ CefPdfPrintSettings GetJNIPdfPrintSettings(JNIEnv* env, jobject obj) {
     CefString(&settings.footer_template) = tmp;
     tmp.clear();
   }
+
+  GetJNIFieldBoolean(env, cls, obj, "generate_tagged_pdf",
+                     &settings.generate_tagged_pdf);
+
+  GetJNIFieldBoolean(env, cls, obj, "generate_document_outline",
+                     &settings.generate_document_outline);
 
   return settings;
 }
@@ -1369,11 +1360,12 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetFocusedFrame(JNIEnv* env,
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1GetFrame(JNIEnv* env,
-                                               jobject obj,
-                                               jlong identifier) {
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameByIdentifier(JNIEnv* env,
+                                                           jobject obj,
+                                                           jstring identifier) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, nullptr);
-  CefRefPtr<CefFrame> frame = browser->GetFrame(identifier);
+  CefRefPtr<CefFrame> frame =
+      browser->GetFrameByIdentifier(GetJNIString(env, identifier));
   if (!frame)
     return nullptr;
   ScopedJNIFrame jframe(env, frame);
@@ -1381,11 +1373,11 @@ Java_org_cef_browser_CefBrowser_1N_N_1GetFrame(JNIEnv* env,
 }
 
 JNIEXPORT jobject JNICALL
-Java_org_cef_browser_CefBrowser_1N_N_1GetFrame2(JNIEnv* env,
-                                                jobject obj,
-                                                jstring name) {
+Java_org_cef_browser_CefBrowser_1N_N_1GetFrameByName(JNIEnv* env,
+                                                     jobject obj,
+                                                     jstring name) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, nullptr);
-  CefRefPtr<CefFrame> frame = browser->GetFrame(GetJNIString(env, name));
+  CefRefPtr<CefFrame> frame = browser->GetFrameByName(GetJNIString(env, name));
   if (!frame)
     return nullptr;
   ScopedJNIFrame jframe(env, frame);
@@ -1402,9 +1394,9 @@ JNIEXPORT jobject JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1GetFrameIdentifiers(JNIEnv* env,
                                                           jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, nullptr);
-  std::vector<int64_t> identifiers;
+  std::vector<CefString> identifiers;
   browser->GetFrameIdentifiers(identifiers);
-  return NewJNILongVector(env, identifiers);
+  return NewJNIStringVector(env, identifiers);
 }
 
 JNIEXPORT jobject JNICALL
