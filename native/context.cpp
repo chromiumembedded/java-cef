@@ -24,6 +24,9 @@ Context* g_context = nullptr;
 CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
   CefString tmp;
   CefSettings settings;
+
+  settings.disable_signal_handlers = true;
+
   if (!obj)
     return settings;
 
