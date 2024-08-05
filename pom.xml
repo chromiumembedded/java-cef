@@ -722,12 +722,12 @@
 				</plugins>
 			</build>
 		</profile>
-
 		<profile>
-			<id>generate-mac</id>
+			<id>generate-mac-amd64</id>
 			<activation>
 				<os>
 					<family>mac</family>
+                    <arch>x86_64</arch>
 				</os>
 			</activation>
 			<properties>
@@ -753,11 +753,14 @@
 									<environmentVariables>
 									</environmentVariables>
 									<options>
+                                        <option>-DPROJECT_ARCH=x86_64</option>
 										<option>-DCMAKE_BUILD_TYPE=Release</option>
 										<option>-DJCEF_VERSION=${project.version}</option>
 										<option>-DJCEF_COMMIT_NUMBER=${git.total.commit.count}</option>
 										<option>-DJCEF_COMMIT_HASH=${git.commit.id}</option>
-									</options>
+                                        <option>-DENACTOR_CODE_SIGN_IDENTITY=${enactor.code.sign.identity}</option>
+                                        <option>-DENACTOR_DEVELOPMENT_TEAM=${enactor.development.team}</option>
+									</options>	
 								</configuration>
 							</execution>
 							<execution>
@@ -839,7 +842,7 @@
 							</execution>
 						</executions>
 						<configuration>
-						    <finalName>chromium-binaries-mac</finalName>
+						    <finalName>chromium-binaries-${distribution.arch}</finalName>
 							<descriptors>
 								<descriptor>assemble-mac-os.xml</descriptor>
 							</descriptors>
@@ -876,7 +879,7 @@
 									<goal>deploy-file</goal>
 								</goals>
 								<configuration>
-									<file>${basedir}/target/chromium-binaries-mac.zip</file>
+									<file>${basedir}/target/chromium-binaries-${distribution.arch}.zip</file>
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
 									<groupId>com.enactor.chromium</groupId>
@@ -890,6 +893,179 @@
 				</plugins>
 			</build>
 		</profile>
+        <profile>
+            <id>generate-mac-arm64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>arm64</arch>
+                </os>
+            </activation>
+            <properties>
+                <distribution.folder>macosx64</distribution.folder>
+                <distribution.arch>macos-arm64</distribution.arch>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.googlecode.cmake-maven-project</groupId>
+                        <artifactId>cmake-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>cmake-generate-mac</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <sourcePath>${basedir}</sourcePath>
+                                    <targetPath>${basedir}/jcef_build</targetPath>
+                                    <generator>Xcode</generator>
+                                    <classifier>mac-x86_64</classifier>
+                                    <environmentVariables>
+                                    </environmentVariables>
+                                    <options>
+                                        <option>-DPROJECT_ARCH=arm64</option>
+                                        <option>-DCMAKE_BUILD_TYPE=Release</option>
+                                        <option>-DJCEF_VERSION=${project.version}</option>
+                                        <option>-DJCEF_COMMIT_NUMBER=${git.total.commit.count}</option>
+                                        <option>-DJCEF_COMMIT_HASH=${git.commit.id}</option>
+                                        <option>-DENACTOR_CODE_SIGN_IDENTITY=${enactor.code.sign.identity}</option>
+                                        <option>-DENACTOR_DEVELOPMENT_TEAM=${enactor.development.team}</option>
+                                    </options>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>cmake-compile-mac</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <config>Release</config>
+                                    <projectDirectory>${basedir}/jcef_build</projectDirectory>
+                                    <classifier>mac-x86_64</classifier>
+                                    <environmentVariables>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <exec dir="${basedir}/tools" executable="/bin/bash">
+                                            <arg value="make_distrib.sh" />
+                                            <arg value="macosx64" />
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy-jcef</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${basedir}/jcef_build/native/Release/jcef.jar/</file>
+                                    <groupId>com.enactor.core</groupId>
+                                    <artifactId>jcef</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-jcef-test</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${basedir}/jcef_build/native/Release/jcef-tests.jar/</file>
+                                    <groupId>com.enactor.core</groupId>
+                                    <artifactId>jcef-tests</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <finalName>chromium-binaries-${distribution.arch}</finalName>
+                            <descriptors>
+                                <descriptor>assemble-mac-os.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <skip>${skip.deploy}</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>deploy-jcef</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${basedir}/jcef_build/native/Release/jcef.jar</file>
+                                    <repositoryId>${repository.id}</repositoryId>
+                                    <url>${repository.url}</url>
+                                    <groupId>com.enactor.core</groupId>
+                                    <artifactId>jcef</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-native-binaries</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${basedir}/target/chromium-binaries-${distribution.arch}.zip</file>
+                                    <repositoryId>${repository.id}</repositoryId>
+                                    <url>${repository.url}</url>
+                                    <groupId>com.enactor.chromium</groupId>
+                                    <artifactId>mac-binaries</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>zip</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
 	</profiles>
 	<dependencies>
 		<dependency>
