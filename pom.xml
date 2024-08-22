@@ -883,8 +883,9 @@
 									<repositoryId>${repository.id}</repositoryId>
 									<url>${repository.url}</url>
 									<groupId>com.enactor.chromium</groupId>
-									<artifactId>mac-binaries-${distribution.arch}</artifactId>
+									<artifactId>mac-binaries</artifactId>
 									<version>${project.version}</version>
+									<classifier>${distribution.arch}</classifier>
 									<packaging>zip</packaging>
 								</configuration>
 							</execution>
@@ -1054,8 +1055,9 @@
                                     <repositoryId>${repository.id}</repositoryId>
                                     <url>${repository.url}</url>
                                     <groupId>com.enactor.chromium</groupId>
-                                    <artifactId>mac-binaries-${distribution.arch}</artifactId>
+                                    <artifactId>mac-binaries</artifactId>
                                     <version>${project.version}</version>
+									<classifier>${distribution.arch}</classifier>
                                     <packaging>zip</packaging>
                                 </configuration>
                             </execution>
