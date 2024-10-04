@@ -106,9 +106,38 @@ public class CefSettings {
      * The location where cache data will be stored on disk. If empty an in-memory
      * cache will be used for some features and a temporary disk cache for others.
      * HTML5 databases such as localStorage will only persist across sessions if a
-     * cache path is specified.
+     * cache path is specified. If this is set and root_cache_path is also set, the cache_path
+     * directory must reside within root_cache_path.
      */
     public String cache_path = null;
+
+    /**
+     * The root directory for installation-specific data and the parent directory
+     * for profile-specific data. All CefSettings.cache_path and
+     * CefRequestContextSettings.cache_path values must have this parent
+     * directory in common. If this value is empty and CefSettings.cache_path is
+     * non-empty then it will default to the CefSettings.cache_path value. Any
+     * non-empty value must be an absolute path. If both values are empty then
+     * the default platform-specific directory will be used
+     * ("~/.config/cef_user_data" directory on Linux, "~/Library/Application
+     * Support/CEF/User Data" directory on MacOS, "AppData\Local\CEF\User Data"
+     * directory under the user profile directory on Windows). Use of the default
+     * directory is not recommended in production applications (see below).
+     *
+     * Multiple application instances writing to the same root_cache_path
+     * directory could result in data corruption. A process singleton lock based
+     * on the root_cache_path value is therefore used to protect against this.
+     * This singleton behavior applies to all CEF-based applications using
+     * version 120 or newer. You should customize root_cache_path for your
+     * application and implement CefAppHandler::
+     * onAlreadyRunningAppRelaunch, which will then be called on any app relaunch
+     * with the same root_cache_path value.
+     *
+     * Failure to set the root_cache_path value correctly may result in startup
+     * crashes or other unexpected behaviors (for example, the sandbox blocking
+     * read/write access to certain files).
+     */
+    public String root_cache_path = null;
 
     /**
      * To persist session cookies (cookies without an expiry date or validity
@@ -245,6 +274,7 @@ public class CefSettings {
         tmp.windowless_rendering_enabled = windowless_rendering_enabled;
         tmp.command_line_args_disabled = command_line_args_disabled;
         tmp.cache_path = cache_path;
+        tmp.root_cache_path = root_cache_path;
         tmp.persist_session_cookies = persist_session_cookies;
         tmp.user_agent = user_agent;
         tmp.user_agent_product = user_agent_product;

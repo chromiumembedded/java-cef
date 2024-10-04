@@ -120,8 +120,8 @@ bool RequestHandler::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIString joriginUrl(env, origin_url);
   ScopedJNIString jhost(env, host);
-  ScopedJNIString jrealm(env, host);
-  ScopedJNIString jscheme(env, host);
+  ScopedJNIString jrealm(env, realm);
+  ScopedJNIString jscheme(env, scheme);
   ScopedJNIAuthCallback jcallback(env, callback);
   jboolean jresult = JNI_FALSE;
 
@@ -175,7 +175,9 @@ bool RequestHandler::OnCertificateError(CefRefPtr<CefBrowser> browser,
 }
 
 void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                               TerminationStatus status) {
+                                               TerminationStatus status,
+                                               int error_code,
+                                               const CefString& error_string) {
   // Forward request to ClientHandler to make the message_router_ happy.
   CefRefPtr<ClientHandler> client =
       (ClientHandler*)browser->GetHost()->GetClient().get();
@@ -197,11 +199,17 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
              TS_PROCESS_CRASHED, jstatus);
     JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
              TS_PROCESS_OOM, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
+             TS_LAUNCH_FAILED, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
+             TS_INTEGRITY_FAILURE, jstatus);
   }
+
+  ScopedJNIString jerrorString(env, error_string);
 
   JNI_CALL_VOID_METHOD(
       env, handle_, "onRenderProcessTerminated",
       "(Lorg/cef/browser/CefBrowser;"
       "Lorg/cef/handler/CefRequestHandler$TerminationStatus;)V",
-      jbrowser.get(), jstatus.get());
+      jbrowser.get(), jstatus.get(), error_code, jerrorString.get());
 }

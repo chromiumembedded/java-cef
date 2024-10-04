@@ -19,9 +19,9 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Dispose(JNIEnv*,
 /*
  * Class:     org_cef_browser_CefFrame_N
  * Method:    N_GetIdentifier
- * Signature: (J)J
+ * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jlong JNICALL
+JNIEXPORT jstring JNICALL
 Java_org_cef_browser_CefFrame_1N_N_1GetIdentifier(JNIEnv*, jobject, jlong);
 
 /*
@@ -134,6 +134,15 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Copy(JNIEnv*,
 JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Paste(JNIEnv*,
                                                                  jobject,
                                                                  jlong);
+
+/*
+ * Class:     org_cef_browser_CefFrame_N
+ * Method:    N_SelectAll
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1SelectAll(JNIEnv*,
+                                                                     jobject,
+                                                                     jlong);
 
 #ifdef __cplusplus
 }

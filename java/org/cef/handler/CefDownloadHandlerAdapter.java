@@ -16,8 +16,10 @@ import org.cef.callback.CefDownloadItemCallback;
  */
 public abstract class CefDownloadHandlerAdapter implements CefDownloadHandler {
     @Override
-    public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
-            String suggestedName, CefBeforeDownloadCallback callback) {}
+    public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
+            String suggestedName, CefBeforeDownloadCallback callback) {
+        return false;
+    }
 
     @Override
     public void onDownloadUpdated(

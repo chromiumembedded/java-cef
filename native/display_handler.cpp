@@ -41,6 +41,18 @@ void DisplayHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
                        jbrowser.get(), jtitle.get());
 }
 
+void DisplayHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser,
+                                            bool fullscreen) {
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  JNI_CALL_VOID_METHOD(env, handle_, "onFullscreenModeChange",
+                       "(Lorg/cef/browser/CefBrowser;Z)V", jbrowser.get(),
+                       (jboolean)fullscreen);
+}
+
 bool DisplayHandler::OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) {
   ScopedJNIEnv env;
   if (!env)

@@ -6,6 +6,7 @@ package tests.detailed;
 
 import org.cef.CefApp;
 import org.cef.CefApp.CefVersion;
+import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 import org.cef.CefSettings;
 import org.cef.CefSettings.ColorType;
@@ -21,6 +22,8 @@ import org.cef.handler.CefRequestContextHandlerAdapter;
 import org.cef.network.CefCookieManager;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GraphicsConfiguration;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -29,6 +32,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.handler.AppHandler;
@@ -58,6 +62,7 @@ public class MainFrame extends BrowserFrame {
         boolean osrEnabledArg = false;
         boolean transparentPaintingEnabledArg = false;
         boolean createImmediately = false;
+        int windowless_frame_rate = 0;
         for (String arg : args) {
             arg = arg.toLowerCase();
             if (arg.equals("--off-screen-rendering-enabled")) {
@@ -66,6 +71,8 @@ public class MainFrame extends BrowserFrame {
                 transparentPaintingEnabledArg = true;
             } else if (arg.equals("--create-immediately")) {
                 createImmediately = true;
+            } else if (arg.equals("--windowless-frame-rate-60")) {
+                windowless_frame_rate = 60;
             }
         }
 
@@ -73,10 +80,21 @@ public class MainFrame extends BrowserFrame {
 
         // MainFrame keeps all the knowledge to display the embedded browser
         // frame.
-        final MainFrame frame = new MainFrame(
-                osrEnabledArg, transparentPaintingEnabledArg, createImmediately, args);
+        final MainFrame frame = new MainFrame(osrEnabledArg, transparentPaintingEnabledArg,
+                createImmediately, windowless_frame_rate, args);
         frame.setSize(800, 600);
         frame.setVisible(true);
+
+        if (osrEnabledArg && windowless_frame_rate != 0) {
+            frame.getBrowser().getWindowlessFrameRate().thenAccept(
+                    framerate -> System.out.println("Framerate is:" + framerate));
+
+            frame.getBrowser().setWindowlessFrameRate(2);
+            frame.getBrowser().getWindowlessFrameRate().thenAccept(
+                    framerate -> System.out.println("Framerate is:" + framerate));
+
+            frame.getBrowser().setWindowlessFrameRate(windowless_frame_rate);
+        }
     }
 
     private final CefClient client_;
@@ -86,9 +104,11 @@ public class MainFrame extends BrowserFrame {
     private boolean browserFocus_ = true;
     private boolean osr_enabled_;
     private boolean transparent_painting_enabled_;
+    private JPanel contentPanel_;
+    private JFrame fullscreenFrame_;
 
     public MainFrame(boolean osrEnabled, boolean transparentPaintingEnabled,
-            boolean createImmediately, String[] args) {
+            boolean createImmediately, int windowless_frame_rate, String[] args) {
         this.osr_enabled_ = osrEnabled;
         this.transparent_painting_enabled_ = transparentPaintingEnabled;
 
@@ -163,6 +183,10 @@ public class MainFrame extends BrowserFrame {
             public void onStatusMessage(CefBrowser browser, String value) {
                 status_panel_.setStatusText(value);
             }
+            @Override
+            public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+                setBrowserFullscreen(fullscreen);
+            }
         });
 
         // 2.2) To disable/enable navigation buttons and to display a prgress bar
@@ -175,19 +199,25 @@ public class MainFrame extends BrowserFrame {
             @Override
             public void onLoadingStateChange(CefBrowser browser, boolean isLoading,
                     boolean canGoBack, boolean canGoForward) {
-                control_pane_.update(browser, isLoading, canGoBack, canGoForward);
-                status_panel_.setIsInProgress(isLoading);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        control_pane_.update(browser, isLoading, canGoBack, canGoForward);
+                        status_panel_.setIsInProgress(isLoading);
 
-                if (!isLoading && !errorMsg_.isEmpty()) {
-                    browser.loadURL(DataUri.create("text/html", errorMsg_));
-                    errorMsg_ = "";
-                }
+                        if (!isLoading && !errorMsg_.isEmpty()) {
+                            browser.loadURL(DataUri.create("text/html", errorMsg_));
+                            errorMsg_ = "";
+                        }
+                    }
+                });
             }
 
             @Override
             public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
                     String errorText, String failedUrl) {
-                if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED) {
+                if (errorCode != ErrorCode.ERR_NONE && errorCode != ErrorCode.ERR_ABORTED
+                        && frame == browser.getMainFrame()) {
                     errorMsg_ = "<html><head>";
                     errorMsg_ += "<title>Error while loading</title>";
                     errorMsg_ += "</head><body>";
@@ -200,14 +230,17 @@ public class MainFrame extends BrowserFrame {
             }
         });
 
+        CefBrowserSettings browserSettings = new CefBrowserSettings();
+        browserSettings.windowless_frame_rate = windowless_frame_rate;
+
         // Create the browser.
-        CefBrowser browser = client_.createBrowser(
-                "http://www.google.com", osrEnabled, null);
+        CefBrowser browser = client_.createBrowser("http://www.google.com", osrEnabled,
+                transparentPaintingEnabled, null, browserSettings);
         setBrowser(browser);
 
         // Set up the UI for this example implementation.
-        JPanel contentPanel = createContentPanel();
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
+        contentPanel_ = createContentPanel();
+        getContentPane().add(contentPanel_, BorderLayout.CENTER);
 
         // Clear focus from the browser when the address field gains focus.
         control_pane_.getAddressField().addFocusListener(new FocusAdapter() {
@@ -239,6 +272,7 @@ public class MainFrame extends BrowserFrame {
         if (createImmediately) browser.createImmediately();
 
         // Add the browser to the UI.
+        contentPanel_.add(getBrowser().getUIComponent(), BorderLayout.CENTER);
 
         MenuBar menuBar = new MenuBar(
                 this, browser, control_pane_, downloadDialog, CefCookieManager.getGlobalManager());
@@ -258,6 +292,8 @@ public class MainFrame extends BrowserFrame {
         menuBar.addBookmark("Spellcheck Test", "client://tests/spellcheck.html");
         menuBar.addBookmark("LocalStorage Test", "client://tests/localstorage.html");
         menuBar.addBookmark("Transparency Test", "client://tests/transparency.html");
+        menuBar.addBookmark("Fullscreen Test",
+                "https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_fullscreen2");
         menuBar.addBookmarkSeparator();
         menuBar.addBookmark(
                 "javachromiumembedded", "https://bitbucket.org/chromiumembedded/java-cef");
@@ -280,5 +316,34 @@ public class MainFrame extends BrowserFrame {
 
     public boolean isTransparentPaintingEnabled() {
         return transparent_painting_enabled_;
+    }
+
+    public void setBrowserFullscreen(boolean fullscreen) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Component browserUI = getBrowser().getUIComponent();
+                if (fullscreen) {
+                    if (fullscreenFrame_ == null) {
+                        fullscreenFrame_ = new JFrame();
+                        fullscreenFrame_.setUndecorated(true);
+                        fullscreenFrame_.setResizable(true);
+                    }
+                    GraphicsConfiguration gc = MainFrame.this.getGraphicsConfiguration();
+                    fullscreenFrame_.setBounds(gc.getBounds());
+                    gc.getDevice().setFullScreenWindow(fullscreenFrame_);
+
+                    contentPanel_.remove(browserUI);
+                    fullscreenFrame_.add(browserUI);
+                    fullscreenFrame_.setVisible(true);
+                    fullscreenFrame_.validate();
+                } else {
+                    fullscreenFrame_.remove(browserUI);
+                    fullscreenFrame_.setVisible(false);
+                    contentPanel_.add(browserUI, BorderLayout.CENTER);
+                    contentPanel_.validate();
+                }
+            }
+        });
     }
 }

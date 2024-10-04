@@ -17,7 +17,7 @@ class DownloadHandler : public CefDownloadHandler {
   DownloadHandler(JNIEnv* env, jobject handler);
 
   // CefDownloadHandler methods
-  virtual void OnBeforeDownload(
+  virtual bool OnBeforeDownload(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
       const CefString& suggested_name,

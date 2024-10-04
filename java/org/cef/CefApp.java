@@ -8,16 +8,11 @@ import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.handler.CefAppHandler;
 import org.cef.handler.CefAppHandlerAdapter;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 /**
  * Exposes static methods for managing the global CEF context.
@@ -101,6 +96,12 @@ public class CefApp extends CefAppHandlerAdapter {
          * message loop is running. You can use all classes and methods of JCEF now.
          */
         INITIALIZED,
+
+        /**
+         * CEF initialization has failed (for example due to a second process using
+         * the same root_cache_path).
+         */
+        INITIALIZATION_FAILED,
 
         /**
          * CefApp is in its shutdown process. All CefClients and CefBrowser

@@ -44,6 +44,11 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.cache_path) = tmp;
     tmp.clear();
   }
+  if (GetJNIFieldString(env, cls, obj, "root_cache_path", &tmp) &&
+      !tmp.empty()) {
+    CefString(&settings.root_cache_path) = tmp;
+    tmp.clear();
+  }
   GetJNIFieldBoolean(env, cls, obj, "persist_session_cookies",
                      &settings.persist_session_cookies);
   if (GetJNIFieldString(env, cls, obj, "user_agent", &tmp) && !tmp.empty()) {

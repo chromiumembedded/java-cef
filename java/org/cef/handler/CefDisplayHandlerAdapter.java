@@ -25,6 +25,11 @@ public abstract class CefDisplayHandlerAdapter implements CefDisplayHandler {
     }
 
     @Override
+    public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+        return;
+    }
+
+    @Override
     public boolean onTooltip(CefBrowser browser, String text) {
         return false;
     }

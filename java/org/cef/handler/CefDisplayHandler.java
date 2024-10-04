@@ -29,6 +29,13 @@ public interface CefDisplayHandler {
     public void onTitleChange(CefBrowser browser, String title);
 
     /**
+     * Browser fullscreen mode changed.
+     * @param browser The browser generating the event.
+     * @param fullscreen True if fullscreen mode is on.
+     */
+    public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen);
+
+    /**
      * About to display a tooltip.
      * @param browser The browser generating the event.
      * @param text Contains the text that will be displayed in the tooltip.

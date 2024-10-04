@@ -14,11 +14,11 @@ public interface CefFrame {
     void dispose();
 
     /**
-     * Returns the globally unique identifier for this frame or < 0 if the
+     * Returns the globally unique identifier for this frame or an empty string if the
      * underlying frame does not yet exist.
      * @return The frame identifier
      */
-    long getIdentifier();
+    String getIdentifier();
 
     /**
      * Emits the URL currently loaded in this frame.
@@ -98,4 +98,9 @@ public interface CefFrame {
      * Execute paste in this frame.
      */
     public void paste();
+
+    /**
+     * Execute selectAll in this frame.
+     */
+    public void selectAll();
 }

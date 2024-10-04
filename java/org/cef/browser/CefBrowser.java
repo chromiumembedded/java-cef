@@ -14,8 +14,7 @@ import org.cef.handler.CefWindowHandler;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
-import java.awt.Component;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.concurrent.CompletableFuture;
@@ -119,20 +118,20 @@ public interface CefBrowser {
      * @param identifier The unique frame identifier
      * @return The frame or NULL if not found
      */
-    public CefFrame getFrame(long identifier);
+    public CefFrame getFrameByIdentifier(String identifier);
 
     /**
      * Returns the frame with the specified name, or NULL if not found.
      * @param name The specified name
      * @return The frame or NULL if not found
      */
-    public CefFrame getFrame(String name);
+    public CefFrame getFrameByName(String name);
 
     /**
      * Returns the identifiers of all existing frames.
      * @return All identifiers of existing frames.
      */
-    public Vector<Long> getFrameIdentifiers();
+    public Vector<String> getFrameIdentifiers();
 
     /**
      * Returns the names of all existing frames.
@@ -331,18 +330,28 @@ public interface CefBrowser {
     public void stopFinding(boolean clearSelection);
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      */
     public CefBrowser getDevTools();
 
     /**
-     * Get an instance of the dev tools to be displayed in its own window or to be
+     * Get an instance of the DevTools to be displayed in its own window or to be
      * embedded within your UI. Only one instance per browser is available.
      *
      * @param inspectAt a position in the UI which should be inspected.
      */
     public CefBrowser getDevTools(Point inspectAt);
+
+    /**
+     * Get an instance of a client that can be used to leverage the DevTools
+     * protocol. Only one instance per browser is available.
+     *
+     * @see {@link CefDevToolsClient}
+     * @return DevTools client, or null if this browser is not yet created
+     *   or if it is closed or closing
+     */
+    public CefDevToolsClient getDevToolsClient();
 
     /**
      * If a misspelled word is currently selected in an editable node calling
@@ -374,4 +383,26 @@ public interface CefBrowser {
      * @throws UnsupportedOperationException if not supported
      */
     public CompletableFuture<BufferedImage> createScreenshot(boolean nativeResolution);
+
+    /**
+     * Set the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be
+     * lower if the browser cannot generate frames at the requested rate. The
+     * minimum value is 1, and the maximum value is 60 (default 30).
+     *
+     * @param frameRate the maximum frame rate
+     * @throws UnsupportedOperationException if not supported
+     */
+    public void setWindowlessFrameRate(int frameRate);
+
+    /**
+     * Returns the maximum rate in frames per second (fps) that {@code CefRenderHandler::onPaint}
+     * will be called for a windowless browser. The actual fps may be lower if the browser cannot
+     * generate frames at the requested rate. The minimum value is 1, and the maximum value is 60
+     * (default 30).
+     *
+     * @return the framerate, 0 if an error occurs
+     * @throws UnsupportedOperationException if not supported
+     */
+    public CompletableFuture<Integer> getWindowlessFrameRate();
 }

@@ -117,8 +117,6 @@ cmake_minimum_required(VERSION 3.19)
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
-
 # Project name.
 project(jcef)
 
@@ -132,12 +130,12 @@ set_property(GLOBAL PROPERTY OS_FOLDERS ON)
 
 # Specify the CEF branch
 if(NOT DEFINED CEF_BRANCH)
-  set(CEF_BRANCH "5845")
+  set(CEF_BRANCH "6478")
 endif()
 
 # Specify the CEF distribution version.
 if(NOT DEFINED CEF_VERSION)
-  set(CEF_VERSION "116.0.27+gd8c85ac+chromium-116.0.5845.190")
+  set(CEF_VERSION "126.2.19+ga5d51ba+chromium-126.0.6478.183")
 endif()
 
 # Determine the platform.

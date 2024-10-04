@@ -27,14 +27,14 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Dispose(JNIEnv* env,
   ClearSelf(env, obj);
 }
 
-JNIEXPORT jlong JNICALL
+JNIEXPORT jstring JNICALL
 Java_org_cef_browser_CefFrame_1N_N_1GetIdentifier(JNIEnv* env,
                                                   jobject obj,
                                                   jlong self) {
   CefRefPtr<CefFrame> frame = GetSelf(self);
   if (!frame)
-    return (jlong)-1;
-  return (jlong)frame->GetIdentifier();
+    return nullptr;
+  return NewJNIString(env, frame->GetIdentifier());
 }
 
 JNIEXPORT jstring JNICALL
@@ -163,4 +163,15 @@ JNIEXPORT void JNICALL Java_org_cef_browser_CefFrame_1N_N_1Paste(JNIEnv* env,
     return;
 
   frame->Paste();
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefFrame_1N_N_1SelectAll(JNIEnv* env,
+                                              jobject obj,
+                                              jlong self) {
+  CefRefPtr<CefFrame> frame = GetSelf(self);
+  if (!frame)
+    return;
+
+  frame->SelectAll();
 }
