@@ -1,4 +1,4 @@
-name: Build java-cef 5359
+name: Build java-cef
 
 on:
   push:
