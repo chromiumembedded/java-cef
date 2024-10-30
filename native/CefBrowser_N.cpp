@@ -2122,8 +2122,10 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetParent(JNIEnv* env,
                   std::move(callback));
 #else
   CefWindowHandle browserHandle = browser->GetHost()->GetWindowHandle();
-  CefWindowHandle parentHandle =
-      canvas ? util::GetWindowHandle(env, canvas) : kNullWindowHandle;
+  if (canvas != NULL)
+    parentHandle = util::GetWindowHandle(env, canvas);
+  else
+    parentHandle = TempWindow::GetWindowHandle();
   if (CefCurrentlyOn(TID_UI)) {
     util::SetParent(browserHandle, parentHandle, std::move(callback));
   } else {
