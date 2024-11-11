@@ -207,10 +207,10 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
 
   ScopedJNIString jerrorString(env, error_string);
 
-  JNI_CALL_VOID_METHOD(
-      env, handle_, "onRenderProcessTerminated",
-      "(Lorg/cef/browser/CefBrowser;"
-      "Lorg/cef/handler/CefRequestHandler$TerminationStatus;"
-      "ILjava/lang/String;)V",
-      jbrowser.get(), jstatus.get(), error_code, jerrorString.get());
+  JNI_CALL_VOID_METHOD(env, handle_, "onRenderProcessTerminated",
+                       "(Lorg/cef/browser/CefBrowser;"
+                       "Lorg/cef/handler/CefRequestHandler$TerminationStatus;"
+                       "ILjava/lang/String;)V",
+                       jbrowser.get(), jstatus.get(), error_code,
+                       jerrorString.get());
 }

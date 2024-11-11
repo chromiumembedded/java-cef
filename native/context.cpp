@@ -107,8 +107,6 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.locales_dir_path) = tmp;
     tmp.clear();
   }
-  GetJNIFieldBoolean(env, cls, obj, "pack_loading_disabled",
-                     &settings.pack_loading_disabled);
   GetJNIFieldInt(env, cls, obj, "remote_debugging_port",
                  &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
