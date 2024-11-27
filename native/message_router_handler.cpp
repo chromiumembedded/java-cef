@@ -44,6 +44,9 @@ bool MessageRouterHandler::OnQuery(
 
   jboolean jresult = JNI_FALSE;
 
+  if (persistent)
+    JNI_CALL_VOID_METHOD(env, jcallback.get(), "makePersistent", "()V");
+
   JNI_CALL_METHOD(env, handle_, "onQuery",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
                   "CefFrame;JLjava/lang/String;ZLorg/cef/"
