@@ -190,8 +190,10 @@ class CefBrowserWr extends CefBrowser_N {
 
             @Override
             public void setBounds(int x, int y, int width, int height) {
-                super.setBounds(x, y, width, height);
-                wasResized((int) (width * scaleFactor_), (int) (height * scaleFactor_));
+                SwingUtilities.invokeLater(() -> {
+                    super.setBounds(x, y, width, height);
+                    wasResized((int) (width * scaleFactor_), (int) (height * scaleFactor_));
+                });
             }
 
             @Override
