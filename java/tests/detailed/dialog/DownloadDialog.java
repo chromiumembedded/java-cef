@@ -143,13 +143,15 @@ public class DownloadDialog extends JDialog implements CefDownloadHandler {
     }
 
     @Override
-    public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
+    public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem,
             String suggestedName, CefBeforeDownloadCallback callback) {
         callback.Continue(suggestedName, true);
 
         DownloadObject dlObject = new DownloadObject(downloadItem, suggestedName);
         downloadObjects_.put(downloadItem.getId(), dlObject);
         downloadPanel_.add(dlObject);
+
+        return true;
     }
 
     @Override

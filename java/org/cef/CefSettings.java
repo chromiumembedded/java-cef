@@ -211,15 +211,6 @@ public class CefSettings {
     public String locales_dir_path = null;
 
     /**
-     * Set to true to disable loading of pack files for resources and locales.
-     * A resource bundle handler must be provided for the browser and render
-     * processes via CefApp::GetResourceBundleHandler() if loading of pack files
-     * is disabled. Also configurable using the "disable-pack-loading" command-
-     * line switch.
-     */
-    public boolean pack_loading_disabled = false;
-
-    /**
      * Set to a value between 1024 and 65535 to enable remote debugging on the
      * specified port. For example, if 8080 is specified the remote debugging URL
      * will be http: *localhost:8080. CEF can be remotely debugged from any CEF or
@@ -278,7 +269,6 @@ public class CefSettings {
         tmp.javascript_flags = javascript_flags;
         tmp.resources_dir_path = resources_dir_path;
         tmp.locales_dir_path = locales_dir_path;
-        tmp.pack_loading_disabled = pack_loading_disabled;
         tmp.remote_debugging_port = remote_debugging_port;
         tmp.uncaught_exception_stack_size = uncaught_exception_stack_size;
         if (background_color != null) tmp.background_color = background_color.clone();

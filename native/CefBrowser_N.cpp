@@ -940,7 +940,29 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
   if (!lifeSpanHandler.get())
     return;
 
+  CefRefPtr<CefBrowser> parentBrowser =
+      GetCefFromJNIObject<CefBrowser>(env, objs->jparentBrowser, "CefBrowser");
+
   CefWindowInfo windowInfo;
+  CefBrowserSettings settings;
+
+  // If parentBrowser is set, we want to show the DEV-Tools for that browser.
+  // Since that cannot be an Alloy-style window, it cannot be integrated into
+  // Java UI but must be opened as a pop-up.
+  if (parentBrowser.get() != nullptr) {
+    CefPoint inspectAt;
+    if (objs->jinspectAt != nullptr) {
+      int x, y;
+      GetJNIPoint(env, objs->jinspectAt, &x, &y);
+      inspectAt.Set(x, y);
+    }
+
+    parentBrowser->GetHost()->ShowDevTools(windowInfo, clientHandler.get(),
+                                           settings, inspectAt);
+    JNI_CALL_VOID_METHOD(env, objs->jbrowser, "notifyBrowserCreated", "()V");
+    return;
+  }
+
   if (osr == JNI_FALSE) {
     CefRect rect;
     CefRefPtr<WindowHandler> windowHandler =
@@ -978,8 +1000,6 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
   }
 
-  CefBrowserSettings settings;
-
   if (transparent == JNI_FALSE) {
     // Specify an opaque background color (white) to disable transparency.
     settings.background_color = CefColorSetARGB(255, 255, 255, 255);
@@ -998,26 +1018,9 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
   CefRefPtr<CefRequestContext> context = GetCefFromJNIObject<CefRequestContext>(
       env, objs->jcontext, "CefRequestContext");
 
-  CefRefPtr<CefBrowser> parentBrowser =
-      GetCefFromJNIObject<CefBrowser>(env, objs->jparentBrowser, "CefBrowser");
-
   // Add a global ref that will be released in LifeSpanHandler::OnAfterCreated.
   jobject globalRef = env->NewGlobalRef(objs->jbrowser);
   lifeSpanHandler->registerJBrowser(globalRef);
-
-  // If parentBrowser is set, we want to show the DEV-Tools for that browser
-  if (parentBrowser.get() != nullptr) {
-    CefPoint inspectAt;
-    if (objs->jinspectAt != nullptr) {
-      int x, y;
-      GetJNIPoint(env, objs->jinspectAt, &x, &y);
-      inspectAt.Set(x, y);
-    }
-    parentBrowser->GetHost()->ShowDevTools(windowInfo, clientHandler.get(),
-                                           settings, inspectAt);
-    JNI_CALL_VOID_METHOD(env, objs->jbrowser, "notifyBrowserCreated", "()V");
-    return;
-  }
 
   CefRefPtr<CefDictionaryValue> extra_info;
   auto router_configs = BrowserProcessHandler::GetMessageRouterConfigs();
@@ -1026,6 +1029,10 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     extra_info = CefDictionaryValue::Create();
     extra_info->SetList("router_configs", router_configs);
   }
+
+  // JCEF requires Alloy runtime style for "normal" browsers in order for them
+  // to be integratable into Java UI.
+  windowInfo.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
 
   bool result = CefBrowserHost::CreateBrowser(
       windowInfo, clientHandler.get(), strUrl, settings, extra_info, context);
@@ -1524,7 +1531,6 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetWindowVisibility(JNIEnv* env,
   }
 #endif
 }
-
 JNIEXPORT jdouble JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1GetZoomLevel(JNIEnv* env, jobject obj) {
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj, 0.0);

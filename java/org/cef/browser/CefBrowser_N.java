@@ -45,7 +45,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final CefRequestContext request_context_;
     private volatile CefBrowser_N parent_ = null;
     private volatile Point inspectAt_ = null;
-    private volatile CefBrowser_N devTools_ = null;
     private volatile CefDevToolsClient devToolsClient_ = null;
     private boolean closeAllowed_ = false;
     private volatile boolean isClosed_ = false;
@@ -134,7 +133,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         if (request_context_ != null) request_context_.dispose();
         if (parent_ != null) {
             parent_.closeDevTools();
-            parent_.devTools_ = null;
             parent_ = null;
         }
         if (devToolsClient_ != null) {
@@ -143,16 +141,13 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     }
 
     @Override
-    public CefBrowser getDevTools() {
-        return getDevTools(null);
+    public void openDevTools() {
+        openDevTools(null);
     }
 
     @Override
-    public synchronized CefBrowser getDevTools(Point inspectAt) {
-        if (devTools_ == null) {
-            devTools_ = createDevToolsBrowser(client_, url_, request_context_, this, inspectAt);
-        }
-        return devTools_;
+    public synchronized void openDevTools(Point inspectAt) {
+        createDevToolsBrowser(client_, url_, request_context_, this, inspectAt).createImmediately();
     }
 
     @Override
@@ -594,7 +589,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
-    protected final void closeDevTools() {
+    @Override
+    public void closeDevTools() {
         try {
             N_CloseDevTools();
         } catch (UnsatisfiedLinkError ule) {

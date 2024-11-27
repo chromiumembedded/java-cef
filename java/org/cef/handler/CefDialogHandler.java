@@ -38,11 +38,17 @@ public interface CefDialogHandler {
      * "image/*"), (b) individual file extensions (e.g. ".txt" or ".png"), or (c)
      * combined description and file extension delimited using "|" and ";" (e.g.
      * "Image Types|.png;.gif;.jpg").
+     * @param acceptExtensions provides the semicolon-delimited expansion of MIME
+     * types to file extensions (if known, or empty string otherwise).
+     * @param acceptDescriptions provides the descriptions for MIME types (if known,
+     * or empty string otherwise). For example, the "image/*" mime type might
+     * have extensions ".png;.jpg;.bmp;..." and description "Image Files".
      * @param callback is a callback handler for handling own file dialogs.
      *
      * @return To display a custom dialog return true and execute callback.
      * To display the default dialog return false.
      */
     public boolean onFileDialog(CefBrowser browser, FileDialogMode mode, String title,
-            String defaultFilePath, Vector<String> acceptFilters, CefFileDialogCallback callback);
+            String defaultFilePath, Vector<String> acceptFilters, Vector<String> acceptExtensions,
+            Vector<String> acceptDescriptions, CefFileDialogCallback callback);
 }
