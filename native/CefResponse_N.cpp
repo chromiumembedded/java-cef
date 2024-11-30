@@ -131,6 +131,27 @@ Java_org_cef_network_CefResponse_1N_N_1SetMimeType(JNIEnv* env,
 }
 
 JNIEXPORT jstring JNICALL
+Java_org_cef_network_CefResponse_1N_N_1GetCharset(JNIEnv* env,
+                                                   jobject obj,
+                                                   jlong self) {
+  CefRefPtr<CefResponse> response = GetSelf(self);
+  if (!response)
+    return nullptr;
+  return NewJNIString(env, response->GetCharset());
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_network_CefResponse_1N_N_1SetCharset(JNIEnv* env,
+                                                   jobject obj,
+                                                   jlong self,
+                                                   jstring jmimeType) {
+  CefRefPtr<CefResponse> response = GetSelf(self);
+  if (!response)
+    return;
+  response->SetCharset(GetJNIString(env, jmimeType));
+}
+
+JNIEXPORT jstring JNICALL
 Java_org_cef_network_CefResponse_1N_N_1GetHeaderByName(JNIEnv* env,
                                                        jobject obj,
                                                        jlong self,

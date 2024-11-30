@@ -109,6 +109,22 @@ Java_org_cef_network_CefResponse_1N_N_1SetMimeType(JNIEnv*,
 
 /*
  * Class:     org_cef_network_CefResponse_N
+ * Method:    N_GetCharset
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_cef_network_CefResponse_1N_N_1GetCharset
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_cef_network_CefResponse_N
+ * Method:    N_SetCharset
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_cef_network_CefResponse_1N_N_1SetCharset
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     org_cef_network_CefResponse_N
  * Method:    N_GetHeaderByName
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
