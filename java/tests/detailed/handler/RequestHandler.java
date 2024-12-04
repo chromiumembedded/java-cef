@@ -161,7 +161,9 @@ public class RequestHandler extends CefResourceRequestHandlerAdapter implements 
     }
 
     @Override
-    public void onRenderProcessTerminated(CefBrowser browser, TerminationStatus status) {
-        System.out.println("render process terminated: " + status);
+    public void onRenderProcessTerminated(
+            CefBrowser browser, TerminationStatus status, int error_code, String error_string) {
+        System.out.println("render process terminated: " + status + " errorCode: " + error_code
+                + " errorString: " + error_string);
     }
 }

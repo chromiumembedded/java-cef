@@ -49,14 +49,14 @@ class ScopedJNIDownloadItemCallback
 DownloadHandler::DownloadHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-void DownloadHandler::OnBeforeDownload(
+bool DownloadHandler::OnBeforeDownload(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefDownloadItem> download_item,
     const CefString& suggested_name,
     CefRefPtr<CefBeforeDownloadCallback> callback) {
   ScopedJNIEnv env;
   if (!env)
-    return;
+    return false;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIDownloadItem jdownloadItem(env, download_item);
@@ -64,12 +64,16 @@ void DownloadHandler::OnBeforeDownload(
   ScopedJNIString jsuggestedName(env, suggested_name);
   ScopedJNIBeforeDownloadCallback jcallback(env, callback);
 
-  JNI_CALL_VOID_METHOD(
-      env, handle_, "onBeforeDownload",
+  jboolean jresult = 0;
+
+  JNI_CALL_BOOLEAN_METHOD(
+      jresult, env, handle_, "onBeforeDownload",
       "(Lorg/cef/browser/CefBrowser;Lorg/cef/callback/CefDownloadItem;"
-      "Ljava/lang/String;Lorg/cef/callback/CefBeforeDownloadCallback;)V",
+      "Ljava/lang/String;Lorg/cef/callback/CefBeforeDownloadCallback;)Z",
       jbrowser.get(), jdownloadItem.get(), jsuggestedName.get(),
       jcallback.get());
+
+  return jresult;
 }
 
 void DownloadHandler::OnDownloadUpdated(

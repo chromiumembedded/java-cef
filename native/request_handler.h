@@ -50,7 +50,9 @@ class RequestHandler : public CefRequestHandler {
                           CefRefPtr<CefSSLInfo> ssl_info,
                           CefRefPtr<CefCallback> callback) override;
   void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                 TerminationStatus status) override;
+                                 TerminationStatus status,
+                                 int error_code,
+                                 const CefString& error_string) override;
 
  protected:
   ScopedJNIObjectGlobal handle_;

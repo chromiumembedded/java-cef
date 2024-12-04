@@ -13,10 +13,6 @@
 #include "util_mac.h"
 #endif
 
-#if defined(OS_POSIX)
-#include "signal_restore_posix.h"
-#endif
-
 namespace {
 
 Context* g_context = nullptr;
@@ -24,6 +20,11 @@ Context* g_context = nullptr;
 CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
   CefString tmp;
   CefSettings settings;
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  settings.disable_signal_handlers = true;
+#endif
+
   if (!obj)
     return settings;
 
@@ -106,8 +107,6 @@ CefSettings GetJNISettings(JNIEnv* env, jobject obj) {
     CefString(&settings.locales_dir_path) = tmp;
     tmp.clear();
   }
-  GetJNIFieldBoolean(env, cls, obj, "pack_loading_disabled",
-                     &settings.pack_loading_disabled);
   GetJNIFieldInt(env, cls, obj, "remote_debugging_port",
                  &settings.remote_debugging_port);
   GetJNIFieldInt(env, cls, obj, "uncaught_exception_stack_size",
@@ -226,21 +225,11 @@ bool Context::Initialize(JNIEnv* env,
       new ClientApp(CefString(&settings.cache_path), env, appHandler));
   bool res = false;
 
-#if defined(OS_POSIX)
-  // CefInitialize will reset signal handlers. Backup/restore the original
-  // signal handlers to avoid crashes in the JVM (see issue #41).
-  BackupSignalHandlers();
-#endif
-
 #if defined(OS_MACOSX)
   res = util_mac::CefInitializeOnMainThread(main_args, settings,
                                             client_app.get());
 #else
   res = CefInitialize(main_args, settings, client_app.get(), nullptr);
-#endif
-
-#if defined(OS_POSIX)
-  RestoreSignalHandlers();
 #endif
 
   return res;
