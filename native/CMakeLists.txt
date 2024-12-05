@@ -146,6 +146,8 @@ set(JCEF_SRCS
 set(JCEF_SRCS_LINUX
   critical_wait_posix.cpp
   jni_util_linux.cpp
+  signal_restore_posix.cpp
+  signal_restore_posix.h
   temp_window_x11.cc
   temp_window_x11.h
   util_linux.cpp
@@ -279,6 +281,28 @@ if(OS_MAC)
   # Avoid CMP0042 policy errors.
   set(CMAKE_MACOSX_RPATH 1)
 
+
+  if(NOT DEFINED PROJECT_ARCH)
+    message(STATUS "PROJECT_ARCH not defined. Detecting machine architecture.")
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+        set(PROJECT_ARCH arm64)
+    elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
+        set(PROJECT_ARCH x86_64)
+    else()
+        message(FATAL_ERROR "Unsupported machine architecture: ${CMAKE_SYSTEM_PROCESSOR}. Please specify the target architecture using -DPROJECT_ARCH=<arch>")
+    endif()
+  endif()
+
+  message(STATUS "Building for architecture: ${PROJECT_ARCH}")
+
+  if(PROJECT_ARCH STREQUAL "x86_64")
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
+  elseif(PROJECT_ARCH STREQUAL "arm64")
+    set(CMAKE_OSX_ARCHITECTURES arm64)
+  else()
+    message(FATAL_ERROR "Unsupported architecture: ${PROJECT_ARCH}")
+  endif()
+
   # Avoid CMP0068 policy errors.
   if(POLICY CMP0068)
     cmake_policy(SET CMP0068 NEW)
@@ -366,7 +390,20 @@ if(OS_MAC)
       MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
       OUTPUT_NAME ${_helper_output_name}
       )
-
+    set_target_properties(${JCEF_TARGET} PROPERTIES
+            # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${ENACTOR_CODE_SIGN_IDENTITY}
+            XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${ENACTOR_DEVELOPMENT_TEAM}
+            # XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
+            # XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep"
+    )
+    set_target_properties(${JCEF_HELPER_TARGET} PROPERTIES
+            # XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${ENACTOR_CODE_SIGN_IDENTITY}
+            XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${ENACTOR_DEVELOPMENT_TEAM}
+            # XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
+            # XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep"
+    )
     if(USE_SANDBOX)
       target_link_libraries(${_helper_target} cef_sandbox_lib)
     endif()
