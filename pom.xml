@@ -41,9 +41,9 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<target>
+							<tasks>
 								<echo>${java.home}</echo>
-							</target>
+							</tasks>
 						</configuration>
 					</execution>
 				</executions>
@@ -146,14 +146,14 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}\tools\" executable="cmd.exe"
 											failonerror="true">
 											<arg value="/c" />
 											<arg value="compile.bat" />
 											<arg value="win64" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 							<execution>
@@ -163,14 +163,14 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}\tools\" executable="cmd.exe"
 											failonerror="true">
 											<arg value="/c" />
 											<arg value="make_distrib.bat" />
 											<arg value="win64" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 						</executions>
@@ -446,12 +446,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}/tools" executable="/bin/bash">
 											<arg value="compile.sh" />
 											<arg value="linux64" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 							<execution>
@@ -461,12 +461,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}/tools" executable="/bin/bash">
 											<arg value="make_distrib.sh" />
 											<arg value="linux64" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 							<execution>
@@ -476,12 +476,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}" executable="/bin/bash">
 											<arg value="strip_binaries.sh" />
 											<arg value="binary_distrib/${distribution.folder}/bin/lib/${distribution.folder}" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 						</executions>
@@ -788,12 +788,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<exec dir="${basedir}/tools" executable="/bin/bash">
 											<arg value="make_distrib.sh" />
 											<arg value="macosx64" />
 										</exec>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 						</executions>
@@ -960,12 +960,12 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <target>
+                                    <tasks>
                                         <exec dir="${basedir}/tools" executable="/bin/bash">
                                             <arg value="make_distrib.sh" />
                                             <arg value="macosx64" />
                                         </exec>
-                                    </target>
+                                    </tasks>
                                 </configuration>
                             </execution>
                         </executions>
