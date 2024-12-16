@@ -15,7 +15,7 @@
 			<outputDirectory></outputDirectory>
 			<directory>${basedir}/jcef_build/native/Release</directory>
 			<includes>
-				<include>**</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>

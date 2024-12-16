@@ -15,7 +15,7 @@
 			<outputDirectory></outputDirectory>
 			<directory>${basedir}/binary_distrib/${distribution.folder}/bin/lib/${distribution.folder}</directory>
 			<includes>
-				<include>*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>
