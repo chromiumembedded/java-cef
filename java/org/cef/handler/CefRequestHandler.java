@@ -26,7 +26,8 @@ public interface CefRequestHandler {
         TS_PROCESS_CRASHED, //!< Segmentation fault.
         TS_PROCESS_OOM, //!< Out of memory.
         TS_LAUNCH_FAILED, //!< Failed to launch.
-        TS_INTEGRITY_FAILURE //!< Integrity check failed.
+        TS_INTEGRITY_FAILURE, //!< Integrity check failed.
+        TS_NUM_VALUES
     }
 
     /**

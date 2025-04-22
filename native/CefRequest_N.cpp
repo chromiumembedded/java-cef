@@ -126,8 +126,8 @@ Java_org_cef_network_CefRequest_1N_N_1SetReferrer(JNIEnv* env,
       policy = REFERRER_POLICY_NO_REFERRER;
     } else if (IsJNIEnumValue(env, jpolicy,
                               "org/cef/network/CefRequest$ReferrerPolicy",
-                              "REFERRER_POLICY_LAST_VALUE")) {
-      policy = REFERRER_POLICY_LAST_VALUE;
+                              "REFERRER_POLICY_NUM_VALUES")) {
+      policy = REFERRER_POLICY_NUM_VALUES;
     }
   }
 
@@ -399,6 +399,8 @@ Java_org_cef_network_CefRequest_1N_N_1GetResourceType(JNIEnv* env,
              RT_NAVIGATION_PRELOAD_MAIN_FRAME, result);
     JNI_CASE(env, "org/cef/network/CefRequest$ResourceType",
              RT_NAVIGATION_PRELOAD_SUB_FRAME, result);
+    JNI_CASE(env, "org/cef/network/CefRequest$ResourceType", RT_NUM_VALUES,
+             result);
   }
   return result;
 }

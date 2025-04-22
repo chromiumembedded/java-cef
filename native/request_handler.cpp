@@ -203,6 +203,8 @@ void RequestHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
              TS_LAUNCH_FAILED, jstatus);
     JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
              TS_INTEGRITY_FAILURE, jstatus);
+    JNI_CASE(env, "org/cef/handler/CefRequestHandler$TerminationStatus",
+             TS_NUM_VALUES, jstatus);
   }
 
   ScopedJNIString jerrorString(env, error_string);

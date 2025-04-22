@@ -7,7 +7,7 @@
 #include <string>
 
 #include "include/cef_app.h"
-#include "include/cef_version.h"
+#include "include/cef_version_info.h"
 
 #include "context.h"
 #include "jcef_version.h"
