@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<core:manifest xmlns:retail="http://www.enactor.com/retail" xmlns:core="http://www.enactor.com/core" xmlns:sref="http://docs.oasis-open.org/wsbpel/2.0/serviceref" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<core:version applicationId="chromium">${chromium.version}</core:version>
+	<core:version applicationId="jcef">${jcef.version}</core:version>
+</core:manifest>

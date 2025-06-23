@@ -330,3 +330,14 @@ message(STATUS "Python executable:            ${PYTHON_EXECUTABLE}")
 message(STATUS "Java directory:               ${JAVA_DIR}")
 message(STATUS "JNI libraries:                ${JNI_LIBRARIES}")
 message(STATUS "JNI include directories:      ${JNI_INCLUDE_DIRS}")
+
+# Enactor manifest generation
+
+string(REGEX REPLACE ".*chromium-([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+       CMAKE_CHROMIUM_VERSION "${CEF_VERSION}")
+
+set(xml_path "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/manifest.xml")
+set(chromium.version "${CMAKE_CHROMIUM_VERSION}")
+set(jcef.version "${JCEF_VERSION}")
+configure_file("manifest.xml.in" "manifest.xml")
+

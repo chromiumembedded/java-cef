@@ -19,4 +19,10 @@
 			</includes>
 		</fileSet>
 	</fileSets>
+	<files>
+    <file>
+      <source>${basedir}/jcef_build/manifest.xml</source>
+      <outputDirectory></outputDirectory>
+    </file>
+  </files>
 </assembly>
