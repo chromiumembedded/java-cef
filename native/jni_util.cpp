@@ -895,6 +895,20 @@ bool SetJNIFieldBoolean(JNIEnv* env,
   return false;
 }
 
+bool SetJNIFieldLong(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     jlong value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "J");
+  if (field) {
+    env->SetLongField(obj, field, value);
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 bool GetJNIFieldStaticInt(JNIEnv* env,
                           jclass cls,
                           const char* field_name,
