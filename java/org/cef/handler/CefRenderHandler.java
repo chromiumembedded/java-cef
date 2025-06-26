@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.browser.CefAcceleratedPaintEvent;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefPaintEvent;
 import org.cef.callback.CefDragData;
@@ -77,6 +78,24 @@ public interface CefRenderHandler {
      */
     public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             CefAcceleratedPaintInfo info);
+
+    /**
+     * Add provided listener for accelerated paint events.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void addOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
+
+    /**
+     * Remove existing accelerated paint listeners and replace with provided listener.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void setOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
+
+    /**
+     * Remove provided accelerated paint listener.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void removeOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
 
     /**
      * Add provided listener.

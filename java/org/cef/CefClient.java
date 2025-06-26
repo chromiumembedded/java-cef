@@ -788,6 +788,15 @@ public class CefClient extends CefClientHandler
     public void removeOnPaintListener(Consumer<CefPaintEvent> listener) {}
 
     @Override
+    public void addOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    @Override
+    public void setOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    @Override
+    public void removeOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
         if (browser == null) return false;
 
