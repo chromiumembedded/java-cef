@@ -4,8 +4,6 @@
 
 package org.cef;
 
-import org.cef.handler.CefOsrRendererSettings;
-
 /**
  * Browser initialization settings. Specify NULL or 0 to get the recommended
  * default values. The consequences of using custom values may not be well
