@@ -19,6 +19,7 @@ import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.callback.CefDragData;
+import org.cef.handler.CefAcceleratedPaintInfo;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefScreenInfo;
 
@@ -407,6 +408,11 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
                 l.accept(paintEvent);
             }
         }
+    }
+
+    @Override
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        // TODO: Implement example for accelerated paint
     }
 
     @Override

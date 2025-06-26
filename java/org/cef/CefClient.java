@@ -17,6 +17,7 @@ import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
+import org.cef.handler.CefAcceleratedPaintInfo;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -766,6 +767,15 @@ public class CefClient extends CefClientHandler
         CefRenderHandler realHandler = browser.getRenderHandler();
         if (realHandler != null)
             realHandler.onPaint(browser, popup, dirtyRects, buffer, width, height);
+    }
+
+    @Override
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        if (browser == null) return;
+
+        CefRenderHandler realHandler = browser.getRenderHandler();
+        if (realHandler != null)
+            realHandler.onAcceleratedPaint(browser, popup, dirtyRects, info);
     }
 
     @Override
