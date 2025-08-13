@@ -520,8 +520,6 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERTIFICATE_TRANSPARENCY_REQUIRED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
-               ERR_CERT_SYMANTEC_LEGACY, jerrorCode);
-      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERT_KNOWN_INTERCEPTION_BLOCKED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CERT_END,
                jerrorCode);

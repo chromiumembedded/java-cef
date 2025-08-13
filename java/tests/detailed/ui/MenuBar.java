@@ -22,8 +22,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -52,7 +50,6 @@ import javax.swing.SwingUtilities;
 import tests.detailed.BrowserFrame;
 import tests.detailed.MainFrame;
 import tests.detailed.dialog.CookieManagerDialog;
-import tests.detailed.dialog.DevToolsDialog;
 import tests.detailed.dialog.DownloadDialog;
 import tests.detailed.dialog.SearchDialog;
 import tests.detailed.dialog.ShowTextDialog;
@@ -62,7 +59,7 @@ import tests.detailed.util.DataUri;
 @SuppressWarnings("serial")
 public class MenuBar extends JMenuBar {
     class SaveAs implements CefStringVisitor {
-        private PrintWriter fileWriter_;
+        private final PrintWriter fileWriter_;
 
         public SaveAs(String fName) throws FileNotFoundException, UnsupportedEncodingException {
             fileWriter_ = new PrintWriter(fName, "UTF-8");
@@ -367,15 +364,7 @@ public class MenuBar extends JMenuBar {
         showDevTools.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DevToolsDialog devToolsDlg = new DevToolsDialog(owner_, "DEV Tools", browser_);
-                devToolsDlg.addComponentListener(new ComponentAdapter() {
-                    @Override
-                    public void componentHidden(ComponentEvent e) {
-                        showDevTools.setEnabled(true);
-                    }
-                });
-                devToolsDlg.setVisible(true);
-                showDevTools.setEnabled(false);
+                browser.openDevTools();
             }
         });
         testMenu.add(showDevTools);
@@ -431,11 +420,14 @@ public class MenuBar extends JMenuBar {
                 reparentButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (reparentPending_) return;
+                        if (reparentPending_) {
+                            return;
+                        }
                         reparentPending_ = true;
 
                         if (reparentButton.getText().equals("Reparent <")) {
                             owner_.removeBrowser(new Runnable() {
+                                @Override
                                 public void run() {
                                     newFrame.add(browser_.getUIComponent(), BorderLayout.CENTER);
                                     newFrame.setBrowser(browser_);
@@ -445,6 +437,7 @@ public class MenuBar extends JMenuBar {
                             });
                         } else {
                             newFrame.removeBrowser(new Runnable() {
+                                @Override
                                 public void run() {
                                     JRootPane rootPane = (JRootPane) owner_.getComponent(0);
                                     Container container = rootPane.getContentPane();
@@ -540,12 +533,16 @@ public class MenuBar extends JMenuBar {
     }
 
     public void addBookmark(String name, String URL) {
-        if (bookmarkMenu_ == null) return;
+        if (bookmarkMenu_ == null) {
+            return;
+        }
 
         // Test if the bookmark already exists. If yes, update URL
         Component[] entries = bookmarkMenu_.getMenuComponents();
         for (Component itemEntry : entries) {
-            if (!(itemEntry instanceof JMenuItem)) continue;
+            if (!(itemEntry instanceof JMenuItem)) {
+                continue;
+            }
 
             JMenuItem item = (JMenuItem) itemEntry;
             if (item.getText().equals(name)) {
