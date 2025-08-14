@@ -24,7 +24,9 @@ std::string GetTempFileName(const std::string& identifer, bool useParentId) {
   CefString tmpPath;
   if (!CefGetPath(PK_DIR_TEMP, tmpPath))
     tmpPath = "/tmp/";
-  tmpName << tmpPath.ToString().c_str();
+
+  // ensure the temp path ends with a slash
+  tmpName << tmpPath.ToString() << (tmpPath.ToString().empty() || tmpPath.ToString().back() == '/' ? "" : "/");
   tmpName << "jcef-p" << (useParentId ? util::GetParentPid() : util::GetPid());
   tmpName << (identifer.empty() ? "" : "_") << identifer.c_str() << ".tmp";
   return tmpName.str();
