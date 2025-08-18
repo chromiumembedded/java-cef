@@ -799,6 +799,14 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    public void sendExternalBeginFrame() {
+        try {
+            N_SendExternalBeginFrame();
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     public CompletableFuture<Integer> getWindowlessFrameRate() {
         final CompletableFuture<Integer> future = new CompletableFuture<>();
         try {
@@ -882,5 +890,6 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_SetParent(long windowHandle, Component canvas);
     private final native void N_NotifyMoveOrResizeStarted();
     private final native void N_SetWindowlessFrameRate(int frameRate);
+    private final native void N_SendExternalBeginFrame();
     private final native void N_GetWindowlessFrameRate(IntCallback frameRateCallback);
 }

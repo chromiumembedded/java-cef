@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.browser.CefAcceleratedPaintEvent;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefPaintEvent;
 import org.cef.callback.CefDragData;
@@ -66,6 +67,35 @@ public interface CefRenderHandler {
      */
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height);
+
+    /**
+     * Called when an element has been rendered to the shared texture handle.
+     * This method is only called when CefWindowInfo::shared_texture_enabled is set to true.
+     * @param browser The browser generating the event.
+     * @param popup True if painting a popup window.
+     * @param dirtyRects Array of dirty regions.
+     * @param info Contains the shared handle and texture information.
+     */
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
+            CefAcceleratedPaintInfo info);
+
+    /**
+     * Add provided listener for accelerated paint events.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void addOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
+
+    /**
+     * Remove existing accelerated paint listeners and replace with provided listener.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void setOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
+
+    /**
+     * Remove provided accelerated paint listener.
+     * @param listener Code that gets executed after a frame was rendered with accelerated painting.
+     */
+    public void removeOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener);
 
     /**
      * Add provided listener.
