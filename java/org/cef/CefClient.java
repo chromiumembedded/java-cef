@@ -28,6 +28,7 @@ import org.cef.handler.CefJSDialogHandler;
 import org.cef.handler.CefKeyboardHandler;
 import org.cef.handler.CefLifeSpanHandler;
 import org.cef.handler.CefLoadHandler;
+import org.cef.handler.CefLoadHandlerCollection;
 import org.cef.handler.CefPrintHandler;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefRequestHandler;
@@ -78,7 +79,7 @@ public class CefClient extends CefClientHandler
     private CefJSDialogHandler jsDialogHandler_ = null;
     private CefKeyboardHandler keyboardHandler_ = null;
     private CefLifeSpanHandler lifeSpanHandler_ = null;
-    private CefLoadHandler loadHandler_ = null;
+    private CefLoadHandlerCollection loadHandlers_ = null;
     private CefPrintHandler printHandler_ = null;
     private CefRequestHandler requestHandler_ = null;
     private boolean isDisposed_ = false;
@@ -625,38 +626,45 @@ public class CefClient extends CefClientHandler
     // CefLoadHandler
 
     public CefClient addLoadHandler(CefLoadHandler handler) {
-        if (loadHandler_ == null) loadHandler_ = handler;
+        if (loadHandlers_ == null) loadHandlers_ = new CefLoadHandlerCollection();
+        loadHandlers_.add(handler);
         return this;
     }
 
     public void removeLoadHandler() {
-        loadHandler_ = null;
+        loadHandlers_ = null;
+    }
+    
+    @Override
+    public void removeLoadHandler(CefLoadHandler handler) {
+        if(loadHandlers_ == null) return;
+        loadHandlers_.remove(handler);
     }
 
     @Override
     public void onLoadingStateChange(
             CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
-        if (loadHandler_ != null && browser != null)
-            loadHandler_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+        if (loadHandlers_ != null && browser != null)
+            loadHandlers_.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
     }
 
     @Override
     public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType) {
-        if (loadHandler_ != null && browser != null)
-            loadHandler_.onLoadStart(browser, frame, transitionType);
+        if (loadHandlers_ != null && browser != null)
+            loadHandlers_.onLoadStart(browser, frame, transitionType);
     }
 
     @Override
     public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-        if (loadHandler_ != null && browser != null)
-            loadHandler_.onLoadEnd(browser, frame, httpStatusCode);
+        if (loadHandlers_ != null && browser != null)
+            loadHandlers_.onLoadEnd(browser, frame, httpStatusCode);
     }
 
     @Override
     public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode,
             String errorText, String failedUrl) {
-        if (loadHandler_ != null && browser != null)
-            loadHandler_.onLoadError(browser, frame, errorCode, errorText, failedUrl);
+        if (loadHandlers_ != null && browser != null)
+            loadHandlers_.onLoadError(browser, frame, errorCode, errorText, failedUrl);
     }
 
     // CefPrintHandler
