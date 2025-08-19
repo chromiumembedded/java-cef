@@ -31,7 +31,12 @@ Java_org_cef_callback_CefQueryCallback_1N_N_1Success(JNIEnv* env,
   if (!callback)
     return;
   callback->Success(GetJNIString(env, response));
-  ClearSelf(env, obj);
+
+  bool persistent = false;
+  JNI_CALL_BOOLEAN_METHOD(persistent, env, obj, "getIsPersistent", "()Z");
+
+  if (!persistent)
+    ClearSelf(env, obj);
 }
 
 JNIEXPORT void JNICALL
