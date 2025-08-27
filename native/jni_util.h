@@ -154,6 +154,11 @@ bool SetJNIFieldBoolean(JNIEnv* env,
                         jobject obj,
                         const char* field_name,
                         int value);
+bool SetJNIFieldLong(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     jlong value);
 
 // Retrieve the static int value stored in the |field_name| field of |cls|.
 bool GetJNIFieldStaticInt(JNIEnv* env,

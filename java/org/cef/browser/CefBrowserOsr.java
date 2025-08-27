@@ -19,6 +19,7 @@ import org.cef.CefBrowserSettings;
 import org.cef.CefClient;
 import org.cef.OS;
 import org.cef.callback.CefDragData;
+import org.cef.handler.CefAcceleratedPaintInfo;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefScreenInfo;
 
@@ -88,6 +89,9 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     private boolean isTransparent_;
 
     private CopyOnWriteArrayList<Consumer<CefPaintEvent>> onPaintListeners =
+            new CopyOnWriteArrayList<>();
+
+    private CopyOnWriteArrayList<Consumer<CefAcceleratedPaintEvent>> onAcceleratedPaintListeners =
             new CopyOnWriteArrayList<>();
 
     CefBrowserOsr(CefClient client, String url, boolean transparent, CefRequestContext context,
@@ -379,6 +383,22 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
     }
 
     @Override
+    public void addOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {
+        onAcceleratedPaintListeners.add(listener);
+    }
+
+    @Override
+    public void setOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {
+        onAcceleratedPaintListeners.clear();
+        onAcceleratedPaintListeners.add(listener);
+    }
+
+    @Override
+    public void removeOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {
+        onAcceleratedPaintListeners.remove(listener);
+    }
+
+    @Override
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height) {
         // if window is closing, canvas_ or opengl context could be null
@@ -404,6 +424,40 @@ class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
             CefPaintEvent paintEvent =
                     new CefPaintEvent(browser, popup, dirtyRects, buffer, width, height);
             for (Consumer<CefPaintEvent> l : onPaintListeners) {
+                l.accept(paintEvent);
+            }
+        }
+    }
+
+    @Override
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        // If window is closing, canvas_ or opengl context could be null
+        final GLContext context = canvas_ != null ? canvas_.getContext() : null;
+
+        if (context == null) {
+            return;
+        }
+
+        // This result can occur due to GLContext re-initialization when changing displays.
+        if (context.makeCurrent() == GLContext.CONTEXT_NOT_CURRENT) {
+            return;
+        }
+
+        // TODO: Implement renderer handling for accelerated paint
+        //  On Windows, convert the D3D11 shared texture handle using ImportMemoryWin32HandleEXT
+        //  through OpenGL's EXT_external_objects_win32. LWJGL supports it, but I am not familiar with JOGL's API.
+        //  renderer_.onAcceleratedPaint(canvas_.getGL().getGL2(), popup, dirtyRects, info);
+
+        context.release();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                canvas_.display();
+            }
+        });
+        if (!onAcceleratedPaintListeners.isEmpty()) {
+            CefAcceleratedPaintEvent paintEvent =
+                    new CefAcceleratedPaintEvent(browser, popup, dirtyRects, info);
+            for (Consumer<CefAcceleratedPaintEvent> l : onAcceleratedPaintListeners) {
                 l.accept(paintEvent);
             }
         }
