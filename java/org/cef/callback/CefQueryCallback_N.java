@@ -4,6 +4,8 @@
 
 package org.cef.callback;
 
+import java.nio.ByteBuffer;
+
 class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     CefQueryCallback_N() {}
 
@@ -16,7 +18,16 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     @Override
     public void success(String response) {
         try {
-            N_Success(getNativeRef(null), response);
+            N_Success(getNativeRef(null), response, isPersistent());
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    @Override
+    public void success(ByteBuffer response) {
+        try {
+            N_SuccessBinary(getNativeRef(null), response, isPersistent());
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -31,6 +42,21 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
         }
     }
 
-    private final native void N_Success(long self, String response);
+    @Override
+    public boolean isPersistent() {
+        return false;
+    }
+
+    private final native void N_Success(long self, String response, boolean persistent);
+    private final native void N_SuccessBinary(long self, ByteBuffer response, boolean persistent);
     private final native void N_Failure(long self, int error_code, String error_message);
+}
+
+class CefQueryCallback_N_Persistent extends CefQueryCallback_N {
+    CefQueryCallback_N_Persistent() {}
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
 }

@@ -12,11 +12,14 @@ import org.cef.browser.CefMessageRouter.CefMessageRouterConfig;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 
+import java.nio.ByteBuffer;
+
 public class MessageRouterHandlerEx extends CefMessageRouterHandlerAdapter {
     private final CefClient client_;
     private final CefMessageRouterConfig config_ =
             new CefMessageRouterConfig("myQuery", "myQueryAbort");
     private CefMessageRouter router_ = null;
+    private boolean binary_direct_ = false;
 
     public MessageRouterHandlerEx(final CefClient client) {
         client_ = client;
@@ -46,6 +49,39 @@ public class MessageRouterHandlerEx extends CefMessageRouterHandlerAdapter {
                 router_.dispose();
                 router_ = null;
                 callback.success("");
+            }
+        } else if (request.startsWith("doPersistent")) {
+            if (persistent) {
+                callback.success("Hello,");
+                callback.success("World!");
+                callback.failure(0, "Finished");
+            } else {
+                callback.failure(-1, "Request not marked as persistent");
+            }
+        } else {
+            // not handled
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long query_id, ByteBuffer request,
+            boolean persistent, CefQueryCallback callback) {
+        if (request != null) {
+            int size = request.capacity();
+            boolean direct = (binary_direct_ = !binary_direct_);
+            ByteBuffer response = direct ? ByteBuffer.allocateDirect(size)
+                                         : ByteBuffer.allocate(size);
+            // reverse bytes
+            for (int i = 0; i < size; i++) {
+                byte b = request.get(i);
+                response.put(size - i - 1, b);
+            }
+            callback.success(response);
+            if (persistent) {
+                callback.failure(0, direct ? "Finished (direct)"
+                                           : "Finished (array)");
             }
         } else {
             // not handled
