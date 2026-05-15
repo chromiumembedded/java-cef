@@ -1024,6 +1024,105 @@ jobject NewJNIObjectFromCefValue(JNIEnv* env, const CefRefPtr<CefValue> value) {
   }
 }
 
+jobject NewJNIPermissionRequestResult(JNIEnv* env, cef_permission_request_result_t result) {
+  const char* name = "IGNORE";
+  switch (result) {
+    case CEF_PERMISSION_RESULT_ACCEPT:
+      name = "ACCEPT";
+      break;
+    case CEF_PERMISSION_RESULT_DENY:
+      name = "DENY";
+      break;
+    case CEF_PERMISSION_RESULT_DISMISS:
+      name = "DISMISS";
+      break;
+    case CEF_PERMISSION_RESULT_IGNORE:
+    default:
+      name = "IGNORE";
+      break;
+  }
+
+  jclass cls = env->FindClass("org/cef/handler/CefPermissionRequestResult");
+  jmethodID valueOf = env->GetStaticMethodID(cls, "valueOf", "(Ljava/lang/String;)Lorg/cef/handler/CefPermissionRequestResult;");
+  jstring jname = env->NewStringUTF(name);
+  jobject resultObj = env->CallStaticObjectMethod(cls, valueOf, jname);
+  env->DeleteLocalRef(jname);
+  env->DeleteLocalRef(cls);
+  return resultObj;
+}
+
+jobject NewJNIPermissionRequestTypeEnumSet(JNIEnv* env, uint32_t mask) {
+  jclass enumCls = env->FindClass("org/cef/handler/CefPermissionRequestType");
+  jclass enumSetCls = env->FindClass("java/util/EnumSet");
+
+  jmethodID noneOf = env->GetStaticMethodID(enumSetCls, "noneOf", "(Ljava/lang/Class;)Ljava/util/EnumSet;");
+  jobject enumSet = env->CallStaticObjectMethod(enumSetCls, noneOf, enumCls);
+
+  jmethodID add = env->GetMethodID(enumSetCls, "add", "(Ljava/lang/Object;)Z");
+  jmethodID valueOf = env->GetStaticMethodID(enumCls, "valueOf", "(Ljava/lang/String;)Lorg/cef/handler/CefPermissionRequestType;");
+
+  struct Entry {
+    uint32_t mask;
+    const char* name;
+  };
+
+  Entry entries[] = {
+    {CEF_PERMISSION_TYPE_NONE, "NONE"},
+    {CEF_PERMISSION_TYPE_AR_SESSION, "AR_SESSION"},
+    {CEF_PERMISSION_TYPE_CAMERA_PAN_TILT_ZOOM, "CAMERA_PAN_TILT_ZOOM"},
+    {CEF_PERMISSION_TYPE_CAMERA_STREAM, "CAMERA_STREAM"},
+    {CEF_PERMISSION_TYPE_CAPTURED_SURFACE_CONTROL, "CAPTURED_SURFACE_CONTROL"},
+    {CEF_PERMISSION_TYPE_CLIPBOARD, "CLIPBOARD"},
+    {CEF_PERMISSION_TYPE_TOP_LEVEL_STORAGE_ACCESS, "TOP_LEVEL_STORAGE_ACCESS"},
+    {CEF_PERMISSION_TYPE_DISK_QUOTA, "DISK_QUOTA"},
+    {CEF_PERMISSION_TYPE_LOCAL_FONTS, "LOCAL_FONTS"},
+    {CEF_PERMISSION_TYPE_GEOLOCATION, "GEOLOCATION"},
+    {CEF_PERMISSION_TYPE_HAND_TRACKING, "HAND_TRACKING"},
+    {CEF_PERMISSION_TYPE_IDENTITY_PROVIDER, "IDENTITY_PROVIDER"},
+    {CEF_PERMISSION_TYPE_IDLE_DETECTION, "IDLE_DETECTION"},
+    {CEF_PERMISSION_TYPE_MIC_STREAM, "MIC_STREAM"},
+    {CEF_PERMISSION_TYPE_MIDI_SYSEX, "MIDI_SYSEX"},
+    {CEF_PERMISSION_TYPE_MULTIPLE_DOWNLOADS, "MULTIPLE_DOWNLOADS"},
+    {CEF_PERMISSION_TYPE_NOTIFICATIONS, "NOTIFICATIONS"},
+    {CEF_PERMISSION_TYPE_KEYBOARD_LOCK, "KEYBOARD_LOCK"},
+    {CEF_PERMISSION_TYPE_POINTER_LOCK, "POINTER_LOCK"},
+    {CEF_PERMISSION_TYPE_PROTECTED_MEDIA_IDENTIFIER, "PROTECTED_MEDIA_IDENTIFIER"},
+    {CEF_PERMISSION_TYPE_REGISTER_PROTOCOL_HANDLER, "REGISTER_PROTOCOL_HANDLER"},
+    {CEF_PERMISSION_TYPE_STORAGE_ACCESS, "STORAGE_ACCESS"},
+    {CEF_PERMISSION_TYPE_VR_SESSION, "VR_SESSION"},
+    {CEF_PERMISSION_TYPE_WEB_APP_INSTALLATION, "WEB_APP_INSTALLATION"},
+    {CEF_PERMISSION_TYPE_WINDOW_MANAGEMENT, "WINDOW_MANAGEMENT"},
+    {CEF_PERMISSION_TYPE_FILE_SYSTEM_ACCESS, "FILE_SYSTEM_ACCESS"},
+    {CEF_PERMISSION_TYPE_LOCAL_NETWORK_ACCESS, "LOCAL_NETWORK_ACCESS"},
+    {CEF_PERMISSION_TYPE_LOCAL_NETWORK, "LOCAL_NETWORK"},
+    {CEF_PERMISSION_TYPE_LOOPBACK_NETWORK, "LOOPBACK_NETWORK"}
+  };
+
+  bool any = false;
+  for (const auto& entry : entries) {
+    if ((mask & entry.mask) != 0) {
+      jstring jname = env->NewStringUTF(entry.name);
+      jobject enumVal = env->CallStaticObjectMethod(enumCls, valueOf, jname);
+      env->CallBooleanMethod(enumSet, add, enumVal);
+      env->DeleteLocalRef(enumVal);
+      env->DeleteLocalRef(jname);
+      any = true;
+    }
+  }
+
+  if (!any) {
+    jstring jname = env->NewStringUTF("NONE");
+    jobject enumVal = env->CallStaticObjectMethod(enumCls, valueOf, jname);
+    env->CallBooleanMethod(enumSet, add, enumVal);
+    env->DeleteLocalRef(enumVal);
+    env->DeleteLocalRef(jname);
+  }
+
+  env->DeleteLocalRef(enumCls);
+  env->DeleteLocalRef(enumSetCls);
+  return enumSet;
+}
+
 cef_errorcode_t GetJNIErrorCode(JNIEnv* env, jobject jerrorCode) {
   cef_errorcode_t errorCode = ERR_NONE;
 
