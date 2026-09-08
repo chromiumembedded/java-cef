@@ -20,12 +20,29 @@ public class CefBrowserSettings {
      */
     public int windowless_frame_rate = 0;
 
+    /**
+     * Set to true to enable shared texture rendering. When enabled, the browser
+     * will render to a shared texture that can be accessed by the host application
+     * for hardware-accelerated compositing. This is supported on Windows via D3D11,
+     * macOS via Metal/OpenGL, and Linux via native buffers.
+     */
+    public boolean shared_texture_enabled = false;
+
+    /**
+     * Set to true to enable external begin frame scheduling. When enabled, the
+     * client must call CefBrowserHost::SendExternalBeginFrame to trigger frame
+     * rendering at the specified frame rate.
+     */
+    public boolean external_begin_frame_enabled = false;
+
     public CefBrowserSettings() {}
 
     @Override
     public CefBrowserSettings clone() {
         CefBrowserSettings tmp = new CefBrowserSettings();
         tmp.windowless_frame_rate = windowless_frame_rate;
+        tmp.shared_texture_enabled = shared_texture_enabled;
+        tmp.external_begin_frame_enabled = external_begin_frame_enabled;
         return tmp;
     }
 }

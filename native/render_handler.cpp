@@ -4,6 +4,8 @@
 
 #include "render_handler.h"
 
+#include <vector>
+
 #include "client_handler.h"
 #include "jni_util.h"
 
@@ -268,6 +270,102 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                        "Rectangle;Ljava/nio/ByteBuffer;II)V",
                        jbrowser.get(), jtype, jrectArray.get(),
                        jdirectBuffer.get(), width, height);
+}
+
+void RenderHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                       PaintElementType type,
+                                       const RectList& dirtyRects,
+                                       const CefAcceleratedPaintInfo& info) {
+  ScopedJNIEnv env;
+  if (!env)
+    return;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  jboolean jtype = type == PET_VIEW ? JNI_FALSE : JNI_TRUE;
+  ScopedJNIObjectLocal jrectArray(env, NewJNIRectArray(env, dirtyRects));
+
+  // Create platform-specific CefAcceleratedPaintInfo Java object
+#if defined(OS_WIN)
+  ScopedJNIClass cls(env, "org/cef/handler/CefAcceleratedPaintInfoWin");
+#elif defined(OS_MACOSX)
+  ScopedJNIClass cls(env, "org/cef/handler/CefAcceleratedPaintInfoMac");
+#elif defined(OS_LINUX)
+  ScopedJNIClass cls(env, "org/cef/handler/CefAcceleratedPaintInfoLinux");
+#else
+  ScopedJNIClass cls(env, "org/cef/handler/CefAcceleratedPaintInfo");
+#endif
+  if (!cls)
+    return;
+  ScopedJNIObjectLocal jpaintInfo(env, NewJNIObject(env, cls));
+  if (!jpaintInfo)
+    return;
+
+  // Get view rect to determine width and height
+  CefRect viewRect;
+  GetViewRect(browser, viewRect);
+  // Set the fields of the paint info object
+#if defined(OS_WIN)
+  SetJNIFieldLong(env, cls, jpaintInfo, "shared_texture_handle",
+                  reinterpret_cast<jlong>(info.shared_texture_handle));
+#elif defined(OS_MACOSX)
+  SetJNIFieldLong(env, cls, jpaintInfo, "shared_texture_io_surface",
+                  reinterpret_cast<jlong>(info.shared_texture_io_surface));
+#endif
+  SetJNIFieldInt(env, cls, jpaintInfo, "format", info.format);
+  SetJNIFieldInt(env, cls, jpaintInfo, "width", viewRect.width);
+  SetJNIFieldInt(env, cls, jpaintInfo, "height", viewRect.height);
+
+#if defined(OS_LINUX)
+  SetJNIFieldInt(env, cls, jpaintInfo, "plane_count", info.plane_count);
+  SetJNIFieldLong(env, cls, jpaintInfo, "modifier",
+                  static_cast<jlong>(info.modifier));
+
+  const int plane_count = info.plane_count;
+  if (plane_count > 0) {
+    std::vector<jint> fds(plane_count);
+    std::vector<jint> strides(plane_count);
+    std::vector<jlong> offsets(plane_count);
+    std::vector<jlong> sizes(plane_count);
+
+    for (int i = 0; i < plane_count; ++i) {
+      fds[i] = info.planes[i].fd;
+      strides[i] = static_cast<jint>(info.planes[i].stride);
+      offsets[i] = static_cast<jlong>(info.planes[i].offset);
+      sizes[i] = static_cast<jlong>(info.planes[i].size);
+    }
+
+    jclass paintInfoClass = cls.get();
+    jfieldID fdsField = env->GetFieldID(paintInfoClass, "plane_fds", "[I");
+    jfieldID stridesField = env->GetFieldID(paintInfoClass, "plane_strides", "[I");
+    jfieldID offsetsField = env->GetFieldID(paintInfoClass, "plane_offsets", "[J");
+    jfieldID sizesField = env->GetFieldID(paintInfoClass, "plane_sizes", "[J");
+
+    if (fdsField && stridesField && offsetsField && sizesField) {
+      jintArray fdsArray = env->NewIntArray(plane_count);
+      jintArray stridesArray = env->NewIntArray(plane_count);
+      jlongArray offsetsArray = env->NewLongArray(plane_count);
+      jlongArray sizesArray = env->NewLongArray(plane_count);
+
+      if (fdsArray && stridesArray && offsetsArray && sizesArray) {
+        env->SetIntArrayRegion(fdsArray, 0, plane_count, fds.data());
+        env->SetIntArrayRegion(stridesArray, 0, plane_count, strides.data());
+        env->SetLongArrayRegion(offsetsArray, 0, plane_count, offsets.data());
+        env->SetLongArrayRegion(sizesArray, 0, plane_count, sizes.data());
+
+        env->SetObjectField(jpaintInfo.get(), fdsField, fdsArray);
+        env->SetObjectField(jpaintInfo.get(), stridesField, stridesArray);
+        env->SetObjectField(jpaintInfo.get(), offsetsField, offsetsArray);
+        env->SetObjectField(jpaintInfo.get(), sizesField, sizesArray);
+      }
+    }
+  }
+#endif
+
+  JNI_CALL_VOID_METHOD(env, handle_, "onAcceleratedPaint",
+                       "(Lorg/cef/browser/CefBrowser;Z[Ljava/awt/"
+                       "Rectangle;Lorg/cef/handler/CefAcceleratedPaintInfo;)V",
+                       jbrowser.get(), jtype, jrectArray.get(),
+                       jpaintInfo.get());
 }
 
 bool RenderHandler::StartDragging(CefRefPtr<CefBrowser> browser,
