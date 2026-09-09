@@ -498,6 +498,20 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CLEARTEXT_NOT_PERMITTED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOCKED_BY_CSP, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOCKED_BY_ORB, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_NETWORK_ACCESS_REVOKED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_LOCAL_NETWORK_PERMISSION_MISSING, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_STRICT_ECH_REQUIRED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONNECTION_CLOSED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CONNECTION_RESET, jerrorCode);
@@ -633,6 +647,16 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_ECH_NOT_NEGOTIATED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_ECH_FALLBACK_CERTIFICATE_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_PROXY_DELEGATE_CANCELED_CONNECT_REQUEST, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CONTROL_MSG_TOO_BIG, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_MULTICAST_NOT_ALLOWED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERT_COMMON_NAME_INVALID, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -779,6 +803,22 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_QUIC_CERT_ROOT_NOT_KNOWN, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_TOO_MANY_ACCEPT_CH_RESTARTS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_INCONSISTENT_IP_ADDRESS_SPACE, jerrorCode);
+      JNI_CASE(
+          env, "org/cef/handler/CefLoadHandler$ErrorCode",
+          ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY,
+          jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_ZSTD_WINDOW_SIZE_TOO_BIG, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DICTIONARY_LOAD_FAILED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_CACHE_MISS,
                jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -808,6 +848,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CACHE_OPEN_OR_CREATE_FAILURE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CACHE_COMPRESSION_FAILURE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_INSECURE_RESPONSE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_NO_PRIVATE_KEY_FOR_CERT, jerrorCode);
@@ -822,6 +864,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST,
                jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_HTTPENGINE_PROVIDER_IN_USE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_PKCS12_IMPORT_BAD_PASSWORD, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
@@ -849,6 +893,8 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_CERT_DATABASE_CHANGED, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_CERT_VERIFIER_CHANGED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_DNS_MALFORMED_RESPONSE, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_DNS_SERVER_REQUIRES_TCP, jerrorCode);
@@ -866,6 +912,38 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
                ERR_DNS_NAME_HTTPS_ONLY, jerrorCode);
       JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
                ERR_DNS_REQUEST_CANCELLED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_SECURE_PROBE_RECORD_INVALID, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_CACHE_INVALIDATION_IN_PROGRESS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_FORMAT_ERROR, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_SERVER_FAILURE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_NOT_IMPLEMENTED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode", ERR_DNS_REFUSED,
+               jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_OTHER_FAILURE, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_DNS_DIRECT_ONLY, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_INVALID_CONSTRUCTION_ARGUMENTS, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_OUT_OF_MEMORY, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_FILE_WRITE_FAILED, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_SOURCE_DIED_IN_TRANSIT, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_DEREFERENCED_WHILE_BUILDING, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_REFERENCED_BLOB_BROKEN, jerrorCode);
+      JNI_CASE(env, "org/cef/handler/CefLoadHandler$ErrorCode",
+               ERR_BLOB_REFERENCED_FILE_UNAVAILABLE, jerrorCode);
   }
   return jerrorCode.Release();
 }
