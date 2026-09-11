@@ -9,6 +9,8 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefNativeAdapter;
 import org.cef.callback.CefQueryCallback;
 
+import java.nio.ByteBuffer;
+
 /**
  * An abstract adapter class for receiving message router events.
  * The methods in this class are empty.
@@ -18,6 +20,12 @@ public abstract class CefMessageRouterHandlerAdapter
         extends CefNativeAdapter implements CefMessageRouterHandler {
     @Override
     public boolean onQuery(CefBrowser browser, CefFrame frame, long queryId, String request,
+            boolean persistent, CefQueryCallback callback) {
+        return false;
+    }
+
+    @Override
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long queryId, ByteBuffer request,
             boolean persistent, CefQueryCallback callback) {
         return false;
     }

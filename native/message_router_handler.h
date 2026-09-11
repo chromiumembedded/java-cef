@@ -25,6 +25,12 @@ class MessageRouterHandler : public CefMessageRouterBrowserSide::Handler,
                        const CefString& request,
                        bool persistent,
                        CefRefPtr<Callback> callback) override;
+  virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefFrame> frame,
+                       int64_t query_id,
+                       CefRefPtr<const CefBinaryBuffer> request,
+                       bool persistent,
+                       CefRefPtr<Callback> callback) override;
   virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser,
                                CefRefPtr<CefFrame> frame,
                                int64_t query_id) override;

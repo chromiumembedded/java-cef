@@ -17,6 +17,44 @@ function toggleButton() {
   });
 }
 
+function doPersistent() {
+  document.getElementById('persist').value = '';
+  window.cefQuery({
+    request: 'doPersistent',
+    persistent: true,
+    onSuccess: function(response) {
+      document.getElementById('persist').value += ' MESSAGE: [ ' + response + '];';
+    },
+    onFailure: function(error_code, error_message) {
+      document.getElementById('persist').value += ' FINISHED: ' + error_code + ' ' + error_message;
+    }
+  });
+}
+
+function doBinary() {
+  document.getElementById('binary').value = 'ORIGINAL: [';
+  const binaryData = new Uint8Array([10, 20, 30, 40, 50]);
+  for (let i = 0; i < binaryData.length; i++) {
+    document.getElementById('binary').value += ' ' + binaryData.at(i);
+  }
+  document.getElementById('binary').value += ' ];';
+  window.cefQuery({
+    request: binaryData.buffer,
+    persistent: true,
+    onSuccess: function(response) {
+      document.getElementById('binary').value += ' RESPONSE: [';
+      const echoedBinaryData = new Uint8Array(response);
+      for (let i = 0; i < echoedBinaryData.length; i++) {
+        document.getElementById('binary').value += ' ' + echoedBinaryData.at(i);
+      }
+      document.getElementById('binary').value += ' ];';
+    },
+    onFailure: function(error_code, error_message) {
+      document.getElementById('binary').value += ' FINISHED: ' + error_code + ' ' + error_message;
+    }
+  });
+}
+
 function execute(cmd) {
   window.cefQuery({
     request: cmd,
@@ -75,6 +113,18 @@ Second message router:
 <input type="button" id="jcefOff" value="Disable myQuery" onclick="execute('disableExt');" />
 <br/><input type="button" onclick="getJavaVersion();" value="Test"/>
 <input type="text" id="result" size="80" readonly />
+<br/><p>This button tests persistent queries. When the button is pressed, it clears the output,
+and when it receives a success message, it appends it to the output. When it finally receives
+a failure message, it appends the error_code followed by the error_message.</p>
+<input type="button" onclick="doPersistent();" value="Persist"/>
+<input type="text" id="persist" size="80" readonly />
+<br/><p>This button tests binary queries. When the button is pressed, it clears the output and
+replaces it with a representation of the binary data sent in the query. When it receives a
+success message, it appends a similar representation of the binary data received (which has
+been reversed by Java). When it finally receives a failure message, it appends the error_code
+followed by the error_message.</p>
+<input type="button" onclick="doBinary();" value="Binary"/>
+<input type="text" id="binary" size="80" readonly />
 </form>
 </body>
 </html>

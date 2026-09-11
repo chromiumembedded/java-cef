@@ -9,18 +9,21 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefNative;
 import org.cef.callback.CefQueryCallback;
 
+import java.nio.ByteBuffer;
+
 /**
  * Implement this interface to handle queries. All methods will be executed on the browser process
  * UI thread.
  */
 public interface CefMessageRouterHandler extends CefNative {
     /**
-     * Called when the browser receives a JavaScript query.
+     * Called when the browser receives a JavaScript text query.
      *
      * @param browser The corresponding browser.
      * @param frame The frame generating the event. Instance only valid within the scope of this
      *         method.
      * @param queryId The unique ID for the query.
+     * @param request The query text.
      * @param persistent True if the query is persistent.
      * @param callback Object used to continue or cancel the query asynchronously.
      * @return True to handle the query or false to propagate the query to other registered
@@ -29,6 +32,24 @@ public interface CefMessageRouterHandler extends CefNative {
      *         callback.
      */
     public boolean onQuery(CefBrowser browser, CefFrame frame, long queryId, String request,
+            boolean persistent, CefQueryCallback callback);
+
+    /**
+     * Called when the browser receives a JavaScript binary query.
+     *
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within the scope of this
+     *         method.
+     * @param queryId The unique ID for the query.
+     * @param request The query direct buffer. Valid only for the scope of this method.
+     * @param persistent True if the query is persistent.
+     * @param callback Object used to continue or cancel the query asynchronously.
+     * @return True to handle the query or false to propagate the query to other registered
+     *         handlers, if any. If no handlers return true from this method then the query will be
+     *         automatically canceled with an error code of -1 delivered to the JavaScript onFailure
+     *         callback.
+     */
+    public boolean onQuery(CefBrowser browser, CefFrame frame, long queryId, ByteBuffer request,
             boolean persistent, CefQueryCallback callback);
 
     /**
