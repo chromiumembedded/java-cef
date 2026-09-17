@@ -51,7 +51,7 @@ bool KeyboardHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
     return false;
 
   ScopedJNIBoolRef jboolRef(env, *is_keyboard_shortcut);
-  if (!jboolRef)
+  if (!jboolRef->get())
     return false;
 
   jboolean jresult = JNI_FALSE;
