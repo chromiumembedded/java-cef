@@ -20,6 +20,7 @@ call make_jni_header.bat %1 org.cef.browser.CefBrowser_N
 call make_jni_header.bat %1 org.cef.browser.CefFrame_N
 call make_jni_header.bat %1 org.cef.browser.CefMessageRouter_N
 call make_jni_header.bat %1 org.cef.browser.CefRequestContext_N
+call make_jni_header.bat %1 org.cef.browser.CefSharedTexture_N
 call make_jni_header.bat %1 org.cef.callback.CefAuthCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefBeforeDownloadCallback_N
 call make_jni_header.bat %1 org.cef.callback.CefCommandLine_N

@@ -40,6 +40,10 @@ class RenderHandler : public CefRenderHandler {
                        const void* buffer,
                        int width,
                        int height) override;
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  PaintElementType type,
+                                  const RectList& dirtyRects,
+                                  const CefAcceleratedPaintInfo& info) override;
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefDragData> drag_data,
                              DragOperationsMask allowed_ops,

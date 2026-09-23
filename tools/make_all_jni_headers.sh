@@ -12,6 +12,7 @@ else
   "${DIR}"/make_jni_header.sh $1 org.cef.browser.CefFrame_N
   "${DIR}"/make_jni_header.sh $1 org.cef.browser.CefMessageRouter_N
   "${DIR}"/make_jni_header.sh $1 org.cef.browser.CefRequestContext_N
+  "${DIR}"/make_jni_header.sh $1 org.cef.browser.CefSharedTexture_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefAuthCallback_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefBeforeDownloadCallback_N
   "${DIR}"/make_jni_header.sh $1 org.cef.callback.CefCommandLine_N

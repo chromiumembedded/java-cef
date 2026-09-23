@@ -6,11 +6,20 @@ package org.cef.browser;
 
 import com.jogamp.opengl.GL2;
 
+import org.cef.OS;
+import org.cef.handler.CefAcceleratedPaintInfo;
+import org.cef.handler.CefAcceleratedPaintInfoLinux;
+import org.cef.handler.CefAcceleratedPaintInfoMac;
+import org.cef.handler.CefAcceleratedPaintInfoWin;
+import org.cef.handler.CefMacOsIOSurface;
+
 import java.awt.Rectangle;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 class CefRenderer {
+    private static final int CEF_COLOR_TYPE_BGRA_8888 = 1;
+
     private boolean transparent_;
     private GL2 initialized_context_ = null;
     private int[] texture_id_ = new int[1];
@@ -21,6 +30,9 @@ class CefRenderer {
     private Rectangle popup_rect_ = new Rectangle(0, 0, 0, 0);
     private Rectangle original_popup_rect_ = new Rectangle(0, 0, 0, 0);
     private boolean use_draw_pixels_ = false;
+    private int[] framebuffer_id_ = new int[2];
+    private boolean swap_red_blue_ = false;
+    private boolean accelerated_paint_failed_ = false;
 
     protected CefRenderer(boolean transparent) {
         transparent_ = transparent;
@@ -67,7 +79,12 @@ class CefRenderer {
 
     protected void cleanup(GL2 gl2) {
         if (texture_id_[0] != 0) gl2.glDeleteTextures(1, texture_id_, 0);
+        if (framebuffer_id_[0] != 0) {
+            gl2.glDeleteFramebuffers(2, framebuffer_id_, 0);
+            framebuffer_id_[0] = framebuffer_id_[1] = 0;
+        }
         view_width_ = view_height_ = 0;
+        swap_red_blue_ = false;
     }
 
     @SuppressWarnings("static-access")
@@ -175,6 +192,8 @@ class CefRenderer {
             return;
         }
 
+        setSwapRedBlue(gl2, false);
+
         if (transparent_) {
             // Enable alpha blending.
             gl2.glEnable(gl2.GL_BLEND);
@@ -244,6 +263,132 @@ class CefRenderer {
             // Disable alpha blending.
             gl2.glDisable(gl2.GL_BLEND);
         }
+    }
+
+    @SuppressWarnings("static-access")
+    protected void onAcceleratedPaint(
+            GL2 gl2, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        initialize(gl2);
+
+        if (use_draw_pixels_ || accelerated_paint_failed_ || info.width <= 0 || info.height <= 0) {
+            return;
+        }
+
+        Rectangle frame = new Rectangle(0, 0, info.width, info.height);
+        Rectangle[] rects;
+        int offset_x = 0, offset_y = 0;
+        if (!popup) {
+            if (view_width_ != frame.width || view_height_ != frame.height) {
+                view_width_ = frame.width;
+                view_height_ = frame.height;
+                gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
+                gl2.glTexImage2D(gl2.GL_TEXTURE_2D, 0, gl2.GL_RGBA, view_width_, view_height_, 0,
+                        gl2.GL_BGRA, gl2.GL_UNSIGNED_INT_8_8_8_8_REV, null);
+                rects = new Rectangle[] {frame};
+            } else {
+                // Copying the whole frame would erase a popup that did not repaint.
+                rects = new Rectangle[dirtyRects.length];
+                for (int i = 0; i < dirtyRects.length; ++i) {
+                    rects[i] = frame.intersection(dirtyRects[i]);
+                }
+            }
+        } else if (popup_rect_.width > 0 && popup_rect_.height > 0) {
+            offset_x = popup_rect_.x;
+            offset_y = popup_rect_.y;
+            rects = new Rectangle[] {frame.intersection(
+                    new Rectangle(-offset_x, -offset_y, view_width_, view_height_))};
+        } else {
+            return;
+        }
+
+        int target = OS.isMacintosh() ? gl2.GL_TEXTURE_RECTANGLE : gl2.GL_TEXTURE_2D;
+        int[] source = new int[1];
+        gl2.glGenTextures(1, source, 0);
+        gl2.glBindTexture(target, source[0]);
+        gl2.glTexParameteri(target, gl2.GL_TEXTURE_MIN_FILTER, gl2.GL_NEAREST);
+        gl2.glTexParameteri(target, gl2.GL_TEXTURE_MAG_FILTER, gl2.GL_NEAREST);
+
+        long dmaBuf = 0;
+        String error = null;
+        try {
+            if (info instanceof CefAcceleratedPaintInfoWin) {
+                int result = CefSharedTexture_N.N_BindD3D11Texture(
+                        ((CefAcceleratedPaintInfoWin) info).shared_texture_handle, info.width,
+                        info.height);
+                if (result != 0) error = "EXT_memory_object_win32 import failed: " + result;
+            } else if (info instanceof CefAcceleratedPaintInfoMac) {
+                int result = CefMacOsIOSurface.bindToCurrentTexture(
+                        ((CefAcceleratedPaintInfoMac) info).shared_texture_io_surface, info.width,
+                        info.height);
+                if (result != 0) error = "CGLTexImageIOSurface2D failed: " + result;
+            } else if (info instanceof CefAcceleratedPaintInfoLinux
+                    && ((CefAcceleratedPaintInfoLinux) info).hasDmaBufPlanes()) {
+                CefAcceleratedPaintInfoLinux linuxInfo = (CefAcceleratedPaintInfoLinux) info;
+                dmaBuf = CefSharedTexture_N.N_BindDmaBuf(info.width, info.height,
+                        linuxInfo.plane_count, linuxInfo.plane_fds, linuxInfo.plane_strides,
+                        linuxInfo.plane_offsets, linuxInfo.modifier);
+                if (dmaBuf == 0) error = "dmabuf import failed";
+            } else {
+                error = "unsupported " + info.getClass().getSimpleName();
+            }
+        } catch (UnsatisfiedLinkError e) {
+            error = e.toString();
+        }
+
+        if (error == null) {
+            copyTexture(gl2, target, source[0], rects, offset_x, offset_y);
+            // The shared texture goes back to CEF's pool when the callback returns.
+            gl2.glFinish();
+            setSwapRedBlue(gl2, isRedBlueSwapped(info));
+        } else {
+            accelerated_paint_failed_ = true;
+            System.err.println("Accelerated paint disabled, " + error);
+        }
+
+        if (dmaBuf != 0) CefSharedTexture_N.N_ReleaseDmaBuf(dmaBuf);
+        gl2.glDeleteTextures(1, source, 0);
+    }
+
+    @SuppressWarnings("static-access")
+    private void copyTexture(
+            GL2 gl2, int target, int source, Rectangle[] rects, int offsetX, int offsetY) {
+        if (framebuffer_id_[0] == 0) gl2.glGenFramebuffers(2, framebuffer_id_, 0);
+
+        gl2.glBindFramebuffer(gl2.GL_READ_FRAMEBUFFER, framebuffer_id_[0]);
+        gl2.glFramebufferTexture2D(
+                gl2.GL_READ_FRAMEBUFFER, gl2.GL_COLOR_ATTACHMENT0, target, source, 0);
+        gl2.glBindFramebuffer(gl2.GL_DRAW_FRAMEBUFFER, framebuffer_id_[1]);
+        gl2.glFramebufferTexture2D(gl2.GL_DRAW_FRAMEBUFFER, gl2.GL_COLOR_ATTACHMENT0,
+                gl2.GL_TEXTURE_2D, texture_id_[0], 0);
+        for (Rectangle r : rects) {
+            if (r.isEmpty()) continue;
+            gl2.glBlitFramebuffer(r.x, r.y, r.x + r.width, r.y + r.height, r.x + offsetX,
+                    r.y + offsetY, r.x + r.width + offsetX, r.y + r.height + offsetY,
+                    gl2.GL_COLOR_BUFFER_BIT, gl2.GL_NEAREST);
+        }
+        gl2.glFramebufferTexture2D(gl2.GL_READ_FRAMEBUFFER, gl2.GL_COLOR_ATTACHMENT0, target, 0, 0);
+
+        // JOGL may back the canvas with its own FBO (e.g. the CALayer path on macOS).
+        gl2.glBindFramebuffer(gl2.GL_READ_FRAMEBUFFER, gl2.getDefaultReadFramebuffer());
+        gl2.glBindFramebuffer(gl2.GL_DRAW_FRAMEBUFFER, gl2.getDefaultDrawFramebuffer());
+    }
+
+    // Shared textures are bound as RGBA. On Windows the D3D11 texture is BGRA in memory; the
+    // Linux pixmap and the macOS IOSurface are interpreted as BGRA already.
+    private static boolean isRedBlueSwapped(CefAcceleratedPaintInfo info) {
+        boolean bgra = info.format == CEF_COLOR_TYPE_BGRA_8888;
+        return info instanceof CefAcceleratedPaintInfoWin ? bgra : !bgra;
+    }
+
+    @SuppressWarnings("static-access")
+    private void setSwapRedBlue(GL2 gl2, boolean swap) {
+        if (swap_red_blue_ == swap) return;
+        swap_red_blue_ = swap;
+        gl2.glBindTexture(gl2.GL_TEXTURE_2D, texture_id_[0]);
+        gl2.glTexParameteri(
+                gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_SWIZZLE_R, swap ? gl2.GL_BLUE : gl2.GL_RED);
+        gl2.glTexParameteri(
+                gl2.GL_TEXTURE_2D, gl2.GL_TEXTURE_SWIZZLE_B, swap ? gl2.GL_RED : gl2.GL_BLUE);
     }
 
     protected void setSpin(float spinX, float spinY) {

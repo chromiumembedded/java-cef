@@ -17,6 +17,7 @@ import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
+import org.cef.handler.CefAcceleratedPaintInfo;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -769,6 +770,15 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public void onAcceleratedPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {
+        if (browser == null) return;
+
+        CefRenderHandler realHandler = browser.getRenderHandler();
+        if (realHandler != null)
+            realHandler.onAcceleratedPaint(browser, popup, dirtyRects, info);
+    }
+
+    @Override
     public void addOnPaintListener(Consumer<CefPaintEvent> listener) {}
 
     @Override
@@ -776,6 +786,15 @@ public class CefClient extends CefClientHandler
 
     @Override
     public void removeOnPaintListener(Consumer<CefPaintEvent> listener) {}
+
+    @Override
+    public void addOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    @Override
+    public void setOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    @Override
+    public void removeOnAcceleratedPaintListener(Consumer<CefAcceleratedPaintEvent> listener) {}
 
     @Override
     public boolean startDragging(CefBrowser browser, CefDragData dragData, int mask, int x, int y) {
