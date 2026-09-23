@@ -156,6 +156,7 @@ set(JCEF_SRCS_LINUX
   util_posix.cpp
   )
 set(JCEF_SRCS_MAC
+  CefMacOsIOSurface_N.mm
   critical_wait_posix.cpp
   temp_window_mac.h
   temp_window_mac.mm
@@ -308,7 +309,7 @@ if(OS_MAC)
   add_library(${JCEF_TARGET} SHARED ${JCEF_RESOURCES_SRCS} ${JCEF_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${JCEF_TARGET})
   add_dependencies(${JCEF_TARGET} libcef_dll_wrapper)
-  target_link_libraries(${JCEF_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS}  ${JNI_LIBRARIES})
+  target_link_libraries(${JCEF_TARGET} libcef_dll_wrapper ${CEF_STANDARD_LIBS} ${JNI_LIBRARIES} "-framework OpenGL")
   target_include_directories(${JCEF_TARGET} PUBLIC ${JNI_INCLUDE_DIRS})
 
   # Use ad-hoc code signing for the dynamic library (required by Xcode 14+).
@@ -427,4 +428,3 @@ if(OS_WINDOWS)
   COPY_FILES("${JCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
   COPY_FILES("${JCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 endif()
-
