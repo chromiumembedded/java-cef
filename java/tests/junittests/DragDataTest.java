@@ -56,7 +56,8 @@ class DragDataTest {
         dragData.setLinkTitle(linkTitle);
         assertEquals(linkTitle, dragData.getLinkTitle());
 
-        final String linkMetadata = "something";
+        // CEF expects the "mime_type:file_name:url" form and drops any other value.
+        final String linkMetadata = "text/plain:test.txt:http://test.com/test.txt";
         dragData.setLinkMetadata(linkMetadata);
         assertEquals(linkMetadata, dragData.getLinkMetadata());
 
@@ -80,12 +81,20 @@ class DragDataTest {
         dragData.addFile(path1, "File 1");
         dragData.addFile(path2, "File 2");
 
+        // getFileNames returns the display names; getFilePaths returns the paths.
         Vector<String> fileNames = new Vector<>();
         assertTrue(dragData.getFileNames(fileNames));
 
         assertEquals(2, fileNames.size());
-        assertEquals(path1, fileNames.get(0));
-        assertEquals(path2, fileNames.get(1));
+        assertEquals("File 1", fileNames.get(0));
+        assertEquals("File 2", fileNames.get(1));
+
+        Vector<String> filePaths = new Vector<>();
+        assertTrue(dragData.getFilePaths(filePaths));
+
+        assertEquals(2, filePaths.size());
+        assertEquals(path1, filePaths.get(0));
+        assertEquals(path2, filePaths.get(1));
 
         assertFalse(dragData.isLink());
         assertTrue(dragData.isFile());
