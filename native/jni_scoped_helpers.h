@@ -678,7 +678,7 @@ class ScopedJNIClass : public ScopedJNIBase<jclass> {
 // JNI string.
 class ScopedJNIString : public ScopedJNIBase<jstring> {
  public:
-  ScopedJNIString(JNIEnv* env, const std::string& str);
+  ScopedJNIString(JNIEnv* env, const CefString& str);
 };
 
 // JNI date.
