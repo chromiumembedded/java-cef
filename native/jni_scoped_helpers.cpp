@@ -298,7 +298,7 @@ ScopedJNIClass::ScopedJNIClass(JNIEnv* env, const jclass& cls)
   jhandle_ = cls;
 }
 
-ScopedJNIString::ScopedJNIString(JNIEnv* env, const std::string& str)
+ScopedJNIString::ScopedJNIString(JNIEnv* env, const CefString& str)
     : ScopedJNIBase<jstring>(env) {
   jhandle_ = NewJNIString(env, str);
   DCHECK(jhandle_);

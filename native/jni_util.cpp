@@ -131,19 +131,27 @@ void SetJNIStringRef(JNIEnv* env,
                        NewJNIString(env, stringValue));
 }
 
-jstring NewJNIString(JNIEnv* env, const std::string& str) {
-  return env->NewStringUTF(str.c_str());
+// NewStringUTF/GetStringUTFChars use modified UTF-8, which cannot represent the
+// 4-byte sequences that standard UTF-8 uses for supplementary characters (e.g.
+// emoji). Convert via UTF-16 instead.
+jstring NewJNIString(JNIEnv* env, const CefString& str) {
+  const std::u16string str16 = str.ToString16();
+  return env->NewString(reinterpret_cast<const jchar*>(str16.data()),
+                        static_cast<jsize>(str16.length()));
 }
 
 CefString GetJNIString(JNIEnv* env, jstring jstr) {
   CefString cef_str;
-  const char* chr = nullptr;
-  if (jstr)
-    chr = env->GetStringUTFChars(jstr, nullptr);
-  if (chr)
-    cef_str = chr;
-  if (jstr)
-    env->ReleaseStringUTFChars(jstr, chr);
+  if (!jstr)
+    return cef_str;
+  const jsize length = env->GetStringLength(jstr);
+  if (length == 0)
+    return cef_str;
+  const jchar* chr = env->GetStringChars(jstr, nullptr);
+  if (chr) {
+    cef_str.FromString16(reinterpret_cast<const char16_t*>(chr), length);
+    env->ReleaseStringChars(jstr, chr);
+  }
   return cef_str;
 }
 

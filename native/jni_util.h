@@ -51,7 +51,7 @@ void SetJNIStringRef(JNIEnv* env,
                      const CefString& initValue);
 
 // Create a new String value.
-jstring NewJNIString(JNIEnv* env, const std::string& str);
+jstring NewJNIString(JNIEnv* env, const CefString& str);
 
 // Retrieve a String value.
 CefString GetJNIString(JNIEnv* env, jstring jstr);
