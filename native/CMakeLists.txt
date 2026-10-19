@@ -38,10 +38,12 @@ set(JCEF_SRCS
   CefFrame_N.h
   CefJSDialogCallback_N.h
   CefJSDialogCallback_N.cpp
+  CefMediaAccessCallback_N.cpp
   CefMenuModel_N.cpp
   CefMenuModel_N.h
   CefMessageRouter_N.cpp
   CefMessageRouter_N.h
+  CefPermissionPromptCallback_N.cpp
   CefPostData_N.cpp
   CefPostData_N.h
   CefPostDataElement_N.cpp
@@ -116,10 +118,16 @@ set(JCEF_SRCS
   life_span_handler.h
   load_handler.cpp
   load_handler.h
+  media_access_callback.cpp
+  media_access_callback.h
   message_router_handler.cpp
   message_router_handler.h
   pdf_print_callback.cpp
   pdf_print_callback.h
+  permission_handler.cpp
+  permission_handler.h
+  permission_prompt_callback.cpp
+  permission_prompt_callback.h
   print_handler.cpp
   print_handler.h
   render_handler.cpp

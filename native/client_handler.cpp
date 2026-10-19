@@ -145,6 +145,10 @@ CefRefPtr<CefRequestHandler> ClientHandler::GetRequestHandler() {
   return GetHandler<RequestHandler>("RequestHandler");
 }
 
+CefRefPtr<CefPermissionHandler> ClientHandler::GetPermissionHandler() {
+  return GetHandler<PermissionHandler>("PermissionHandler");
+}
+
 bool ClientHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,

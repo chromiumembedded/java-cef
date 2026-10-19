@@ -160,6 +160,13 @@ public abstract class CefClientHandler implements CefNative {
     abstract protected CefRequestHandler getRequestHandler();
 
     /**
+     * Return the handler for permission requests.
+     * This method is a callback method and is called by
+     * the native code.
+     */
+    abstract protected CefPermissionHandler getPermissionHandler();
+
+    /**
      * Return the handler for windowed rendering events.
      * This method is a callback method and is called by
      * the native code.
