@@ -58,7 +58,7 @@ public abstract class CefClientHandler implements CefNative {
 
     /**
      * Returns the java part of the browser implementation.
-     * @param identifer the unique identifier of the browser.
+     * @param identifier the unique identifier of the browser.
      * @return The found browser or null if none is found.
      */
     abstract protected CefBrowser getBrowser(int identifier);

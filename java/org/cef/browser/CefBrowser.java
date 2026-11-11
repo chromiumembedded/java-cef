@@ -364,7 +364,7 @@ public interface CefBrowser {
      * Get an instance of a client that can be used to leverage the DevTools
      * protocol. Only one instance per browser is available.
      *
-     * @see {@link CefDevToolsClient}
+     * @see CefDevToolsClient
      * @return DevTools client, or null if this browser is not yet created
      *   or if it is closed or closing
      */

@@ -40,22 +40,22 @@ public abstract class CefPermissionHandlerAdapter implements CefPermissionHandle
                 case CAMERA_STREAM:
                 case CAPTURED_SURFACE_CONTROL:
                 case CLIPBOARD:
-                case TOP_LEVEL_STORAGE_ACCESS:
+                //case TOP_LEVEL_STORAGE_ACCESS:
                 case DISK_QUOTA:
-                case LOCAL_FONTS:
+                //case LOCAL_FONTS:
                 case GEOLOCATION:
                 case HAND_TRACKING:
-                case IDENTITY_PROVIDER:
+                //case IDENTITY_PROVIDER:
                 case IDLE_DETECTION:
                 case MIC_STREAM:
                 case MIDI_SYSEX:
-                case MULTIPLE_DOWNLOADS:
+                //case MULTIPLE_DOWNLOADS:
                 case NOTIFICATIONS:
                 case KEYBOARD_LOCK:
-                case POINTER_LOCK:
+                //case POINTER_LOCK:
                 case PROTECTED_MEDIA_IDENTIFIER:
-                case REGISTER_PROTOCOL_HANDLER:
-                case STORAGE_ACCESS:
+                //case REGISTER_PROTOCOL_HANDLER:
+                //case STORAGE_ACCESS:
                 case VR_SESSION:
                 case WEB_APP_INSTALLATION:
                 case WINDOW_MANAGEMENT:
