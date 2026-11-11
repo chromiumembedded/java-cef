@@ -7,7 +7,7 @@ The Java Chromium Embedded Framework (JCEF) is a simple framework for embedding 
 * Issue Tracker - https://github.com/chromiumembedded/java-cef/issues
 * Downloads - https://github.com/jcefmaven/jcefbuild
 * Maven/Gradle Artifacts - https://github.com/jcefmaven/jcefmaven
-* Donations - http://www.magpcss.org/ceforum/donate.php
+* Donations - https://github.com/sponsors/magreenblatt
 
 # Introduction
 

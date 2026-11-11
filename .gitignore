@@ -54,4 +54,6 @@ Thumbs.db
 /tools/buildtools/external_bin
 /tools/buildtools/linux64/clang-format
 /tools/buildtools/mac/clang-format
+# Misc working directories
+/tmp
 /tools/buildtools/win/clang-format.exe
