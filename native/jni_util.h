@@ -117,6 +117,9 @@ jobject NewJNIArrayList(JNIEnv* env);
 
 jobject NewJNIObjectFromCefValue(JNIEnv* env, const CefRefPtr<CefValue> value);
 
+jobject NewJNIPermissionRequestResult(JNIEnv* env, cef_permission_request_result_t result);
+jobject NewJNIPermissionRequestTypeEnumSet(JNIEnv* env, uint32_t mask);
+
 jboolean GetJNIBoolean(JNIEnv* env, jobject jbool);
 jint GetJNIInteger(JNIEnv* env, jobject jint);
 jdouble GetJNIDouble(JNIEnv* env, jobject jdouble);

@@ -75,7 +75,7 @@ public class CefDevToolsClient implements AutoCloseable {
      * <p>If an error occurs the returned future is completed exceptionally, otherwise its value is
      * asynchronously set to the method result.
      *
-     * <p>Call {@link #addEventListener(String, EventListener)} to subscribe to events.
+     * <p>Call #addEventListener(String, EventListener) to subscribe to events.
      *
      * @param method the method name
      * @return return a future with the method result if the method was executed successfully
@@ -92,7 +92,7 @@ public class CefDevToolsClient implements AutoCloseable {
      * <p>If an error occurs the returned future is completed exceptionally, otherwise its value is
      * asynchronously set to the method result.
      *
-     * <p>Call {@link #addEventListener(String, EventListener)} to subscribe to events.
+     * <p>Call #addEventListener(String, EventListener) to subscribe to events.
      *
      * @param method the method name
      * @param parametersAsJson JSON object with parameters, or null if no parameters are needed
@@ -111,7 +111,7 @@ public class CefDevToolsClient implements AutoCloseable {
 
     /**
      * Add an event listener for DevTools protocol events. Events by default are disabled
-     * and need to be enabled on a per domain basis, e.g. by sending Network.enable to enable
+     * and need to be enabled on a per-domain basis, e.g. by sending Network.enable to enable
      * network related events.
      *
      * @param eventListener the listener to add

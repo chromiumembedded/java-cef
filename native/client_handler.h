@@ -17,6 +17,7 @@
 #include "jni_scoped_helpers.h"
 #include "message_router_handler.h"
 #include "window_handler.h"
+#include "permission_handler.h"
 
 // ClientHandler implementation.
 class ClientHandler : public CefClient {
@@ -37,6 +38,7 @@ class ClientHandler : public CefClient {
   CefRefPtr<CefPrintHandler> GetPrintHandler() override;
   CefRefPtr<CefRenderHandler> GetRenderHandler() override;
   CefRefPtr<CefRequestHandler> GetRequestHandler() override;
+  CefRefPtr<CefPermissionHandler> GetPermissionHandler() override;
 
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,

@@ -58,7 +58,7 @@ public abstract class CefClientHandler implements CefNative {
 
     /**
      * Returns the java part of the browser implementation.
-     * @param identifer the unique identifier of the browser.
+     * @param identifier the unique identifier of the browser.
      * @return The found browser or null if none is found.
      */
     abstract protected CefBrowser getBrowser(int identifier);
@@ -158,6 +158,13 @@ public abstract class CefClientHandler implements CefNative {
      * the native code.
      */
     abstract protected CefRequestHandler getRequestHandler();
+
+    /**
+     * Return the handler for permission requests.
+     * This method is a callback method and is called by
+     * the native code.
+     */
+    abstract protected CefPermissionHandler getPermissionHandler();
 
     /**
      * Return the handler for windowed rendering events.
