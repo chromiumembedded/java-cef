@@ -1155,7 +1155,7 @@ bool GetJNIFieldDate(JNIEnv* env,
   if (GetJNIFieldObject(env, cls, obj, field_name, &fieldobj,
                         "Ljava/util/Date;")) {
     ScopedJNIObjectLocal jdate(env, fieldobj);
-    long timestamp = 0;
+    jlong timestamp = 0;
     JNI_CALL_METHOD(env, jdate, "getTime", "()J", Long, timestamp);
     CefTime cef_time;
     cef_time.SetDoubleT((double)(timestamp / 1000));
