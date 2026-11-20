@@ -36,7 +36,7 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
                                const CefSettings& settings,
                                CefRefPtr<ClientApp> application);
 
-void CefShutdownOnMainThread();
+void CefShutdownOnMainThread(JNIEnv* env, jobject app);
 
 void CefDoMessageLoopWorkOnMainThread();
 

@@ -32,7 +32,7 @@ class Context {
                   jobject jsettings);
   void OnContextInitialized();
   void DoMessageLoopWork();
-  void Shutdown();
+  void Shutdown(JNIEnv* env, jobject app);
 
  private:
   Context();

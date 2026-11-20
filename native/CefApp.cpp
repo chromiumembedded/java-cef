@@ -38,8 +38,12 @@ Java_org_cef_CefApp_N_1Initialize(JNIEnv* env,
              : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown(JNIEnv* env, jobject) {
-  Context::GetInstance()->Shutdown();
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown(JNIEnv* env,
+                                                       jobject app) {
+  Context::GetInstance()->Shutdown(env, app);
+}
+
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1FinishShutdown(JNIEnv*, jobject) {
   Context::Destroy();
 }
 
