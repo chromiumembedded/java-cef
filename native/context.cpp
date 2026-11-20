@@ -255,7 +255,7 @@ void Context::DoMessageLoopWork() {
 #endif
 }
 
-void Context::Shutdown() {
+void Context::Shutdown(JNIEnv* env, jobject app) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Clear scheme handler factories on shutdown to avoid refcount DCHECK.
@@ -263,7 +263,7 @@ void Context::Shutdown() {
 
   ClientApp::eraseTempFiles();
 #if defined(OS_MACOSX)
-  util_mac::CefShutdownOnMainThread();
+  util_mac::CefShutdownOnMainThread(env, app);
 #else
   // Pump CefDoMessageLoopWork a few times before shutting down.
   if (external_message_pump_) {

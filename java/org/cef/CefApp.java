@@ -131,6 +131,7 @@ public class CefApp extends CefAppHandlerAdapter {
     private static CefAppHandler appHandler_ = null;
     private static CefAppState state_ = CefAppState.NONE;
     private Timer workTimer_ = null;
+    private boolean shutdownStarted_ = false; // Accessed only on the EDT.
     private HashSet<CefClient> clients_ = new HashSet<CefClient>();
     private CefSettings settings_ = null;
 
@@ -473,15 +474,39 @@ public class CefApp extends CefAppHandlerAdapter {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (shutdownStarted_) return;
+                shutdownStarted_ = true;
+                stopMessageLoopTimer();
+
                 System.out.println("shutdown on " + Thread.currentThread());
-
-                // Shutdown native CEF.
                 N_Shutdown();
-
-                setState(CefAppState.TERMINATED);
-                CefApp.self = null;
+                if (!OS.isMacintosh()) finishShutdown();
             }
         });
+    }
+
+    // Called from AppKit after native shutdown. Destroy the context on the EDT,
+    // where it was initialized, before publishing TERMINATED.
+    private void handleNativeShutdownComplete() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                finishShutdown();
+            }
+        });
+    }
+
+    private void finishShutdown() {
+        N_FinishShutdown();
+        setState(CefAppState.TERMINATED);
+        CefApp.self = null;
+    }
+
+    private void stopMessageLoopTimer() {
+        if (workTimer_ != null) {
+            workTimer_.stop();
+            workTimer_ = null;
+        }
     }
 
     /**
@@ -493,16 +518,13 @@ public class CefApp extends CefAppHandlerAdapter {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (getState() == CefAppState.TERMINATED) return;
+                if (shutdownStarted_ || getState() == CefAppState.TERMINATED) return;
 
                 // The maximum number of milliseconds we're willing to wait between
                 // calls to DoMessageLoopWork().
                 final long kMaxTimerDelay = 1000 / 30; // 30fps
 
-                if (workTimer_ != null) {
-                    workTimer_.stop();
-                    workTimer_ = null;
-                }
+                stopMessageLoopTimer();
 
                 if (delay_ms <= 0) {
                     // Execute the work immediately.
@@ -518,9 +540,8 @@ public class CefApp extends CefAppHandlerAdapter {
                     workTimer_ = new Timer((int) timer_delay_ms, new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
-                            // Timer has timed out.
-                            workTimer_.stop();
-                            workTimer_ = null;
+                            if (shutdownStarted_) return;
+                            stopMessageLoopTimer();
 
                             N_DoMessageLoopWork();
 
@@ -593,6 +614,7 @@ public class CefApp extends CefAppHandlerAdapter {
     private final native boolean N_PreInitialize();
     private final native boolean N_Initialize(CefAppHandler appHandler, CefSettings settings);
     private final native void N_Shutdown();
+    private final native void N_FinishShutdown();
     private final native void N_DoMessageLoopWork();
     private final native CefVersion N_GetVersion();
     private final native boolean N_RegisterSchemeHandlerFactory(

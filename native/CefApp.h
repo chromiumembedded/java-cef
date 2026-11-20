@@ -43,6 +43,13 @@ JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1Shutdown(JNIEnv*, jobject);
 
 /*
  * Class:     org_cef_CefApp
+ * Method:    N_FinishShutdown
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_cef_CefApp_N_1FinishShutdown(JNIEnv*, jobject);
+
+/*
+ * Class:     org_cef_CefApp
  * Method:    N_DoMessageLoopWork
  * Signature: ()V
  */

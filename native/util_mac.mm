@@ -10,6 +10,8 @@
 #import <jni.h>
 #include <objc/runtime.h>
 
+#include <memory>
+
 #include "include/base/cef_callback.h"
 #include "include/cef_app.h"
 #include "include/cef_application_mac.h"
@@ -30,6 +32,7 @@ static std::set<CefWindowHandle> g_browsers_;
 static CriticalLock g_browsers_lock_;
 id g_mouse_monitor_ = nil;
 static CefRefPtr<ClientApp> g_client_app_ = nullptr;
+bool g_shutting_down_ = false;  // Accessed only on AppKit.
 bool g_handling_send_event = false;
 
 }  // namespace
@@ -221,6 +224,10 @@ bool g_handling_send_event = false;
 }
 
 + (void)shutdown {
+  if (g_shutting_down_)
+    return;
+  g_shutting_down_ = true;
+
   // Pump CefDoMessageLoopWork a few times before shutting down.
   for (int i = 0; i < 10; ++i)
     CefDoMessageLoopWork();
@@ -232,7 +239,8 @@ bool g_handling_send_event = false;
 }
 
 + (void)doMessageLoopWork {
-  CefDoMessageLoopWork();
+  if (!g_shutting_down_)
+    CefDoMessageLoopWork();
 }
 
 + (void)setVisibility:(SetVisibilityParams*)params {
@@ -448,11 +456,16 @@ bool CefInitializeOnMainThread(const CefMainArgs& args,
   return result;
 }
 
-void CefShutdownOnMainThread() {
-  // Block until done.
-  [[CefHandler class] performSelectorOnMainThread:@selector(shutdown)
-                                       withObject:nil
-                                    waitUntilDone:YES];
+void CefShutdownOnMainThread(JNIEnv* env, jobject app) {
+  // AppKit can be waiting for the EDT to answer an accessibility query.
+  // Return to the EDT while the AppKit shutdown is pending.
+  auto java_app = std::make_shared<ScopedJNIObjectGlobal>(env, app);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[CefHandler class] shutdown];
+    ScopedJNIEnv callback_env;
+    JNI_CALL_VOID_METHOD(callback_env, java_app->get(),
+                         "handleNativeShutdownComplete", "()V");
+  });
 }
 
 void CefDoMessageLoopWorkOnMainThread() {
