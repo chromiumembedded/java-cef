@@ -61,11 +61,14 @@ def write_svn_header(header):
   else:
     oldcontents = ''
 
-  if not git.is_checkout(jcef_dir):
-    raise Exception('Not a valid checkout')
-
-  commit_number = git.get_commit_number(jcef_dir)
-  commit_hash = git.get_hash(jcef_dir)
+  if platform == 'freebsd':
+    commit_number = "%%CI_NBR%%"
+    commit_hash = "%%CI_HASH%%"
+  else
+    if not git.is_checkout(jcef_dir):
+      raise Exception('Not a valid checkout')
+    commit_number = git.get_commit_number(jcef_dir)
+    commit_hash = git.get_hash(jcef_dir)
 
   year = get_year()
 
