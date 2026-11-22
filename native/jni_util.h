@@ -27,7 +27,7 @@ jobject GetJavaClassLoader();
 
 #if defined(OS_WIN)
 HWND GetHwndOfCanvas(jobject canvas, JNIEnv* env);
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_FREEBSD)
 unsigned long GetDrawableOfCanvas(jobject canvas, JNIEnv* env);
 #endif
 
